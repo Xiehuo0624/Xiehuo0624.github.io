@@ -43,6 +43,7 @@ git remote set-url origin "https://Xiehuo0624:${TOKEN}@github.com/${REPO}.git"
 while true; do
     echo ""
     echo "⏳ 正在推送..."
+    git remote set-url origin "https://Xiehuo0624:${TOKEN}@github.com/${REPO}.git"
     if git push -u origin main 2>&1; then
         echo ""
         echo "✅ 推送成功！"
@@ -51,11 +52,17 @@ while true; do
         echo ""
         echo "❌ 推送失败！"
         echo ""
-        echo "  [r] 重试   [q] 退出"
+        echo "  [r] 粘贴新 Token 重试   [q] 退出"
         echo ""
         read -n 1 -p "  请选择: " choice
         echo ""
         if [[ "$choice" != "r" && "$choice" != "R" ]]; then
+            break
+        fi
+        echo "🔑 请粘贴新的 Token："
+        read -s TOKEN
+        if [ -z "$TOKEN" ]; then
+            echo "❌ Token 为空，已退出"
             break
         fi
     fi
