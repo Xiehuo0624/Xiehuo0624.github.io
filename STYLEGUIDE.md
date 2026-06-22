@@ -213,6 +213,7 @@
 │
 ├── img/                         图片资源
 │   ├── ecce-homo.jpg
+│   ├── edgedgedge.jpg
 │   └── wwhbh.jpg
 │
 ├── start-https.sh               本地 HTTPS 预览服务脚本
