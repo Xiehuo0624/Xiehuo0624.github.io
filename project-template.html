@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROJECT</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/project.css">
+</head>
+<body>
+
+<!-- default grid layout -->
+<div class="project-grid" id="layout-grid">
+  <div class="media-area">
+    <span class="media-placeholder" data-i18n="mediaHint">[ 演示视频 / 硬件照片 ]</span>
+  </div>
+  <div class="info-area">
+    <h2 id="grid-title"></h2>
+    <p id="grid-desc"></p>
+  </div>
+</div>
+
+<!-- wwbh: text + mic button -->
+<div class="wwhbh-panel" id="layout-wwhbh">
+  <div class="wwhbh-body">
+    <h2 id="wwhbh-title"></h2>
+    <p id="wwhbh-desc"></p>
+  </div>
+  <div class="wwhbh-footer">
+    <button class="btn-mic" id="btn-mic">ACTIVATE</button>
+  </div>
+</div>
+
+<!-- ecce-homo: video top, text bottom -->
+<div class="ecce-panel" id="layout-ecce">
+  <h2 id="ecce-title"></h2>
+  <div class="ecce-video">
+    <iframe allowfullscreen></iframe>
+  </div>
+  <div class="ecce-text">
+    <p id="ecce-desc"></p>
+  </div>
+</div>
+
+<!-- core -->
+<script src="js/app.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/i18n-common.js"></script>
+<script src="js/nav.js"></script>
+<!-- page data + logic -->
+<script src="js/project-i18n.js"></script>
+<script src="js/project-data.js"></script>
+<script src="js/audio-wwhbh.js"></script>
+<script src="js/project.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+/* ===== CHANGELOG PAGE ===== */
+.page{max-width:680px;margin:0 auto;padding:80px 24px 48px 60px;position:relative}
+.page-title{font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;border-bottom:3px solid #000;padding-bottom:10px}
+
+.timeline{
+  position:absolute;
+  left:36px;top:80px;bottom:48px;
+  width:2px;background:#000;
+}
+
+.log-entry{position:relative;margin-bottom:24px}
+.log-entry::before{
+  content:'';position:absolute;
+  left:-30px;top:6px;
+  width:10px;height:10px;
+  background:#000;
+}
+
+details{
+  border:2px solid #000;
+  margin-bottom:0;
+}
+details summary{
+  padding:10px 14px;
+  cursor:pointer;
+  font-size:13px;font-weight:700;
+  letter-spacing:1px;
+  list-style:none;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:'[+] ';margin-right:6px}
+details[open] summary::before{content:'[-] '}
+details summary:hover{background:#000;color:#fff}
+
+.date{font-size:11px;color:#888;margin-left:8px;font-weight:400}
+
+details .body{
+  padding:14px;
+  font-size:12px;
+  line-height:1.8;
+  border-top:2px solid #000;
+}
+details .body img,
+details .body video{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+
+@media(max-width:768px){
+  .page{padding:80px 16px 48px 44px}
+  .timeline{left:20px}
+  .log-entry::before{left:-18px;width:8px;height:8px}
+  details summary{font-size:12px;padding:8px 10px}
+  details .body{font-size:11px;padding:10px}
+  .date{font-size:10px}
+}

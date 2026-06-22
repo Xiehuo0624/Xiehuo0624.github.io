@@ -1,0 +1,61 @@
+/* ===== PROJECT PAGE: default grid layout ===== */
+.project-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  width:100%;height:100vh;
+}
+.media-area{
+  border-right:3px solid #000;
+  display:flex;align-items:center;justify-content:center;
+  background:#f0f0f0;
+  overflow:hidden;
+}
+.media-placeholder{font-size:14px;letter-spacing:1px;text-transform:uppercase;color:#888}
+.media-area video,.media-area img{display:block;width:100%;height:100%;object-fit:cover;border:none;outline:none}
+.info-area{
+  padding:32px;
+  overflow-y:auto;
+  font-size:13px;
+  line-height:1.7;
+}
+.info-area h2{
+  font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  border-bottom:3px solid #000;padding-bottom:8px;margin-bottom:24px;
+}
+.info-area p{margin-bottom:16px}
+
+/* ===== shared ===== */
+.redact{background:#000;color:#000;padding:0 4px;letter-spacing:2px;margin:0 2px}
+
+/* ===== WWHBH layout ===== */
+.wwhbh-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
+.wwhbh-body{max-width:800px;width:100%;text-align:left}
+.wwhbh-body h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px}
+.wwhbh-body p{line-height:2.4;font-size:14px;letter-spacing:0.5px;margin-bottom:32px}
+.wwhbh-footer{max-width:800px;width:100%;padding:0 0 32px}
+.btn-mic{
+  width:100%;font-family:monospace;font-size:14px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  border:3px solid #000;background:#fff;color:#000;
+  padding:12px;cursor:pointer;
+}
+.btn-mic:hover{background:#000;color:#fff}
+.btn-mic.on{background:#000;color:#fff}
+
+/* ===== ECCE HOMO layout ===== */
+.ecce-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
+.ecce-panel>h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;align-self:flex-start;max-width:800px;width:100%}
+.ecce-video{width:100%;max-width:800px;aspect-ratio:16/9;border-bottom:3px solid #000;background:#000}
+.ecce-video iframe{width:100%;height:100%;border:none}
+.ecce-text{padding:24px 0 0;max-width:800px;width:100%}
+.ecce-text p{line-height:2.4;font-size:14px;letter-spacing:0.5px}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  .project-grid{grid-template-columns:1fr;height:auto;min-height:100vh}
+  .media-area{border-right:none;border-bottom:3px solid #000;min-height:40vw}
+  .info-area{padding:20px 16px}
+  .info-area h2{font-size:16px}
+  .wwhbh-panel{padding:70px 16px 24px}
+  .ecce-panel{padding:70px 16px 24px}
+}

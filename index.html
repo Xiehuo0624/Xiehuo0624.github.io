@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORKS</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+<!-- DOM order: firstChild = bottom of stack, lastChild = visual top -->
+<div class="stack-wrap" id="stack">
+  <div class="card" data-href="project-template.html?project=new-work">
+    <div class="card-fallback" data-i18n="cardNewWork"></div>
+  </div>
+  <div class="card" data-href="project-template.html?project=spectral-dissector">
+    <div class="card-fallback" data-i18n="cardSpectral">SPECTRAL DISSECTOR</div>
+  </div>
+  <div class="card" data-href="project-template.html?project=ecce-homo">
+    <div class="card-fallback" data-i18n="cardEcce">ECCE HOMO</div>
+  </div>
+  <div class="card" data-href="project-template.html?project=wwhbh">
+    <div class="card-fallback" data-i18n="cardWwbh">WE WILL HAVE BEEN HERE</div>
+    <img class="card-image" src="img/wwhbh.jpg" alt="We Will Have Been Here">
+  </div>
+</div>
+
+<!-- core -->
+<script src="js/app.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/i18n-common.js"></script>
+<script src="js/nav.js"></script>
+<!-- page data + logic -->
+<script src="js/index-i18n.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
