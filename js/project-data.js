@@ -6,6 +6,18 @@ App.projects = {
     desc:  { file: true }
   },
 
+  'the-fet-mixer': {
+    layout: 'grid',
+    title: { zh:'THE FET MIXER', en:'THE FET MIXER' },
+    desc:  { file: true }
+  },
+
+  'riverrun': {
+    layout: 'grid',
+    title: { zh:'riverrun', en:'riverrun' },
+    desc:  { file: true }
+ },
+
   'spectral-dissector': {
     layout: 'grid',
     title: { zh:'SPECTRAL DISSECTOR', en:'SPECTRAL DISSECTOR' },

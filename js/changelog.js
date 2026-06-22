@@ -13,8 +13,8 @@
     },
     {
       date: '2026-06-20',
-      title: { zh: '观看了电影《噬草者》', en: 'Watched the film Háry János' },
-      body:  { zh: '观看了《噬草者》。', en: 'Watched Háry János.' },
+      title: { zh: '观看了电影《噬草者》', en: 'Watched the film The Grass Eater' },
+      body:  { zh: '观看了《噬草者》。', en: 'Watched The Grass Eater.' },
       media: ''
     },
     {
