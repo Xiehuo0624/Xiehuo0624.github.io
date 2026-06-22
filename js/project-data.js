@@ -1,8 +1,8 @@
 /* ===== PROJECT DATA ===== */
 App.projects = {
-  'new-work': {
+  'edgedgedge': {
     layout: 'grid',
-    title: { zh:'', en:'' },
+    title: { zh:'EDGEDGEDGE', en:'EDGEDGEDGE' },
     desc:  { file: true }
   },
 
