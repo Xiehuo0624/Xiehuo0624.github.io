@@ -1,5 +1,5 @@
 #!/bin/bash
-# 推送代码到 GitHub 并触发 Pages 重建
+# 推送代码到 GitHub（Pages 会自动重建）
 # 运行后粘贴你的 Personal Access Token，按回车即可
 
 cd "$(dirname "$0")"
@@ -36,9 +36,6 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
-# 临时设置带 Token 的远程地址
-git remote set-url origin "https://Xiehuo0624:${TOKEN}@github.com/${REPO}.git"
-
 # ---- 推送（含重试） ----
 while true; do
     echo ""
@@ -47,6 +44,7 @@ while true; do
     if git push -u origin main 2>&1; then
         echo ""
         echo "✅ 推送成功！"
+        echo "🔄 GitHub Pages 将在 1-2 分钟内自动更新"
         break
     else
         echo ""
@@ -67,22 +65,6 @@ while true; do
         fi
     fi
 done
-
-# ---- 触发 GitHub Pages 重建 ----
-echo ""
-echo "🔄 正在触发 GitHub Pages 重建..."
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-    -X POST \
-    -H "Authorization: Bearer ${TOKEN}" \
-    -H "Accept: application/vnd.github+json" \
-    "https://api.github.com/repos/${REPO}/pages/builds")
-
-if [ "$HTTP_CODE" = "201" ]; then
-    echo "✅ 重建已触发！1-2 分钟后生效"
-else
-    echo "⚠️  重建触发失败 (HTTP $HTTP_CODE)"
-    echo "   可手动触发：https://github.com/${REPO}/actions"
-fi
 
 # ---- 清除 Token ----
 git remote set-url origin "https://github.com/${REPO}.git"

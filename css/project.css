@@ -45,8 +45,8 @@
 /* ===== ECCE HOMO layout ===== */
 .ecce-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
 .ecce-panel>h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;align-self:flex-start;max-width:800px;width:100%}
-.ecce-video{width:100%;max-width:800px;aspect-ratio:16/9;border-bottom:3px solid #000;background:#000}
-.ecce-video iframe{width:100%;height:100%;border:none}
+.ecce-video{width:100%;max-width:800px;border-bottom:3px solid #000;background:#000}
+.ecce-video iframe{width:100%;height:60px;border:none}
 .ecce-text{padding:24px 0 0;max-width:800px;width:100%}
 .ecce-text p{line-height:2.4;font-size:14px;letter-spacing:0.5px}
 
