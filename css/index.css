@@ -21,6 +21,9 @@ html,body{overflow:hidden}
   background:#fff;color:#000;
   font-size:22px;letter-spacing:2px;text-transform:uppercase;
 }
+.card.lowercase .card-fallback{
+  text-transform:none;
+}
 
 /* layer 2 — image */
 .card-image{
