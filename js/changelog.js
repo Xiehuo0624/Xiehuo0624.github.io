@@ -6,6 +6,18 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-06-21',
+      title: { zh: '观看了电影《撒旦探戈》', en: 'Watched the film Sátántangó' },
+      body:  { zh: '观看了贝拉·塔尔执导的《撒旦探戈》。', en: 'Watched Sátántangó directed by Béla Tarr.' },
+      media: ''
+    },
+    {
+      date: '2026-06-20',
+      title: { zh: '观看了电影《噬草者》', en: 'Watched the film Háry János' },
+      body:  { zh: '观看了《噬草者》。', en: 'Watched Háry János.' },
+      media: ''
+    },
+    {
       date: '2026-06-15',
       title: { zh: '为《我们将会曾经在这里》增加了作品封面', en: 'Added cover image for We Will Have Been Here' },
       body:  { zh: '为首页卡片增加了封面图。', en: 'Added a cover image to the homepage card.' },
