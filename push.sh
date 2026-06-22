@@ -73,7 +73,7 @@ echo ""
 echo "🔄 正在触发 GitHub Pages 重建..."
 HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
     -X POST \
-    -H "Authorization: token ${TOKEN}" \
+    -H "Authorization: Bearer ${TOKEN}" \
     -H "Accept: application/vnd.github+json" \
     "https://api.github.com/repos/${REPO}/pages/builds")
 
