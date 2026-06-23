@@ -6,6 +6,18 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-06-24',
+      title: { zh: '修复了2026-06-10的个人介绍的语法错误', en: 'Fixed grammar errors in 2026-06-10 bio' },
+      body:  { zh: '修复了顿号误用（并列词语应用顿号而非逗号）、重复词语（"可以在我生日的时候可以"）等语法问题。', en: 'Fixed incorrect use of commas instead of enumeration commas (、) for parallel items, and removed redundant word ("可以在我生日的时候可以").' },
+      media: ''
+    },
+    {
+      date: '2026-06-24',
+      title: { zh: 'EDGEDGEDGE 作品介绍、Edge 布局与关于页更新', en: 'EDGEDGEDGE description, Edge layout & About page updates' },
+      body:  { zh: '为 EDGEDGEDGE 添加了完整作品介绍（2025.10.09 随笔、作品构思、2026.06.24 后续感想）及 Bilibili 视频嵌入；新增 Edge 布局（视频在上文字在下，取代 Grid 布局的左右分栏），移动端视频可见性修复；为关于页段落组添加日期标注；新增「我妈说我标点用错了」。', en: 'Added full artist statement for EDGEDGEDGE (2025.10.09 essay, original concept, 2026.06.24 afterthoughts) with Bilibili video embed; introduced Edge layout (video above, text below, replacing Grid layout side-by-side), fixing mobile video visibility; added date annotations to About page paragraph groups; added "My mom says I used the wrong punctuation."' },
+      media: ''
+    },
+    {
       date: '2026-06-23',
       title: { zh: '文件目录整理、本地服务器修复与排版优化', en: 'File structure reorganization, local server fix & layout refinements' },
       body:  { zh: '将杂项文档（docx）移入 docs/ 目录，开发脚本与 SSL 证书移入 scripts/ 目录，根目录仅保留部署页面与样式指南；修复本地服务器不支持 HTTP Range 请求导致音频无法拖动进度条的问题，将服务器 Python 代码提取为独立 server.py；works 页排版全面优化：宽度 640px→960px 适配英文简介长度，条目固定高度 48px 统一行间距，标题和简介居中对齐（line-height:1 消除中英文字体基线差异），h1 标题间距缩小（margin-bottom 2px），移动端竖排布局修复（标题居中、简介不溢出）；about/changelog 页标题加 line-height:1 修复中英文切换横线偏移；首页四角导航左右对齐微调；为 riverrun 作品标题添加小写显示支持。', en: 'Moved doc files to docs/ and dev scripts + SSL certs to scripts/, keeping only deployable pages and styleguide in root; fixed local server lacking HTTP Range request support which prevented audio seek, extracted server code into standalone server.py; comprehensive works page layout refinements: widened to 960px to accommodate English briefs, fixed 48px row height for consistent line spacing, centered title and brief alignment (line-height:1 to eliminate font baseline differences), reduced h1 margin-bottom to 2px, fixed mobile vertical layout (title centered, brief not overflowing); added line-height:1 to about/changelog titles to fix border shift on lang switch; adjusted index page four-corner nav alignment; added lowercase display support for riverrun title.' },
