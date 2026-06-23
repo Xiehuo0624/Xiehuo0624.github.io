@@ -21,6 +21,14 @@
       title.className = 'works-title';
       title.textContent = p.title[lang];
       a.appendChild(title);
+
+      if (p.brief && p.brief[lang]) {
+        const brief = document.createElement('span');
+        brief.className = 'works-brief';
+        brief.textContent = p.brief[lang];
+        a.appendChild(brief);
+      }
+
       list.appendChild(a);
     });
   }

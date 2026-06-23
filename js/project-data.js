@@ -31,7 +31,7 @@ App.projects = {
   'ecce-homo': {
     layout: 'ecce',
     title: { zh:'瞧！这个人', en:'ECCE HOMO' },
-    brief: { zh:'声音剧场：圣经·卡夫卡·肉身', en:'Sound theatre: Bible · Kafka · Flesh' },
+    brief: { zh:'与 Allen 共同创作的声音剧场作品，交织《圣经》与卡夫卡的文本', en:'A sound theatre piece co-created with Allen, interweaving Biblical and Kafkaesque texts' }
     desc: { file: true },
     videoUrl: 'https://player.bilibili.com/player.html?bvid=BV1EUr6YoESn&autoplay=0'
   },
@@ -39,7 +39,7 @@ App.projects = {
   'wwhbh': {
     layout: 'wwhbh',
     title: { zh:'我们将会曾经在这里', en:'WE WILL HAVE BEEN HERE' },
-    brief: { zh:'未来完成时的在场证明', en:'A proof of presence in the future perfect tense' },
+    brief: { zh:'基于麦克风与扬声器回授的声音装置，关于时间、记忆与易失性', en:'A microphone-loudspeaker feedback installation about time, memory, and volatility' }
     desc: { file: true }
   }
 };
