@@ -4,7 +4,7 @@
 }
 .works-page h1{
   font-size:22px;letter-spacing:3px;text-transform:uppercase;
-  border-bottom:3px solid #000;padding-bottom:12px;margin-bottom:32px;
+  border-bottom:3px solid #000;padding-bottom:12px;margin-bottom:20px;
 }
 #works-list{
   display:flex;flex-direction:column;gap:0;

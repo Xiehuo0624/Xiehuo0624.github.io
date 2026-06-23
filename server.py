@@ -1,4 +1,4 @@
-"""Local HTTPS server with HTTP Range request support."""
+"""Local HTTP/HTTPS server with HTTP Range request support."""
 
 import http.server, ssl, os, re, sys
 
@@ -71,12 +71,17 @@ class RangeHandler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 4443
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8888
+    use_ssl = '--ssl' in sys.argv or '--https' in sys.argv
 
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain('localhost-cert.pem', 'localhost-key.pem')
+    server = http.server.HTTPServer(('0.0.0.0', port), RangeHandler)
 
-    server = http.server.HTTPServer(('127.0.0.1', port), RangeHandler)
-    server.socket = context.wrap_socket(server.socket, server_side=True)
-    print(f'✅ HTTPS 服务已启动 (支持 Range 请求)', flush=True)
+    if use_ssl:
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain('localhost-cert.pem', 'localhost-key.pem')
+        server.socket = context.wrap_socket(server.socket, server_side=True)
+        print(f'✅ HTTPS 服务已启动 (支持 Range 请求) — https://localhost:{port}', flush=True)
+    else:
+        print(f'✅ HTTP 服务已启动 (支持 Range 请求) — http://localhost:{port}', flush=True)
+
     server.serve_forever()
