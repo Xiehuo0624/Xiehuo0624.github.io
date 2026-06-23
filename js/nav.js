@@ -28,9 +28,9 @@ App.renderIndexNav = function() {
   const bottomLeft = document.createElement('div');
   bottomLeft.className = 'nav-bottom-left';
   bottomLeft.innerHTML =
-    '<a href="project-template.html?project=the-fet-mixer" data-i18n="linkFetMixer">THE FET MIXER</a>' +
+    '<a href="project-template.html?project=ecce-homo" data-i18n="linkEcce">ECCE HOMO</a>' +
     '<a href="project-template.html?project=riverrun" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a>' +
-    '<a href="project-template.html?project=edgedgedge" data-i18n="linkNewWork">EDGEDGEDGE</a>' +
+    '<a href="project-template.html?project=spectral-dissector" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
     '<a href="works.html" class="nav-all-works" data-i18n="allWorks">[ALL WORKS →]</a>';
   document.body.appendChild(bottomLeft);
 
