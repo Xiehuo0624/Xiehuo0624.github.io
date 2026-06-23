@@ -5,6 +5,7 @@
 .works-page h1{
   font-size:22px;letter-spacing:3px;text-transform:uppercase;
   border-bottom:3px solid #000;padding-bottom:12px;margin-bottom:4px;
+  line-height:1;
 }
 #works-list{
   display:flex;flex-direction:column;gap:0;
