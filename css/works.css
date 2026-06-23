@@ -21,7 +21,7 @@
 .works-item:hover .works-brief{color:#fff}
 .works-title{
   font-size:16px;letter-spacing:2px;text-transform:uppercase;
-  white-space:nowrap;
+  white-space:nowrap;line-height:1;
 }
 .works-title.lowercase{text-transform:none}
 .works-brief{
