@@ -3,7 +3,7 @@ html,body{overflow:hidden}
 
 .stack-wrap{
   position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
+  transform:translate(calc(-50% - 15px), calc(-50% - 10px));
   width:460px;height:300px;
 }
 .card{
