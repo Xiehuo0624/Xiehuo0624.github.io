@@ -17,9 +17,9 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
     const children = [...stack.children];
     const len = children.length;
     const isMobile = window.innerWidth <= 768;
-    const maxSpreadX = isMobile ? 70 : 110;
-    const maxSpreadY = isMobile ? 12 : 20;
-    const maxStepX = isMobile ? 14 : 22;
+    const maxSpreadX = isMobile ? 40 : 110;
+    const maxSpreadY = isMobile ? 10 : 20;
+    const maxStepX = isMobile ? 8 : 22;
     const maxStepY = isMobile ? 2 : 4;
     const stepX = len > 1 ? Math.min(maxStepX, maxSpreadX / (len - 1)) : maxStepX;
     const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;

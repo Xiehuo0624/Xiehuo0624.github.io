@@ -51,8 +51,8 @@ body{
   .stack-wrap{
     width:80vw;max-width:380px;
     height:46vw;max-height:240px;
-    /* shift up slightly to give bottom nav more room */
-    transform:translate(-50%, calc(-50% - 12px));
+    /* shift left + up: keep right edge within screen */
+    transform:translate(calc(-50% - 25px), calc(-50% - 12px));
   }
   .card-fallback{font-size:16px;letter-spacing:1px}
   .card{border-width:2px}
