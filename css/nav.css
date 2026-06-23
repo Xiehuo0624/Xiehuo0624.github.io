@@ -32,6 +32,7 @@
   position:fixed;top:20px;right:20px;z-index:100;
   font-size:14px;letter-spacing:1px;cursor:pointer;
   text-align:right;
+  padding:3px 6px 0;
 }
 
 /* nav variant: bottom-right lang toggle (index page) */
@@ -39,6 +40,7 @@
   position:fixed;bottom:20px;right:20px;z-index:100;
   font-size:14px;
   text-align:right;
+  padding:2px 6px 4px;
 }
 .nav-bottom-right a{
   color:#000;text-decoration:none;padding:2px 6px;
