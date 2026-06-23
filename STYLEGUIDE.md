@@ -160,9 +160,10 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 |------|--------|--------|
 | 内容区最大宽 | `640px` | 100% |
 | 内容区 padding | `80px 24px 48px` | `80px 5vw 48px` |
-| 标题 h1 | `22px; letter-spacing:3px; uppercase; border-bottom:3px solid #000` | `18px; letter-spacing:2px` |
+| 标题 h1 | `22px; letter-spacing:3px; uppercase; border-bottom:3px solid #000; padding-bottom:12px; margin-bottom:4px` | `18px; letter-spacing:2px` |
 | 条目 `.works-item` | `flex; justify-content:space-between; align-items:baseline; gap:16px; border-bottom:2px solid #000; padding:14px 4px` | `flex-direction:column; gap:4px; padding:12px 4px` |
 | 条目标题 `.works-title` | `16px; letter-spacing:2px; uppercase; white-space:nowrap` | `14px; letter-spacing:1px` |
+| 小写标题 `.works-title.lowercase` | `text-transform:none` | 同左 |
 | 条目简介 `.works-brief` | `12px; color:#888; text-align:right; letter-spacing:0.5px` | `12px; text-align:left` |
 | hover | 黑底白字（简介变白） | 同左 |
 
@@ -241,7 +242,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 ├── works.html                 作品列表页 HTML
 ├── changelog.html             日志页 HTML
 ├── project-template.html      项目页 HTML
-├── .gitignore                 Git 忽略规则（含 preview-cards.html）
+├── .gitignore                 Git 忽略规则（含 docs/、preview-cards.html）
 │
 ├── preview-cards.html          卡片堆叠预览工具（仅本地开发，不部署）
 │
@@ -283,8 +284,17 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── edgedgedge.jpg
 │   └── wwhbh.jpg
 │
-├── start-https.sh               本地 HTTPS 预览服务脚本
-├── push.sh                      GitHub 推送助手脚本（粘贴 Token 即推送）
+├── docs/                        杂项文档（不部署，.gitignore 排除）
+│   ├── Ecce Homo朗读稿.docx
+│   └── 我们将会曾经在这里 2026.06.15.docx
+│
+├── scripts/                     开发工具与本地服务器
+│   ├── server.py               本地 HTTP/HTTPS 服务器（支持 Range 请求）
+│   ├── start-https.sh          启动脚本（默认 HTTP 8888，--https 启用 4443）
+│   ├── push.sh                 GitHub 推送助手脚本
+│   ├── localhost-cert.pem      SSL 证书（本地 HTTPS 用）
+│   ├── localhost-key.pem       SSL 密钥
+│   └── localhost-san.cnf       SSL 配置
 │
 └── js/                         （全局命名空间 App.*，按序加载）
     ├── app.js                 命名空间声明

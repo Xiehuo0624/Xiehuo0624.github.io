@@ -74,11 +74,19 @@ if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8888
     use_ssl = '--ssl' in sys.argv or '--https' in sys.argv
 
+    # Serve from project root (parent of scripts/)
+    project_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+    os.chdir(project_root)
+
     server = http.server.HTTPServer(('0.0.0.0', port), RangeHandler)
 
     if use_ssl:
+        cert_dir = os.path.dirname(os.path.abspath(__file__))
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain('localhost-cert.pem', 'localhost-key.pem')
+        context.load_cert_chain(
+            os.path.join(cert_dir, 'localhost-cert.pem'),
+            os.path.join(cert_dir, 'localhost-key.pem')
+        )
         server.socket = context.wrap_socket(server.socket, server_side=True)
         print(f'✅ HTTPS 服务已启动 (支持 Range 请求) — https://localhost:{port}', flush=True)
     else:

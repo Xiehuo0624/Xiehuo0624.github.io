@@ -2,7 +2,7 @@
 # 推送代码到 GitHub（Pages 会自动重建）
 # 运行后粘贴你的 Personal Access Token，按回车即可
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 # 设置代理
 export https_proxy=http://127.0.0.1:7897

@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-23',
+      title: { zh: '文件目录整理与本地服务器修复', en: 'File structure reorganization & local server fix' },
+      body:  { zh: '将杂项文档（docx）移入 docs/ 目录，开发脚本与 SSL 证书移入 scripts/ 目录，根目录仅保留部署页面与样式指南；修复本地服务器不支持 HTTP Range 请求导致音频无法拖动进度条的问题，将服务器 Python 代码提取为独立 server.py；减小 works 页标题与列表间距（margin-bottom 4px）；为 riverrun 作品标题添加小写显示支持。', en: 'Moved doc files to docs/ and dev scripts + SSL certs to scripts/, keeping only deployable pages and styleguide in root; fixed local server lacking HTTP Range request support which prevented audio seek, extracted server code into standalone server.py; reduced works page title-to-list spacing (margin-bottom 4px); added lowercase display support for riverrun title.' },
+      media: ''
+    },
+    {
+      date: '2026-06-23',
       title: { zh: '代码审查与重构', en: 'Code audit & refactoring' },
       body:  { zh: '对全站代码进行了系统性审查并修复所有问题：修复首页标题错误（WORKS → 泻火）；消除 about/changelog 页面 .page 类名冲突（拆分为 .about-page / .changelog-page）；清理 ECCE HOMO 已停用的 B站 iframe 死代码（CSS + HTML + JS + 数据）；修复 WWHBH 音频按钮硬编码英文文本，改为 i18n 驱动（启动/关闭/权限被拒）；修复 works 页标题手动硬编码与 i18n 脱节问题；将过时键名 cardNewWork 重命名为 cardEdgedgedge；移除 prevCard() 中无效的 zIndex 覆盖；重构 preview-cards.html 导航为动态渲染；将 preview-cards.html 加入 .gitignore 排除部署；同步更新 STYLEGUIDE.md。', en: 'Conducted a systematic code audit and fixed all issues: fixed homepage title (WORKS → 泻火); eliminated .page class name collision between about/changelog pages (split into .about-page / .changelog-page); removed dead Bilibili iframe code for ECCE HOMO (CSS + HTML + JS + data); fixed WWHBH audio button hardcoded English text, now i18n-driven (activate/deactivate/permission denied); fixed works page title hardcoded separately from i18n; renamed stale key cardNewWork to cardEdgedgedge; removed ineffective zIndex override in prevCard(); refactored preview-cards.html navigation to use dynamic rendering; added preview-cards.html to .gitignore; synchronized STYLEGUIDE.md.' },
       media: ''
