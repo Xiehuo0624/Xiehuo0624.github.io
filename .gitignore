@@ -1,11 +1,8 @@
-# SSL certificates (local dev only)
-localhost-key.pem
-localhost-cert.pem
-localhost-san.cnf
-
 # macOS
 .DS_Store
 
 # Dev / preview tools (not for deployment)
 preview-cards.html
-ecce-homo-aac.m4a
+
+# Docs (not for deployment)
+docs/
