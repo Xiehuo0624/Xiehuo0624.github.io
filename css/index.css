@@ -52,7 +52,7 @@ body{
     width:80vw;max-width:380px;
     height:46vw;max-height:240px;
     /* shift left + up: keep right edge within screen */
-    transform:translate(calc(-50% - 12px), calc(-50% - 12px));
+    transform:translate(calc(-50% - 12px), calc(-50% - 20px));
   }
   .card-fallback{font-size:16px;letter-spacing:1px}
   .card{border-width:2px}
