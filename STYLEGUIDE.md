@@ -13,6 +13,7 @@
 | 前景色 | `#000` |
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
 | 标题行高 | 所有页面标题（h1/h2）统一 `line-height:1`，消除中英文字体基线差异导致切换语言时横线位置偏移 |
+| 导航对齐 | 首页四角导航左右侧仅靠 `line-height:1` + 统一 padding 近似对齐，中英文字符度量差异是字体固有属性，不做像素级微调 |
 | viewport | `viewport-fit=cover`（所有页面，启用 `env(safe-area-inset-*)`） |
 
 ### 移动端弹性滚动
