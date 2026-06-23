@@ -158,13 +158,13 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
-| 内容区最大宽 | `640px` | 100% |
+| 内容区最大宽 | `960px` | 100% |
 | 内容区 padding | `80px 24px 48px` | `80px 5vw 48px` |
 | 标题 h1 | `22px; letter-spacing:3px; uppercase; border-bottom:3px solid #000; padding-bottom:12px; margin-bottom:4px` | `18px; letter-spacing:2px` |
-| 条目 `.works-item` | `flex; justify-content:space-between; align-items:baseline; gap:16px; border-bottom:2px solid #000; padding:14px 4px` | `flex-direction:column; gap:4px; padding:12px 4px` |
+| 条目 `.works-item` | `flex; justify-content:space-between; align-items:center; gap:16px; border-bottom:2px solid #000; padding:0 4px; min-height:48px` | `flex-direction:column; gap:4px; padding:12px 4px; min-height:auto` |
 | 条目标题 `.works-title` | `16px; letter-spacing:2px; uppercase; white-space:nowrap` | `14px; letter-spacing:1px` |
 | 小写标题 `.works-title.lowercase` | `text-transform:none` | 同左 |
-| 条目简介 `.works-brief` | `12px; color:#888; text-align:right; letter-spacing:0.5px` | `12px; text-align:left` |
+| 条目简介 `.works-brief` | `12px; color:#888; text-align:right; letter-spacing:0.5px; max-width:50%; line-height:1.3` | `12px; text-align:left; max-width:none` |
 | hover | 黑底白字（简介变白） | 同左 |
 
 ---
