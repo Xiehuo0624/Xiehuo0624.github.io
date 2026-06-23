@@ -39,7 +39,8 @@
   .works-item{
     flex-direction:column;gap:4px;
     padding:12px 4px;
-    min-height:auto;
+    height:auto;
+    align-items:flex-start;
   }
   .works-brief{text-align:left;max-width:none}
   .works-title{font-size:14px;letter-spacing:1px}
