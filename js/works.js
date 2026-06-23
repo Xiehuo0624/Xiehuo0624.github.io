@@ -16,7 +16,7 @@
       a.className = 'works-item';
       a.href = 'project-template.html?project=' + id;
       const title = document.createElement('span');
-      title.className = 'works-title';
+      title.className = 'works-title' + (p.lowercase ? ' lowercase' : '');
       title.textContent = p.title[lang];
       a.appendChild(title);
 

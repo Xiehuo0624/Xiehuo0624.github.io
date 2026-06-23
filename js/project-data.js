@@ -9,6 +9,7 @@ App.projects = {
   'riverrun': {
     layout: 'grid',
     title: { zh:'riverrun', en:'riverrun' },
+    lowercase: true,
     desc: { file: true }
   },
 
