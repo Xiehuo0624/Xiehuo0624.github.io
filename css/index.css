@@ -16,7 +16,7 @@ body{
 
 .stack-wrap{
   position:absolute;top:50%;left:50%;
-  transform:translate(calc(-50% - 15px), calc(-50% - 28px));
+  transform:translate(calc(-50% - 22px), calc(-50% - 28px));
   width:min(460px, 85vw);height:min(300px, 50vw);
   overflow:visible;
 }
