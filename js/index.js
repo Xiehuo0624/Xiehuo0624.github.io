@@ -19,10 +19,10 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     const children = [...stack.children];
     const len = children.length;
     const { x: stepX, y: stepY } = getOffset();
-    const totalOffsetX = (len - 1) * stepX;
     children.forEach((card, i) => {
       const fromTop = len - 1 - i;
-      const offsetX = fromTop * stepX - totalOffsetX / 2;
+      // 顶卡 fromTop=0 在 (0,0)，下方卡片往左下展开
+      const offsetX = -fromTop * stepX;
       card.style.zIndex  = String(i + 1);
       card.style.transform = `translate(${offsetX}px, ${fromTop * stepY}px)`;
     });

@@ -48,7 +48,7 @@
 | 卡片边框 | `3px solid #000` | 同左 |
 | 水平偏移步长 | `22px` | `14px` |
 | 垂直偏移步长 | `4px` | `2px` |
-| 水平居中补偿 | `offsetX = fromTop * stepX - totalOffsetX / 2`（重心回正） | 同左 |
+| 水平偏移 | 顶卡(0,0)，下方卡片往左展开 `offsetX = -fromTop * stepX` | 同左 |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
