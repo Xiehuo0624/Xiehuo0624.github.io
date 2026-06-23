@@ -120,12 +120,11 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
   }, { passive: true });
 
   document.addEventListener('touchmove', e => {
-    if (!touchStartOnNav) e.preventDefault();
+    e.preventDefault();
   }, { passive: false });
 
   document.addEventListener('touchend', e => {
-    if(isAnimating || touchStartOnNav) return;
-    touchStartOnNav = null;
+    if(isAnimating || touchStartOnNav) { touchStartOnNav = null; return; }
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
 
