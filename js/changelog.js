@@ -8,7 +8,7 @@
     {
       date: '2026-06-23',
       title: { zh: '修复移动端导航适配', en: 'Fixed mobile navigation layout' },
-      body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题：添加 viewport-fit=cover 与 env(safe-area-inset-*) 支持刘海屏/底部指示条；左下角项目列表改为折叠式（点击[项目▼]展开）；缩小移动端卡片尺寸并上移，避免遮挡导航；增大触摸目标区域；移动端字号从10px提升至11-12px。', en: 'Fixed four-corner navigation being clipped or invisible on mobile: added viewport-fit=cover and env(safe-area-inset-*) for notches/home indicators; bottom-left project list now collapsible (tap [PROJECTS▼] to expand); reduced mobile card size and shifted up to avoid overlapping nav; increased touch target sizes; raised mobile font size from 10px to 11-12px.' },
+      body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题；左下角项目列表改为单条链接进入作品列表页；新增作品列表页（works.html），显示所有作品名称与简介；移动端卡片间距缩小并左移保证不溢出；禁止移动端弹性滚动；添加 safe-area 适配刘海屏。', en: 'Fixed four-corner navigation being clipped on mobile; bottom-left project list replaced with single link to works list page; added works list page (works.html) showing all project names and briefs; reduced mobile card spacing and shifted left; disabled mobile rubber-band scrolling; added safe-area inset support for notched screens.' },
       media: ''
     },
     {

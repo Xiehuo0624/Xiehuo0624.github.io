@@ -14,26 +14,15 @@
 }
 .nav-top-left a:hover{background:#000;color:#fff}
 
-/* nav variant: bottom-left project list (index page) */
+/* nav variant: bottom-left works link (index page) */
 .nav-bottom-left{
   position:fixed;bottom:20px;left:20px;z-index:100;
   font-size:14px;
-  display:flex;flex-direction:column;gap:4px;
 }
 .nav-bottom-left a{
-  display:block;color:#000;text-decoration:none;
-  padding:2px 6px;
+  color:#000;text-decoration:none;padding:2px 6px;
 }
 .nav-bottom-left a:hover{background:#000;color:#fff}
-
-/* mobile toggle for project list */
-.nav-bottom-left-toggle{
-  display:none;
-  color:#000;text-decoration:none;
-  padding:2px 6px;cursor:pointer;
-  background:none;border:none;font:inherit;
-}
-.nav-bottom-left-toggle:hover{background:#000;color:#fff}
 
 /* nav variant: top-right name (index page) */
 .nav-top-right{
@@ -56,7 +45,6 @@
 @media(max-width:768px){
   .back{gap:8px;padding:8px 12px;padding-top:max(8px, env(safe-area-inset-top))}
 
-  /* top-left: safe area + larger tap targets */
   .nav-top-left{
     top:max(10px, env(safe-area-inset-top));
     left:max(10px, env(safe-area-inset-left));
@@ -65,7 +53,6 @@
   }
   .nav-top-left a{padding:4px 6px;margin-bottom:6px}
 
-  /* top-right: safe area, ensure text fully visible */
   .nav-top-right{
     top:max(10px, env(safe-area-inset-top));
     right:max(10px, env(safe-area-inset-right));
@@ -76,33 +63,17 @@
     overflow-wrap:break-word;
   }
 
-  /* bottom-left: collapsible on mobile with safe area */
   .nav-bottom-left{
     bottom:max(10px, env(safe-area-inset-bottom));
     left:max(10px, env(safe-area-inset-left));
-    font-size:11px;
-    max-width:40vw;
+    font-size:12px;
   }
-  .nav-bottom-left a{padding:3px 6px}
+  .nav-bottom-left a{padding:4px 6px}
 
-  /* show the toggle button on mobile */
-  .nav-bottom-left-toggle{
-    display:block;
-  }
-
-  /* collapsed state: hide project links */
-  .nav-bottom-left.collapsed .nav-bottom-link{
-    display:none;
-  }
-  .nav-bottom-link{
-    transition:max-height .2s ease, opacity .2s ease;
-  }
-
-  /* bottom-right: safe area + larger tap target */
   .nav-bottom-right{
     bottom:max(10px, env(safe-area-inset-bottom));
     right:max(10px, env(safe-area-inset-right));
-    font-size:11px;
+    font-size:12px;
     left:50vw;
     text-align:right;
   }

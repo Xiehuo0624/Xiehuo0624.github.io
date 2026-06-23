@@ -1,8 +1,6 @@
 /* ===== INDEX PAGE ===== */
 App.renderIndexNav();
-App.I18n.init(App.INDEX_I18N, function onLangToggle() {
-  App._updateToggleText();
-});
+App.I18n.init(App.INDEX_I18N);
 
 /* easter egg */
 document.getElementById('name-easter').addEventListener('click', () => alert('æˆ‘çˆ±ä½ '));
@@ -111,12 +109,10 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
   /* ---- TOUCH ---- */
   let touchStartX = 0;
   let touchStartY = 0;
-  let touchStartOnNav = null;
 
   document.addEventListener('touchstart', e => {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
-    touchStartOnNav = e.target.closest('.nav-top-left, .nav-bottom-left, .nav-top-right, .nav-bottom-right');
   }, { passive: true });
 
   document.addEventListener('touchmove', e => {
@@ -124,7 +120,7 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
   }, { passive: false });
 
   document.addEventListener('touchend', e => {
-    if(isAnimating || touchStartOnNav) { touchStartOnNav = null; return; }
+    if(isAnimating) return;
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
 

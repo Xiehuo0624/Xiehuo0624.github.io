@@ -53,9 +53,9 @@
 | 卡片尺寸 | `min(460px, 85vw) × min(300px, 50vw)` | `80vw × 46vw`（max `380×240`） |
 | 卡片边框 | `3px solid #000` | `2px solid #000` |
 | 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `14px`（最大展开 `70px`） |
-| 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `12px`） |
+| 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `10px`） |
 | 偏移方向 | 右下展开 `translate(+x, +y)` | 同左 |
-| 卡片居中偏移 | `translate(calc(-50% - 15px), calc(-50% - 10px))` | `translate(-50%, calc(-50% - 12px))` |
+| 卡片居中偏移 | `translate(calc(-50% - 22px), calc(-50% - 28px))` | `translate(calc(-50% - 12px), calc(-50% - 28px))` |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
@@ -131,7 +131,21 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ---
 
-## 6. Project 页 — 三种布局共用标准
+## 6. Works 页
+
+| 属性 | 桌面端 | 移动端 |
+|------|--------|--------|
+| 内容区最大宽 | `640px` | 100% |
+| 内容区 padding | `80px 24px 48px` | `80px 5vw 48px` |
+| 标题 h1 | `22px; letter-spacing:3px; uppercase; border-bottom:3px solid #000` | `18px; letter-spacing:2px` |
+| 条目 `.works-item` | `flex; justify-content:space-between; border-bottom:2px solid #000; padding:14px 4px` | `flex-direction:column; padding:12px 4px` |
+| 条目标题 `.works-title` | `16px; letter-spacing:2px; uppercase; white-space:nowrap` | `14px; letter-spacing:1px` |
+| 条目简介 `.works-brief` | `12px; color:#888; text-align:right; white-space:nowrap` | `12px; text-align:left; white-space:normal` |
+| hover | 黑底白字（简介变白） | 同左 |
+
+---
+
+## 7. Project 页 — 三种布局共用标准
 
 ### 通用
 
@@ -184,7 +198,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ---
 
-## 7. i18n 系统
+## 8. i18n 系统
 
 | 规则 | 说明 |
 |------|------|
@@ -196,11 +210,12 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ---
 
-## 8. 文件结构
+## 9. 文件结构
 
 ```
 ├── index.html                 首页 HTML
 ├── about.html                 关于页 HTML
+├── works.html                 作品列表页 HTML
 ├── changelog.html             日志页 HTML
 ├── project-template.html      项目页 HTML
 ├── .gitignore                 Git 忽略规则
@@ -210,6 +225,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── nav.css                导航栏（两种变体）
 │   ├── index.css              首页卡片堆叠
 │   ├── about.css              关于页
+│   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
 │   └── project.css            项目页三种布局
 │
@@ -253,6 +269,9 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据
     ├── index.js               首页逻辑
+    │
+    ├── works-i18n.js          App.WORKS_I18N 作品列表页 i18n 数据
+    ├── works.js               作品列表页逻辑
     │
     ├── about-i18n.js          App.ABOUT_I18N 关于页 i18n 数据
     ├── about.js               关于页
