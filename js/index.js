@@ -11,20 +11,20 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
   let isAnimating = false;
   const ANIM_MS = 300;
 
-  function getOffset(){
-    return window.innerWidth <= 768 ? { x: 14, y: 2 } : { x: 22, y: 4 };
-  }
-
   function reindex(){
     const children = [...stack.children];
     const len = children.length;
-    const { x: stepX, y: stepY } = getOffset();
+    const isMobile = window.innerWidth <= 768;
+    const maxSpreadX = isMobile ? 70 : 110;
+    const maxSpreadY = isMobile ? 12 : 20;
+    const maxStepX = isMobile ? 14 : 22;
+    const maxStepY = isMobile ? 2 : 4;
+    const stepX = len > 1 ? Math.min(maxStepX, maxSpreadX / (len - 1)) : maxStepX;
+    const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
     children.forEach((card, i) => {
       const fromTop = len - 1 - i;
-      // 顶卡 fromTop=0 在 (0,0)，下方卡片往左下展开
-      const offsetX = -fromTop * stepX;
       card.style.zIndex  = String(i + 1);
-      card.style.transform = `translate(${offsetX}px, ${fromTop * stepY}px)`;
+      card.style.transform = `translate(${fromTop * stepX}px, ${fromTop * stepY}px)`;
     });
   }
 

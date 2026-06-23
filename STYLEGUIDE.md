@@ -46,9 +46,9 @@
 |------|--------|--------|
 | 卡片尺寸 | `460×300px` | `85vw × 50vw`（max `400×260`） |
 | 卡片边框 | `3px solid #000` | 同左 |
-| 水平偏移步长 | `22px` | `14px` |
-| 垂直偏移步长 | `4px` | `2px` |
-| 水平偏移 | 顶卡(0,0)，下方卡片往左展开 `offsetX = -fromTop * stepX` | 同左 |
+| 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `14px`（最大展开 `70px`） |
+| 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `12px`） |
+| 偏移方向 | 右下展开 `translate(+x, +y)` | 同左 |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
