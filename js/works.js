@@ -1,14 +1,13 @@
 /* ===== WORKS PAGE ===== */
 (function(){
   App.renderBackNav();
-  App.I18n.init(App.WORKS_I18N, () => render());
 
   function render(){
-    document.documentElement.lang = App.I18n.currentLang;
-    document.title = App.I18n.t('pageTitle');
-    document.querySelector('.works-page h1').textContent = App.I18n.t('pageTitle');
-
     const lang = App.I18n.currentLang;
+    document.documentElement.lang = lang;
+    document.title = lang === 'zh' ? '作品列表' : 'WORKS';
+    document.querySelector('.works-page h1').textContent = lang === 'zh' ? '作品列表' : 'WORKS';
+
     const list = document.getElementById('works-list');
     list.innerHTML = '';
 
@@ -18,12 +17,14 @@
       const a = document.createElement('a');
       a.className = 'works-item';
       a.href = 'project-template.html?project=' + id;
-      a.innerHTML =
-        '<span class="works-title">' + p.title[lang] + '</span>' +
-        '<span class="works-brief">' + p.brief[lang] + '</span>';
+      const title = document.createElement('span');
+      title.className = 'works-title';
+      title.textContent = p.title[lang];
+      a.appendChild(title);
       list.appendChild(a);
     });
   }
 
+  App.I18n.init(App.WORKS_I18N, () => render());
   render();
 })();
