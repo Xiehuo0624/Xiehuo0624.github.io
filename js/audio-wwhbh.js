@@ -8,12 +8,16 @@
   let micStream = null;
   let source    = null;
   let running   = false;
+  let btn       = null;
 
-  App.initMicButton = function(btn) {
+  App.initMicButton = function(btnEl) {
+    btn = btnEl;
+    btn.textContent = App.I18n.t('btnActivate');
+
     btn.addEventListener('click', async () => {
       if (running) {
         stop();
-        btn.textContent = 'ACTIVATE';
+        btn.textContent = App.I18n.t('btnActivate');
         btn.classList.remove('on');
         return;
       }
@@ -21,8 +25,8 @@
       try {
         micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       } catch(err) {
-        btn.textContent = 'PERMISSION DENIED';
-        setTimeout(() => { if(!running) btn.textContent = 'ACTIVATE'; }, 2000);
+        btn.textContent = App.I18n.t('btnDenied');
+        setTimeout(() => { if(!running) btn.textContent = App.I18n.t('btnActivate'); }, 2000);
         return;
       }
 
@@ -43,9 +47,15 @@
       fbGain.connect(delay);
 
       running = true;
-      btn.textContent = 'DEACTIVATE';
+      btn.textContent = App.I18n.t('btnDeactivate');
       btn.classList.add('on');
     });
+  };
+
+  /** 语言切换后刷新按钮文本 */
+  App.refreshMicButton = function() {
+    if (!btn) return;
+    btn.textContent = running ? App.I18n.t('btnDeactivate') : App.I18n.t('btnActivate');
   };
 
   function stop() {

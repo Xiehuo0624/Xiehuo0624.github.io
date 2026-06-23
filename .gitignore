@@ -5,3 +5,6 @@ localhost-san.cnf
 
 # macOS
 .DS_Store
+
+# Dev / preview tools (not for deployment)
+preview-cards.html

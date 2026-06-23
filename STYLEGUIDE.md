@@ -12,6 +12,11 @@
 | 背景色 | `#fff` |
 | 前景色 | `#000` |
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
+| viewport | `viewport-fit=cover`（所有页面，启用 `env(safe-area-inset-*)`） |
+
+### 移动端弹性滚动
+
+首页 `html, body` 均设置 `position:fixed; top:0; left:0; right:0; bottom:0; overflow:hidden`，阻止 iOS Safari rubber-band 滚动。内页无需此处理。
 
 ---
 
@@ -23,28 +28,31 @@
 |--|--------|--------|
 | 位置 | `fixed; top:0; left:0; width:100%` | 同左 |
 | 背景 | `rgba(255,255,255,.75)` | 同左 |
-| padding | `8px 24px` | `8px 12px` |
+| padding | `8px 24px` | `8px 12px; padding-top:max(8px, env(safe-area-inset-top))` |
 | 链接间距 | `gap:16px` | `gap:8px` |
-| 字号 | `14px` | 继承 14px |
-| z-index | `100` | `100` |
+| 字号 | `14px` | 同左 |
+| z-index | `100` | 同左 |
 | 交互 | hover → 黑底白字 | 同左 |
 
 ### 首页导航（四角布局）
 
 | | 桌面端 | 移动端 |
 |--|--------|--------|
-| top-left 位置 | `top:20px; left:20px` | `top:max(10px, env(safe-area-inset-top)); left:max(10px, env(safe-area-inset-left))` |
+| top-left 位置 | `top:20px; left:20px` | `top:max(10px, env(safe-area-inset-top)); left:max(10px, env(safe-area-inset-left)); max-width:40vw` |
 | top-left 内容 | `[+] 简介与联系` `[>] 进程日志` | 同左，字号 `12px` |
+| top-left 链接间距 | `margin-bottom:8px` | `margin-bottom:6px` |
 | top-right 位置 | `top:20px; right:20px` | `top:max(10px, env(safe-area-inset-top)); right:max(10px, env(safe-area-inset-right)); left:50vw` |
 | top-right 内容 | `泻火 曹浩轩`（点击彩蛋） | 同左，字号 `12px` |
+| top-right letter-spacing | `1px` | 同左 |
+| top-right cursor | `pointer` | 同左 |
+| top-right 换行 | — | `word-break:break-all; overflow-wrap:break-word` |
 | bottom-left 位置 | `bottom:20px; left:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); left:max(10px, env(safe-area-inset-left))` |
-| bottom-left 内容 | SELECT WORKS 3 条直达链接 + `[ALL WORKS →]` | 同左，字号 `12px` |
+| bottom-left 内容 | SELECT WORKS 直达链接 + `[ALL WORKS →]` | 同左，字号 `12px` |
 | bottom-left 排列 | `flex-direction:column; gap:4px` | 同左 |
 | bottom-left 小写微调 | `.nav-lowercase{position:relative; top:-1px}` | 同左 |
 | bottom-right 位置 | `bottom:20px; right:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); right:max(10px, env(safe-area-inset-right)); left:50vw` |
 | bottom-right 内容 | 语言切换 `[en] English` | 同左，字号 `12px` |
 | 触摸目标 | `padding:2px 6px` | `padding:4px 6px`（加大点击区） |
-| viewport | `viewport-fit=cover`（所有页面） | 同左，启用 `env(safe-area-inset-*)` |
 
 ---
 
@@ -54,7 +62,7 @@
 |------|--------|--------|
 | 卡片尺寸 | `min(460px, 85vw) × min(300px, 50vw)` | `80vw × 46vw`（max `380×240`） |
 | 卡片边框 | `3px solid #000` | `2px solid #000` |
-| 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `14px`（最大展开 `70px`） |
+| 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `8px`（最大展开 `40px`） |
 | 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `10px`） |
 | 偏移方向 | 右下展开 `translate(+x, +y)` | 同左 |
 | 卡片居中偏移 | `translate(calc(-50% - 22px), calc(-50% - 28px))` | `translate(calc(-50% - 12px), calc(-50% - 28px))` |
@@ -83,6 +91,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
+| 容器类 | `.about-page` | — |
 | 内容区最大宽 | `640px` | 100% |
 | 内容区 padding | `80px 24px 48px` | `80px 5vw 48px` |
 | 标题 h1 字号 | `22px` | `18px` |
@@ -103,8 +112,14 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
+| 容器类 | `.changelog-page` | — |
 | 内容区最大宽 | `680px` | 100% |
 | 内容区 padding | `80px 24px 48px 60px` | `80px 16px 48px 44px` |
+| 标题 h1 类 | `.changelog-title` | — |
+| 标题 h1 字号 | `22px` | 同左 |
+| 标题 h1 letter-spacing | `3px` | 同左 |
+| 标题 h1 text-transform | `uppercase` | 同左 |
+| 标题 h1 装饰 | `border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:28px` | 同左 |
 | 时间线位置 | `left:36px` | `left:20px` |
 | 时间线宽度 | `2px` | 同左 |
 | 圆点尺寸 | `10×10px` / `left:-30px` | `8×8px` / `left:-18px` |
@@ -118,13 +133,19 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 展开正文 padding | `14px` | `10px` |
 | 条目间距 | `24px` | 同左 |
 
-### Changelog 录入格式
+### Changelog 录入规则
 
-在 `js/changelog.js` 的 `entries` 数组中添加，新条目放最前：
+1. 在 `js/changelog.js` 的 `entries` 数组中添加
+2. **新条目放最前**（数组顺序 = 页面显示顺序）
+3. **必须严格按日期降序排列**：`2026-06-23 → 2026-06-22 → 2026-06-21 → ...`，同一天多条按时间倒序
+4. **每条必须有 `date` 字段**，格式 `YYYY-MM-DD`，不得遗漏
+5. 录入新条目前先检查前一条的日期，确认不会打乱降序
+
+### Changelog 录入格式
 
 ```js
 {
-  date: 'YYYY-MM-DD',
+  date: 'YYYY-MM-DD',  // 必填
   title: { zh: '中文标题', en: 'English Title' },
   body:  { zh: '中文正文（支持HTML）', en: 'English body (HTML ok)' },
   media: ''  // 可选：图片或视频路径，留空则不显示
@@ -140,9 +161,9 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 内容区最大宽 | `640px` | 100% |
 | 内容区 padding | `80px 24px 48px` | `80px 5vw 48px` |
 | 标题 h1 | `22px; letter-spacing:3px; uppercase; border-bottom:3px solid #000` | `18px; letter-spacing:2px` |
-| 条目 `.works-item` | `flex; justify-content:space-between; border-bottom:2px solid #000; padding:14px 4px` | `flex-direction:column; padding:12px 4px` |
+| 条目 `.works-item` | `flex; justify-content:space-between; align-items:baseline; gap:16px; border-bottom:2px solid #000; padding:14px 4px` | `flex-direction:column; gap:4px; padding:12px 4px` |
 | 条目标题 `.works-title` | `16px; letter-spacing:2px; uppercase; white-space:nowrap` | `14px; letter-spacing:1px` |
-| 条目简介 `.works-brief` | `12px; color:#888; text-align:right; white-space:nowrap` | `12px; text-align:left; white-space:normal` |
+| 条目简介 `.works-brief` | `12px; color:#888; text-align:right; letter-spacing:0.5px` | `12px; text-align:left` |
 | hover | 黑底白字（简介变白） | 同左 |
 
 ---
@@ -161,7 +182,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 正文长文本 letter-spacing | `0.5px` |
 | 遮蔽块 `.redact` | `background:#000; color:#000; padding:0 4px; letter-spacing:2px; margin:0 2px` |
 
-### 6a. Grid 布局（默认 / spectral-dissector）
+### 7a. Grid 布局（默认）
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
@@ -176,7 +197,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 信息区 line-height | `1.7` | 同左 |
 | 标题下边框 | `3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
 
-### 6b. WWHBH 布局
+### 7b. WWHBH 布局
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
@@ -185,16 +206,16 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 正文最大宽 | `800px` | 同左 |
 | 按钮区 padding | `0 0 32px` | 同左 |
 | 按钮 | `width:100%; border:3px solid #000; padding:12px; 14px/700/2px` | 同左 |
+| 按钮 i18n | `btnActivate` / `btnDeactivate` / `btnDenied` | 同左 |
 | 按钮激活态 | 黑底白字 (`.on`) | 同左 |
 
-### 6c. ECCE HOMO 布局
+### 7c. ECCE HOMO 布局
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
 | 整体 padding | `80px 40px 40px` | `70px 16px 24px` |
-| 剧照 `.ecce-still` | `width:100%; max-width:800px` | 同左 |
+| 剧照 `.ecce-still` | `width:100%; max-width:800px; border-bottom:3px solid #000` | 同左 |
 | 音频 `.ecce-audio` | `width:100%; max-width:800px`（HTML5 `<audio>`） | 同左 |
-| 视频区 `.ecce-video` | `display:none`（已停用 B站 iframe） | 同左 |
 | 文字区 padding | `24px 0 0` | 同左 |
 | 文字区最大宽 | `800px` | 同左 |
 
@@ -220,7 +241,9 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 ├── works.html                 作品列表页 HTML
 ├── changelog.html             日志页 HTML
 ├── project-template.html      项目页 HTML
-├── .gitignore                 Git 忽略规则
+├── .gitignore                 Git 忽略规则（含 preview-cards.html）
+│
+├── preview-cards.html          卡片堆叠预览工具（仅本地开发，不部署）
 │
 ├── css/
 │   ├── base.css               全局 reset + 基础

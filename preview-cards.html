@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PREVIEW — Card Stack</title>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/nav.css">
@@ -32,24 +32,6 @@ html,body{overflow:hidden}
   <button id="btn-plus">+</button>
 </div>
 
-<!-- navigation -->
-<div class="nav-top-left">
-  <a href="about.html" data-i18n="about">[+] 简介与联系</a>
-  <a href="changelog.html" data-i18n="changelog">[>] 进程日志</a>
-</div>
-<div class="nav-top-right" id="name-easter">泻火 曹浩轩</div>
-<div class="nav-bottom-left">
-  <a href="project-template.html?project=the-fet-mixer" data-i18n="linkFetMixer">THE FET MIXER</a>
-  <a href="project-template.html?project=riverrun" data-i18n="linkRiverrun">riverrun</a>
-  <a href="project-template.html?project=edgedgedge" data-i18n="linkNewWork">EDGEDGEDGE</a>
-  <a href="project-template.html?project=spectral-dissector" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>
-  <a href="project-template.html?project=ecce-homo" data-i18n="linkEcce">ECCE HOMO</a>
-  <a href="project-template.html?project=wwhbh" data-i18n="linkWwbh">WE WILL HAVE BEEN HERE</a>
-</div>
-<div class="nav-bottom-right">
-  <a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a>
-</div>
-
 <!-- card stack -->
 <div class="stack-wrap" id="stack">
   <div class="card" data-href="project-template.html?project=the-fet-mixer">
@@ -59,7 +41,7 @@ html,body{overflow:hidden}
     <div class="card-fallback" data-i18n="cardRiverrun">riverrun</div>
   </div>
   <div class="card" data-href="project-template.html?project=edgedgedge">
-    <div class="card-fallback" data-i18n="cardNewWork">EDGEDGEDGE</div>
+    <div class="card-fallback" data-i18n="cardEdgedgedge">EDGEDGEDGE</div>
     <img class="card-image" src="img/edgedgedge.jpg" alt="EDGEDGEDGE">
   </div>
   <div class="card" data-href="project-template.html?project=spectral-dissector">
@@ -82,6 +64,7 @@ html,body{overflow:hidden}
 <script src="js/index-i18n.js"></script>
 
 <script>
+App.renderIndexNav();
 App.I18n.init(App.INDEX_I18N);
 
 // easter egg
@@ -120,9 +103,9 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     const children = [...stack.children];
     const len = children.length;
     const isMobile = window.innerWidth <= 768;
-    const maxSpreadX = isMobile ? 70 : 110;
-    const maxSpreadY = isMobile ? 12 : 20;
-    const maxStepX = isMobile ? 14 : 22;
+    const maxSpreadX = isMobile ? 40 : 110;
+    const maxSpreadY = isMobile ? 10 : 20;
+    const maxStepX = isMobile ? 8 : 22;
     const maxStepY = isMobile ? 2 : 4;
     const stepX = len > 1 ? Math.min(maxStepX, maxSpreadX / (len - 1)) : maxStepX;
     const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
@@ -163,7 +146,6 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     const bottom = stack.firstElementChild;
     bottom.style.transition = 'none';
     bottom.style.transform  = 'translateX(-100vw)';
-    bottom.style.zIndex     = '999';
     stack.append(bottom);
     const children = [...stack.children];
     void bottom.offsetHeight;

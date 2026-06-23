@@ -28,12 +28,6 @@
   const activeEl = document.getElementById(layoutMap[project.layout]);
   activeEl.style.display = project.layout === 'grid' ? 'grid' : 'flex';
 
-  /* ---- set video iframe src dynamically ---- */
-  if (project.videoUrl) {
-    const iframe = activeEl.querySelector('iframe');
-    if (iframe) iframe.src = project.videoUrl;
-  }
-
   /* ---- get the desc element for the active layout ---- */
   function getDescEl(){
     const layout = project.layout;
@@ -73,7 +67,10 @@
     }
   }
 
-  App.I18n.init(App.PROJECT_I18N, () => fillContent());
+  App.I18n.init(App.PROJECT_I18N, () => {
+    fillContent();
+    if (projectId === 'wwhbh') App.refreshMicButton();
+  });
   fillContent();
 
   /* ---- WWHBH audio ---- */

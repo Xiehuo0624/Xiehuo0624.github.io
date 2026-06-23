@@ -4,9 +4,7 @@
 
   function render(){
     const lang = App.I18n.currentLang;
-    document.documentElement.lang = lang;
-    document.title = lang === 'zh' ? '作品列表' : 'WORKS';
-    document.querySelector('.works-page h1').textContent = lang === 'zh' ? '作品列表' : 'WORKS';
+    document.title = App.I18n.t('pageTitle');
 
     const list = document.getElementById('works-list');
     list.innerHTML = '';

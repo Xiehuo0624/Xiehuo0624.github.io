@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-23',
+      title: { zh: '代码审查与重构', en: 'Code audit & refactoring' },
+      body:  { zh: '对全站代码进行了系统性审查并修复所有问题：修复首页标题错误（WORKS → 泻火）；消除 about/changelog 页面 .page 类名冲突（拆分为 .about-page / .changelog-page）；清理 ECCE HOMO 已停用的 B站 iframe 死代码（CSS + HTML + JS + 数据）；修复 WWHBH 音频按钮硬编码英文文本，改为 i18n 驱动（启动/关闭/权限被拒）；修复 works 页标题手动硬编码与 i18n 脱节问题；将过时键名 cardNewWork 重命名为 cardEdgedgedge；移除 prevCard() 中无效的 zIndex 覆盖；重构 preview-cards.html 导航为动态渲染；将 preview-cards.html 加入 .gitignore 排除部署；同步更新 STYLEGUIDE.md。', en: 'Conducted a systematic code audit and fixed all issues: fixed homepage title (WORKS → 泻火); eliminated .page class name collision between about/changelog pages (split into .about-page / .changelog-page); removed dead Bilibili iframe code for ECCE HOMO (CSS + HTML + JS + data); fixed WWHBH audio button hardcoded English text, now i18n-driven (activate/deactivate/permission denied); fixed works page title hardcoded separately from i18n; renamed stale key cardNewWork to cardEdgedgedge; removed ineffective zIndex override in prevCard(); refactored preview-cards.html navigation to use dynamic rendering; added preview-cards.html to .gitignore; synchronized STYLEGUIDE.md.' },
+      media: ''
+    },
+    {
+      date: '2026-06-23',
       title: { zh: '移动端适配与作品列表页', en: 'Mobile adaptation & works list page' },
       body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题；禁止移动端弹性滚动（html/body position:fixed）；右侧导航文字裁切修复（用 left:50vw 替代 max-width）；添加 viewport-fit=cover 与 safe-area-inset 适配刘海屏；左下角改为 SELECT WORKS 直达链接（ECCE HOMO / riverrun / SPECTRAL DISSECTOR）加 [ALL WORKS →] 按钮；新增作品列表页（works.html）；为 ECCE HOMO 和 WWHBH 添加了简介；桌面端与移动端卡片视觉逻辑重做：桌面端上移+左偏补偿右视觉重心，移动端卡片尺寸缩小(80vw×46vw)、边框变细、间距缩小(maxSpreadX 70→40, maxStepX 14→8)并左移保证右侧不溢出；riverrun 小写视觉重心微调。', en: 'Fixed four-corner navigation being clipped on mobile; disabled mobile rubber-band scrolling (html/body position:fixed); fixed right-side nav text clipping (replaced max-width with left:50vw); added viewport-fit=cover and safe-area-inset support for notched screens; bottom-left now shows SELECT WORKS direct links (ECCE HOMO / riverrun / SPECTRAL DISSECTOR) plus [ALL WORKS →] button; added works list page (works.html); added briefs for ECCE HOMO and WWHBH; rebuilt desktop and mobile card visual logic: desktop shifted up and left to compensate right visual weight, mobile card size reduced (80vw×46vw), thinner borders, tighter spacing (maxSpreadX 70→40, maxStepX 14→8), shifted left to keep right edge within screen; adjusted riverrun lowercase visual alignment.' },
       media: ''
@@ -18,12 +24,7 @@
       media: ''
     },
     {
-      date: '2026-06-18',
-      title: { zh: '观看了电影拯救地球', en: 'Watched the film Save the Green Planet' },
-      body:  { zh: '观看了张俊焕执导的《拯救地球》。', en: 'Watched Save the Green Planet directed by Jang Jun-hwan.' },
-      media: ''
-    },
-    {
+      date: '2026-06-22',
       title: { zh: '新增作品与网站部署', en: 'New projects & site deployment' },
       body:  { zh: '将项目 new-work 正式命名为 EDGEDGEDGE；新增作品 The FET Mixer 与 riverrun；为 Ecce Homo 和 EDGEDGEDGE 增加了卡片封面图；Ecce Homo 改用本地音频播放器替代 B站视频嵌入；首页卡片堆叠改为水平扇形展开布局，卡片数量增加时自动缩小间距；首页整体偏左上补偿重心；更新了首页左下角导航链接；创建了本地 HTTPS 预览脚本和 GitHub 推送脚本；将网站部署至 GitHub Pages。', en: 'Renamed project new-work to EDGEDGEDGE; added new projects The FET Mixer and riverrun; added cover images for Ecce Homo and EDGEDGEDGE cards; replaced Bilibili video embed with local audio player for Ecce Homo; changed homepage card stack to horizontal fan layout with auto-shrinking spacing; shifted stack upper-left for center compensation; updated bottom-left navigation links; created local HTTPS preview script and GitHub push script; deployed the site to GitHub Pages.' },
       media: ''
@@ -38,6 +39,12 @@
       date: '2026-06-20',
       title: { zh: '观看了电影《噬草者》', en: 'Watched the film The Grass Eater' },
       body:  { zh: '观看了《噬草者》。', en: 'Watched The Grass Eater.' },
+      media: ''
+    },
+    {
+      date: '2026-06-18',
+      title: { zh: '观看了电影《拯救地球》', en: 'Watched the film Bugonia' },
+      body:  { zh: '观看了欧格斯·兰斯莫斯执导的《拯救地球》。', en: 'Watched Bugonia directed by Yorgos Lanthimos.' },
       media: ''
     },
     {
@@ -84,7 +91,7 @@
    * ======================================================== */
 
   function render() {
-    const page = document.querySelector('.page');
+    const page = document.querySelector('.changelog-page');
     // 保留 timeline 和 h1，清除旧条目
     page.querySelectorAll('.log-entry').forEach(el => el.remove());
 

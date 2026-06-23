@@ -28,8 +28,7 @@ App.projects = {
     layout: 'ecce',
     title: { zh:'瞧！这个人', en:'ECCE HOMO' },
     brief: { zh:'与 Allen 共同创作的声音剧场作品，交织《圣经》与卡夫卡的文本', en:'A sound theatre piece co-created with Allen, interweaving Biblical and Kafkaesque texts' },
-    desc: { file: true },
-    videoUrl: 'https://player.bilibili.com/player.html?bvid=BV1EUr6YoESn&autoplay=0'
+    desc: { file: true }
   },
 
   'wwhbh': {

@@ -61,7 +61,6 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
     const bottom = stack.firstElementChild;
     bottom.style.transition = 'none';
     bottom.style.transform  = 'translateX(-100vw)';
-    bottom.style.zIndex     = '999';
     stack.append(bottom);
     const children = [...stack.children];
     void bottom.offsetHeight;

@@ -29,7 +29,7 @@
 }
 
 @media(max-width:768px){
-  .works-page{padding:80px 5vw 48px}
+  .works-page{max-width:100%;padding:80px 5vw 48px}
   .works-page h1{font-size:18px;letter-spacing:2px}
   .works-item{
     flex-direction:column;gap:4px;
