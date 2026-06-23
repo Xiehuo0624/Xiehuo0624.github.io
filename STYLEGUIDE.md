@@ -33,12 +33,16 @@
 
 | | 桌面端 | 移动端 |
 |--|--------|--------|
-| top-left 位置 | `top:20px; left:20px` | `top:10px; left:10px` |
-| top-right 位置 | `top:20px; right:20px` | `top:10px; right:10px` |
-| bottom-left 位置 | `bottom:20px; left:20px` | `bottom:10px; left:10px` |
-| bottom-right 位置 | `bottom:20px; right:20px` | `bottom:10px; right:10px` |
-| 字号 | `14px` | `10px` |
-| 链接间距（top-left） | `margin-bottom:8px`（块级） | 同左 |
+| top-left 位置 | `top:20px; left:20px` | `top:max(10px, env(safe-area-inset-top)); left:max(10px, env(safe-area-inset-left))` |
+| top-right 位置 | `top:20px; right:20px` | `top:max(10px, env(safe-area-inset-top)); right:max(10px, env(safe-area-inset-right))` |
+| bottom-left 位置 | `bottom:20px; left:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); left:max(10px, env(safe-area-inset-left))` |
+| bottom-right 位置 | `bottom:20px; right:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); right:max(10px, env(safe-area-inset-right))` |
+| 字号 | `14px` | top: `12px`, bottom: `11px` |
+| 链接间距（top-left） | `margin-bottom:8px`（块级） | `margin-bottom:6px` |
+| top-right 约束 | 无 | `max-width:45vw; text-align:right; word-break:break-all` |
+| bottom-left 移动端 | 始终展开 | **折叠**，点击 `[项目 ▼]` 展开（`App._updateToggleText` 管理文本+箭头） |
+| 触摸目标 | `padding:2px 6px` | `padding:3-4px 6px`（加大点击区） |
+| viewport | `viewport-fit=cover`（所有页面） | 同左，启用 `env(safe-area-inset-*)` |
 
 ---
 
@@ -46,12 +50,12 @@
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
-| 卡片尺寸 | `min(460px, 85vw) × min(300px, 50vw)` | `85vw × 50vw`（max `400×260`） |
-| 卡片边框 | `3px solid #000` | 同左 |
+| 卡片尺寸 | `min(460px, 85vw) × min(300px, 50vw)` | `80vw × 46vw`（max `380×240`） |
+| 卡片边框 | `3px solid #000` | `2px solid #000` |
 | 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `14px`（最大展开 `70px`） |
 | 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `12px`） |
 | 偏移方向 | 右下展开 `translate(+x, +y)` | 同左 |
-| 卡片居中偏移 | `translate(calc(-50% - 15px), calc(-50% - 10px))` | `translate(-50%, calc(-50% - 5px))` |
+| 卡片居中偏移 | `translate(calc(-50% - 15px), calc(-50% - 10px))` | `translate(-50%, calc(-50% - 12px))` |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |

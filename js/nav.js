@@ -26,19 +26,41 @@ App.renderIndexNav = function() {
   document.body.appendChild(topRight);
 
   const bottomLeft = document.createElement('div');
-  bottomLeft.className = 'nav-bottom-left';
+  bottomLeft.className = 'nav-bottom-left collapsed';
   bottomLeft.innerHTML =
-    '<a href="project-template.html?project=the-fet-mixer" data-i18n="linkFetMixer">THE FET MIXER</a>' +
-    '<a href="project-template.html?project=riverrun" data-i18n="linkRiverrun">riverrun</a>' +
-    '<a href="project-template.html?project=edgedgedge" data-i18n="linkNewWork">EDGEDGEDGE</a>' +
-    '<a href="project-template.html?project=spectral-dissector" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
-    '<a href="project-template.html?project=ecce-homo" data-i18n="linkEcce">ECCE HOMO</a>' +
-    '<a href="project-template.html?project=wwhbh" data-i18n="linkWwbh">WE WILL HAVE BEEN HERE</a>';
+    '<button class="nav-bottom-left-toggle" id="project-toggle">[项目 ▼]</button>' +
+    '<a class="nav-bottom-link" href="project-template.html?project=the-fet-mixer" data-i18n="linkFetMixer">THE FET MIXER</a>' +
+    '<a class="nav-bottom-link" href="project-template.html?project=riverrun" data-i18n="linkRiverrun">riverrun</a>' +
+    '<a class="nav-bottom-link" href="project-template.html?project=edgedgedge" data-i18n="linkNewWork">EDGEDGEDGE</a>' +
+    '<a class="nav-bottom-link" href="project-template.html?project=spectral-dissector" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
+    '<a class="nav-bottom-link" href="project-template.html?project=ecce-homo" data-i18n="linkEcce">ECCE HOMO</a>' +
+    '<a class="nav-bottom-link" href="project-template.html?project=wwhbh" data-i18n="linkWwbh">WE WILL HAVE BEEN HERE</a>';
   document.body.appendChild(bottomLeft);
+
+  /* toggle project list on mobile */
+  const toggle = bottomLeft.querySelector('#project-toggle');
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    bottomLeft.classList.toggle('collapsed');
+    App._updateToggleText();
+  });
 
   const bottomRight = document.createElement('div');
   bottomRight.className = 'nav-bottom-right';
   bottomRight.innerHTML =
     '<a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a>';
   document.body.appendChild(bottomRight);
+};
+
+/** Update the project toggle button text based on collapsed state & current lang */
+App._updateToggleText = function() {
+  const btn = document.getElementById('project-toggle');
+  const list = btn && btn.parentElement;
+  if (!btn || !list) return;
+  const collapsed = list.classList.contains('collapsed');
+  const lang = App.I18n.currentLang;
+  const arrow = collapsed ? '▼' : '▲';
+  btn.textContent = lang === 'zh'
+    ? '[项目 ' + arrow + ']'
+    : '[PROJECTS ' + arrow + ']';
 };

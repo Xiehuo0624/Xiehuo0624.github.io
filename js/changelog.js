@@ -6,6 +6,12 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-06-23',
+      title: { zh: '修复移动端导航适配', en: 'Fixed mobile navigation layout' },
+      body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题：添加 viewport-fit=cover 与 env(safe-area-inset-*) 支持刘海屏/底部指示条；左下角项目列表改为折叠式（点击[项目▼]展开）；缩小移动端卡片尺寸并上移，避免遮挡导航；增大触摸目标区域；移动端字号从10px提升至11-12px。', en: 'Fixed four-corner navigation being clipped or invisible on mobile: added viewport-fit=cover and env(safe-area-inset-*) for notches/home indicators; bottom-left project list now collapsible (tap [PROJECTS▼] to expand); reduced mobile card size and shifted up to avoid overlapping nav; increased touch target sizes; raised mobile font size from 10px to 11-12px.' },
+      media: ''
+    },
+    {
       date: '2026-06-22',
       title: { zh: '新增作品与网站部署', en: 'New projects & site deployment' },
       body:  { zh: '将项目 new-work 正式命名为 EDGEDGEDGE；新增作品 The FET Mixer 与 riverrun；为 Ecce Homo 和 EDGEDGEDGE 增加了卡片封面图；Ecce Homo 改用本地音频播放器替代 B站视频嵌入；首页卡片堆叠改为水平扇形展开布局，卡片数量增加时自动缩小间距；首页整体偏左上补偿重心；更新了首页左下角导航链接；创建了本地 HTTPS 预览脚本和 GitHub 推送脚本；将网站部署至 GitHub Pages。', en: 'Renamed project new-work to EDGEDGEDGE; added new projects The FET Mixer and riverrun; added cover images for Ecce Homo and EDGEDGEDGE cards; replaced Bilibili video embed with local audio player for Ecce Homo; changed homepage card stack to horizontal fan layout with auto-shrinking spacing; shifted stack upper-left for center compensation; updated bottom-left navigation links; created local HTTPS preview script and GitHub push script; deployed the site to GitHub Pages.' },

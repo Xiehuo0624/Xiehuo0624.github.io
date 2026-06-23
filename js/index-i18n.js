@@ -14,5 +14,6 @@ App.INDEX_I18N = {
   linkRiverrun:{ zh:'riverrun',                                     en:'riverrun' },
   linkNewWork: { zh:'EDGEDGEDGE',                               en:'EDGEDGEDGE' },
   linkEcce:    { zh:'瞧！这个人',                         en:'ECCE HOMO' },
-  linkWwbh:    { zh:'我们将会曾经在这里',                 en:'WE WILL HAVE BEEN HERE' }
+  linkWwbh:    { zh:'我们将会曾经在这里',                 en:'WE WILL HAVE BEEN HERE' },
+  projectToggle: { zh:'[项目 ▼]', en:'[PROJECTS ▼]' }
 };
