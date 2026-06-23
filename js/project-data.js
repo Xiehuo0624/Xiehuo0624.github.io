@@ -14,9 +14,10 @@ App.projects = {
   },
 
   'edgedgedge': {
-    layout: 'grid',
+    layout: 'edge',
     title: { zh:'EDGEDGEDGE', en:'EDGEDGEDGE' },
-    desc:  { file: true }
+    desc:  { file: true },
+    media: { type: 'bilibili', bvid: 'BV1VbxyzaEKA', cover: 'img/edgedgedge.jpg' }
   },
 
   'spectral-dissector': {

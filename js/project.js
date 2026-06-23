@@ -3,13 +3,13 @@
   const urlParams = new URLSearchParams(location.search);
   const projectId = urlParams.get('project');
   const project   = App.projects[projectId];
-  const layoutMap = { grid:'layout-grid', ecce:'layout-ecce', wwhbh:'layout-wwhbh' };
+  const layoutMap = { grid:'layout-grid', ecce:'layout-ecce', wwhbh:'layout-wwhbh', edge:'layout-edge' };
 
   App.renderBackNav();
 
   /* ---- 404 fallback ---- */
   if (!project) {
-    document.querySelectorAll('.project-grid,.wwhbh-panel,.ecce-panel').forEach(el => {
+    document.querySelectorAll('.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel').forEach(el => {
       el.style.display = 'none';
     });
     document.getElementById('layout-grid').style.display = 'grid';
@@ -22,11 +22,11 @@
   }
 
   /* ---- show active layout, hide the rest ---- */
-  document.querySelectorAll('.project-grid,.wwhbh-panel,.ecce-panel').forEach(el => {
+  document.querySelectorAll('.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel').forEach(el => {
     el.style.display = 'none';
   });
   const activeEl = document.getElementById(layoutMap[project.layout]);
-  activeEl.style.display = project.layout === 'grid' ? 'grid' : 'flex';
+  activeEl.style.display = (project.layout === 'grid') ? 'grid' : 'flex';
 
   /* ---- get the desc element for the active layout ---- */
   function getDescEl(){
@@ -34,6 +34,7 @@
     if (layout === 'grid')  return document.getElementById('grid-desc');
     if (layout === 'wwhbh') return document.getElementById('wwhbh-desc');
     if (layout === 'ecce')  return document.getElementById('ecce-desc');
+    if (layout === 'edge')  return document.getElementById('edge-desc');
     return null;
   }
 
@@ -46,6 +47,27 @@
     const layout = project.layout;
     if (layout === 'grid') {
       document.getElementById('grid-title').textContent = t;
+    } else if (layout === 'edge') {
+      document.getElementById('edge-title').textContent = t;
+      /* render media area */
+      if (project.media) {
+        const mediaEl = document.getElementById('edge-media');
+        if (mediaEl) {
+          mediaEl.innerHTML = '';
+          if (project.media.type === 'bilibili') {
+            const iframe = document.createElement('iframe');
+            iframe.src = '//player.bilibili.com/player.html?bvid=' + project.media.bvid + '&autoplay=0';
+            iframe.setAttribute('allowfullscreen', 'true');
+            mediaEl.appendChild(iframe);
+          } else if (project.media.type === 'image') {
+            const img = document.createElement('img');
+            img.src = project.media.src;
+            img.alt = t;
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+            mediaEl.appendChild(img);
+          }
+        }
+      }
     } else if (layout === 'wwhbh') {
       document.getElementById('wwhbh-title').textContent = t;
     } else if (layout === 'ecce') {

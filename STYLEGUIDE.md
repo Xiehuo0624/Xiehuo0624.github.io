@@ -106,6 +106,12 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 小标题 h2 text-transform | `uppercase` | 同左 |
 | 联系链接字号 | `16px` | `14px` |
 | 区块间距 | `border-bottom:3px solid #000; padding-bottom:32px; margin-bottom:32px` | 同左 |
+| 日期 `.bio-date` | `display:block; text-align:right; font-size:13px; margin-bottom:16px` | 同左 |
+
+### About 页内容规则
+
+- 日期 `.bio-date` 标注在段落组末尾，右对齐
+- 连续段落共享同一日期时只标注一个日期，不逐条重复
 
 ---
 
@@ -170,7 +176,15 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ---
 
-## 7. Project 页 — 三种布局共用标准
+## 7. Project 页 — 四种布局共用标准
+
+### 视频布局规则
+
+**视频不得左右排列，一律上下排列：视频在上，文字在下。** 移动端尤其需要保证视频可见。
+
+### 日期格式规则
+
+所有日期统一使用 **YYYY.MM.DD** 格式，月和日的个位数前补零（如 `06`、`09`），不得省略。示例：`2025.10.09`，而非 `2025.10.9`。
 
 ### 通用
 
@@ -221,6 +235,19 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 文字区 padding | `24px 0 0` | 同左 |
 | 文字区最大宽 | `800px` | 同左 |
 
+### 7d. Edge 布局（视频 + 文字，上下排列）
+
+| 属性 | 桌面端 | 移动端 |
+|------|--------|--------|
+| 整体 padding | `80px 40px 40px` | `70px 16px 24px` |
+| 媒体区 `.edge-media` | `width:100%; max-width:800px; aspect-ratio:16/9; background:#f0f0f0` | 同左 |
+| 媒体区 iframe | `width:100%; height:100%; border:none` | 同左 |
+| 文字区 `.edge-body` | `max-width:800px; padding-top:24px` | 同左 |
+| 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
+| 正文行高 | `2.4` | 同左 |
+
+> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），不得使用 Grid 布局（`layout:'grid'`）的左右分栏。Grid 布局仅用于图片/硬件照片的场景。
+
 ---
 
 ## 8. i18n 系统
@@ -254,7 +281,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── about.css              关于页
 │   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
-│   └── project.css            项目页三种布局
+│   └── project.css            项目页四种布局
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
 │   ├── ecce-homo/
