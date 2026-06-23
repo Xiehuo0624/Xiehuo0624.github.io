@@ -1,6 +1,6 @@
 /* ===== CHANGELOG PAGE ===== */
 .changelog-page{max-width:680px;margin:0 auto;padding:80px 24px 48px 60px;position:relative}
-.changelog-title{font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;border-bottom:3px solid #000;padding-bottom:10px}
+.changelog-title{font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;border-bottom:3px solid #000;padding-bottom:10px;line-height:1}
 
 .timeline{
   position:absolute;
