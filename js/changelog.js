@@ -7,8 +7,8 @@
   const entries = [
     {
       date: '2026-06-23',
-      title: { zh: '文件目录整理与本地服务器修复', en: 'File structure reorganization & local server fix' },
-      body:  { zh: '将杂项文档（docx）移入 docs/ 目录，开发脚本与 SSL 证书移入 scripts/ 目录，根目录仅保留部署页面与样式指南；修复本地服务器不支持 HTTP Range 请求导致音频无法拖动进度条的问题，将服务器 Python 代码提取为独立 server.py；减小 works 页标题与列表间距（margin-bottom 4px）；为 riverrun 作品标题添加小写显示支持。', en: 'Moved doc files to docs/ and dev scripts + SSL certs to scripts/, keeping only deployable pages and styleguide in root; fixed local server lacking HTTP Range request support which prevented audio seek, extracted server code into standalone server.py; reduced works page title-to-list spacing (margin-bottom 4px); added lowercase display support for riverrun title.' },
+      title: { zh: '文件目录整理、本地服务器修复与排版优化', en: 'File structure reorganization, local server fix & layout refinements' },
+      body:  { zh: '将杂项文档（docx）移入 docs/ 目录，开发脚本与 SSL 证书移入 scripts/ 目录，根目录仅保留部署页面与样式指南；修复本地服务器不支持 HTTP Range 请求导致音频无法拖动进度条的问题，将服务器 Python 代码提取为独立 server.py；works 页排版全面优化：宽度 640px→960px 适配英文简介长度，条目固定高度 48px 统一行间距，标题和简介居中对齐（line-height:1 消除中英文字体基线差异），h1 标题间距缩小（margin-bottom 4px）；为 riverrun 作品标题添加小写显示支持。', en: 'Moved doc files to docs/ and dev scripts + SSL certs to scripts/, keeping only deployable pages and styleguide in root; fixed local server lacking HTTP Range request support which prevented audio seek, extracted server code into standalone server.py; comprehensive works page layout refinements: widened to 960px to accommodate English briefs, fixed 48px row height for consistent line spacing, centered title and brief alignment (line-height:1 to eliminate font baseline differences between Chinese and English), reduced h1 margin-bottom to 4px; added lowercase display support for riverrun title.' },
       media: ''
     },
     {
