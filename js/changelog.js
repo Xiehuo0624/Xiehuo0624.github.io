@@ -7,12 +7,17 @@
   const entries = [
     {
       date: '2026-06-23',
-      title: { zh: '修复移动端导航适配', en: 'Fixed mobile navigation layout' },
-      body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题；左下角项目列表改为单条链接进入作品列表页；新增作品列表页（works.html），显示所有作品名称与简介；移动端卡片间距缩小并左移保证不溢出；禁止移动端弹性滚动；添加 safe-area 适配刘海屏。', en: 'Fixed four-corner navigation being clipped on mobile; bottom-left project list replaced with single link to works list page; added works list page (works.html) showing all project names and briefs; reduced mobile card spacing and shifted left; disabled mobile rubber-band scrolling; added safe-area inset support for notched screens.' },
+      title: { zh: '移动端适配与作品列表页', en: 'Mobile adaptation & works list page' },
+      body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题；左下角改为 SELECT WORKS 直达链接（ECCE HOMO / riverrun / SPECTRAL DISSECTOR）加 [ALL WORKS →] 按钮；新增作品列表页（works.html）；为 ECCE HOMO 和 WWHBH 添加了简介；移动端卡片间距缩小并左移保证不溢出；禁止移动端弹性滚动；添加 safe-area 适配刘海屏；riverrun 小写视觉重心微调。', en: 'Fixed four-corner navigation being clipped on mobile; bottom-left now shows SELECT WORKS direct links (ECCE HOMO / riverrun / SPECTRAL DISSECTOR) plus [ALL WORKS →] button; added works list page (works.html); added briefs for ECCE HOMO and WWHBH; reduced mobile card spacing and shifted left; disabled mobile rubber-band scrolling; added safe-area inset support; adjusted riverrun lowercase visual alignment.' },
       media: ''
     },
     {
       date: '2026-06-22',
+      title: { zh: '通关了游戏武士零', en: 'Completed the game Katana ZERO' },
+      body:  { zh: '通关了武士零。', en: 'Completed Katana ZERO.' },
+      media: ''
+    },
+    {
       title: { zh: '新增作品与网站部署', en: 'New projects & site deployment' },
       body:  { zh: '将项目 new-work 正式命名为 EDGEDGEDGE；新增作品 The FET Mixer 与 riverrun；为 Ecce Homo 和 EDGEDGEDGE 增加了卡片封面图；Ecce Homo 改用本地音频播放器替代 B站视频嵌入；首页卡片堆叠改为水平扇形展开布局，卡片数量增加时自动缩小间距；首页整体偏左上补偿重心；更新了首页左下角导航链接；创建了本地 HTTPS 预览脚本和 GitHub 推送脚本；将网站部署至 GitHub Pages。', en: 'Renamed project new-work to EDGEDGEDGE; added new projects The FET Mixer and riverrun; added cover images for Ecce Homo and EDGEDGEDGE cards; replaced Bilibili video embed with local audio player for Ecce Homo; changed homepage card stack to horizontal fan layout with auto-shrinking spacing; shifted stack upper-left for center compensation; updated bottom-left navigation links; created local HTTPS preview script and GitHub push script; deployed the site to GitHub Pages.' },
       media: ''

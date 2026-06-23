@@ -29,19 +29,21 @@
 | z-index | `100` | `100` |
 | 交互 | hover → 黑底白字 | 同左 |
 
-### 首页导航（`.nav-top-left` / `.nav-bottom-right`）
+### 首页导航（四角布局）
 
 | | 桌面端 | 移动端 |
 |--|--------|--------|
 | top-left 位置 | `top:20px; left:20px` | `top:max(10px, env(safe-area-inset-top)); left:max(10px, env(safe-area-inset-left))` |
-| top-right 位置 | `top:20px; right:20px` | `top:max(10px, env(safe-area-inset-top)); right:max(10px, env(safe-area-inset-right))` |
+| top-left 内容 | `[+] 简介与联系` `[>] 进程日志` | 同左，字号 `12px` |
+| top-right 位置 | `top:20px; right:20px` | `top:max(10px, env(safe-area-inset-top)); right:max(10px, env(safe-area-inset-right)); left:50vw` |
+| top-right 内容 | `泻火 曹浩轩`（点击彩蛋） | 同左，字号 `12px` |
 | bottom-left 位置 | `bottom:20px; left:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); left:max(10px, env(safe-area-inset-left))` |
-| bottom-right 位置 | `bottom:20px; right:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); right:max(10px, env(safe-area-inset-right))` |
-| 字号 | `14px` | top: `12px`, bottom: `11px` |
-| 链接间距（top-left） | `margin-bottom:8px`（块级） | `margin-bottom:6px` |
-| top-right 约束 | 无 | `max-width:45vw; text-align:right; word-break:break-all` |
-| bottom-left 移动端 | 始终展开 | **折叠**，点击 `[项目 ▼]` 展开（`App._updateToggleText` 管理文本+箭头） |
-| 触摸目标 | `padding:2px 6px` | `padding:3-4px 6px`（加大点击区） |
+| bottom-left 内容 | SELECT WORKS 3 条直达链接 + `[ALL WORKS →]` | 同左，字号 `12px` |
+| bottom-left 排列 | `flex-direction:column; gap:4px` | 同左 |
+| bottom-left 小写微调 | `.nav-lowercase{position:relative; top:-1px}` | 同左 |
+| bottom-right 位置 | `bottom:20px; right:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); right:max(10px, env(safe-area-inset-right)); left:50vw` |
+| bottom-right 内容 | 语言切换 `[en] English` | 同左，字号 `12px` |
+| 触摸目标 | `padding:2px 6px` | `padding:4px 6px`（加大点击区） |
 | viewport | `viewport-fit=cover`（所有页面） | 同左，启用 `env(safe-area-inset-*)` |
 
 ---
@@ -65,9 +67,9 @@
 
 ```js
 const isMobile = window.innerWidth <= 768;
-const maxSpreadX = isMobile ? 70 : 110;
-const maxSpreadY = isMobile ? 12 : 20;
-const maxStepX = isMobile ? 14 : 22;
+const maxSpreadX = isMobile ? 40 : 110;
+const maxSpreadY = isMobile ? 10 : 20;
+const maxStepX = isMobile ? 8 : 22;
 const maxStepY = isMobile ? 2 : 4;
 const stepX = len > 1 ? Math.min(maxStepX, maxSpreadX / (len - 1)) : maxStepX;
 const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
