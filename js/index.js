@@ -12,17 +12,19 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
   const ANIM_MS = 300;
 
   function getOffset(){
-    return window.innerWidth <= 768 ? 5 : 9;
+    return window.innerWidth <= 768 ? { x: 14, y: 2 } : { x: 22, y: 4 };
   }
 
   function reindex(){
     const children = [...stack.children];
     const len = children.length;
-    const step = getOffset();
+    const { x: stepX, y: stepY } = getOffset();
+    const totalOffsetX = (len - 1) * stepX;
     children.forEach((card, i) => {
       const fromTop = len - 1 - i;
+      const offsetX = fromTop * stepX - totalOffsetX / 2;
       card.style.zIndex  = String(i + 1);
-      card.style.transform = `translate(${fromTop * step}px, ${fromTop * step}px)`;
+      card.style.transform = `translate(${offsetX}px, ${fromTop * stepY}px)`;
     });
   }
 
@@ -35,15 +37,19 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
     isAnimating = true;
 
     const top = stack.lastElementChild;
-    top.style.transition = `transform ${ANIM_MS}ms steps(6)`;
+    top.style.transition = `transform ${ANIM_MS}ms ease-out`;
     top.style.transform  = 'translateX(-100vw)';
 
     setTimeout(() => {
       top.style.transition = 'none';
       stack.prepend(top);
+      const children = [...stack.children];
+      children.forEach(c => c.style.transition = `transform ${ANIM_MS}ms ease-out`);
       reindex();
-      void top.offsetHeight;
-      isAnimating = false;
+      setTimeout(() => {
+        children.forEach(c => c.style.transition = 'none');
+        isAnimating = false;
+      }, ANIM_MS);
     }, ANIM_MS);
   }
 
@@ -57,14 +63,12 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
     bottom.style.transform  = 'translateX(-100vw)';
     bottom.style.zIndex     = '999';
     stack.append(bottom);
+    const children = [...stack.children];
     void bottom.offsetHeight;
-    bottom.style.transition = `transform ${ANIM_MS}ms steps(6)`;
-    bottom.style.transform  = 'translate(0px, 0px)';
-
+    children.forEach(c => c.style.transition = `transform ${ANIM_MS}ms ease-out`);
+    reindex();
     setTimeout(() => {
-      bottom.style.transition = 'none';
-      reindex();
-      void bottom.offsetHeight;
+      children.forEach(c => c.style.transition = 'none');
       isAnimating = false;
     }, ANIM_MS);
   }
