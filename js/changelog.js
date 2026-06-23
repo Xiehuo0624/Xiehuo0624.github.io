@@ -18,6 +18,12 @@
       media: ''
     },
     {
+      date: '2026-06-18',
+      title: { zh: '观看了电影拯救地球', en: 'Watched the film Save the Green Planet' },
+      body:  { zh: '观看了张俊焕执导的《拯救地球》。', en: 'Watched Save the Green Planet directed by Jang Jun-hwan.' },
+      media: ''
+    },
+    {
       title: { zh: '新增作品与网站部署', en: 'New projects & site deployment' },
       body:  { zh: '将项目 new-work 正式命名为 EDGEDGEDGE；新增作品 The FET Mixer 与 riverrun；为 Ecce Homo 和 EDGEDGEDGE 增加了卡片封面图；Ecce Homo 改用本地音频播放器替代 B站视频嵌入；首页卡片堆叠改为水平扇形展开布局，卡片数量增加时自动缩小间距；首页整体偏左上补偿重心；更新了首页左下角导航链接；创建了本地 HTTPS 预览脚本和 GitHub 推送脚本；将网站部署至 GitHub Pages。', en: 'Renamed project new-work to EDGEDGEDGE; added new projects The FET Mixer and riverrun; added cover images for Ecce Homo and EDGEDGEDGE cards; replaced Bilibili video embed with local audio player for Ecce Homo; changed homepage card stack to horizontal fan layout with auto-shrinking spacing; shifted stack upper-left for center compensation; updated bottom-left navigation links; created local HTTPS preview script and GitHub push script; deployed the site to GitHub Pages.' },
       media: ''
