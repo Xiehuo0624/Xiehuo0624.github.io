@@ -34,8 +34,10 @@
 | | 桌面端 | 移动端 |
 |--|--------|--------|
 | top-left 位置 | `top:20px; left:20px` | `top:10px; left:10px` |
+| top-right 位置 | `top:20px; right:20px` | `top:10px; right:10px` |
+| bottom-left 位置 | `bottom:20px; left:20px` | `bottom:10px; left:10px` |
 | bottom-right 位置 | `bottom:20px; right:20px` | `bottom:10px; right:10px` |
-| 字号 | `14px` | `12px` |
+| 字号 | `14px` | `10px` |
 | 链接间距（top-left） | `margin-bottom:8px`（块级） | 同左 |
 
 ---
@@ -44,15 +46,30 @@
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
-| 卡片尺寸 | `460×300px` | `85vw × 50vw`（max `400×260`） |
+| 卡片尺寸 | `min(460px, 85vw) × min(300px, 50vw)` | `85vw × 50vw`（max `400×260`） |
 | 卡片边框 | `3px solid #000` | 同左 |
 | 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `14px`（最大展开 `70px`） |
 | 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `12px`） |
 | 偏移方向 | 右下展开 `translate(+x, +y)` | 同左 |
+| 卡片居中偏移 | `translate(calc(-50% - 15px), calc(-50% - 10px))` | `translate(-50%, calc(-50% - 5px))` |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
 | 动画 | `300ms ease-out`（所有卡片同步过渡） | 同左 |
+
+### Card Stack 偏移算法
+
+```js
+const isMobile = window.innerWidth <= 768;
+const maxSpreadX = isMobile ? 70 : 110;
+const maxSpreadY = isMobile ? 12 : 20;
+const maxStepX = isMobile ? 14 : 22;
+const maxStepY = isMobile ? 2 : 4;
+const stepX = len > 1 ? Math.min(maxStepX, maxSpreadX / (len - 1)) : maxStepX;
+const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
+// 每张卡片: translate(fromTop * stepX, fromTop * stepY)
+// 卡片数量增加时 stepX/Y 自动缩小，最大展开范围不变
+```
 
 ---
 
@@ -155,10 +172,9 @@
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
 | 整体 padding | `80px 40px 40px` | `70px 16px 24px` |
-| 视频最大宽 | `800px` | 100% |
-| 视频比例 | `16/9` | 同左 |
-| 视频底边框 | `3px solid #000` | 同左 |
-| 标题与视频间距 | `margin-bottom:24px` | 同左 |
+| 剧照 `.ecce-still` | `width:100%; max-width:800px` | 同左 |
+| 音频 `.ecce-audio` | `width:100%; max-width:800px`（HTML5 `<audio>`） | 同左 |
+| 视频区 `.ecce-video` | `display:none`（已停用 B站 iframe） | 同左 |
 | 文字区 padding | `24px 0 0` | 同左 |
 | 文字区最大宽 | `800px` | 同左 |
 
@@ -213,8 +229,12 @@
 │       ├── zh.html
 │       └── en.html
 │
+├── audio/                        音频资源
+│   └── ecce-homo.m4a
+│
 ├── img/                         图片资源
 │   ├── ecce-homo.jpg
+│   ├── ecce-homo-still.jpg
 │   ├── edgedgedge.jpg
 │   └── wwhbh.jpg
 │
