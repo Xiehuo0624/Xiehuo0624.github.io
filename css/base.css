@@ -1,7 +1,21 @@
 /* ===== RESET & BASE ===== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
-/* ===== WEBFONT: DejaVu Sans Mono（与 macOS Menlo 同源，保证跨平台一致）===== */
+/* ===== WEBFONT: PlainZero（仅 U+0030，覆盖 DejaVu 的点 0 为纯净 0；同家族同高度）===== */
+@font-face{
+  font-family:'PlainZero';
+  src:url('fonts/PlainZero-Regular.woff2') format('woff2');
+  unicode-range:U+0030;
+  font-weight:400;font-style:normal;font-display:swap
+}
+@font-face{
+  font-family:'PlainZero';
+  src:url('fonts/PlainZero-Bold.woff2') format('woff2');
+  unicode-range:U+0030;
+  font-weight:700;font-style:normal;font-display:swap
+}
+
+/* ===== WEBFONT: DejaVu Sans Mono（与 macOS Menlo 同源，跨平台一致；英文/数字）===== */
 @font-face{
   font-family:'DejaVu Sans Mono';
   src:url('fonts/DejaVuSansMono.woff2') format('woff2');
@@ -13,4 +27,21 @@
   font-weight:700;font-style:normal;font-display:swap
 }
 
-html,body{width:100%;height:100%;font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace;background:#fff;color:#000}
+/* ===== WEBFONT: 思源黑体 SC（Source Han Sans SC，自托管子集化；中文）===== */
+@font-face{
+  font-family:'Source Han Sans SC';
+  src:url('fonts/SourceHanSansSC-Regular.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap
+}
+@font-face{
+  font-family:'Source Han Sans SC';
+  src:url('fonts/SourceHanSansSC-Bold.woff2') format('woff2');
+  font-weight:700;font-style:normal;font-display:swap
+}
+
+/*
+  字体栈：'0' 用 PlainZero（纯净 0），其余英文/数字用 DejaVu Sans Mono，中文用思源黑体 SC。
+  中英/中数间距由 js/autospace.js 自动插入 thin space（U+2009）；DejaVu 中 U+2009 的字宽
+  已单独改为 0.2em（等宽字体默认 0.6em 会过宽），故间距可控且优雅。
+*/
+html,body{width:100%;height:100%;font-family:'PlainZero','DejaVu Sans Mono','Source Han Sans SC',Menlo,Consolas,monospace;background:#fff;color:#000}

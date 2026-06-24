@@ -8,7 +8,8 @@
 
 | 属性 | 值 |
 |------|------|
-| 字体 | `'DejaVu Sans Mono', Menlo, Consolas, monospace`（自托管 webfont，与 macOS Menlo 同源，保证跨平台一致；中文回退系统字体） |
+| 字体 | 英文/数字：`'DejaVu Sans Mono'`（自托管 webfont，与 macOS Menlo 同源，跨平台一致）；中文：`'Source Han Sans SC'`（思源黑体 SC，自托管子集化，Regular/Bold 各约 300KB）；`'PlainZero'`（仅 U+0030，用同家族 DejaVu Sans 的纯净 0 覆盖 DejaVu Sans Mono 的点 0）。字体栈：`'PlainZero','DejaVu Sans Mono','Source Han Sans SC',Menlo,Consolas,monospace` |
+| 中英/中数间距 | `js/autospace.js` 自动在 CJK↔英数 边界插入 thin space（U+2009）；DejaVu Sans Mono 中 U+2009 的字宽已单独改为 0.2em（等宽字体默认 0.6em 会过宽）。全站自动生效，幂等，覆盖动态注入内容 |
 | 背景色 | `#fff` |
 | 前景色 | `#000` |
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
@@ -335,7 +336,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
 │   ├── project.css            项目页五种布局
-│   └── fonts/                 自托管 webfont（DejaVu Sans Mono woff2，子集化）
+│   └── fonts/                 自托管 webfont（DejaVu Sans Mono + 思源黑体 SC + PlainZero woff2，子集化）
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
 │   ├── ecce-homo/
@@ -387,6 +388,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
     ├── app.js                 命名空间声明
     ├── i18n.js                App.I18n 公共 i18n 引擎
     ├── i18n-common.js         App.COMMON_I18N 公共字符串
+    ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
     ├── nav.js                 App.renderBackNav / renderIndexNav
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据
@@ -415,10 +417,11 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 - 语言切换时重新 fetch 对应语言文件
 - HTML 片段为纯 HTML（无 `<html>/<body>`），源文件按句换行、空行分段，渲染时换行被浏览器折叠，段落由 `<br><br>` 控制
 - 文本引用块使用 `border-left:3px solid #000; background:#f9f9f9; padding:12px 16px; font-size:13px; line-height:1.8` 的内联样式
-- 引用块内英文原文斜体（`<span style="font-style:italic">`），中文翻译正常显示
+- 引用块内外文原文（拉丁/德/英等）斜体（`<span style="font-style:italic">`），中文翻译正常显示
+- 中文强调改为加粗而非斜体（`<span style="font-weight:700">`），因思源黑体等 CJK 字体无真正的斜体字形
 - 轨道/章节标题加粗（`<span style="font-weight:700">`）
 
 ### 脚本加载规则
 
-每个 HTML 按 **app → i18n → i18n-common → nav → 页面数据 → 页面逻辑** 顺序加载，
+每个 HTML 按 **app → i18n → i18n-common → autospace → nav → 页面数据 → 页面逻辑** 顺序加载，
 确保 `App.*` 引用在被使用前已声明。详见各 HTML 底部 `<script>` 标签。

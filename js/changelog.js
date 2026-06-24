@@ -6,6 +6,12 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-06-25',
+      title: { zh: '中文换思源黑体自托管 + 中英自动间距 + 纯净 0', en: 'Self-hosted Source Han Sans SC for CJK + auto CJK↔Latin spacing + plain zero' },
+      body:  { zh: '三处排版升级：① 中文字体由系统 PingFang SC 换为自托管思源黑体 SC（Source Han Sans SC，子集化 woff2，Regular/Bold 各约 300KB），保证跨平台一致。② 新增 js/autospace.js，在中文↔英文/数字边界自动插入 thin space（U+2009，0.2em），覆盖 i18n 切换等动态注入；因等宽字体空格默认 0.6em 过宽，已将 DejaVu 中 U+2009 字宽单独改为 0.2em。③ 新增 PlainZero webfont（unicode-range:U+0030），用同家族 DejaVu Sans 的纯净 0 覆盖 DejaVu Sans Mono 的点 0，同高度同基线仅去点。另将中文行内强调的斜体统一改为加粗，外文原文斜体保留。', en: 'Three typographic upgrades: ① CJK font switched from system PingFang SC to self-hosted Source Han Sans SC (subsetted woff2, ~300KB each Regular/Bold) for cross-platform consistency. ② Added js/autospace.js to auto-insert thin space (U+2009, 0.2em) at CJK↔Latin/numeric boundaries, covering dynamic i18n content; since monospace spaces default to 0.6em (too wide), U+2009 advance in the DejaVu subset was narrowed to 0.2em. ③ Added PlainZero webfont (unicode-range:U+0030) using DejaVu Sans plain zero to override DejaVu Sans Mono dotted zero — same height/baseline, dot removed. Inline CJK emphasis italics changed to bold; foreign-language italics preserved.' },
+      media: ''
+    },
+    {
       date: '2026-06-24',
       title: { zh: '引入 DejaVu Sans Mono webfont 保证跨平台字体一致', en: 'Self-hosted DejaVu Sans Mono webfont for cross-platform font consistency' },
       body:  { zh: '原 font-family: monospace 依赖各平台系统默认等宽字体（macOS/iOS 为 Menlo、Windows 为 Consolas），导致跨平台显示不一致。改为自托管 DejaVu Sans Mono（与 Menlo 同源于 Bitstream Vera Sans Mono，开源可分发），子集化后仅 ASCII+拉丁扩展+标点，Regular 与 Bold 各约 22KB（woff2）。中文回退系统字体。font-family 改为 \'DejaVu Sans Mono\', Menlo, Consolas, monospace。', en: 'The original font-family: monospace relied on each platform\'s default monospaced font (Menlo on macOS/iOS, Consolas on Windows), causing cross-platform inconsistency. Switched to a self-hosted DejaVu Sans Mono (same lineage as Menlo via Bitstream Vera Sans Mono, open-source and redistributable), subset to ASCII + Latin Extended + punctuation, ~22KB each for Regular and Bold (woff2). CJK falls back to system fonts. font-family changed to \'DejaVu Sans Mono\', Menlo, Consolas, monospace.' },
