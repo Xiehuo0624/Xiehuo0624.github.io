@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-24',
+      title: { zh: '首页卡片顺序每次随机', en: 'Homepage cards shuffled on each load' },
+      body:  { zh: '首页卡片堆叠顺序改为每次打开网页随机打乱，使用 Fisher-Yates 洗牌算法在初始化时执行。刷新页面即得到新的卡片顺序。', en: 'Homepage card stack order is now randomly shuffled on each page load using the Fisher-Yates algorithm at init. Refreshing the page yields a new card order.' },
+      media: ''
+    },
+    {
+      date: '2026-06-24',
       title: { zh: 'Gallery 图片点击放大（Lightbox）', en: 'Gallery image lightbox (click to zoom)' },
       body:  { zh: '为 Gallery 布局增加点击放大功能：点击任一图片打开全屏 Lightbox，支持左右切换、键盘方向键、ESC/点击空白关闭。纯 JS 实现，无依赖。', en: 'Added a click-to-zoom lightbox for the Gallery layout: clicking any image opens a fullscreen overlay with prev/next navigation, keyboard arrows, and ESC/click-outside to close. Pure JS, no dependencies.' },
       media: ''

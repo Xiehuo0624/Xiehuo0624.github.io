@@ -11,6 +11,16 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
   let isAnimating = false;
   const ANIM_MS = 300;
 
+  /* ---- shuffle card order on each page load ---- */
+  (function shuffle(){
+    const cards = [...stack.children];
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      stack.appendChild(cards[j]);            // 随机重排 DOM 顺序
+      cards[j] = cards[i];                    // 交换引用，避免重复
+    }
+  })();
+
   function reindex(){
     const children = [...stack.children];
     const len = children.length;
