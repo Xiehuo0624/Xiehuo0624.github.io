@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-25',
+      title: { zh: '修复首页 [全部作品 →] 与 [en] English 垂直高度不一致', en: 'Fixed vertical alignment between [ALL WORKS →] and [en] English on homepage' },
+      body:  { zh: '首页右下角语言切换 [en] English 的 <a> 原为 inline，竖向 padding 不影响行盒高度；而左下角 [全部作品 →] 的 <a> 为 display:block，竖向 padding 真实撑高盒子。两者虽同以 bottom:20px 锚定底部，但文字基线与 hover 黑底高度差约 2px（移动端 4px）。将 .nav-bottom-right 改为与 .nav-bottom-left 一致的 flex 列（display:flex; flex-direction:column; align-items:flex-end，移动端去掉多余的 text-align:right），<a> blockify 后 padding 行为两侧一致，底部与文字基线对齐。', en: 'The homepage bottom-right lang toggle [en] English used an inline <a>, whose vertical padding does not affect the line box height; whereas the bottom-left [ALL WORKS →] used display:block, whose vertical padding genuinely enlarges the box. Both were anchored at bottom:20px, but the text baselines and hover backgrounds differed by ~2px (4px on mobile). Changed .nav-bottom-right to match .nav-bottom-left as a flex column (display:flex; flex-direction:column; align-items:flex-end; dropped the redundant text-align:right on mobile) so the <a> is blockified and padding behaves identically on both sides, aligning their bottoms and text baselines.' },
+      media: ''
+    },
+    {
+      date: '2026-06-25',
       title: { zh: '中文换思源黑体自托管 + 中英自动间距 + 纯净 0', en: 'Self-hosted Source Han Sans SC for CJK + auto CJK↔Latin spacing + plain zero' },
       body:  { zh: '三处排版升级：① 中文字体由系统 PingFang SC 换为自托管思源黑体 SC（Source Han Sans SC，子集化 woff2，Regular/Bold 各约 300KB），保证跨平台一致。② 新增 js/autospace.js，在中文↔英文/数字边界自动插入 thin space（U+2009，0.2em），覆盖 i18n 切换等动态注入；因等宽字体空格默认 0.6em 过宽，已将 DejaVu 中 U+2009 字宽单独改为 0.2em。③ 新增 PlainZero webfont（unicode-range:U+0030），用同家族 DejaVu Sans 的纯净 0 覆盖 DejaVu Sans Mono 的点 0，同高度同基线仅去点。另将中文行内强调的斜体统一改为加粗，外文原文斜体保留。', en: 'Three typographic upgrades: ① CJK font switched from system PingFang SC to self-hosted Source Han Sans SC (subsetted woff2, ~300KB each Regular/Bold) for cross-platform consistency. ② Added js/autospace.js to auto-insert thin space (U+2009, 0.2em) at CJK↔Latin/numeric boundaries, covering dynamic i18n content; since monospace spaces default to 0.6em (too wide), U+2009 advance in the DejaVu subset was narrowed to 0.2em. ③ Added PlainZero webfont (unicode-range:U+0030) using DejaVu Sans plain zero to override DejaVu Sans Mono dotted zero — same height/baseline, dot removed. Inline CJK emphasis italics changed to bold; foreign-language italics preserved.' },
       media: ''
