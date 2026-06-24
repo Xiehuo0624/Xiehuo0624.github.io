@@ -36,10 +36,13 @@
 }
 
 /* nav variant: bottom-right lang toggle (index page) */
+/* 用 flex 列 + align-items:flex-end 与 .nav-bottom-left 结构对齐，
+   使 <a> blockify 后竖向 padding 真实生效，
+   [en] English 与 [全部作品 →] 文字基线/hover 黑底高度一致 */
 .nav-bottom-right{
   position:fixed;bottom:20px;right:20px;z-index:100;
   font-size:14px;
-  text-align:right;
+  display:flex;flex-direction:column;align-items:flex-end;
 }
 .nav-bottom-right a{
   color:#000;text-decoration:none;padding:2px 6px;
@@ -80,7 +83,6 @@
     right:max(10px, env(safe-area-inset-right));
     font-size:12px;
     left:50vw;
-    text-align:right;
   }
   .nav-bottom-right a{padding:4px 6px}
 }
