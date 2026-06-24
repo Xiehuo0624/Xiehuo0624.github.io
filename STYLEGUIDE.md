@@ -8,7 +8,7 @@
 
 | 属性 | 值 |
 |------|------|
-| 字体 | `monospace` |
+| 字体 | `'DejaVu Sans Mono', Menlo, Consolas, monospace`（自托管 webfont，与 macOS Menlo 同源，保证跨平台一致；中文回退系统字体） |
 | 背景色 | `#fff` |
 | 前景色 | `#000` |
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
@@ -328,13 +328,14 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 ├── preview-cards.html          卡片堆叠预览工具（仅本地开发，不部署）
 │
 ├── css/
-│   ├── base.css               全局 reset + 基础
+│   ├── base.css               全局 reset + 基础 + @font-face
 │   ├── nav.css                导航栏（两种变体）
 │   ├── index.css              首页卡片堆叠
 │   ├── about.css              关于页
 │   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
-│   └── project.css            项目页五种布局
+│   ├── project.css            项目页五种布局
+│   └── fonts/                 自托管 webfont（DejaVu Sans Mono woff2，子集化）
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
 │   ├── ecce-homo/

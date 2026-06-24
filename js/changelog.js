@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-24',
+      title: { zh: '引入 DejaVu Sans Mono webfont 保证跨平台字体一致', en: 'Self-hosted DejaVu Sans Mono webfont for cross-platform font consistency' },
+      body:  { zh: '原 font-family: monospace 依赖各平台系统默认等宽字体（macOS/iOS 为 Menlo、Windows 为 Consolas），导致跨平台显示不一致。改为自托管 DejaVu Sans Mono（与 Menlo 同源于 Bitstream Vera Sans Mono，开源可分发），子集化后仅 ASCII+拉丁扩展+标点，Regular 与 Bold 各约 22KB（woff2）。中文回退系统字体。font-family 改为 \'DejaVu Sans Mono\', Menlo, Consolas, monospace。', en: 'The original font-family: monospace relied on each platform\'s default monospaced font (Menlo on macOS/iOS, Consolas on Windows), causing cross-platform inconsistency. Switched to a self-hosted DejaVu Sans Mono (same lineage as Menlo via Bitstream Vera Sans Mono, open-source and redistributable), subset to ASCII + Latin Extended + punctuation, ~22KB each for Regular and Bold (woff2). CJK falls back to system fonts. font-family changed to \'DejaVu Sans Mono\', Menlo, Consolas, monospace.' },
+      media: ''
+    },
+    {
+      date: '2026-06-24',
       title: { zh: '首页卡片顺序每次随机', en: 'Homepage cards shuffled on each load' },
       body:  { zh: '首页卡片堆叠顺序改为每次打开网页随机打乱，使用 Fisher-Yates 洗牌算法在初始化时执行。刷新页面即得到新的卡片顺序。', en: 'Homepage card stack order is now randomly shuffled on each page load using the Fisher-Yates algorithm at init. Refreshing the page yields a new card order.' },
       media: ''
