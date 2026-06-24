@@ -79,12 +79,20 @@
 
 | 卡片 | 封面图 | 说明 |
 |------|--------|------|
-| the-fet-mixer | `img/the-fet-mixer.jpg` | 实物照片 |
+| the-fet-mixer | `img/the-fet-mixer.webp` | 实物照片 |
 | riverrun | — | 仅文字 |
-| edgedgedge | `img/edgedgedge.jpg` | 拍摄者：段立言 |
-| spectral-dissector | `img/spectral-dissector.png` | 6 条分轨半透明叠加频谱图（黑底，程序生成） |
-| ecce-homo | `img/ecce-homo.jpg` | |
-| wwhbh | `img/wwhbh.jpg` | |
+| edgedgedge | `img/edgedgedge.webp` | 拍摄者：段立言 |
+| spectral-dissector | `img/spectral-dissector.webp` | 6 条分轨半透明叠加频谱图（黑底，程序生成） |
+| ecce-homo | `img/ecce-homo.webp` | |
+| wwhbh | `img/wwhbh.webp` | |
+
+### 图片压缩规范
+
+- 部署图片统一使用 **WebP** 格式（`cwebp -q 80`）
+- 卡片封面（首页，显示≤460px）缩到 **1200px 宽**
+- Gallery/剧照（显示≤800px）缩到 **1600px 宽**
+- 原图留档于 `img/originals/`，不部署（`.gitignore` 排除）
+- 生成命令示例：`cwebp -resize 1200 0 -q 80 img/originals/xx.jpg -o img/xx.webp`
 
 ### Card Stack 偏移算法
 
@@ -335,16 +343,16 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 ├── audio/                        音频资源
 │   └── ecce-homo.m4a
 │
-├── img/                         图片资源
-│   ├── ecce-homo.jpg
-│   ├── ecce-homo-still.jpg
-│   ├── edgedgedge.jpg
-│   ├── spectral-dissector.png
-│   ├── the-fet-mixer.jpg
-│   ├── the-fet-mixer-1.jpg
-│   ├── the-fet-mixer-2.png
-│   ├── the-fet-mixer-3.png
-│   └── wwhbh.jpg
+├── img/                         图片资源（部署用 WebP，原图留档于 originals/）
+│   ├── ecce-homo.webp
+│   ├── ecce-homo-still.webp
+│   ├── edgedgedge.webp
+│   ├── spectral-dissector.webp
+│   ├── the-fet-mixer.webp      卡片封面 + Gallery 首图共用
+│   ├── the-fet-mixer-2.webp
+│   ├── the-fet-mixer-3.webp
+│   ├── wwhbh.webp
+│   └── originals/             原图留档（不部署，.gitignore 排除）
 │
 ├── docs/                        杂项文档（不部署，.gitignore 排除）
 │   ├── Ecce Homo朗读稿.docx

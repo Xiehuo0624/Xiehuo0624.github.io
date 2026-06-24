@@ -11,3 +11,6 @@ preview-baseline-test.html
 
 # 临时频谱图生成脚本（本地工具，不部署）
 tmp/
+
+# 图片原图留档（本地保留，不部署）
+img/originals/
