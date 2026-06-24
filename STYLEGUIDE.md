@@ -281,6 +281,19 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 单张 `.gallery-slide` | `flex:0 0 100%; scroll-snap-align:start` | 同左 |
 | 图片 | `width:100%; height:auto; object-fit:contain` | 同左 |
 
+### 7e-补. Gallery Lightbox（点击放大）
+
+点击 Gallery 任一图片打开全屏 Lightbox，支持左右切换、键盘方向键、ESC/点击空白关闭。
+
+| 属性 | 值 |
+|------|------|
+| 遮罩 `.lightbox` | `position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.92)` |
+| 图片 | `max-width:92vw; max-height:88vh; object-fit:contain` |
+| 左右切换 `.lightbox-nav` | 绝对垂直居中，`48×64px`，透明背景白字 |
+| 关闭 `.lightbox-close` | 右上角，`44×44px` |
+| 交互 | 点击空白/ESC 关闭；←/→ 切换；多图才显示导航钮 |
+| 逻辑位置 | `js/project.js` 的 `openLightbox()`，gallery 渲染时绑定 click |
+
 > Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.images` 数组渲染，不在描述 HTML 中内嵌。
 
 > **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片的场景。
