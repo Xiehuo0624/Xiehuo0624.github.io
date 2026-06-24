@@ -14,11 +14,13 @@
       el.style.display = 'none';
     });
     document.getElementById('layout-grid').style.display = 'grid';
-    App.I18n.init(App.PROJECT_I18N, () => {
+    const render404 = () => {
       document.getElementById('grid-title').textContent = App.I18n.t('notFoundTitle');
       document.getElementById('grid-desc').textContent  = App.I18n.t('notFoundDesc');
       document.title = '404 — ' + App.I18n.t('notFoundTitle');
-    });
+    };
+    App.I18n.init(App.PROJECT_I18N, render404);
+    render404();
     return;
   }
 

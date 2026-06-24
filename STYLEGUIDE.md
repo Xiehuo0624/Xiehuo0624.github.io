@@ -72,6 +72,19 @@
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
 | 动画 | `300ms ease-out`（所有卡片同步过渡） | 同左 |
 
+### 卡片封面图
+
+每张卡片为 `card-fallback`（文字层，白底）+ `card-image`（图片层，`object-fit:cover` 盖住文字）双层结构。无图片的卡片仅显示文字 fallback。
+
+| 卡片 | 封面图 | 说明 |
+|------|--------|------|
+| the-fet-mixer | `img/the-fet-mixer.jpg` | 实物照片 |
+| riverrun | — | 仅文字 |
+| edgedgedge | `img/edgedgedge.jpg` | 拍摄者：段立言 |
+| spectral-dissector | `img/spectral-dissector.png` | 6 条分轨半透明叠加频谱图（黑底，程序生成） |
+| ecce-homo | `img/ecce-homo.jpg` | |
+| wwhbh | `img/wwhbh.jpg` | |
+
 ### Card Stack 偏移算法
 
 ```js
@@ -325,6 +338,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── ecce-homo.jpg
 │   ├── ecce-homo-still.jpg
 │   ├── edgedgedge.jpg
+│   ├── spectral-dissector.png
 │   ├── the-fet-mixer.jpg
 │   ├── the-fet-mixer-1.jpg
 │   ├── the-fet-mixer-2.png
@@ -374,6 +388,9 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 - 加载中显示 `…` 占位，加载失败则清空
 - 语言切换时重新 fetch 对应语言文件
 - HTML 片段为纯 HTML（无 `<html>/<body>`），源文件按句换行、空行分段，渲染时换行被浏览器折叠，段落由 `<br><br>` 控制
+- 文本引用块使用 `border-left:3px solid #000; background:#f9f9f9; padding:12px 16px; font-size:13px; line-height:1.8` 的内联样式
+- 引用块内英文原文斜体（`<span style="font-style:italic">`），中文翻译正常显示
+- 轨道/章节标题加粗（`<span style="font-weight:700">`）
 
 ### 脚本加载规则
 
