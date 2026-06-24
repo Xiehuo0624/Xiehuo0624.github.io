@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-24',
+      title: { zh: 'The FET Mixer 作品介绍与 Gallery 布局', en: 'The FET Mixer description & Gallery layout' },
+      body:  { zh: '为 The FET Mixer 添加了完整作品介绍及简介；添加了封面图与3张作品图（实物照片、建模图、渲染图）；新增 Gallery 布局（文字在上、图片横向滑动切换），替代 Grid 布局用于多图展示；为 EDGEDGEDGE 添加了封面图拍摄者（段立言）致谢。', en: 'Added full artist statement and brief for The FET Mixer; added cover image and 3 project images (photo, 3D model, render); introduced Gallery layout (text above, horizontally scrollable image slider) replacing Grid layout for multi-image projects; added cover photo credit (Duan Liyan) to EDGEDGEDGE.' },
+      media: ''
+    },
+    {
+      date: '2026-06-24',
       title: { zh: '修复了2026-06-10的个人介绍的语法错误', en: 'Fixed grammar errors in 2026-06-10 bio' },
       body:  { zh: '修复了顿号误用（并列词语应用顿号而非逗号）、重复词语（"可以在我生日的时候可以"）等语法问题。', en: 'Fixed incorrect use of commas instead of enumeration commas (、) for parallel items, and removed redundant word ("可以在我生日的时候可以").' },
       media: ''
