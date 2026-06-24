@@ -94,8 +94,11 @@
 - 原图留档于 `img/originals/`，不部署（`.gitignore` 排除）
 - 生成命令示例：`cwebp -resize 1200 0 -q 80 img/originals/xx.jpg -o img/xx.webp`
 
-### Card Stack 偏移算法
+### 卡片顺序
 
+每次打开首页时，卡片顺序由 Fisher-Yates 洗牌算法随机打乱（在 `js/index.js` 初始化时执行，`reindex()` 之前）。刷新页面即得到新顺序。HTML 中的初始顺序仅作 fallback。
+
+### Card Stack 偏移算法
 ```js
 const isMobile = window.innerWidth <= 768;
 const maxSpreadX = isMobile ? 40 : 110;
