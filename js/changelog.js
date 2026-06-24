@@ -7,6 +7,18 @@
   const entries = [
     {
       date: '2026-06-24',
+      title: { zh: 'SPECTRAL DISSECTOR 封面与频谱图生成', en: 'SPECTRAL DISSECTOR cover & spectrogram generation' },
+      body:  { zh: '为 SPECTRAL DISSECTOR 添加了封面图：将 6 条分轨音频各自生成半透明单色 2D 频谱图（红/青绿/蓝/金黄/紫/橙），叠加成一张黑底合成图作为首页卡片封面（3:2，无坐标轴）。同期编写了本地频谱图生成脚本（2D 频谱图 / 3D 声谱图 / 瀑布图 / 半透明叠加），置于 tmp/ 并加入 .gitignore 不随部署。', en: 'Added a cover image for SPECTRAL DISSECTOR: generated a semi-transparent single-color 2D spectrogram for each of 6 audio tracks (red/teal/blue/gold/purple/orange), composited into a black-background overlay used as the homepage card cover (3:2, no axes). Also wrote local spectrogram-generation scripts (2D spectrogram / 3D surface / waterfall / translucent overlay) kept under tmp/ and git-ignored so they are not deployed.' },
+      media: 'img/spectral-dissector.png'
+    },
+    {
+      date: '2026-06-24',
+      title: { zh: 'riverrun 作品介绍', en: 'riverrun description' },
+      body:  { zh: '为 riverrun 添加了完整作品介绍，包含《芬尼根的守灵夜》多轨有声书文本说明、riverrun 的三重解构（river run / reverend / Erinnerung）及三条轨道的原文与翻译对照，使用左边框引用块排版。', en: 'Added full artist statement for riverrun, including multi-track audiobook text explanation, the triple deconstruction of riverrun (river run / reverend / Erinnerung), and three track texts with original and translation, formatted with left-border quote blocks.' },
+      media: ''
+    },
+    {
+      date: '2026-06-24',
       title: { zh: 'The FET Mixer 作品介绍与 Gallery 布局', en: 'The FET Mixer description & Gallery layout' },
       body:  { zh: '为 The FET Mixer 添加了完整作品介绍及简介；添加了封面图与3张作品图（实物照片、建模图、渲染图）；新增 Gallery 布局（文字在上、图片横向滑动切换），替代 Grid 布局用于多图展示；为 EDGEDGEDGE 添加了封面图拍摄者（段立言）致谢。', en: 'Added full artist statement and brief for The FET Mixer; added cover image and 3 project images (photo, 3D model, render); introduced Gallery layout (text above, horizontally scrollable image slider) replacing Grid layout for multi-image projects; added cover photo credit (Duan Liyan) to EDGEDGEDGE.' },
       media: ''

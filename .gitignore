@@ -8,3 +8,6 @@ preview-cards.html
 docs/
 preview-works-layout.html
 preview-baseline-test.html
+
+# 临时频谱图生成脚本（本地工具，不部署）
+tmp/
