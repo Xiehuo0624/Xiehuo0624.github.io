@@ -7,6 +7,11 @@
   const entries = [
     {
       date: '2026-06-24',
+      title: { zh: 'Gallery 图片点击放大（Lightbox）', en: 'Gallery image lightbox (click to zoom)' },
+      body:  { zh: '为 Gallery 布局增加点击放大功能：点击任一图片打开全屏 Lightbox，支持左右切换、键盘方向键、ESC/点击空白关闭。纯 JS 实现，无依赖。', en: 'Added a click-to-zoom lightbox for the Gallery layout: clicking any image opens a fullscreen overlay with prev/next navigation, keyboard arrows, and ESC/click-outside to close. Pure JS, no dependencies.' },
+      media: ''
+    },
+      date: '2026-06-24',
       title: { zh: '图片压缩为 WebP 并原图留档', en: 'Compressed images to WebP with originals archived' },
       body:  { zh: '将全部图片转为 WebP 格式（质量 80）并按用途分两档缩放：卡片封面 1200px 宽、Gallery/剧照 1600px 宽。图片总体积从约 31MB 降至约 0.8MB。原图留档于 img/originals/ 并加入 .gitignore 不随部署。合并了重复的 the-fet-mixer.jpg 与 the-fet-mixer-1.jpg（同一张图），卡片封面与 Gallery 首图共用 the-fet-mixer.webp。同步更新所有 HTML/JS 引用与 STYLEGUIDE。', en: 'Converted all images to WebP (quality 80) and resized by use case: card covers to 1200px wide, gallery/still images to 1600px wide. Total image size dropped from ~31MB to ~0.8MB. Originals archived under img/originals/ and git-ignored so they are not deployed. Merged the duplicate the-fet-mixer.jpg and the-fet-mixer-1.jpg (identical image) so the card cover and gallery first slide share the-fet-mixer.webp. Updated all HTML/JS references and STYLEGUIDE accordingly.' },
       media: ''

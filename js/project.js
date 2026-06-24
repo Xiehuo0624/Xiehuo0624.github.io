@@ -79,12 +79,14 @@
         const slider = document.getElementById('gallery-slider');
         if (slider) {
           slider.innerHTML = '';
-          project.media.images.forEach(src => {
+          project.media.images.forEach((src, idx) => {
             const slide = document.createElement('div');
             slide.className = 'gallery-slide';
             const img = document.createElement('img');
             img.src = src;
             img.alt = t;
+            img.dataset.index = String(idx);
+            img.addEventListener('click', () => openLightbox(project.media.images, idx, t));
             slide.appendChild(img);
             slider.appendChild(slide);
           });
@@ -120,5 +122,72 @@
   /* ---- WWHBH audio ---- */
   if (projectId === 'wwhbh') {
     App.initMicButton(document.getElementById('btn-mic'));
+  }
+
+  /* ---- Gallery lightbox ---- */
+  let lbOverlay = null;
+  let lbImages = [];
+  let lbIndex = 0;
+  let lbImg = null;
+
+  function openLightbox(images, index, alt) {
+    lbImages = images;
+    lbIndex = index;
+    if (!lbOverlay) {
+      lbOverlay = document.createElement('div');
+      lbOverlay.className = 'lightbox';
+      lbImg = document.createElement('img');
+      lbImg.alt = alt;
+      const prev = document.createElement('button');
+      prev.className = 'lightbox-nav lightbox-prev';
+      prev.textContent = '‹';
+      const next = document.createElement('button');
+      next.className = 'lightbox-nav lightbox-next';
+      next.textContent = '›';
+      const close = document.createElement('button');
+      close.className = 'lightbox-close';
+      close.textContent = '×';
+
+      lbOverlay.appendChild(lbImg);
+      lbOverlay.appendChild(prev);
+      lbOverlay.appendChild(next);
+      lbOverlay.appendChild(close);
+      document.body.appendChild(lbOverlay);
+
+      lbOverlay.addEventListener('click', e => {
+        if (e.target === lbOverlay) closeLightbox();
+      });
+      prev.addEventListener('click', e => { e.stopPropagation(); lbStep(-1); });
+      next.addEventListener('click', e => { e.stopPropagation(); lbStep(1); });
+      close.addEventListener('click', closeLightbox);
+      document.addEventListener('keydown', lbKeyHandler);
+    }
+    lbShow();
+    lbOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function lbShow() {
+    lbImg.src = lbImages[lbIndex];
+    const multi = lbImages.length > 1;
+    lbOverlay.querySelector('.lightbox-prev').style.display = multi ? '' : 'none';
+    lbOverlay.querySelector('.lightbox-next').style.display = multi ? '' : 'none';
+  }
+
+  function lbStep(dir) {
+    lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+    lbShow();
+  }
+
+  function closeLightbox() {
+    if (lbOverlay) lbOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function lbKeyHandler(e) {
+    if (!lbOverlay || !lbOverlay.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowLeft') lbStep(-1);
+    else if (e.key === 'ArrowRight') lbStep(1);
   }
 })();
