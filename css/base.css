@@ -1,3 +1,16 @@
 /* ===== RESET & BASE ===== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;font-family:monospace;background:#fff;color:#000}
+
+/* ===== WEBFONT: DejaVu Sans Mono（与 macOS Menlo 同源，保证跨平台一致）===== */
+@font-face{
+  font-family:'DejaVu Sans Mono';
+  src:url('fonts/DejaVuSansMono.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap
+}
+@font-face{
+  font-family:'DejaVu Sans Mono';
+  src:url('fonts/DejaVuSansMono-Bold.woff2') format('woff2');
+  font-weight:700;font-style:normal;font-display:swap
+}
+
+html,body{width:100%;height:100%;font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace;background:#fff;color:#000}
