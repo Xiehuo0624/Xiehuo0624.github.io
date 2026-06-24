@@ -1,9 +1,11 @@
 /* ===== PROJECT DATA ===== */
 App.projects = {
   'the-fet-mixer': {
-    layout: 'grid',
+    layout: 'gallery',
     title: { zh:'THE FET MIXER', en:'THE FET MIXER' },
-    desc:  { file: true }
+    brief: { zh:'12输入4输出的空间混音器，基于电磁波传输与拾取', en:'A 12-in 4-out spatial mixer based on electromagnetic wave transmission and pickup' },
+    desc: { file: true },
+    media: { type: 'gallery', images: ['img/the-fet-mixer-1.jpg','img/the-fet-mixer-2.png','img/the-fet-mixer-3.png'] }
   },
 
   'riverrun': {

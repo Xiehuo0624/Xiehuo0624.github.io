@@ -176,7 +176,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ---
 
-## 7. Project 页 — 四种布局共用标准
+## 7. Project 页 — 五种布局共用标准
 
 ### 视频布局规则
 
@@ -246,7 +246,20 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
 | 正文行高 | `2.4` | 同左 |
 
-> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），不得使用 Grid 布局（`layout:'grid'`）的左右分栏。Grid 布局仅用于图片/硬件照片的场景。
+### 7e. Gallery 布局（文字在上，图片横向滑动切换）
+
+| 属性 | 桌面端 | 移动端 |
+|------|--------|--------|
+| 整体 padding | `80px 40px 40px` | `70px 16px 24px` |
+| 文字区 `.gallery-body` | `max-width:800px` | 同左 |
+| 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
+| 正文行高 | `2.4` | 同左 |
+| 滑动区 `.gallery-slider` | `max-width:800px; scroll-snap-type:x mandatory` | 同左 |
+| 滑动条样式 | `scrollbar-height:3px; thumb:#000; track:#f0f0f0` | 同左 |
+| 单张 `.gallery-slide` | `flex:0 0 100%; scroll-snap-align:start` | 同左 |
+| 图片 | `width:100%; height:auto; object-fit:contain` | 同左 |
+
+> Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.images` 数组渲染，不在描述 HTML 中内嵌。
 
 ---
 
@@ -281,7 +294,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── about.css              关于页
 │   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
-│   └── project.css            项目页四种布局
+│   └── project.css            项目页五种布局
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
 │   ├── ecce-homo/

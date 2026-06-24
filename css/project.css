@@ -59,6 +59,27 @@
 .edge-body h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-bottom:3px solid #000;padding-bottom:8px;margin-bottom:24px}
 .edge-body p{line-height:2.4;font-size:14px;letter-spacing:0.5px}
 
+/* ===== GALLERY layout ===== */
+.gallery-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
+.gallery-body{max-width:800px;width:100%;text-align:left}
+.gallery-body h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-bottom:3px solid #000;padding-bottom:8px;margin-bottom:24px}
+.gallery-body p{line-height:2.4;font-size:14px;letter-spacing:0.5px}
+.gallery-slider{
+  width:100%;max-width:800px;
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+  gap:0;-webkit-overflow-scrolling:touch;
+  border-top:3px solid #000;margin-top:24px;
+}
+.gallery-slider::-webkit-scrollbar{height:3px}
+.gallery-slider::-webkit-scrollbar-track{background:#f0f0f0}
+.gallery-slider::-webkit-scrollbar-thumb{background:#000}
+.gallery-slide{
+  flex:0 0 100%;scroll-snap-align:start;
+  display:flex;align-items:center;justify-content:center;
+  background:#f0f0f0;
+}
+.gallery-slide img{display:block;width:100%;height:auto;object-fit:contain}
+
 /* ===== MOBILE ===== */
 @media(max-width:768px){
   .project-grid{grid-template-columns:1fr;height:auto;min-height:100vh}
@@ -69,4 +90,5 @@
   .ecce-panel{padding:70px 16px 24px}
   .edge-panel{padding:70px 16px 24px}
   .edge-media{aspect-ratio:16/9}
+  .gallery-panel{padding:70px 16px 24px}
 }
