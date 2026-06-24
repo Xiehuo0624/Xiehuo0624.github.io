@@ -261,6 +261,8 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 > Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.images` 数组渲染，不在描述 HTML 中内嵌。
 
+> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片的场景。
+
 ---
 
 ## 8. i18n 系统
@@ -323,6 +325,10 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── ecce-homo.jpg
 │   ├── ecce-homo-still.jpg
 │   ├── edgedgedge.jpg
+│   ├── the-fet-mixer.jpg
+│   ├── the-fet-mixer-1.jpg
+│   ├── the-fet-mixer-2.png
+│   ├── the-fet-mixer-3.png
 │   └── wwhbh.jpg
 │
 ├── docs/                        杂项文档（不部署，.gitignore 排除）

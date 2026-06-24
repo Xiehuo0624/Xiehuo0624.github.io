@@ -12,6 +12,7 @@ App.projects = {
     layout: 'grid',
     title: { zh:'riverrun', en:'riverrun' },
     lowercase: true,
+    brief: { zh:'基于《芬尼根的守灵夜》与 The FET Mixer 的交互式声音装置', en:'An interactive sound installation based on Finnegans Wake and The FET Mixer' },
     desc: { file: true }
   },
 
