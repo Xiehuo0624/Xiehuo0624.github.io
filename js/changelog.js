@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-24',
+      title: { zh: '首页标签页标题改为「泻火 曹浩轩」', en: 'Homepage tab title changed to "泻火 曹浩轩"' },
+      body:  { zh: '将首页 <title> 从「泻火」改为「泻火 曹浩轩」，使浏览器标签页同时显示笔名与本名。', en: 'Changed the homepage <title> from "泻火" to "泻火 曹浩轩" so the browser tab shows both the pen name and real name.' },
+      media: ''
+    },
+    {
+      date: '2026-06-24',
       title: { zh: 'SPECTRAL DISSECTOR 封面与频谱图生成', en: 'SPECTRAL DISSECTOR cover & spectrogram generation' },
       body:  { zh: '为 SPECTRAL DISSECTOR 添加了封面图：将 6 条分轨音频各自生成半透明单色 2D 频谱图（红/青绿/蓝/金黄/紫/橙），叠加成一张黑底合成图作为首页卡片封面（3:2，无坐标轴）。同期编写了本地频谱图生成脚本（2D 频谱图 / 3D 声谱图 / 瀑布图 / 半透明叠加），置于 tmp/ 并加入 .gitignore 不随部署。', en: 'Added a cover image for SPECTRAL DISSECTOR: generated a semi-transparent single-color 2D spectrogram for each of 6 audio tracks (red/teal/blue/gold/purple/orange), composited into a black-background overlay used as the homepage card cover (3:2, no axes). Also wrote local spectrogram-generation scripts (2D spectrogram / 3D surface / waterfall / translucent overlay) kept under tmp/ and git-ignored so they are not deployed.' },
       media: 'img/spectral-dissector.png'
