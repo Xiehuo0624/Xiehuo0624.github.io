@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-06-25',
+      title: { zh: '为 EDGEDGEDGE 添加作品简介', en: 'Added brief for EDGEDGEDGE' },
+      body:  { zh: '在作品列表页（works）为 EDGEDGEDGE 补充了一句话简介：与钢铁大腿共同创作的回授声音装置，关于模糊的边缘与失控。此前该条目仅有标题无简介，与其它作品不统一。', en: 'Added a one-line brief for EDGEDGEDGE on the works list page: a feedback sound installation co-created with Gangtie Datui, about blurred edges and loss of control. Previously the entry had only a title with no brief, inconsistent with other works.' },
+      media: ''
+    },
+    {
+      date: '2026-06-25',
       title: { zh: '修复首页 [全部作品 →] 与 [en] English 垂直高度不一致', en: 'Fixed vertical alignment between [ALL WORKS →] and [en] English on homepage' },
       body:  { zh: '首页右下角语言切换 [en] English 的 <a> 原为 inline，竖向 padding 不影响行盒高度；而左下角 [全部作品 →] 的 <a> 为 display:block，竖向 padding 真实撑高盒子。两者虽同以 bottom:20px 锚定底部，但文字基线与 hover 黑底高度差约 2px（移动端 4px）。将 .nav-bottom-right 改为与 .nav-bottom-left 一致的 flex 列（display:flex; flex-direction:column; align-items:flex-end，移动端去掉多余的 text-align:right），<a> blockify 后 padding 行为两侧一致，底部与文字基线对齐。', en: 'The homepage bottom-right lang toggle [en] English used an inline <a>, whose vertical padding does not affect the line box height; whereas the bottom-left [ALL WORKS →] used display:block, whose vertical padding genuinely enlarges the box. Both were anchored at bottom:20px, but the text baselines and hover backgrounds differed by ~2px (4px on mobile). Changed .nav-bottom-right to match .nav-bottom-left as a flex column (display:flex; flex-direction:column; align-items:flex-end; dropped the redundant text-align:right on mobile) so the <a> is blockified and padding behaves identically on both sides, aligning their bottoms and text baselines.' },
       media: ''
