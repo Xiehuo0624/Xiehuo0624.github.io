@@ -14,6 +14,7 @@
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
 | 标题行高 | 所有页面标题（h1/h2）统一 `line-height:1`，消除中英文字体基线差异导致切换语言时横线位置偏移 |
 | viewport | `viewport-fit=cover`（所有页面，启用 `env(safe-area-inset-*)`） |
+| 标签页 `<title>` | 首页 `泻火 曹浩轩`；内页 `ABOUT`/`WORKS`/`CHANGELOG`/`PROJECT`（项目页运行时动态设为作品标题，404 时为 `404 — 未找到`） |
 
 ### 移动端弹性滚动
 
