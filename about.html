@@ -7,6 +7,17 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/nav.css">
 <link rel="stylesheet" href="css/about.css">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="css/fonts/SourceHanSansSC-Regular.woff2">
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/app.js"></script>
+<script defer src="js/i18n.js"></script>
+<script defer src="js/i18n-common.js"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic -->
+<script defer src="js/about-i18n.js"></script>
+<script defer src="js/about.js"></script>
 </head>
 <body>
 
@@ -30,14 +41,5 @@
   </div>
 </div>
 
-<!-- core -->
-<script src="js/app.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/i18n-common.js"></script>
-<script src="js/autospace.js"></script>
-<script src="js/nav.js"></script>
-<!-- page data + logic -->
-<script src="js/about-i18n.js"></script>
-<script src="js/about.js"></script>
 </body>
 </html>

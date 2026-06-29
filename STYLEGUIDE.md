@@ -399,6 +399,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
     ├── i18n-common.js         App.COMMON_I18N 公共字符串
     ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
     ├── nav.js                 App.renderBackNav / renderIndexNav
+    ├── prefetch.js            站内链接悬停预取（link rel=prefetch）
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据
     ├── index.js               首页逻辑
@@ -432,5 +433,20 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ### 脚本加载规则
 
-每个 HTML 按 **app → i18n → i18n-common → autospace → nav → 页面数据 → 页面逻辑** 顺序加载，
-确保 `App.*` 引用在被使用前已声明。详见各 HTML 底部 `<script>` 标签。
+每个 HTML 的所有 `<script>` 统一放在 `<head>` 中并加 `defer`：浏览器并行下载、按文档顺序执行、不阻塞渲染。
+加载顺序仍为 **app → i18n → i18n-common → autospace → nav → prefetch → 页面数据 → 页面逻辑**，
+确保 `App.*` 引用在被使用前已声明。`defer` 脚本在文档解析完成后、`DOMContentLoaded` 前执行，
+故 `document.body` 已存在，各页 IIFE 直接操作 DOM 安全（与原先放在 `<body>` 末尾等效但更早开始下载）。
+
+### 性能与加载策略
+
+详见 `PERFORMANCE.md`。要点：
+
+- **首屏图片（卡片封面 / 项目页 hero 图）**：`decoding="async"` + `fetchpriority="high"`，保持默认 eager。
+- **非首屏图片（Gallery 其余帧、Changelog 媒体）**：`loading="lazy"` + `decoding="async"`，进入视口才下载。
+- **音频 / 视频**：`preload="none"`。`audio/ecce-homo.m4a`（12MB）与 Changelog `<details>` 内视频在用户点播放前不拉取。
+- **字体**：`@font-face` 全部 `font-display:swap`（不阻塞首屏文字）；文字为主的页（about/works/changelog/project）
+  在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。
+- **站内跳转预取**：`js/prefetch.js` 监听 `pointerover/focusin/touchstart`，对同源 `.html` 链接用
+  `<link rel="prefetch" as="document">` 预取目标文档（`requestIdleCallback` 内、去重、省流量模式禁用），点击跳转近乎即时。
+- **脚本**：全部 `defer` 置于 `<head>`，与 CSS 并行下载、不阻塞渲染。

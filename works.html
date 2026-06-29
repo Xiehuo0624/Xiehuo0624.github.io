@@ -7,6 +7,18 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/nav.css">
 <link rel="stylesheet" href="css/works.css">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="css/fonts/SourceHanSansSC-Regular.woff2">
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/app.js"></script>
+<script defer src="js/i18n.js"></script>
+<script defer src="js/i18n-common.js"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic -->
+<script defer src="js/project-data.js"></script>
+<script defer src="js/works-i18n.js"></script>
+<script defer src="js/works.js"></script>
 </head>
 <body>
 
@@ -15,15 +27,5 @@
   <div id="works-list"></div>
 </div>
 
-<!-- core -->
-<script src="js/app.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/i18n-common.js"></script>
-<script src="js/autospace.js"></script>
-<script src="js/nav.js"></script>
-<!-- page data + logic -->
-<script src="js/project-data.js"></script>
-<script src="js/works-i18n.js"></script>
-<script src="js/works.js"></script>
 </body>
 </html>

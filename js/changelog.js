@@ -242,6 +242,7 @@
         if (['mp4','webm','ogg'].includes(ext)) {
           const video = document.createElement('video');
           video.controls = true;
+          video.preload = 'none';   /* 在 <details> 折叠区内，点开并播放前不拉取 */
           const source = document.createElement('source');
           source.src = entry.media;
           source.type = 'video/' + ext;
@@ -251,6 +252,8 @@
           const img = document.createElement('img');
           img.src = entry.media;
           img.alt = '';
+          img.loading = 'lazy';
+          img.decoding = 'async';
           body.appendChild(img);
         }
       }
