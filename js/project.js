@@ -51,6 +51,19 @@
     const layout = project.layout;
     if (layout === 'grid') {
       document.getElementById('grid-title').textContent = t;
+      /* render media area (single image) */
+      if (project.media) {
+        const mediaEl = document.getElementById('grid-media');
+        if (mediaEl) {
+          mediaEl.innerHTML = '';
+          if (project.media.type === 'image') {
+            const img = document.createElement('img');
+            img.src = project.media.src;
+            img.alt = t;
+            mediaEl.appendChild(img);
+          }
+        }
+      }
     } else if (layout === 'edge') {
       document.getElementById('edge-title').textContent = t;
       /* render media area */
@@ -96,6 +109,25 @@
       document.getElementById('wwhbh-title').textContent = t;
     } else if (layout === 'ecce') {
       document.getElementById('ecce-title').textContent = t;
+      /* render top image (+ optional audio) */
+      const mediaEl = document.getElementById('ecce-media');
+      if (mediaEl) {
+        mediaEl.innerHTML = '';
+        if (project.media && project.media.type === 'image') {
+          const img = document.createElement('img');
+          img.className = 'ecce-still';
+          img.src = project.media.src;
+          img.alt = t;
+          mediaEl.appendChild(img);
+        }
+        if (project.audio) {
+          const audio = document.createElement('audio');
+          audio.className = 'ecce-audio';
+          audio.controls = true;
+          audio.src = project.audio;
+          mediaEl.appendChild(audio);
+        }
+      }
     }
 
     /* desc: fetch from HTML fragment or use inline string */

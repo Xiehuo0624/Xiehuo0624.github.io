@@ -13,7 +13,8 @@ App.projects = {
     title: { zh:'riverrun', en:'riverrun' },
     lowercase: true,
     brief: { zh:'基于《芬尼根的守灵夜》与 The FET Mixer 的交互式声音装置', en:'An interactive sound installation based on Finnegans Wake and The FET Mixer' },
-    desc: { file: true }
+    desc: { file: true },
+    media: { type: 'image', src: 'img/riverrun-2.webp' }
   },
 
   'edgedgedge': {
@@ -25,16 +26,19 @@ App.projects = {
   },
 
   'spectral-dissector': {
-    layout: 'grid',
+    layout: 'ecce',
     title: { zh:'SPECTRAL DISSECTOR', en:'SPECTRAL DISSECTOR' },
-    desc:  { file: true }
+    desc:  { file: true },
+    media: { type: 'image', src: 'img/spectral-dissector-2.webp' }
   },
 
   'ecce-homo': {
     layout: 'ecce',
     title: { zh:'瞧！这个人', en:'ECCE HOMO' },
     brief: { zh:'与 Allen 共同创作的声音剧场作品，交织《圣经》与卡夫卡的文本', en:'A sound theatre piece co-created with Allen, interweaving Biblical and Kafkaesque texts' },
-    desc: { file: true }
+    desc: { file: true },
+    media: { type: 'image', src: 'img/ecce-homo-still.webp' },
+    audio: 'audio/ecce-homo.m4a'
   },
 
   'wwhbh': {
