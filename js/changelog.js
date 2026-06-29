@@ -6,6 +6,42 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-06-29',
+      title: { zh: '根治首页四角导航纵向对齐（统一偏移变量）', en: 'Root-fixed homepage four-corner vertical alignment (unified offset variable)' },
+      body:  { zh: '此前四角纵向对齐靠各角分散凑 padding（容器 padding 与 <a> padding 两套机制混用，top-right 是文本节点靠容器 padding、其余三角是 <a> 列表靠 <a> padding），改任一角即可能破坏对齐，已反复修补两次（2026-06-25 修底部一对、本日修顶部一对）。本次根治：引入 CSS 变量 --nav-y（桌面2px/移动4px），四角容器的竖向 padding 统一引用它（顶部角 padding-top、底部角 padding-bottom），<a> 竖向 padding 归零仅留水平点击区 0 6px，line-height 统一 1.5 补偿 <a> 竖向 padding 归零后的 hover 黑底高度。如此"文字到锚边的偏移"只由容器一层决定，改 --nav-y 四角联动，不再分散凑数。数值上与已对齐状态完全一致（偏移仍为 锚边20+2=22px），仅结构重构 + 变量化 + line-height 统一，回归风险低。', en: 'The four-corner vertical alignment previously relied on scattered padding values across each corner (two mechanisms mixed: top-right is a text node using container padding, the other three are <a> lists using <a> padding), so editing any one corner could break alignment — it had been patched twice (2026-06-25 the bottom pair, today the top pair). This root fix introduces a CSS variable --nav-y (desktop 2px / mobile 4px); all four corner containers reference it for their vertical padding (top corners padding-top, bottom corners padding-bottom), <a> vertical padding is zeroed leaving only the horizontal click area 0 6px, and line-height is unified at 1.5 to compensate the hover background height lost from zeroing <a> vertical padding. Now the “text-to-anchor-edge offset” is decided by the container layer alone; changing --nav-y moves all four corners together, no more scattered padding arithmetic. The values are identical to the already-aligned state (offset still anchor 20 + 2 = 22px) — only a structural refactor + variable binding + unified line-height — so regression risk is low.' },
+      media: ''
+    },
+    {
+      date: '2026-06-29',
+      title: { zh: '对齐首页顶部一对导航的纵向位置', en: 'Aligned the top pair of homepage nav vertically' },
+      body:  { zh: '修复首页顶部一对（左上 [+] 简介与联系 / 右上 泻火 曹浩轩）的纵向错位：此前右上的 .nav-top-right 容器 padding-top 为 4px，而左上第一个导航链接 <a> 的 padding-top 为 2px，导致右上名字比左上首条链接低约 2px。将桌面端 .nav-top-right 的 padding 从 4px 6px 0 改为 2px 6px 0；移动端显式补声明 padding:4px 6px 0，与移动端左上链接 padding-top(4px) 对齐。底部一对已于 2026-06-25 对齐，此次补齐顶部一对，四角在盒子层面完全对齐。', en: 'Fixed the vertical misalignment of the homepage top pair (top-left [+] 简介 / top-right 泻火 曹浩轩): the .nav-top-right container had padding-top:4px while the top-left first nav link <a> had padding-top:2px, so the top-right name sat ~2px lower than the top-left first link. Changed the desktop .nav-top-right padding from 4px 6px 0 to 2px 6px 0; explicitly added padding:4px 6px 0 on mobile to match the mobile top-left link padding-top (4px). The bottom pair was already aligned on 2026-06-25; this completes the top pair, so all four corners now align at the box level.' },
+      media: ''
+    },
+    {
+      date: '2026-06-29',
+      title: { zh: 'SPECTRAL DISSECTOR 改用 Ecce 布局并添加顶部介绍图', en: 'SPECTRAL DISSECTOR switched to Ecce layout with a top intro image' },
+      body:  { zh: '为 SPECTRAL DISSECTOR 项目页添加一张顶部介绍图（1142×412 横幅，转 WebP 17KB，原图留档 img/originals/），并调整布局：由 Grid 左右分栏改为 Ecce 布局，图片置于最上方、文字在下，类似 ECCE HOMO 的剧照排版。为此将 Ecce 布局通用化：原先 project-template.html 中硬编码的 ecce-homo-still 图片与 ecce-homo 音频改为由 JS 动态渲染——图片从 project.media（type:image）读取、音频从 project.audio 读取（无该字段则不渲染音频）。同步为 ecce-homo 配置补上 media 与 audio 字段以保持向后兼容。更新 STYLEGUIDE 的 Ecce 布局说明、布局选择规则与文件结构树。', en: 'Added a top intro image to the SPECTRAL DISSECTOR project page (1142×412 banner, WebP 17KB, original archived under img/originals/) and changed its layout from the Grid left-right split to the Ecce layout, placing the image at the top with the text below — similar to ECCE HOMO’s still placement. Generalized the Ecce layout to enable this: the previously hard-coded ecce-homo-still image and ecce-homo audio in project-template.html are now rendered dynamically by JS — the image from project.media (type:image), the audio from project.audio (omitted when absent). Added media and audio fields to the ecce-homo config for backward compatibility. Updated the STYLEGUIDE Ecce layout section, layout-selection rule, and file-structure tree accordingly.' },
+      media: 'img/spectral-dissector-2.webp'
+    },
+    {
+      date: '2026-06-29',
+      title: { zh: '为 SPECTRAL DISSECTOR 介绍补充 Max for Live 版使用方法', en: 'Added Max for Live usage guide to the SPECTRAL DISSECTOR introduction' },
+      body:  { zh: '在 SPECTRAL DISSECTOR 项目介绍（概念部分）之后，追加一段 Max for Live 版本的使用说明。逐一说明全部控制参数（Threshold、Spacing、Focus、Band 1–7 Offset、Blur、Perc、Gate、Detail、Slide Rise/Fall、Tilt、Dry、各层开关与路由、循环调制）如何主观地影响听感，并给出从零拆解一个采样的操作顺序：先以 Dry 听原声，依次调 Threshold 校准、Spacing 分层、Focus 定边界、Blur/Perc 处理瞬态、Gate 分离底噪、Slide 调响应、Tilt 偏向频段、Band Offset 逐层微调，最后开关与独奏各层完成拆解。刻意不从信号/DSP 角度分析，全部以经验化听感描述。', en: 'Appended a Max for Live usage section after the SPECTRAL DISSECTOR conceptual introduction. Walks through every control parameter (Threshold, Spacing, Focus, Band 1–7 Offset, Blur, Perc, Gate, Detail, Slide Rise/Fall, Tilt, Dry, per-layer switches & routing, cyclic modulation) in terms of subjective listening effect rather than signal/DSP analysis, and gives a from-scratch sample-dissection workflow: start with Dry to hear the original, then calibrate with Threshold, layer with Spacing, set boundaries with Focus, handle transients with Blur/Perc, separate the noise floor with Gate, set responsiveness with Slide, bias the spectrum with Tilt, fine-tune per layer with Band Offset, and finish by muting/soloing/routing each layer. Deliberately experiential throughout, no signal-path analysis.' },
+      media: 'img/spectral-dissector.webp'
+    },
+    {
+      date: '2026-06-29',
+      title: { zh: '撰写 SPECTRAL DISSECTOR 项目介绍', en: 'Wrote the SPECTRAL DISSECTOR project introduction' },
+      body:  { zh: '此前 SPECTRAL DISSECTOR 的项目页描述为空，现为其撰写中英文介绍。基于项目架构文档提炼设计理念，刻意略去全部技术细节（FFT、Max for Live、gen~、HPSS、倒谱、阈值参数、声道数等），只面向普通读者阐明其设计目的与作用：传统声音工具按「音高」切分声音，而 Spectral Dissector 按「成分构成」切分——把任何声音解剖为八层由强到弱的持续音、一层噪声与一层打击，每层可独立开关与路由。以「解剖」为隐喻，强调它把混音的起点从「合并」倒转为「拆开」。介绍末尾注明由 GLM-5.2 撰写。', en: 'The SPECTRAL DISSECTOR project page description was previously empty; wrote its Chinese and English introductions. Distilled the design concept from the project architecture doc while deliberately omitting all technical details (FFT, Max for Live, gen~, HPSS, cepstrum, threshold parameters, channel counts, etc.), aiming only to convey its design purpose and function to a general audience: where conventional sound tools split sound by "pitch," Spectral Dissector splits it by "composition" — dissecting any sound into eight layers of sustained tones graded from strongest to weakest, one layer of noise, and one layer of percussion, each independently switchable and routable. Uses "dissection" as a metaphor, emphasizing how it inverts the starting point of mixing from "combining" to "taking apart." The introduction notes it was written by GLM-5.2.' },
+      media: 'img/spectral-dissector.webp'
+    },
+    {
+      date: '2026-06-29',
+      title: { zh: '为 riverrun 添加封面与项目页图片', en: 'Added cover and project-page image for riverrun' },
+      body:  { zh: '为 riverrun 补齐了此前缺失的图片：首页卡片封面（横图，1200px 宽 WebP）与项目页 Grid 布局媒体区的内部图片（竖图，1600px 宽 WebP）。原图留档于 img/originals/。同时扩展了 Grid 布局：此前 Grid 仅渲染标题与文字描述、媒体区恒为占位符，现支持 media.type="image" 渲染单张图片（与 Edge 布局的 image 渲染一致）。给 project-template.html 的 .media-area 加上 id="grid-media" 以供 project.js 定位。', en: 'Filled in the previously missing images for riverrun: a homepage card cover (landscape, 1200px-wide WebP) and an internal image in the project page Grid layout media area (portrait, 1600px-wide WebP). Originals archived under img/originals/. Also extended the Grid layout: previously Grid only rendered the title and description with a permanent placeholder in the media area, it now supports media.type="image" to render a single image (consistent with the Edge layout image rendering). Added id="grid-media" to the .media-area in project-template.html so project.js can target it.' },
+      media: 'img/riverrun.webp'
+    },
+    {
       date: '2026-06-25',
       title: { zh: '为 EDGEDGEDGE 添加作品简介', en: 'Added brief for EDGEDGEDGE' },
       body:  { zh: '在作品列表页（works）为 EDGEDGEDGE 补充了一句话简介：与钢铁大腿共同创作的回授声音装置，关于模糊的边缘与失控。此前该条目仅有标题无简介，与其它作品不统一。', en: 'Added a one-line brief for EDGEDGEDGE on the works list page: a feedback sound installation co-created with Gangtie Datui, about blurred edges and loss of control. Previously the entry had only a title with no brief, inconsistent with other works.' },
@@ -50,7 +86,7 @@
     {
       date: '2026-06-24',
       title: { zh: '首页标签页标题改为「泻火 曹浩轩」', en: 'Homepage tab title changed to "泻火 曹浩轩"' },
-      body:  { zh: '将首页 <title> 从「泻火」改为「泻火 曹浩轩」，使浏览器标签页同时显示笔名与本名。', en: 'Changed the homepage <title> from "泻火" to "泻火 曹浩轩" so the browser tab shows both the pen name and real name.' },
+      body:  { zh: '将首页 &lt;title&gt; 从「泻火」改为「泻火 曹浩轩」，使浏览器标签页同时显示笔名与本名。', en: 'Changed the homepage &lt;title&gt; from "泻火" to "泻火 曹浩轩" so the browser tab shows both the pen name and real name.' },
       media: ''
     },
     {

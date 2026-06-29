@@ -12,7 +12,7 @@
 
 <!-- default grid layout -->
 <div class="project-grid" id="layout-grid">
-  <div class="media-area">
+  <div class="media-area" id="grid-media">
     <span class="media-placeholder" data-i18n="mediaHint">[ 演示视频 / 硬件照片 ]</span>
   </div>
   <div class="info-area">
@@ -32,11 +32,10 @@
   </div>
 </div>
 
-<!-- ecce-homo: still + audio + text -->
+<!-- ecce: top image (+ optional audio) + text -->
 <div class="ecce-panel" id="layout-ecce">
   <h2 id="ecce-title"></h2>
-  <img class="ecce-still" src="img/ecce-homo-still.webp" alt="ECCE HOMO">
-  <audio class="ecce-audio" controls src="audio/ecce-homo.m4a"></audio>
+  <div class="ecce-media" id="ecce-media"></div>
   <div class="ecce-text">
     <p id="ecce-desc"></p>
   </div>

@@ -3,49 +3,56 @@
 .back a{color:#000;text-decoration:none;padding:2px 6px;font-size:14px}
 .back a:hover{background:#000;color:#fff}
 
+/* ===== 首页四角导航 =====
+   竖向偏移统一由容器 padding 承担（--nav-y 单一变量），<a> 竖向 padding
+   归零（仅留水平点击区），line-height 统一 1.5 补偿 hover 黑底高度。
+   这样"文字到锚边的偏移"只看容器一层，改 --nav-y 四角联动，不再分散凑数。 */
+:root{--nav-y:2px}
+@media(max-width:768px){:root{--nav-y:4px}}
+
 /* nav variant: top-left links (index page) */
 .nav-top-left{
   position:fixed;top:20px;left:20px;z-index:100;
-  font-size:14px;
+  font-size:14px;line-height:1.5;
+  padding-top:var(--nav-y);
 }
 .nav-top-left a{
   display:block;color:#000;text-decoration:none;
-  padding:2px 6px;margin-bottom:8px;
+  padding:0 6px;margin-bottom:8px;
 }
 .nav-top-left a:hover{background:#000;color:#fff}
+.nav-lowercase{position:relative;top:-1px}
 
 /* nav variant: bottom-left works link (index page) */
 .nav-bottom-left{
   position:fixed;bottom:20px;left:20px;z-index:100;
-  font-size:14px;
+  font-size:14px;line-height:1.5;
   display:flex;flex-direction:column;gap:4px;
+  padding-bottom:var(--nav-y);
 }
 .nav-bottom-left a{
   display:block;color:#000;text-decoration:none;
-  padding:2px 6px;
+  padding:0 6px;
 }
 .nav-bottom-left a:hover{background:#000;color:#fff}
-.nav-lowercase{position:relative;top:-1px}
 
 /* nav variant: top-right name (index page) */
 .nav-top-right{
   position:fixed;top:20px;right:20px;z-index:100;
   font-size:14px;letter-spacing:1px;cursor:pointer;
-  text-align:right;
-  padding:4px 6px 0;
+  text-align:right;line-height:1.5;
+  padding:var(--nav-y) 6px 0;
 }
 
 /* nav variant: bottom-right lang toggle (index page) */
-/* 用 flex 列 + align-items:flex-end 与 .nav-bottom-left 结构对齐，
-   使 <a> blockify 后竖向 padding 真实生效，
-   [en] English 与 [全部作品 →] 文字基线/hover 黑底高度一致 */
 .nav-bottom-right{
   position:fixed;bottom:20px;right:20px;z-index:100;
-  font-size:14px;
+  font-size:14px;line-height:1.5;
   display:flex;flex-direction:column;align-items:flex-end;
+  padding-bottom:var(--nav-y);
 }
 .nav-bottom-right a{
-  color:#000;text-decoration:none;padding:2px 6px;
+  color:#000;text-decoration:none;padding:0 6px;
 }
 .nav-bottom-right a:hover{background:#000;color:#fff}
 
@@ -58,7 +65,7 @@
     font-size:12px;
     max-width:40vw;
   }
-  .nav-top-left a{padding:4px 6px;margin-bottom:6px}
+  .nav-top-left a{margin-bottom:6px}
 
   .nav-top-right{
     top:max(10px, env(safe-area-inset-top));
@@ -75,7 +82,6 @@
     left:max(10px, env(safe-area-inset-left));
     font-size:12px;
   }
-  .nav-bottom-left a{padding:4px 6px}
   .nav-lowercase{top:-1px}
 
   .nav-bottom-right{
@@ -84,5 +90,4 @@
     font-size:12px;
     left:50vw;
   }
-  .nav-bottom-right a{padding:4px 6px}
 }

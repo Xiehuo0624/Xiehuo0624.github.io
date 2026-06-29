@@ -39,8 +39,12 @@
 
 ### 首页导航（四角布局）
 
+四角统一竖向偏移机制：竖向 padding 由**容器**承担（`--nav-y` 单一变量，桌面 `2px`/移动 `4px`），`<a>` 竖向 padding 归零（仅留水平点击区 `0 6px`），`line-height` 统一 `1.5` 补偿 hover 黑底高度。这样"文字到锚边的偏移"只看容器一层，改 `--nav-y` 四角联动，不再各角分散凑数。顶部角用 `padding-top`、底部角用 `padding-bottom`。
+
 | | 桌面端 | 移动端 |
 |--|--------|--------|
+| 统一竖向偏移 `--nav-y` | `2px` | `4px` |
+| 统一 line-height | `1.5`（补偿 `<a>` 竖向 padding 归零后的 hover 黑底高度） | 同左 |
 | top-left 位置 | `top:20px; left:20px` | `top:max(10px, env(safe-area-inset-top)); left:max(10px, env(safe-area-inset-left)); max-width:40vw` |
 | top-left 内容 | `[+] 简介与联系` `[>] 进程日志` | 同左，字号 `12px` |
 | top-left 链接间距 | `margin-bottom:8px` | `margin-bottom:6px` |
@@ -55,7 +59,7 @@
 | bottom-left 小写微调 | `.nav-lowercase{position:relative; top:-1px}` | 同左 |
 | bottom-right 位置 | `bottom:20px; right:20px` | `bottom:max(10px, env(safe-area-inset-bottom)); right:max(10px, env(safe-area-inset-right)); left:50vw` |
 | bottom-right 内容 | 语言切换 `[en] English` | 同左，字号 `12px` |
-| 触摸目标 | `padding:2px 6px` | `padding:4px 6px`（加大点击区） |
+| `<a>` padding（水平点击区） | `0 6px`（竖向归零，由容器 `--nav-y` 承担偏移） | 同左 |
 
 ---
 
@@ -81,7 +85,7 @@
 | 卡片 | 封面图 | 说明 |
 |------|--------|------|
 | the-fet-mixer | `img/the-fet-mixer.webp` | 实物照片 |
-| riverrun | — | 仅文字 |
+| riverrun | `img/riverrun.webp` | |
 | edgedgedge | `img/edgedgedge.webp` | 拍摄者：段立言 |
 | spectral-dissector | `img/spectral-dissector.webp` | 6 条分轨半透明叠加频谱图（黑底，程序生成） |
 | ecce-homo | `img/ecce-homo.webp` | |
@@ -251,13 +255,15 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 按钮 i18n | `btnActivate` / `btnDeactivate` / `btnDenied` | 同左 |
 | 按钮激活态 | 黑底白字 (`.on`) | 同左 |
 
-### 7c. ECCE HOMO 布局
+### 7c. Ecce 布局（顶部单图 + 可选音频 + 文字）
+
+顶部一张全宽图、下方文字的纵向布局；若项目带 `audio` 字段，则在图下嵌入 HTML5 音频。图片来自 `project.media`（`type:'image'`），音频来自 `project.audio`，均由 `js/project.js` 的 ecce 分支动态渲染（无 audio 字段则不渲染音频，如 SPECTRAL DISSECTOR）。
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
 | 整体 padding | `80px 40px 40px` | `70px 16px 24px` |
-| 剧照 `.ecce-still` | `width:100%; max-width:800px; border-bottom:3px solid #000` | 同左 |
-| 音频 `.ecce-audio` | `width:100%; max-width:800px`（HTML5 `<audio>`） | 同左 |
+| 顶部图 `.ecce-still` | `width:100%; max-width:800px; border-bottom:3px solid #000` | 同左 |
+| 音频 `.ecce-audio` | `width:100%; max-width:800px`（HTML5 `<audio>`，可选） | 同左 |
 | 文字区 padding | `24px 0 0` | 同左 |
 | 文字区最大宽 | `800px` | 同左 |
 
@@ -300,7 +306,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 > Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.images` 数组渲染，不在描述 HTML 中内嵌。
 
-> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片的场景。
+> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
 
 ---
 
@@ -365,7 +371,10 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── ecce-homo.webp
 │   ├── ecce-homo-still.webp
 │   ├── edgedgedge.webp
+│   ├── riverrun.webp           卡片封面
+│   ├── riverrun-2.webp         项目页媒体区单图
 │   ├── spectral-dissector.webp
+│   ├── spectral-dissector-2.webp    项目页顶部介绍图
 │   ├── the-fet-mixer.webp      卡片封面 + Gallery 首图共用
 │   ├── the-fet-mixer-2.webp
 │   ├── the-fet-mixer-3.webp
