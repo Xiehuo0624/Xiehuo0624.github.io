@@ -7,6 +7,16 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/nav.css">
 <link rel="stylesheet" href="css/index.css">
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/app.js"></script>
+<script defer src="js/i18n.js"></script>
+<script defer src="js/i18n-common.js"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic -->
+<script defer src="js/index-i18n.js"></script>
+<script defer src="js/index.js"></script>
 </head>
 <body>
 
@@ -14,38 +24,29 @@
 <div class="stack-wrap" id="stack">
   <div class="card" data-href="project-template.html?project=the-fet-mixer">
     <div class="card-fallback" data-i18n="cardFetMixer">THE FET MIXER</div>
-    <img class="card-image" src="img/the-fet-mixer.webp" alt="THE FET MIXER">
+    <img class="card-image" src="img/the-fet-mixer.webp" alt="THE FET MIXER" decoding="async" fetchpriority="high">
   </div>
   <div class="card lowercase" data-href="project-template.html?project=riverrun">
     <div class="card-fallback" data-i18n="cardRiverrun">riverrun</div>
-    <img class="card-image" src="img/riverrun.webp" alt="riverrun">
+    <img class="card-image" src="img/riverrun.webp" alt="riverrun" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-href="project-template.html?project=edgedgedge">
     <div class="card-fallback" data-i18n="cardEdgedgedge">EDGEDGEDGE</div>
-    <img class="card-image" src="img/edgedgedge.webp" alt="EDGEDGEDGE">
+    <img class="card-image" src="img/edgedgedge.webp" alt="EDGEDGEDGE" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-href="project-template.html?project=spectral-dissector">
     <div class="card-fallback" data-i18n="cardSpectral">SPECTRAL DISSECTOR</div>
-    <img class="card-image" src="img/spectral-dissector.webp" alt="SPECTRAL DISSECTOR">
+    <img class="card-image" src="img/spectral-dissector.webp" alt="SPECTRAL DISSECTOR" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-href="project-template.html?project=ecce-homo">
     <div class="card-fallback" data-i18n="cardEcce">ECCE HOMO</div>
-    <img class="card-image" src="img/ecce-homo.webp" alt="ECCE HOMO">
+    <img class="card-image" src="img/ecce-homo.webp" alt="ECCE HOMO" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-href="project-template.html?project=wwhbh">
     <div class="card-fallback" data-i18n="cardWwbh">WE WILL HAVE BEEN HERE</div>
-    <img class="card-image" src="img/wwhbh.webp" alt="We Will Have Been Here">
+    <img class="card-image" src="img/wwhbh.webp" alt="We Will Have Been Here" decoding="async" fetchpriority="high">
   </div>
 </div>
 
-<!-- core -->
-<script src="js/app.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/i18n-common.js"></script>
-<script src="js/autospace.js"></script>
-<script src="js/nav.js"></script>
-<!-- page data + logic -->
-<script src="js/index-i18n.js"></script>
-<script src="js/index.js"></script>
 </body>
 </html>

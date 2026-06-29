@@ -60,6 +60,8 @@
             const img = document.createElement('img');
             img.src = project.media.src;
             img.alt = t;
+            img.decoding = 'async';
+            img.fetchPriority = 'high';
             mediaEl.appendChild(img);
           }
         }
@@ -80,6 +82,8 @@
             const img = document.createElement('img');
             img.src = project.media.src;
             img.alt = t;
+            img.decoding = 'async';
+            img.fetchPriority = 'high';
             img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
             mediaEl.appendChild(img);
           }
@@ -98,6 +102,9 @@
             const img = document.createElement('img');
             img.src = src;
             img.alt = t;
+            /* 水平 slider 内只有首屏可见，其余懒加载 */
+            img.loading = 'lazy';
+            img.decoding = 'async';
             img.dataset.index = String(idx);
             img.addEventListener('click', () => openLightbox(project.media.images, idx, t));
             slide.appendChild(img);
@@ -118,12 +125,15 @@
           img.className = 'ecce-still';
           img.src = project.media.src;
           img.alt = t;
+          img.decoding = 'async';
+          img.fetchPriority = 'high';
           mediaEl.appendChild(img);
         }
         if (project.audio) {
           const audio = document.createElement('audio');
           audio.className = 'ecce-audio';
           audio.controls = true;
+          audio.preload = 'none';   /* 12MB 音频不在首屏即拉取，点播放才下载 */
           audio.src = project.audio;
           mediaEl.appendChild(audio);
         }
