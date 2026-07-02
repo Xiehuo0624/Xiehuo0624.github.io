@@ -2,14 +2,15 @@
 
 <br><br>
 
-Spectral Dissector是一款基于Spectral Noise Gate、HPSS和Cepstrum的基频、谐波、瞬态、噪音分离插件，灵感来源于模拟的Filterbanks、SPEAR、Bitwig Loud Split、Bitwig Harmonic Split、Ircam iana~等。我非常喜欢用Filterbanks把声音在频域上进行拆解后重新组合，我希望能有一个更精确的工具来达到这一点；我希望能把声音的基频、一次、二次、三次谐波等材料实时地精确地分离。这个作品最初的形态是一组6个并联的Spectral Gates，其Thresholds首尾相连，由6个互相关联的Threshold进行控制。图1为最初版本的Spectral Dissector (Spectral Bank) Max For Live插件截图。初版插件完成时间约为2025年6月。
+Spectral Dissector是一款基于Spectral Noise Gate、HPSS和Cepstrum的基频、谐波、瞬态、噪音分离插件，灵感来源于模拟的Filterbanks、SPEAR、Bitwig Loud Split、Bitwig Harmonic Split、Ircam iana~等。我非常喜欢用Filterbanks把声音在频域上进行拆解后重新组合，我希望能有一个更精确的工具来达到这一点；我希望能把声音的基频、一次、二次、三次谐波等材料实时地精确地分离。这个作品最初的形态是一组6个并联的Spectral Gates，其Thresholds首尾相连，由6个互相关联的Threshold进行控制。下图为最初版本的Spectral Dissector (Spectral Bank) Max For Live插件截图。初版插件完成时间约为2025年6月。
 
-<img src="img/spectral-dissector-1.webp" alt="最初版本的 Spectral Dissector (Spectral Bank) Max for Live 插件截图" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0 4px">
-<div style="text-align:center;font-size:12px;color:#666;letter-spacing:0.5px">图1</div>
+<img src="img/spectral-dissector-1.webp" alt="最初版本的 Spectral Dissector (Spectral Bank) Max for Live 插件截图" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
+
+我在2026年4月对本插件的架构进行了重构：引入了HPSS和Cepstrum算法，并学习Bitwig Loud Split加入了Rise Fall控制参数，尝试以此分离非谐波性的瞬态和噪音，使谐波的分离更加稳定、精确、减少伪影。同时重做了Interface的逻辑，将每个Spectral Gate Band的逻辑改为了由一个Main Threshold进行总控制，使用Spacing旋钮调整每个Band的Threshold之间的响度差，并通过Tilt为高/低频的Threshold进行补偿。还新增了[<strong>Focus</strong> (<code>focus</code>) | 频带交叉锐度 | 大值=频带边界清晰但可能跳变；小值=过渡平滑]参数以强调乐音信号。现版本中暂时去掉了包络补偿算法，因为其与Cepstrum和HPSS在打架..残念。新版本的Max For live插件的实现与UI由闫开完成，
 
 <br><br>
 
-我在2026年4月对本插件的架构进行了重构：引入了HPSS和Cepstrum算法，并学习Bitwig Loud Split加入了Rise Fall控制参数，尝试以此分离非谐波性的瞬态和噪音，使谐波的分离更加稳定、精确、减少伪影。同时重做了Interface的逻辑，将每个Spectral Gate Band的逻辑改为了由一个Main Threshold进行总控制，使用Spacing旋钮调整每个Band的Threshold之间的响度差，并通过Tilt为高/低频的Threshold进行补偿。还新增了[<strong>Focus</strong> (<code>focus</code>) | 频带交叉锐度 | 大值=频带边界清晰但可能跳变；小值=过渡平滑]参数以强调乐音信号。现版本中暂时去掉了包络补偿算法，因为其与Cepstrum和HPSS在打架..残念。新版本的Max For live插件的实现与UI由闫开完成，+rep
++rep
 
 <br><br>
 
