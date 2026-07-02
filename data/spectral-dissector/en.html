@@ -2,41 +2,15 @@ Co-created with Yan Kai.
 
 <br><br>
 
-Spectral Dissector is a sound-processing tool. It takes any incoming sound and breaks it down into ten independent "layers," each of which can be switched on or off on its own and routed to a different destination.
+Spectral Dissector is a fundamental-frequency, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum, inspired by analog filterbanks, SPEAR, Bitwig Loud Split, Bitwig Harmonic Split, Ircam iana~, and others. I have always loved using filterbanks to decompose sound in the frequency domain and recombine it, and I wanted a more precise tool for doing so — I wanted to separate a sound's fundamental, first, second, third harmonics and so on in real time and with precision. The work's original form was a set of six parallel Spectral Gates whose thresholds were chained end to end, controlled by six interrelated thresholds. Figure 1 shows a screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device. The first version was completed around June 2025.
+
+<img src="img/spectral-dissector-1.webp" alt="Screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0 4px">
+<div style="text-align:center;font-size:12px;color:#666;letter-spacing:0.5px">Figure 1</div>
 
 <br><br>
 
-Most tools for processing sound carve it up by "pitch" — separating lows from highs. Spectral Dissector takes a different path: rather than asking how high or low a sound is, it asks what it is made of. At any single moment, a sound is in fact many components layered together: the sustained, stable tones; the fleeting percussive strikes; and the noise that always lingers at the bottom. The work cuts precisely along the boundaries between these components, dissecting a complete sound into eight layers of sustained tones graded from strongest to weakest, plus one layer of noise and one layer of percussion.
+In April 2026 I refactored the plugin's architecture: I introduced HPSS and Cepstrum algorithms and, learning from Bitwig Loud Split, added a Rise/Fall control parameter, attempting thereby to separate non-harmonic transients and noise so that harmonic separation becomes more stable, precise, and free of artifacts. At the same time I reworked the interface logic: the per-band logic of each Spectral Gate Band was changed to be governed overall by a single Main Threshold, with a Spacing knob adjusting the loudness difference between each band's threshold, and Tilt compensating the thresholds for high and low frequencies. I also added a [<strong>Focus</strong> (<code>focus</code>) | band-crossing sharpness | large value = clear band boundaries but possible discontinuities; small value = smooth transitions] parameter to emphasize tonal signals. In the current version the envelope-compensation algorithm has been temporarily removed because it conflicts with Cepstrum and HPSS.. too bad. The implementation and UI of the new Max for Live device were done by Yan Kai, +rep
 
 <br><br>
 
-The word "Dissector" is borrowed from anatomy. Just as a dissector opens up a body to reveal its internal structure, Spectral Dissector opens up a sound, letting the components that were formerly layered together and masking one another emerge each on its own. Once separated, each layer no longer blurs into the rest — it can be heard alone, sent away alone, dealt with alone. The work inverts the very starting point of "mixing": instead of bringing multiple sounds together, it first takes a single sound completely apart — to see clearly what it is actually made of.
-
-<br><br>
-
-As a Max for Live device, Spectral Dissector turns the idea above into a set of knobs you can actually operate. Its controls fall into a few groups: one decides “what counts as a layer,” another decides “what is a sustained tone, what is a momentary strike, what is noise,” another decides how quickly the layers respond, and the last decides where each layer goes once it has been separated.
-
-<br><br>
-
-First, the parameters that decide what counts as a layer. Threshold is the overall sensitivity — it sets how loud a sound must be to count as “the strongest layer.” Raise it and only the most forceful moments get singled out; lower it and the dissection reaches deeper, pulling quieter material into the active layers. Spacing is the drop between adjacent layers: wider spacing makes each layer more exclusive, a sound must be clearly louder than the one below to rise a level; narrower spacing and the layers crowd together, cutting the sound into finer steps of loudness. Focus is the sharpness of the boundary between layers — low focus and they bleed into one another softly; high focus and the cuts are decisive, each layer holding its own ground, the difference between a soft brush and a scalpel. The Band 1–7 Offsets nudge the threshold of a single layer: on top of the global settings you can lift or drop one particular layer, pulling it forward or pushing it back.
-
-<br><br>
-
-Next, the parameters that separate tone, percussion, and noise. Blur is how much the tool remembers the recent past: more blur and it reacts slowly, transients get smoothed over and more sound is treated as sustained tone; less blur and it reacts instantly, sharp hits breaking free as percussion — it sets the tool’s sense of inertia. Perc decides how tightly the percussion layer gathers its transient energy: higher and only the sharpest, most pinpoint attacks are peeled off as percussion; lower and the percussion layer swells to include broader, softer impacts — it tunes what counts as a hit. Gate draws the line between “real sound” and “noise”: a higher gate is stricter, only clear, deliberate sound reaches the tonal layers while everything hazy is shunted into the noise band; a lower gate is more forgiving, letting faint, ambiguous material stay with the tones. Detail is how finely the tool perceives the sound’s contour when judging the noise floor: more detail and it tracks the sound closely; less and it sees a smoother, averaged picture.
-
-<br><br>
-
-Then the speed of response. Slide Rise and Slide Fall govern how quickly each layer reacts when sound enters and leaves it: fast rise and the layer snaps on the moment its sound appears; slow rise and it eases in. Fast fall and the layer lets go the instant the sound is gone; slow fall and it lingers. Together they set the tempo of the dissection itself — alert and twitchy, or relaxed and breathing.
-
-<br><br>
-
-Finally, the overall lean and what to do with the separated layers. Tilt is a bias across the whole spectrum: lean it toward the lows and the bass is treated as more prominent, pulled into the upper layers; lean toward the highs and the treble takes precedence — it lets you weight the dissection toward the part of the spectrum you care about. Dry is the original sound running alongside: keep it on to compare the whole against its parts; mute it to hear only what the dissection has separated. And each layer can be switched on or off on its own and routed to a different destination — solo a layer to hear it alone, mute the ones you don’t need, send the percussion to its own track, route the noise somewhere else entirely. The separated parts become a working palette. Beyond that, nearly every parameter above can be set to move on its own in a slow cyclic modulation, breathing or sweeping, so the dissection never sits frozen at one moment.
-
-<br><br>
-
-To dissect a sample from scratch, the order runs roughly like this. First feed the sample into the device and start playback, with Dry on so you hear the original. The first step is Threshold — find the point where the loudest part of the sample just registers as the top layer; this calibrates the whole scale to your material. Next, Spacing decides how the remaining layers stack beneath: widen it for clear, distinct layers, narrow it for a finer gradient. Then use Focus to set whether the boundaries are soft or hard. If the sample carries strong transients (drums, plucks, strikes), use Blur to decide how much stays as tone versus breaks off as percussion, and shape that percussion layer with Perc. Then set Gate to separate deliberate sound from the noise floor — especially important with noisy or lo-fi material. Use Slide Rise/Fall to dial in the responsiveness you want. If you want to lean toward bass or treble, move Tilt. Then fine-tune layer by layer with the Band Offsets, bringing the layer you care about forward and pushing the rest back. Finally, start muting and soloing — turn off the noise, solo the percussion, route each layer where it should go. At this point the sample has been broken into its constituent parts, each ready to be heard or used on its own.
-
-<br><br>
-
-<span style="display:block;text-align:right">2026.06.29</span>
-<span style="display:block;text-align:right">Written by GLM-5.2</span>
+<span style="display:block;text-align:right">2026.07.02</span>

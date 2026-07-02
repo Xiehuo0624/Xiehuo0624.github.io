@@ -374,6 +374,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── riverrun.webp           卡片封面
 │   ├── riverrun-2.webp         项目页媒体区单图
 │   ├── spectral-dissector.webp
+│   ├── spectral-dissector-1.webp    项目页介绍内嵌图1（初版 M4L 截图）
 │   ├── spectral-dissector-2.webp    项目页顶部介绍图
 │   ├── the-fet-mixer.webp      卡片封面 + Gallery 首图共用
 │   ├── the-fet-mixer-2.webp
