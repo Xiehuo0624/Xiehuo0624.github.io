@@ -6,6 +6,12 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-07-22',
+      title: { zh: '青海之旅', en: 'Trip to Qinghai' },
+      body:  { zh: '7 月 17 日去青海玩了，7 月 24 日回上海。青海非常美丽。', en: 'I went to Qinghai on July 17 and will return to Shanghai on July 24. Qinghai is very beautiful.' },
+      media: ''
+    },
+    {
       date: '2026-07-04',
       title: { zh: '修复 SPECTRAL DISSECTOR 工程的 Cepstrum 算法 bug', en: 'Fixed a Cepstrum algorithm bug in the SPECTRAL DISSECTOR project' },
       body:  { zh: '修复了 SPECTRAL DISSECTOR 工程中 Cepstrum（倒谱）算法的一个 bug。Cepstrum 在该插件中用于基频提取与谐波分离，此前该 bug 会导致谐波分离结果异常，现已修正。同时在项目介绍末尾新增一段（日期 2026.07.04）：「I hate Cepstrum.」（中英文页面均保留英文原文，不作翻译）。', en: 'Fixed a bug in the Cepstrum algorithm of the SPECTRAL DISSECTOR project. Cepstrum is used in the plugin for fundamental-frequency extraction and harmonic separation; the bug previously caused abnormal harmonic-separation results and has now been corrected. Also appended a new paragraph (dated 2026.07.04) to the end of the project introduction: "I hate Cepstrum." (kept in English on both the Chinese and English pages, not translated).' },
