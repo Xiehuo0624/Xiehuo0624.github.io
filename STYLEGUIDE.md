@@ -84,6 +84,7 @@
 
 | 卡片 | 封面图 | 说明 |
 |------|--------|------|
+| the-just-type-study | `img/the-just-type-study.webp` | |
 | the-fet-mixer | `img/the-fet-mixer.webp` | 实物照片 |
 | riverrun | `img/riverrun.webp` | |
 | edgedgedge | `img/edgedgedge.webp` | 拍摄者：段立言 |
@@ -360,12 +361,16 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── the-fet-mixer/
 │   │   ├── zh.html
 │   │   └── en.html
+│   ├── the-just-type-study/
+│   │   ├── zh.html
+│   │   └── en.html
 │   └── wwhbh/
 │       ├── zh.html
 │       └── en.html
 │
 ├── audio/                        音频资源
-│   └── ecce-homo.m4a
+│   ├── ecce-homo.m4a
+│   └── the-just-type-study.m4a
 │
 ├── img/                         图片资源（部署用 WebP，原图留档于 originals/）
 │   ├── ecce-homo.webp
@@ -379,6 +384,8 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── the-fet-mixer.webp      卡片封面 + Gallery 首图共用
 │   ├── the-fet-mixer-2.webp
 │   ├── the-fet-mixer-3.webp
+│   ├── the-just-type-study.webp        卡片封面
+│   ├── the-just-type-study-still.webp  项目页顶部图（Ecce 布局）
 │   ├── wwhbh.webp
 │   └── originals/             原图留档（不部署，.gitignore 排除）
 │

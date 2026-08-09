@@ -48,7 +48,14 @@
 .ecce-still{width:100%;max-width:800px;border-bottom:3px solid #000;display:block}
 .ecce-audio{width:100%;max-width:800px;display:block;margin:0;padding:0}
 .ecce-text{padding:24px 0 0;max-width:800px;width:100%}
-.ecce-text p{line-height:2.4;font-size:14px;letter-spacing:0.5px}
+.ecce-text #ecce-desc{line-height:2.4;font-size:14px;letter-spacing:0.5px}
+
+/* Teletype scene display (The JustType Study) */
+.tt-wrap{width:100%;margin:8px 0 0;line-height:1.5}
+.tt-block{font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace;font-size:13px;line-height:1.7;white-space:pre;overflow-x:auto;background:#f4f4f4;color:#000;padding:16px 18px;border:1px solid #e4e4e4;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06);margin:0 0 16px}
+.tt-block .tt-h{font-weight:700}
+.tt-download{display:inline-block;margin-top:4px;font-size:13px;letter-spacing:0.5px;color:#000;text-decoration:none;border-bottom:1px solid #000}
+.tt-download:hover{background:#000;color:#fff}
 
 /* ===== EDGE layout ===== */
 .edge-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}

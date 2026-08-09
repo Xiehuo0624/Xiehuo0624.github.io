@@ -1,0 +1,81 @@
+这是我为2026年7月24日的演出设计的Eurorack模块合成器系统，它的尺寸是3+1U，64HP。这个系统包含了一块Monome Teletype的Clone，它是有自己编程语言的编程模块，可以自己设计Script来创作编程音乐；一块Mannequins Just Friends，它是一块数字振荡器，可以经由I2C协议由Teletype进行数字控制；一块Holocene AWMS，这是一块Radio、LFO与SnH；一块Holocene Seiche，这是一块Complex Dual Filters；一块khiat v.dws，这是一块将类似马特诺音波琴拉环的拉线位移传感器转化为电压输出的控制模块；一块sarnesjo设计的1U Nearness Mixer来提供带有Panning的Mixing，一块1U Pico FX来提供Reverb，一块1U的有源Output模块。Pico FX与Output来自fm.things，由我的朋友qoɔ.制作。
+
+<br><br>
+
+这个系统的设计出发点为学习Teletype如何使用：这是我过去两年中一直计划做却始终没有做的事情；制作一些让大部分人都可以接受的悦耳的音乐；以及在我并不常使用的小系统中设计一次Live Set。我不知道为什么长期以来拥有Teletype却始终没有兴趣学习它，可能因为它过于Menu Diving，有很高的学习成本，并且一直以来它并不在我的工作流中。我一直以来创作作品都将通俗的可听性置于非常低的优先级，所以我的演出往往难以被大部分人所接受。部分原因来源于我通俗音乐设计能力和学习的缺失，另一方面原因来源于我在创作的时候并不从可听性的角度设计作品。最后，我往往习惯于使用如24U 104HP的大系统进行创作，考虑到在未来我计划去欧洲学习声音艺术，且携带这样巨大的系统是不切实际的，我有必要学习如何在小系统的各类限制下设计我的模块合成器系统。
+
+<br><br>
+
+在这个系统中，我效仿Instruō harmonàig逻辑，设计了一个只需要输入根音即可设计和弦的脚本，并且（在一位不愿透露姓名的朋友的帮助下）设计了一个和声进行，让Just Friends的输出3-6根据这个和声进行输出柱式和弦。3-6输出的每个输出之间有细微的时间差，将输出的时间差按照这些接口在Nearness上的Panning关系进行设计，我得到了"从左到右被触发"的Organic的柱式和弦。输出1-2为旋律输出，它们的音高为八度关系。旋律的音高由v.dws这款拉环模块输出的电压，输入到Teletype的CV in，使用量化脚本，量化为当前和弦的和弦内音。当输入电压改变时，旋律会被触发，当输入电压长时间不改变时，旋律将会终止。我还设计了一组有节奏的Trigger输出来Ping Seiche的两个Filter，以此设计了打击乐，而AWMS提供了Radio输出、LFO、SnH来帮助这个系统更有呼吸感。
+
+<br><br>
+
+这个系统的Patching是非常简单和一目了然的，Teletype的Script我将会提供在这里，供有需要的人参考和使用。非常抱歉，但是我没怎么写介绍和注释。
+
+<br><br>
+
+<div class="tt-wrap">
+<pre class="tt-block"><span class="tt-h">M:</span>
+EVERY 4: $ 2
+K O; $ 1
+I ER 3 16 K; J ER 17 32 K
+IF I: CV 1 N RRND 0 3; TR.P 1
+IF J: TR.P 2
+
+<span class="tt-h">I:</span>
+JF.MODE 1
+JF.VTR 0 V 3
+JF.VTR 1 V 2; JF.VTR 2 VV 150
+M 50; M.ACT 1
+PN.WRAP 0 1; PN.I 0 -1
+TR.TIME 1 100; TR.TIME 2 100
+
+<span class="tt-h">1:</span>
+X DIV IN 1024
+I MOD X 4
+J N MUL 12 ADD 2 DIV X 4
+C ADD N.C B Z I J
+$ 7
+
+<span class="tt-h">2:</span>
+T MOD ADD T 1 16
+IF EZ ER 2 16 T: BREAK
+R PN.NEXT 0; $ 3; $ 6
+
+<span class="tt-h">3:</span>
+B R; Z 0
+Y WRAP R 0 11
+IF EQ Y 7: Z 2
+IF EQ Y 11: Z 6
+IF EQ MOD Y 7 2: Z 1
+IF EQ Y 4: Z 1
+
+<span class="tt-h">4:</span>
+L 3 6: JF.TR I 1
+DEL 50: $ 5
+
+<span class="tt-h">5:</span>
+L 3 6: JF.TR I 0
+
+<span class="tt-h">6:</span>
+JF.PITCH 5 N.C R Z 2
+DEL 10: JF.PITCH 3 N.C R Z 0
+DEL 20: JF.PITCH 4 N.C R Z 1
+DEL 40: JF.PITCH 6 N.C R Z 3
+$ 4
+
+<span class="tt-h">7:</span>
+IF NE X A: $ 8
+IF EQ D 1: JF.TR 1 0
+IF EQ D 1: JF.TR 2 0
+IF GT D 0: D SUB D 1
+A X
+
+<span class="tt-h">8:</span>
+D 40
+JF.PITCH 1 - C N 12
+JF.PITCH 2 - C N 24
+JF.TR 1 1
+JF.TR 2 1</pre>
+<a class="tt-download" href="data/the-just-type-study/tt20s.txt" download>↓ 下载完整 Teletype Scene（tt20s.txt）</a>
+</div>

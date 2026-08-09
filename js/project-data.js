@@ -1,5 +1,14 @@
 /* ===== PROJECT DATA ===== */
 App.projects = {
+  'the-just-type-study': {
+    layout: 'ecce',
+    title: { zh:'The JustType Study', en:'The JustType Study' },
+    brief: { zh:'以JustType为核心的模块乐器系统设计', en:'A modular instrument system designed around JustType' },
+    desc: { file: true },
+    media: { type: 'image', src: 'img/the-just-type-study-still.webp' },
+    audio: 'audio/the-just-type-study.m4a'
+  },
+
   'the-fet-mixer': {
     layout: 'gallery',
     title: { zh:'THE FET MIXER', en:'THE FET MIXER' },
@@ -51,6 +60,7 @@ App.projects = {
 
 /** 作品显示顺序（从新到旧） */
 App.projectOrder = [
+  'the-just-type-study',
   'the-fet-mixer',
   'riverrun',
   'edgedgedge',

@@ -12,5 +12,6 @@ App.INDEX_I18N = {
   cardFetMixer:{ zh:'THE FET MIXER',                               en:'THE FET MIXER' },
   cardRiverrun:{ zh:'riverrun',                                     en:'riverrun' },
   cardEcce:    { zh:'瞧！这个人',                         en:'ECCE HOMO' },
-  cardWwbh:    { zh:'我们将会曾经在这里',                 en:'WE WILL HAVE BEEN HERE' }
+  cardWwbh:    { zh:'我们将会曾经在这里',                 en:'WE WILL HAVE BEEN HERE' },
+  cardJustType:{ zh:'The JustType Study',                 en:'The JustType Study' }
 };

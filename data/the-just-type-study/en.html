@@ -1,0 +1,81 @@
+This is a Eurorack modular synthesizer system I designed for a performance on July 24, 2026; it is 3+1U, 64HP. The system contains a Monome Teletype clone — a programming module with its own scripting language that lets you write your own scripts to create algorithmic music; a Mannequins Just Friends — a digital oscillator that can be digitally controlled over I2C by the Teletype; a Holocene AWMS — a Radio, LFO and S&H; a Holocene Seiche — a complex dual filter; a khiat v.dws — a control module that converts a wire displacement sensor, like the ring of the Ondes Martenot, into a voltage output; a 1U Nearness Mixer designed by sarnesjo to provide mixing with panning; a 1U Pico FX to provide reverb; and a 1U active output module. The Pico FX and Output are from fm.things, made by my friend qoɔ.
+
+<br><br>
+
+The starting points for designing this system were: learning how to use the Teletype — something I had been planning to do for the past two years but never actually did; making some pleasant music that most people can accept; and designing a live set within a small system I don't often use. I don't know why I've long owned a Teletype yet never felt like learning it — perhaps because it is too menu-diving, has a high learning cost, and has never really been part of my workflow. I've always placed popular accessibility very low on my list of priorities when creating works, so my performances are often hard for most people to accept. Part of the reason is my lack of skill and study in popular music design; another part is that I don't approach composition from the angle of listenability. Lastly, I'm used to working with large systems like 24U 104HP; considering that I plan to go study sound art in Europe in the future, and that carrying such a huge system is impractical, I need to learn how to design my modular system under the various constraints of a small system.
+
+<br><br>
+
+In this system, emulating the logic of the Instruō harmonàig, I wrote a script that builds chords from only a root-note input, and (with the help of an anonymous friend) designed a chord progression so that Just Friends outputs 3-6 play block chords following that progression. Outputs 3-6 each trigger with a slight time offset; by designing those time offsets to match the panning positions of those jacks on the Nearness, I arrived at "left-to-right-triggered" organic block chords. Outputs 1-2 carry the melody, their pitches an octave apart. The melody's pitch comes from the voltage output of the v.dws ring module, fed into the Teletype's CV in and run through a quantization script that snaps it to chord tones of the current chord. When the input voltage changes, the melody is triggered; when it stays unchanged for a long time, the melody stops. I also designed a set of rhythmic trigger outputs to ping the two filters on the Seiche, giving me percussion, while the AWMS supplies Radio output, LFO and S&H to help the system breathe.
+
+<br><br>
+
+The patching of this system is very simple and clear at a glance. I'll provide the Teletype script here for anyone who needs it to reference and use. I'm sorry — I haven't written much explanation or commentary in it.
+
+<br><br>
+
+<div class="tt-wrap">
+<pre class="tt-block"><span class="tt-h">M:</span>
+EVERY 4: $ 2
+K O; $ 1
+I ER 3 16 K; J ER 17 32 K
+IF I: CV 1 N RRND 0 3; TR.P 1
+IF J: TR.P 2
+
+<span class="tt-h">I:</span>
+JF.MODE 1
+JF.VTR 0 V 3
+JF.VTR 1 V 2; JF.VTR 2 VV 150
+M 50; M.ACT 1
+PN.WRAP 0 1; PN.I 0 -1
+TR.TIME 1 100; TR.TIME 2 100
+
+<span class="tt-h">1:</span>
+X DIV IN 1024
+I MOD X 4
+J N MUL 12 ADD 2 DIV X 4
+C ADD N.C B Z I J
+$ 7
+
+<span class="tt-h">2:</span>
+T MOD ADD T 1 16
+IF EZ ER 2 16 T: BREAK
+R PN.NEXT 0; $ 3; $ 6
+
+<span class="tt-h">3:</span>
+B R; Z 0
+Y WRAP R 0 11
+IF EQ Y 7: Z 2
+IF EQ Y 11: Z 6
+IF EQ MOD Y 7 2: Z 1
+IF EQ Y 4: Z 1
+
+<span class="tt-h">4:</span>
+L 3 6: JF.TR I 1
+DEL 50: $ 5
+
+<span class="tt-h">5:</span>
+L 3 6: JF.TR I 0
+
+<span class="tt-h">6:</span>
+JF.PITCH 5 N.C R Z 2
+DEL 10: JF.PITCH 3 N.C R Z 0
+DEL 20: JF.PITCH 4 N.C R Z 1
+DEL 40: JF.PITCH 6 N.C R Z 3
+$ 4
+
+<span class="tt-h">7:</span>
+IF NE X A: $ 8
+IF EQ D 1: JF.TR 1 0
+IF EQ D 1: JF.TR 2 0
+IF GT D 0: D SUB D 1
+A X
+
+<span class="tt-h">8:</span>
+D 40
+JF.PITCH 1 - C N 12
+JF.PITCH 2 - C N 24
+JF.TR 1 1
+JF.TR 2 1</pre>
+<a class="tt-download" href="data/the-just-type-study/tt20s.txt" download>↓ Download full Teletype scene (tt20s.txt)</a>
+</div>
