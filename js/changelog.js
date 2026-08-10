@@ -6,10 +6,22 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-08-10',
+      title: { zh: '更新作品简介：The JustType Study 与 SPECTRAL DISSECTOR', en: 'Updated work briefs: The JustType Study and SPECTRAL DISSECTOR' },
+      body:  { zh: '更新了作品列表页（works）的两条一句话简介：① 将 The JustType Study 的简介由「以JustType为核心的模块乐器系统设计」改为「以 JustType 为核心的模块合成器系统设计」（乐器→合成器）；② 为此前仅有标题无简介的 SPECTRAL DISSECTOR 补充简介：「基于频谱噪声门、HPSS 与倒谱的基频、谐波、瞬态与噪音分离插件」。', en: 'Updated two one-line briefs on the works list page: ① changed The JustType Study\'s brief from "a modular instrument system designed around JustType" to "a modular synthesizer system designed around JustType" (instrument → synthesizer); ② added a brief for SPECTRAL DISSECTOR, which previously had only a title: "a fundamental, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum".' },
+      media: ''
+    },
+    {
       date: '2026-08-09',
       title: { zh: '新增作品《The JustType Study》', en: 'Added new work "The JustType Study"' },
       body:  { zh: '新增作品页「The JustType Study」，采用 Ecce 布局（顶部封面图 + HTML5 音频 + 文字）。封面原图（1930×1448 JPEG）按图片压缩规范转为两档 WebP（q80）：首页卡片封面 img/the-just-type-study.webp（1200px 宽）与项目页顶部图 img/the-just-type-study-still.webp（1600px 宽），原图留档 img/originals/。录音由 08.09.wav（2ch/48kHz/Int16 PCM，约 22 分 51 秒）以与 ecce-homo.m4a 相同的标准压缩为 AAC-LC m4a：双声道、48000 Hz、实际码率约 178 kbps（实测 178217 bps，与 ecce-homo 的 178900 bps 一致），输出 audio/the-just-type-study.m4a（约 30MB，沿用 preload="none" 点播放才拉取）。在 js/project-data.js 注册项目并置于 projectOrder 首位（最新），首页 index.html 增加对应卡片与 js/index-i18n.js 的 cardJustType 文案。同时撰写了中英文作品介绍（data/the-just-type-study/{zh,en}.html）；介绍末尾以代码块（等宽字体、灰底阴影）形式附上 Teletype Scene 脚本（M、I、1-8 各段，段首标注 M:/I:/N:），并附完整场景文件 data/the-just-type-study/tt20s.txt 的下载链接。作品列表页（works）为其配有一句话简介：以JustType为核心的模块乐器系统设计。', en: 'Added a new work page "The JustType Study" using the Ecce layout (top cover image + HTML5 audio + text). The cover original (1930×1448 JPEG) was compressed to two WebP variants per the image spec (q80): a homepage card cover img/the-just-type-study.webp (1200px wide) and a project-page top image img/the-just-type-study-still.webp (1600px wide); the original is archived under img/originals/. The recording was compressed from 08.09.wav (2ch/48kHz/Int16 PCM, ~22:51) to AAC-LC m4a using the same standard as ecce-homo.m4a: stereo, 48000 Hz, actual bitrate ~178 kbps (measured 178217 bps, matching ecce-homo\'s 178900 bps), output as audio/the-just-type-study.m4a (~30MB, reusing preload="none" so it is fetched only on play). Registered the project in js/project-data.js and placed it first in projectOrder (newest); added the matching card to index.html and the cardJustType string to js/index-i18n.js. Also wrote the Chinese and English project description (data/the-just-type-study/{zh,en}.html); the Teletype scene script (sections M, I, 1-8, each headed M:/I:/N:) is appended at the end of the description in a monospace code block with a shaded background, along with a download link for the full scene file data/the-just-type-study/tt20s.txt. The works list page includes a one-line brief for it: a modular instrument system designed around JustType.' },
       media: 'img/the-just-type-study.webp'
+    },
+    {
+      date: '2026-08-05',
+      title: { zh: '观看了电影《痴迷》', en: 'Watched the film Obsession' },
+      body:  { zh: '观看了电影《痴迷》（Obsession）。真的好恐怖啊，对这种细节非常丰满的心理恐怖电影完全没有抵抗力……', en: 'Watched the film Obsession. Truly terrifying — I have no resistance whatsoever to this kind of psychological horror film, so richly textured in its details...' },
+      media: ''
     },
     {
       date: '2026-07-22',
