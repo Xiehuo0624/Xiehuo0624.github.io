@@ -3,7 +3,7 @@ App.projects = {
   'the-just-type-study': {
     layout: 'ecce',
     title: { zh:'The JustType Study', en:'The JustType Study' },
-    brief: { zh:'以JustType为核心的模块乐器系统设计', en:'A modular instrument system designed around JustType' },
+    brief: { zh:'以 JustType 为核心的模块合成器系统设计', en:'A modular synthesizer system designed around JustType' },
     desc: { file: true },
     media: { type: 'image', src: 'img/the-just-type-study-still.webp' },
     audio: 'audio/the-just-type-study.m4a'
@@ -37,6 +37,7 @@ App.projects = {
   'spectral-dissector': {
     layout: 'ecce',
     title: { zh:'SPECTRAL DISSECTOR', en:'SPECTRAL DISSECTOR' },
+    brief: { zh:'基于频谱噪声门、HPSS 与倒谱的基频、谐波、瞬态与噪音分离插件', en:'A fundamental, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum' },
     desc:  { file: true },
     media: { type: 'image', src: 'img/spectral-dissector-2.webp' }
   },
