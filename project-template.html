@@ -19,6 +19,7 @@
 <script defer src="js/project-i18n.js"></script>
 <script defer src="js/project-data.js"></script>
 <script defer src="js/audio-wwhbh.js"></script>
+<script defer src="js/mixer-riverrun.js?v=3"></script>
 <script defer src="js/project.js"></script>
 </head>
 <body>
@@ -60,6 +61,27 @@
   <div class="edge-body">
     <h2 id="edge-title"></h2>
     <p id="edge-desc"></p>
+  </div>
+</div>
+
+<!-- riverrun: interactive spatial mixer (recreates The FET Mixer) -->
+<div class="mixer-panel" id="layout-mixer">
+  <div class="mixer-header">
+    <h2 id="mixer-title"></h2>
+  </div>
+  <div class="mixer-body">
+    <div class="mixer-stage" id="mixer-stage">
+      <canvas class="mixer-canvas" id="mixer-canvas"></canvas>
+
+      <div class="mixer-hud">
+        <button class="btn-mixer-sm" id="mixer-stop" data-i18n="mixerStop">STOP</button>
+      </div>
+
+      <div class="mixer-center" id="mixer-center">
+        <button class="btn-mixer" id="mixer-toggle" data-i18n="mixerStart">START MIXING</button>
+      </div>
+    </div>
+    <div class="mixer-desc" id="mixer-desc"></div>
   </div>
 </div>
 

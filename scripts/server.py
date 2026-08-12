@@ -5,6 +5,13 @@ import http.server, ssl, os, re, sys
 class RangeHandler(http.server.SimpleHTTPRequestHandler):
     """SimpleHTTPRequestHandler with HTTP Range request support."""
 
+    def end_headers(self):
+        # 开发环境：HTML/JS/CSS 禁用缓存，保证手机等设备每次拿到最新代码；
+        # 音频（m4a）保持可缓存，避免重复下载 17MB
+        if self.path.split('?')[0].endswith(('.html', '.js', '.css')):
+            self.send_header('Cache-Control', 'no-cache')
+        super().end_headers()
+
     def send_head(self):
         if 'Range' in self.headers:
             return self.send_range_head()
@@ -78,7 +85,8 @@ if __name__ == '__main__':
     project_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
     os.chdir(project_root)
 
-    server = http.server.HTTPServer(('0.0.0.0', port), RangeHandler)
+    server = http.server.ThreadingHTTPServer(('0.0.0.0', port), RangeHandler)
+    # 多线程：单个客户端连接卡住（如流式下载中暂停）时不再阻塞整个服务器
 
     if use_ssl:
         cert_dir = os.path.dirname(os.path.abspath(__file__))

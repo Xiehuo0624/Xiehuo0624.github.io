@@ -107,6 +107,38 @@
   .gallery-slider{height:46vh;max-height:380px;min-height:240px}
 }
 
+/* ===== MIXER layout (riverrun) ===== */
+.mixer-panel{display:none;flex-direction:column;height:100vh;height:100dvh;padding:76px 20px 18px;gap:10px;overflow:hidden;max-width:1080px;margin:0 auto;width:100%}
+.mixer-header{padding:0 4px}
+.mixer-header h2{font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
+.mixer-panel.lowercase .mixer-header h2{text-transform:none;letter-spacing:1px}
+.mixer-body{display:flex;flex:1;min-height:0;gap:14px}
+.mixer-stage{position:relative;flex:1;min-width:0;border:3px solid #000;background:#fff;overflow:hidden}
+.mixer-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+/* 说明列：桌面在右侧（与交互框纵向对齐），手机在交互下方 */
+.mixer-desc{width:380px;flex:none;border:3px solid #000;background:#fff;overflow-y:auto;padding:14px 16px 20px;font-size:13px;line-height:1.85;letter-spacing:0.3px}
+.mixer-desc p{margin-bottom:14px}
+.mixer-desc .project-related{margin-top:24px}
+.mixer-hud{position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.5px;z-index:3}
+.btn-mixer-sm{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:2px solid #000;background:#fff;color:#000;padding:6px 10px;cursor:pointer}
+.btn-mixer-sm:hover{background:#000;color:#fff}
+#mixer-stop{display:none}
+.mixer-center{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.5)}
+.btn-mixer{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:3px solid #000;background:#000;color:#fff;padding:14px 28px;cursor:pointer}
+.btn-mixer:hover{background:#fff;color:#000}
+.btn-mixer:disabled{opacity:.6;cursor:default}
+
+@media(max-width:768px){
+  .mixer-panel{flex-direction:column;height:auto;min-height:100dvh;padding:64px 12px 48px;gap:8px;overflow:visible;max-width:none;margin:0}
+  .mixer-body{display:flex;flex-direction:column;flex:none;gap:8px}
+  .mixer-header h2{font-size:15px}
+  .mixer-stage{height:40dvh;flex:none}
+  .mixer-desc{width:auto;flex:none;border:none;background:transparent;overflow:visible;padding:6px 2px 0;font-size:12.5px;line-height:1.85}
+  .btn-mixer{font-size:13px;padding:12px 22px}
+  .mixer-hud{top:8px;right:8px;gap:6px}
+  .btn-mixer-sm{font-size:10px;padding:5px 8px}
+}
+
 /* ===== GALLERY LIGHTBOX ===== */
 .lightbox{
   position:fixed;inset:0;z-index:200;

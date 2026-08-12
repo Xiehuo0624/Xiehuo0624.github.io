@@ -3,8 +3,8 @@
   const urlParams = new URLSearchParams(location.search);
   const projectId = urlParams.get('project');
   const project   = App.projects[projectId];
-  const layoutMap = { grid:'layout-grid', ecce:'layout-ecce', wwhbh:'layout-wwhbh', edge:'layout-edge', gallery:'layout-gallery' };
-  const hideSelector = '.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel,.gallery-panel';
+  const layoutMap = { grid:'layout-grid', ecce:'layout-ecce', wwhbh:'layout-wwhbh', edge:'layout-edge', gallery:'layout-gallery', mixer:'layout-mixer' };
+  const hideSelector = '.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel,.gallery-panel,.mixer-panel';
 
   App.renderBackNav();
 
@@ -30,6 +30,7 @@
   });
   const activeEl = document.getElementById(layoutMap[project.layout]);
   activeEl.style.display = (project.layout === 'grid') ? 'grid' : 'flex';
+  if (project.lowercase) activeEl.classList.add('lowercase');
 
   /* ---- get the desc element for the active layout ---- */
   function getDescEl(){
@@ -39,6 +40,7 @@
     if (layout === 'ecce')    return document.getElementById('ecce-desc');
     if (layout === 'edge')    return document.getElementById('edge-desc');
     if (layout === 'gallery') return document.getElementById('gallery-desc');
+    if (layout === 'mixer')  return document.getElementById('mixer-desc');
     return null;
   }
 
@@ -114,6 +116,8 @@
       }
     } else if (layout === 'wwhbh') {
       document.getElementById('wwhbh-title').textContent = t;
+    } else if (layout === 'mixer') {
+      document.getElementById('mixer-title').textContent = t;
     } else if (layout === 'ecce') {
       document.getElementById('ecce-title').textContent = t;
       /* render top image (+ optional audio) */
@@ -178,12 +182,21 @@
   App.I18n.init(App.PROJECT_I18N, () => {
     fillContent();
     if (projectId === 'wwhbh') App.refreshMicButton();
+    if (project.layout === 'mixer') App.refreshRiverrunMixer();
   });
   fillContent();
 
   /* ---- WWHBH audio ---- */
   if (projectId === 'wwhbh') {
     App.initMicButton(document.getElementById('btn-mic'));
+  }
+
+  /* ---- RIVERRUN spatial mixer ---- */
+  if (project.layout === 'mixer') {
+    App.initRiverrunMixer(document.getElementById('layout-mixer'), {
+      audioDir: project.audioDir,
+      tracks: project.tracks
+    });
   }
 
   /* ---- Gallery lightbox ---- */

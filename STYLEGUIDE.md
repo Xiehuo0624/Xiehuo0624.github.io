@@ -207,7 +207,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 ---
 
-## 7. Project 页 — 五种布局共用标准
+## 7. Project 页 — 六种布局共用标准
 
 ### 视频布局规则
 
@@ -305,9 +305,27 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 交互 | 点击空白/ESC 关闭；←/→ 切换；多图才显示导航钮 |
 | 逻辑位置 | `js/project.js` 的 `openLightbox()`，gallery 渲染时绑定 click |
 
+### 7f. Mixer 布局（riverrun 交互式空间混音）
+
+riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互逻辑：12 条音轨在 Canvas 面板上排布为带编号的黑点，点半径随响度脉动；光标（虚拟麦克风）离点越近该轨音量越大。全屏面板，Web Audio API 驱动。
+
+| 属性 | 桌面端 | 移动端 |
+|------|--------|--------|
+| 面板 `.mixer-panel` | 纵向：`flex-direction:column; height:100vh; max-width:1080px; margin:0 auto`（整体收窄居中，标题横跨顶部） | 上下分栏：`flex-direction:column; height:auto; min-height:100dvh; padding:64px 12px 48px; overflow:visible`（页面自然滚动） |
+| 内容行 `.mixer-body` | `flex:1`（行：舞台 + 说明列） | `flex-direction:column; flex:none` |
+| 标题区 `.mixer-header` | 横跨面板顶部，仅标题，无副标题 | 同左 |
+| 舞台 `.mixer-stage` | `flex:1; border:3px solid #000; position:relative`（与说明列纵向对齐等高） | `height:40dvh; flex:none` |
+| 说明列 `.mixer-desc` | 右侧 `width:380px; overflow-y:auto; border:3px solid #000`（与舞台纵向对齐） | 交互下方，无边框、透明背景、随页面滚动 |
+| Canvas `.mixer-canvas` | `position:absolute; inset:0; touch-action:none; cursor:crosshair` | 同左 |
+| 启动按钮 `.btn-mixer` | 黑底白字、`3px` 边框、居中覆盖 | `13px` 字号 |
+| HUD 控件 | 右上角仅 STOP | 同左 |
+| 增益 | 无 UI 控件：增益只由麦克风光标外圈半径 + 增益弧指示，桌面滚轮（wheel）调节、手机固定 100%、手写笔 pressure | 同左 |
+| 交互 | 鼠标常驻一只麦克风（滚轮调增益）；触控每指一只（手机固定增益 100%） | 同左 |
+| 逻辑位置 | `js/mixer-riverrun.js` 的 `App.initRiverrunMixer()`，`js/project.js` 的 mixer 分支初始化 | |
+
 > Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.images` 数组渲染，不在描述 HTML 中内嵌。
 
-> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
+> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
 
 ---
 
@@ -342,7 +360,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 │   ├── about.css              关于页
 │   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
-│   ├── project.css            项目页五种布局
+│   ├── project.css            项目页六种布局
 │   └── fonts/                 自托管 webfont（DejaVu Sans Mono + 思源黑体 SC + PlainZero woff2，子集化）
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
