@@ -148,11 +148,31 @@
       descEl.textContent = '…';
       fetch('data/' + projectId + '/' + App.I18n.currentLang + '.html')
         .then(r => r.ok ? r.text() : Promise.reject(r.statusText))
-        .then(html => { descEl.innerHTML = html; })
-        .catch(() => { descEl.textContent = ''; });
+        .then(html => { descEl.innerHTML = html; appendRelated(descEl); })
+        .catch(() => { descEl.textContent = ''; appendRelated(descEl); });
     } else {
       descEl.innerHTML = project.desc[App.I18n.currentLang];
+      appendRelated(descEl);
     }
+  }
+
+  /* ---- related works (cross-links, e.g. riverrun ↔ The FET Mixer) ---- */
+  function appendRelated(descEl){
+    if (!project.related || !project.related.length) return;
+    const lang = App.I18n.currentLang;
+    const wrap = document.createElement('div');
+    wrap.className = 'project-related';
+    project.related.forEach(r => {
+      const target = App.projects[r.id];
+      if (!target) return;
+      const a = document.createElement('a');
+      a.className = 'project-related-link';
+      a.href = 'project-template.html?project=' + r.id;
+      const role = r.role ? r.role[lang] + ' ' : '';
+      a.textContent = role + target.title[lang] + ' →';
+      wrap.appendChild(a);
+    });
+    descEl.appendChild(wrap);
   }
 
   App.I18n.init(App.PROJECT_I18N, () => {

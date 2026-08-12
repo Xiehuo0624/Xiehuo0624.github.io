@@ -22,7 +22,8 @@ App.projects = {
     title: { zh:'THE FET MIXER', en:'THE FET MIXER' },
     brief: { zh:'12输入4输出的空间混音器，基于电磁波传输与拾取', en:'A 12-in 4-out spatial mixer based on electromagnetic wave transmission and pickup' },
     desc: { file: true },
-    media: { type: 'gallery', images: ['img/the-fet-mixer.webp','img/the-fet-mixer-2.webp','img/the-fet-mixer-3.webp'] }
+    media: { type: 'gallery', images: ['img/the-fet-mixer.webp','img/the-fet-mixer-2.webp','img/the-fet-mixer-3.webp'] },
+    related: [ { id:'riverrun', role:{ zh:'应用于', en:'Used in' } } ]
   },
 
   'riverrun': {
@@ -31,7 +32,8 @@ App.projects = {
     lowercase: true,
     brief: { zh:'基于《芬尼根的守灵夜》与 The FET Mixer 的交互式声音装置', en:'An interactive sound installation based on Finnegans Wake and The FET Mixer' },
     desc: { file: true },
-    media: { type: 'image', src: 'img/riverrun-2.webp' }
+    media: { type: 'image', src: 'img/riverrun-2.webp' },
+    related: [ { id:'the-fet-mixer', role:{ zh:'本作品使用', en:'Created with' } } ]
   },
 
   'edgedgedge': {

@@ -27,6 +27,11 @@
 /* ===== shared ===== */
 .redact{background:#000;color:#000;padding:0 4px;letter-spacing:2px;margin:0 2px}
 
+/* related works cross-links */
+.project-related{margin-top:32px;display:flex;flex-direction:column;gap:6px}
+.project-related-link{display:inline-block;align-self:flex-start;font-size:13px;letter-spacing:0.5px;color:#000;text-decoration:none;border-bottom:1px solid #000;padding-bottom:2px}
+.project-related-link:hover{background:#000;color:#fff}
+
 /* ===== WWHBH layout ===== */
 .wwhbh-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
 .wwhbh-body{max-width:800px;width:100%;text-align:left}
