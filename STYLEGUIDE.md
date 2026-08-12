@@ -72,16 +72,15 @@
 | 水平偏移步长 | `22px`（卡片多时自动缩小，最大展开 `110px`） | `8px`（最大展开 `40px`） |
 | 垂直偏移步长 | `4px`（卡片多时自动缩小，最大展开 `20px`） | `2px`（最大展开 `10px`） |
 | 偏移方向 | 右下展开 `translate(+x, +y)` | 同左 |
-| 卡片居中偏移（`.stack-wrap`） | `translate(calc(-50% - 22px), calc(-50% - 28px))` | `translate(calc(-50% - 12px), calc(-50% - 28px))` |
+| 卡片居中偏移 | `translate(calc(-50% - 22px), calc(-50% - 28px))` | `translate(calc(-50% - 12px), calc(-50% - 28px))` |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
-| 卡片名称 `.card-name` | `position:absolute; bottom:calc(100% + 6px); left:0; z-index:3; font-size:12px; color:#888; opacity:0`，卡片子元素，仅 `.card.is-top` 显示；划动时随卡片飞出，新顶层卡片标题渐变出现 | `font-size:10px; bottom:calc(100% + 4px)` |
 | 动画 | `300ms ease-out`（所有卡片同步过渡） | 同左 |
 
 ### 卡片封面图
 
-每张卡片为 `card-fallback`（文字层，白底）+ `card-image`（图片层，`object-fit:cover` 盖住文字）+ `card-name`（名称层，卡片上方左对齐，仅顶层显示）三层结构；`.card` 设 `overflow:visible` 以露出上方的名称层。无图片的卡片仅显示文字 fallback。
+每张卡片为 `card-fallback`（文字层，白底）+ `card-image`（图片层，`object-fit:cover` 盖住文字）双层结构。无图片的卡片仅显示文字 fallback。
 
 | 卡片 | 封面图 | 说明 |
 |------|--------|------|

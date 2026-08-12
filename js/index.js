@@ -35,7 +35,6 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
       const fromTop = len - 1 - i;
       card.style.zIndex  = String(i + 1);
       card.style.transform = `translate(${fromTop * stepX}px, ${fromTop * stepY}px)`;
-      card.classList.toggle('is-top', fromTop === 0);
     });
   }
 
@@ -48,8 +47,6 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
     isAnimating = true;
 
     const top = stack.lastElementChild;
-    const newTop = stack.children[stack.children.length - 2];
-    if(newTop) newTop.classList.add('is-top');   // new caption fades in, in sync with the old one flying out
     top.style.transition = `transform ${ANIM_MS}ms ease-out`;
     top.style.transform  = 'translateX(-100vw)';
 
