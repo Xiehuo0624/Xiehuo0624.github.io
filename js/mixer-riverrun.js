@@ -138,11 +138,11 @@
       const rand = (a, b) => a + Math.random() * (b - a);
       const archetypes = [
         // ① 暗长：长延迟 + 低频衰减 EQ + 慢颤音 + 深 swell
-        { fb: rand(0.50, 0.65), delay: rand(0.60, 0.80), eqFreq: rand(300, 500),   eqGain: rand(-6, -4), tremF: rand(0.3, 0.5),  tremD: rand(0.06, 0.09), drive: rand(1.10, 1.25), swR: rand(0.15, 0.25), swBase: rand(0.45, 0.60), send: rand(0.32, 0.45) },
+        { fb: rand(0.28, 0.36), delay: rand(0.60, 0.80), eqFreq: rand(300, 500),   eqGain: rand(-6, -4), tremF: rand(0.3, 0.5),  tremD: rand(0.06, 0.09), drive: rand(1.10, 1.25), swR: rand(0.15, 0.25), swBase: rand(0.45, 0.60), send: rand(0.32, 0.45) },
         // ② 亮闪：短延迟 + 高频提升 EQ + 快颤音 + 浅 swell + 更多 drive
-        { fb: rand(0.42, 0.55), delay: rand(0.15, 0.28), eqFreq: rand(1500, 2500), eqGain: rand(3, 5),    tremF: rand(3.5, 5.0),  tremD: rand(0.03, 0.05), drive: rand(1.50, 1.70), swR: rand(0.50, 0.70), swBase: rand(0.75, 0.85), send: rand(0.20, 0.32) },
+        { fb: rand(0.24, 0.32), delay: rand(0.15, 0.28), eqFreq: rand(1500, 2500), eqGain: rand(3, 5),    tremF: rand(3.5, 5.0),  tremD: rand(0.03, 0.05), drive: rand(1.50, 1.70), swR: rand(0.50, 0.70), swBase: rand(0.75, 0.85), send: rand(0.20, 0.32) },
         // ③ 中雾：中延迟 + 平 EQ + 中速颤音
-        { fb: rand(0.46, 0.58), delay: rand(0.38, 0.52), eqFreq: rand(700, 900),   eqGain: rand(-1, 1),   tremF: rand(1.2, 1.8),  tremD: rand(0.04, 0.06), drive: rand(1.30, 1.45), swR: rand(0.30, 0.40), swBase: rand(0.60, 0.70), send: rand(0.26, 0.38) }
+        { fb: rand(0.26, 0.34), delay: rand(0.38, 0.52), eqFreq: rand(700, 900),   eqGain: rand(-1, 1),   tremF: rand(1.2, 1.8),  tremD: rand(0.04, 0.06), drive: rand(1.30, 1.45), swR: rand(0.30, 0.40), swBase: rand(0.60, 0.70), send: rand(0.26, 0.38) }
       ];
       const order = [0, 1, 2];
       for (let i = 2; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
@@ -524,23 +524,7 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
       }
 
-      // 高反馈共振点标记（虚线圈 + 菱形锚点）
-      if (fxZones && fxZones.length){
-        const Rz = Math.min(W, H) * 0.16;
-        ctx.lineWidth = 1;
-        for (const z of fxZones){
-          const zx = z.x * W, zy = z.y * H;
-          ctx.setLineDash([3, 5]);
-          ctx.strokeStyle = 'rgba(0,0,0,0.22)';
-          ctx.beginPath(); ctx.arc(zx, zy, Rz, 0, Math.PI * 2); ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-          const k = 6;
-          ctx.beginPath();
-          ctx.moveTo(zx, zy - k); ctx.lineTo(zx + k, zy); ctx.lineTo(zx, zy + k); ctx.lineTo(zx - k, zy); ctx.closePath();
-          ctx.stroke();
-        }
-      }
+      // 高反馈共振点标记（黑箱：不绘制，仅影响声音）
 
       // 拾音连线（点之下）——低端设备跳过以减负
       if (!LOW_END){
