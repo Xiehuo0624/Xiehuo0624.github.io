@@ -42,8 +42,8 @@
     let dryAn = null, fxAn = null, dryBuf = null, fxBuf = null;
     // 伪 reverse（swell 包络）
     let swellLfo = null, swellDepth = null, swellBaseSrc = null;
-    // 麦克风位置 → 效果器参数 的随机映射画像（每次启动重新生成）
-    let fxMap = null;
+    // 麦克风位置 → 效果器参数：3 个高反馈「共振点」音色（每次启动重新生成）
+    let fxZones = null;
     let tracks = [];                 // {el,src,analyser,gain,panner,smoothed,targetGain,wave,num,pos}
     let running = false, loading = false;
     let W = 0, H = 0, dpr = 1;
@@ -132,15 +132,21 @@
       for (let i = 0; i < n; i++){ c[i] = (i / (n - 1)); }
       return c;
     }
-    // 每次启动随机生成「麦克风位置 → 效果器参数」映射画像：
-    // 每个参数随机选坐标（ux / uy / 径向 r）与斜率方向（正/负）
-    function makeFxMap(){
-      const pick = () => ({ c: Math.floor(Math.random() * 3), dir: Math.random() < 0.5 ? -1 : 1 });
-      return {
-        send: pick(), fb: pick(), delay: pick(), eq: pick(),
-        tremFreq: pick(), tremAmt: pick(), drive: pick(),
-        swellRate: pick(), swell: pick()
-      };
+    // 每次启动随机生成 3 个「高反馈共振点」：位置随机；三个音色原型（暗长/亮闪/中雾）
+    // 在各自区间内随机取值，并按随机顺序分配到位置，保证每次启动音色点都不同
+    function makeFxZones(){
+      const rand = (a, b) => a + Math.random() * (b - a);
+      const archetypes = [
+        // ① 暗长：长延迟 + 低频衰减 EQ + 慢颤音 + 深 swell
+        { fb: rand(0.50, 0.65), delay: rand(0.60, 0.80), eqFreq: rand(300, 500),   eqGain: rand(-6, -4), tremF: rand(0.3, 0.5),  tremD: rand(0.06, 0.09), drive: rand(1.10, 1.25), swR: rand(0.15, 0.25), swBase: rand(0.45, 0.60), send: rand(0.32, 0.45) },
+        // ② 亮闪：短延迟 + 高频提升 EQ + 快颤音 + 浅 swell + 更多 drive
+        { fb: rand(0.42, 0.55), delay: rand(0.15, 0.28), eqFreq: rand(1500, 2500), eqGain: rand(3, 5),    tremF: rand(3.5, 5.0),  tremD: rand(0.03, 0.05), drive: rand(1.50, 1.70), swR: rand(0.50, 0.70), swBase: rand(0.75, 0.85), send: rand(0.20, 0.32) },
+        // ③ 中雾：中延迟 + 平 EQ + 中速颤音
+        { fb: rand(0.46, 0.58), delay: rand(0.38, 0.52), eqFreq: rand(700, 900),   eqGain: rand(-1, 1),   tremF: rand(1.2, 1.8),  tremD: rand(0.04, 0.06), drive: rand(1.30, 1.45), swR: rand(0.30, 0.40), swBase: rand(0.60, 0.70), send: rand(0.26, 0.38) }
+      ];
+      const order = [0, 1, 2];
+      for (let i = 2; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
+      return [0, 1, 2].map(i => ({ x: rand(0.18, 0.82), y: rand(0.18, 0.82), prof: archetypes[order[i]] }));
     }
 
     async function start(){
@@ -234,7 +240,7 @@
       tracks = [];
       shuffleSlots();              // 每次启动重新洗牌：音轨与槽位的对应关系随机化
       computePositions();
-      fxMap = makeFxMap();         // 每次启动随机：麦克风位置 → 效果器参数映射
+      fxZones = makeFxZones();     // 每次启动随机：3 个高反馈共振点（位置 + 音色）
       const made = [];
       for (let i = 0; i < TRACK_COUNT; i++){
         const el = new Audio();
@@ -424,33 +430,50 @@
         if (t){ t.targetGain = tg; if (running && audioCtx) t.gain.gain.setTargetAtTime(tg, now, 0.03); }
       }
 
-      /* ---- FX 参数由麦克风位置控制（黑箱）：离簇中心越近发送越多（背景越糊）---- */
+      /* ---- 高反馈共振点：麦克风靠近 3 个音色点之一时该点参数接管（距离加权混合），远处回退中性基础 ---- */
       if (fxSend && running){
         const mc = mics[0];                       // 控制器：第一只活跃麦克风（桌面=鼠标）
-        if (mc && fxMap){
-          let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
-          for (const p of positions){ if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x; if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y; }
-          const cxx = (minX + maxX) / 2, cyy = (minY + maxY) / 2;
-          const hw = Math.max(1, (maxX - minX) / 2), hh = Math.max(1, (maxY - minY) / 2);
-          const r = Math.sqrt(Math.pow((mc.x - cxx) / hw, 2) + Math.pow((mc.y - cyy) / hh, 2));
-          const ux = Math.max(0, Math.min(1, (mc.x - minX) / (maxX - minX || 1)));
-          const uy = Math.max(0, Math.min(1, (mc.y - minY) / (maxY - minY || 1)));
-          // 按本次随机画像取 0..1 的映射值（坐标 c: 0=ux / 1=uy / 2=径向 r；dir: 斜率方向）
-          const v = m => { const raw = m.c === 0 ? ux : m.c === 1 ? uy : Math.min(1, r); return m.dir === 1 ? raw : 1 - raw; };
-          const M = fxMap;
-          // 发送量：恒有下限 0.08（drone 不静默），上限 0.5
-          fxSend.gain.setTargetAtTime(0.08 + 0.42 * v(M.send), now, 0.15);
-          fxFb.gain.setTargetAtTime(0.12 + 0.12 * v(M.fb), now, 0.3);            // 反馈恒有 12%–24%
-          fxDelay.delayTime.setTargetAtTime(0.28 + 0.34 * v(M.delay), now, 0.3); // 延迟 0.28–0.62s
-          fxEq.gain.setTargetAtTime((v(M.eq) - 0.5) * 6, now, 0.3);              // EQ ±3dB @520Hz
-          tremLfo.frequency.setTargetAtTime(0.6 + 2.4 * v(M.tremFreq), now, 0.3);// 颤音速率 0.6–3Hz
-          tremAmt.gain.setTargetAtTime(0.04 + 0.06 * v(M.tremAmt), now, 0.3);    // 颤音深度 4%–10%
-          fxDrivePre.gain.setTargetAtTime(1.15 + 0.45 * v(M.drive), now, 0.3);   // drive 输入增益 1.15–1.6
-          if (swellLfo){                                                        // 伪 reverse swell
-            swellLfo.frequency.setTargetAtTime(0.18 + 0.45 * v(M.swellRate), now, 0.3);
-            const pSw = v(M.swell);                                             // 谷底 0.5–0.8 / 深度 0.2–0.5
-            swellBaseSrc.offset.setTargetAtTime(0.5 + 0.3 * pSw, now, 0.3);
-            swellDepth.gain.setTargetAtTime(0.5 - 0.3 * pSw, now, 0.3);
+        if (mc && fxZones && fxZones.length){
+          const Rz = Math.min(W, H) * 0.16;       // 共振点拾取半径
+          let wsum = 0;
+          const mix = { fb:0, delay:0, eqFreq:0, eqGain:0, tremF:0, tremD:0, drive:0, swR:0, swBase:0, send:0 };
+          for (const z of fxZones){
+            const dz = Math.sqrt(Math.pow((mc.x - z.x * W) / Rz, 2) + Math.pow((mc.y - z.y * H) / Rz, 2));
+            const s = Math.max(0, 1 - dz);
+            const w = s * s * (3 - 2 * s);        // smoothstep 距离衰减权重
+            wsum += w;
+            const p = z.prof;
+            mix.fb += w * p.fb; mix.delay += w * p.delay; mix.eqFreq += w * p.eqFreq; mix.eqGain += w * p.eqGain;
+            mix.tremF += w * p.tremF; mix.tremD += w * p.tremD; mix.drive += w * p.drive;
+            mix.swR += w * p.swR; mix.swBase += w * p.swBase; mix.send += w * p.send;
+          }
+          if (wsum > 0.05){
+            // 靠近共振点：加权混合（feedback 高，音色各不相同）
+            fxSend.gain.setTargetAtTime(mix.send / wsum, now, 0.15);
+            fxFb.gain.setTargetAtTime(mix.fb / wsum, now, 0.25);
+            fxDelay.delayTime.setTargetAtTime(mix.delay / wsum, now, 0.25);
+            fxEq.frequency.setTargetAtTime(mix.eqFreq / wsum, now, 0.25);
+            fxEq.gain.setTargetAtTime(mix.eqGain / wsum, now, 0.25);
+            tremLfo.frequency.setTargetAtTime(mix.tremF / wsum, now, 0.25);
+            tremAmt.gain.setTargetAtTime(mix.tremD / wsum, now, 0.25);
+            fxDrivePre.gain.setTargetAtTime(mix.drive / wsum, now, 0.25);
+            if (swellLfo){
+              const swB = mix.swBase / wsum;
+              swellLfo.frequency.setTargetAtTime(mix.swR / wsum, now, 0.25);
+              swellBaseSrc.offset.setTargetAtTime(swB, now, 0.25);
+              swellDepth.gain.setTargetAtTime(1 - swB, now, 0.25);
+            }
+          } else {
+            // 远离所有共振点：中性基础（低反馈 drone）
+            fxSend.gain.setTargetAtTime(0.14, now, 0.25);
+            fxFb.gain.setTargetAtTime(0.18, now, 0.25);
+            fxDelay.delayTime.setTargetAtTime(0.42, now, 0.25);
+            fxEq.frequency.setTargetAtTime(520, now, 0.25);
+            fxEq.gain.setTargetAtTime(0, now, 0.25);
+            tremLfo.frequency.setTargetAtTime(1.2, now, 0.25);
+            tremAmt.gain.setTargetAtTime(0.06, now, 0.25);
+            fxDrivePre.gain.setTargetAtTime(1.3, now, 0.25);
+            if (swellLfo){ swellLfo.frequency.setTargetAtTime(0.3, now, 0.25); swellBaseSrc.offset.setTargetAtTime(0.6, now, 0.25); swellDepth.gain.setTargetAtTime(0.4, now, 0.25); }
           }
         } else {
           // 无麦克风：仍保持下限发送/反馈，drone 由反馈环与干声持续喂养
@@ -499,6 +522,24 @@
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
         const y = H * i / grid;
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      // 高反馈共振点标记（虚线圈 + 菱形锚点）
+      if (fxZones && fxZones.length){
+        const Rz = Math.min(W, H) * 0.16;
+        ctx.lineWidth = 1;
+        for (const z of fxZones){
+          const zx = z.x * W, zy = z.y * H;
+          ctx.setLineDash([3, 5]);
+          ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+          ctx.beginPath(); ctx.arc(zx, zy, Rz, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+          const k = 6;
+          ctx.beginPath();
+          ctx.moveTo(zx, zy - k); ctx.lineTo(zx + k, zy); ctx.lineTo(zx, zy + k); ctx.lineTo(zx - k, zy); ctx.closePath();
+          ctx.stroke();
+        }
       }
 
       // 拾音连线（点之下）——低端设备跳过以减负
