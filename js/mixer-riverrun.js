@@ -504,14 +504,15 @@
           ds += dv * dv; fs += fv * fv;
         }
         const dryRms = Math.sqrt(ds / 1024), fxRms = Math.sqrt(fs / 1024);
-        // 包络目标：干声 RMS 归一化（0.25 为满度），单极点平滑——上升 attack 50ms / 下降 decay 150ms
-        const envT = Math.min(1, dryRms / 0.25);
+        // 包络目标：干声 RMS 归一化（0.2 为满度，env 更常达到 1），单极点平滑——上升 50ms / 下降 150ms
+        const envT = Math.min(1, dryRms / 0.2);
         const tau  = envT > fxEnv ? 0.05 : 0.15;
         fxEnv += (envT - fxEnv) * (1 - Math.exp(-1 / 60 / tau));
-        // 输出音量 = 包络 × 0.25（约 -12dB）；闭路约束（fx ≤ 干声×0.251）作为硬顶兜底
-        let target = 0.25 * fxEnv;
+        // 输出音量 = 包络 × 0.5（约 -6dB）；闭路约束（fx ≤ 干声×0.5）作为硬顶兜底
+        const FX_LEVEL = 0.5;
+        let target = FX_LEVEL * fxEnv;
         if (fxRms > 0.002 && dryRms > 0.002){
-          const ceiling = Math.min(1, (0.251 * dryRms) / fxRms);
+          const ceiling = Math.min(1, (FX_LEVEL * dryRms) / fxRms);
           if (ceiling < target) target = ceiling;
         }
         fxReturn.gain.setTargetAtTime(target, now, 0.02);

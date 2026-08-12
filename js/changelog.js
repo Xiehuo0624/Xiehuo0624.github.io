@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-08-13',
+      title: { zh: 'riverrun 混音器：FX 输出电平提升（-12dB → -6dB，包络满度参考降低）', en: 'riverrun mixer: FX output level raised (-12dB → -6dB, lower envelope reference)' },
+      body:  { zh: '按反馈「FX 音量太小」提升输出电平：包络跟随器的输出系数从 0.25（约 -12dB）提高到 0.5（约 -6dB），干声 RMS 满度参考从 0.25 降到 0.2（包络更常达到 1），闭路硬顶兜底同步放宽到 fx ≤ 干声×0.5。attack 50ms / decay 150ms 的呼吸感不变；FX 仍是明显低于干声的背景层，但可闻度显著提高。', en: 'Per the feedback that the FX volume was too low, the output level was raised: the envelope follower scale went from 0.25 (~-12dB) to 0.5 (~-6dB), the dry-RMS full-scale reference dropped from 0.25 to 0.2 (so the envelope reaches 1 more often), and the closed-loop hard ceiling was relaxed to fx ≤ dry×0.5. The 50ms-attack / 150ms-decay breathing stays the same; the FX remains a background layer clearly below the dry signal but is now much more audible.' },
+      media: ''
+    },
+    {
+      date: '2026-08-13',
       title: { zh: 'riverrun 混音器：干声包络跟随控制 FX 输出音量（attack 50ms / decay 150ms）', en: 'riverrun mixer: dry-signal envelope follower drives FX output volume (attack 50ms / decay 150ms)' },
       body:  { zh: '将 FX 输出音量的控制改为干声包络跟随：frame 循环里双 Analyser 测干声与 FX 的 RMS，单极点包络跟随器（满度参考 0.25 RMS，上升 time constant 50ms、下降 150ms）输出 0..1 包络，`fxReturn.gain = 0.25×包络`（保持约 -12dB 上限），原闭路约束（fx ≤ 干声×0.251）保留作硬顶兜底。效果：drone 背景随干声动态呼吸——干声起来 50ms 内 FX 跟上，干声落下时 FX 以 150ms 缓慢衰减，起音快、尾巴长；干声静默时 FX 输出随之归零（与 -12dB 规则一致，反馈环仍持续喂养）。单测：阶跃响应 attack 63%@~50ms、decay 63%@~150ms，满包络输出增益恒 0.25。', en: 'Switched the FX output volume control to a dry-signal envelope follower: each frame the dual analysers measure dry and FX RMS, a one-pole envelope follower (full-scale reference 0.25 RMS; rise time-constant 50ms, fall 150ms) outputs a 0..1 envelope, and fxReturn.gain = 0.25×envelope (keeping the ~-12dB ceiling); the previous closed-loop constraint (fx ≤ dry×0.251) stays as a hard ceiling. Result: the drone background breathes with the dry dynamics — FX catches up within 50ms when the dry swells, and trails off over 150ms when it falls, with a fast attack and a long tail; when the dry is silent the FX output follows to zero (consistent with the -12dB rule, while the feedback loop keeps feeding). Unit-tested: step response attack 63% at ~50ms, decay 63% at ~150ms, full envelope output gain always 0.25.' },
       media: ''
