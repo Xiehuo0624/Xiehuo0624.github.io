@@ -1,5 +1,13 @@
 /* ===== PROJECT DATA ===== */
 App.projects = {
+  '6u104hp': {
+    layout: 'gallery',
+    title: { zh:'6U104HP', en:'6U104HP' },
+    brief: { zh:'与Ciiyte共同设计的6/7U 104HP Eurorack电源箱', en:'A 6/7U 104HP Eurorack power case co-designed with Ciiyte' },
+    desc: { file: true },
+    media: { type: 'gallery', images: ['img/6u104hp.webp','img/6u104hp-11.webp','img/6u104hp-2.webp','img/6u104hp-3.webp','img/6u104hp-4.webp','img/6u104hp-5.webp','img/6u104hp-6.webp','img/6u104hp-7.webp','img/6u104hp-8.webp','img/6u104hp-9.webp','img/6u104hp-10.webp'] }
+  },
+
   'the-just-type-study': {
     layout: 'ecce',
     title: { zh:'The JustType Study', en:'The JustType Study' },
@@ -61,6 +69,7 @@ App.projects = {
 
 /** 作品显示顺序（从新到旧） */
 App.projectOrder = [
+  '6u104hp',
   'the-just-type-study',
   'the-fet-mixer',
   'riverrun',

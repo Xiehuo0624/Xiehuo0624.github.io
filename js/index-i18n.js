@@ -13,5 +13,6 @@ App.INDEX_I18N = {
   cardRiverrun:{ zh:'riverrun',                                     en:'riverrun' },
   cardEcce:    { zh:'瞧！这个人',                         en:'ECCE HOMO' },
   cardWwbh:    { zh:'我们将会曾经在这里',                 en:'WE WILL HAVE BEEN HERE' },
-  cardJustType:{ zh:'The JustType Study',                 en:'The JustType Study' }
+  cardJustType:{ zh:'The JustType Study',                 en:'The JustType Study' },
+  card6u104hp: { zh:'6U104HP',                             en:'6U104HP' }
 };
