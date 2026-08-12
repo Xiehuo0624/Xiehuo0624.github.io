@@ -40,6 +40,7 @@
     // 干声混响 + drone 返回（-12dB 约束用）
     let dryRevSend = null, dryReverb = null, fxReturn = null;
     let dryAn = null, fxAn = null, dryBuf = null, fxBuf = null;
+    let fxEnv = 0;                       // 干声包络跟随器状态（attack 50ms / decay 150ms）
     // 伪 reverse（swell 包络）
     let swellLfo = null, swellDepth = null, swellBaseSrc = null;
     // 麦克风位置 → 效果器参数：3 个高反馈「共振点」音色（每次启动重新生成）
@@ -250,6 +251,7 @@
       shuffleSlots();              // 每次启动重新洗牌：音轨与槽位的对应关系随机化
       computePositions();
       fxZones = makeFxZones();     // 每次启动随机：3 个高反馈共振点（位置 + 音色）
+      fxEnv = 0;                   // 包络跟随器复位
       const made = [];
       for (let i = 0; i < TRACK_COUNT; i++){
         const el = new Audio();
@@ -492,7 +494,7 @@
         }
       }
 
-      /* ---- -12dB 动态约束：drone(FX) 输出始终 ≤ 干声 - 12dB（幅度比 0.251） ---- */
+      /* ---- 干声包络跟随 → 控制 FX 输出音量（attack 50ms / decay 150ms） ---- */
       if (fxReturn && running){
         dryAn.getByteTimeDomainData(dryBuf);
         fxAn.getByteTimeDomainData(fxBuf);
@@ -502,11 +504,17 @@
           ds += dv * dv; fs += fv * fv;
         }
         const dryRms = Math.sqrt(ds / 1024), fxRms = Math.sqrt(fs / 1024);
+        // 包络目标：干声 RMS 归一化（0.25 为满度），单极点平滑——上升 attack 50ms / 下降 decay 150ms
+        const envT = Math.min(1, dryRms / 0.25);
+        const tau  = envT > fxEnv ? 0.05 : 0.15;
+        fxEnv += (envT - fxEnv) * (1 - Math.exp(-1 / 60 / tau));
+        // 输出音量 = 包络 × 0.25（约 -12dB）；闭路约束（fx ≤ 干声×0.251）作为硬顶兜底
+        let target = 0.25 * fxEnv;
         if (fxRms > 0.002 && dryRms > 0.002){
-          fxReturn.gain.setTargetAtTime(Math.max(0.05, Math.min(1, (0.251 * dryRms) / fxRms)), now, 0.06);
-        } else if (fxRms > 0.002){
-          fxReturn.gain.setTargetAtTime(0.05, now, 0.1);   // 干声静默时压到最低，保持约束
+          const ceiling = Math.min(1, (0.251 * dryRms) / fxRms);
+          if (ceiling < target) target = ceiling;
         }
+        fxReturn.gain.setTargetAtTime(target, now, 0.02);
       }
 
       draw(mics, R);
