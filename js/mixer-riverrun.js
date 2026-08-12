@@ -146,7 +146,16 @@
       ];
       const order = [0, 1, 2];
       for (let i = 2; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
-      return [0, 1, 2].map(i => ({ x: rand(0.18, 0.82), y: rand(0.18, 0.82), prof: archetypes[order[i]] }));
+      const zones = [0, 1, 2].map(i => ({ x: rand(0.30, 0.70), y: rand(0.30, 0.70), prof: archetypes[order[i]] }));
+      // 三个效果圈互相重叠：拾取直径 = 最大两两间距 × 1.25（下限 0.15×min），
+      // 存为相对 min(W,H) 的比例，窗口缩放时同步缩放
+      let maxD = 0;
+      for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++){
+        const d = Math.hypot((zones[i].x - zones[j].x) * W, (zones[i].y - zones[j].y) * H);
+        if (d > maxD) maxD = d;
+      }
+      zones.RzFrac = Math.max(1.25 * maxD / 2, Math.min(W, H) * 0.15) / Math.min(W, H);
+      return zones;
     }
 
     async function start(){
@@ -434,7 +443,7 @@
       if (fxSend && running){
         const mc = mics[0];                       // 控制器：第一只活跃麦克风（桌面=鼠标）
         if (mc && fxZones && fxZones.length){
-          const Rz = Math.min(W, H) * 0.16;       // 共振点拾取半径
+          const Rz = Math.min(W, H) * (fxZones.RzFrac || 0.16);   // 共振点拾取半径（保证三圈互相重叠）
           let wsum = 0;
           const mix = { fb:0, delay:0, eqFreq:0, eqGain:0, tremF:0, tremD:0, drive:0, swR:0, swBase:0, send:0 };
           for (const z of fxZones){
