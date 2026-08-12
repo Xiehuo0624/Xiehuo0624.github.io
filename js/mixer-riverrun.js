@@ -42,6 +42,8 @@
     let dryAn = null, fxAn = null, dryBuf = null, fxBuf = null;
     // 伪 reverse（swell 包络）
     let swellLfo = null, swellDepth = null, swellBaseSrc = null;
+    // 麦克风位置 → 效果器参数 的随机映射画像（每次启动重新生成）
+    let fxMap = null;
     let tracks = [];                 // {el,src,analyser,gain,panner,smoothed,targetGain,wave,num,pos}
     let running = false, loading = false;
     let W = 0, H = 0, dpr = 1;
@@ -129,6 +131,16 @@
       const n = 256, c = new Float32Array(n);
       for (let i = 0; i < n; i++){ c[i] = (i / (n - 1)); }
       return c;
+    }
+    // 每次启动随机生成「麦克风位置 → 效果器参数」映射画像：
+    // 每个参数随机选坐标（ux / uy / 径向 r）与斜率方向（正/负）
+    function makeFxMap(){
+      const pick = () => ({ c: Math.floor(Math.random() * 3), dir: Math.random() < 0.5 ? -1 : 1 });
+      return {
+        send: pick(), fb: pick(), delay: pick(), eq: pick(),
+        tremFreq: pick(), tremAmt: pick(), drive: pick(),
+        swellRate: pick(), swell: pick()
+      };
     }
 
     async function start(){
@@ -222,6 +234,7 @@
       tracks = [];
       shuffleSlots();              // 每次启动重新洗牌：音轨与槽位的对应关系随机化
       computePositions();
+      fxMap = makeFxMap();         // 每次启动随机：麦克风位置 → 效果器参数映射
       const made = [];
       for (let i = 0; i < TRACK_COUNT; i++){
         const el = new Audio();
@@ -414,7 +427,7 @@
       /* ---- FX 参数由麦克风位置控制（黑箱）：离簇中心越近发送越多（背景越糊）---- */
       if (fxSend && running){
         const mc = mics[0];                       // 控制器：第一只活跃麦克风（桌面=鼠标）
-        if (mc){
+        if (mc && fxMap){
           let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
           for (const p of positions){ if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x; if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y; }
           const cxx = (minX + maxX) / 2, cyy = (minY + maxY) / 2;
@@ -422,18 +435,22 @@
           const r = Math.sqrt(Math.pow((mc.x - cxx) / hw, 2) + Math.pow((mc.y - cyy) / hh, 2));
           const ux = Math.max(0, Math.min(1, (mc.x - minX) / (maxX - minX || 1)));
           const uy = Math.max(0, Math.min(1, (mc.y - minY) / (maxY - minY || 1)));
-          // 发送量：恒有下限 0.08（drone 不静默），簇中心满 0.5
-          fxSend.gain.setTargetAtTime(0.08 + 0.42 * Math.pow(1 - Math.min(1, r), 1.5), now, 0.15);
-          fxFb.gain.setTargetAtTime(0.12 + 0.12 * uy, now, 0.3);            // 反馈恒有 12%–24%
-          fxDelay.delayTime.setTargetAtTime(0.28 + 0.34 * ux, now, 0.3);    // 延迟 0.28–0.62s
-          fxEq.gain.setTargetAtTime((ux - 0.5) * 6, now, 0.3);              // EQ ±3dB @520Hz
-          tremLfo.frequency.setTargetAtTime(0.6 + 2.4 * (1 - uy), now, 0.3);// 颤音速率 0.6–3Hz
-          tremAmt.gain.setTargetAtTime(0.04 + 0.06 * (1 - ux), now, 0.3);   // 颤音深度 4%–10%
-          fxDrivePre.gain.setTargetAtTime(1.15 + 0.45 * (1 - ux), now, 0.3);// drive 输入增益 1.15–1.6
-          if (swellLfo){                                                      // 伪 reverse swell
-            swellLfo.frequency.setTargetAtTime(0.18 + 0.45 * ux, now, 0.3);  // 速率 0.18–0.63Hz
-            swellBaseSrc.offset.setTargetAtTime(0.5 + 0.3 * (1 - uy), now, 0.3);  // 谷底 0.5–0.8
-            swellDepth.gain.setTargetAtTime(0.5 - 0.3 * (1 - uy), now, 0.3); // 深度 0.2–0.5（max-min）
+          // 按本次随机画像取 0..1 的映射值（坐标 c: 0=ux / 1=uy / 2=径向 r；dir: 斜率方向）
+          const v = m => { const raw = m.c === 0 ? ux : m.c === 1 ? uy : Math.min(1, r); return m.dir === 1 ? raw : 1 - raw; };
+          const M = fxMap;
+          // 发送量：恒有下限 0.08（drone 不静默），上限 0.5
+          fxSend.gain.setTargetAtTime(0.08 + 0.42 * v(M.send), now, 0.15);
+          fxFb.gain.setTargetAtTime(0.12 + 0.12 * v(M.fb), now, 0.3);            // 反馈恒有 12%–24%
+          fxDelay.delayTime.setTargetAtTime(0.28 + 0.34 * v(M.delay), now, 0.3); // 延迟 0.28–0.62s
+          fxEq.gain.setTargetAtTime((v(M.eq) - 0.5) * 6, now, 0.3);              // EQ ±3dB @520Hz
+          tremLfo.frequency.setTargetAtTime(0.6 + 2.4 * v(M.tremFreq), now, 0.3);// 颤音速率 0.6–3Hz
+          tremAmt.gain.setTargetAtTime(0.04 + 0.06 * v(M.tremAmt), now, 0.3);    // 颤音深度 4%–10%
+          fxDrivePre.gain.setTargetAtTime(1.15 + 0.45 * v(M.drive), now, 0.3);   // drive 输入增益 1.15–1.6
+          if (swellLfo){                                                        // 伪 reverse swell
+            swellLfo.frequency.setTargetAtTime(0.18 + 0.45 * v(M.swellRate), now, 0.3);
+            const pSw = v(M.swell);                                             // 谷底 0.5–0.8 / 深度 0.2–0.5
+            swellBaseSrc.offset.setTargetAtTime(0.5 + 0.3 * pSw, now, 0.3);
+            swellDepth.gain.setTargetAtTime(0.5 - 0.3 * pSw, now, 0.3);
           }
         } else {
           // 无麦克风：仍保持下限发送/反馈，drone 由反馈环与干声持续喂养
