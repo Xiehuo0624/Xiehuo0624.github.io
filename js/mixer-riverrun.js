@@ -37,6 +37,7 @@
     // 全局 FX 链节点（frame 中按麦克风位置调制）
     let fxSend = null, fxFb = null, fxDelay = null, fxEq = null;
     let fxTrem = null, tremLfo = null, tremAmt = null, fxDrivePre = null;
+    let fxDelay2 = null, fxFb2 = null;              // 平行长延迟
     // 干声混响 + drone 返回（-12dB 约束用）
     let dryRevSend = null, dryReverb = null, fxReturn = null;
     let dryAn = null, fxAn = null, dryBuf = null, fxBuf = null;
@@ -208,8 +209,10 @@
       fxDrivePre = audioCtx.createGain(); fxDrivePre.gain.value = 1.3;
       const fxDrive = audioCtx.createWaveShaper(); fxDrive.curve = makeDriveCurve(); fxDrive.oversample = '2x';
       fxDelay = audioCtx.createDelay(1.5); fxDelay.delayTime.value = 0.42;
+      fxDelay2 = audioCtx.createDelay(1.5); fxDelay2.delayTime.value = 1.05;   // 平行长延迟（≈2.2×短延迟）
       fxFb = audioCtx.createGain(); fxFb.gain.value = 0.1;          // 恒有反馈（总体偏小，避免类正弦单音）
-      // 延迟时间微抖（LFO ±12ms，速率随机）：打破反馈环固定梳状共振，避免单音感
+      fxFb2 = audioCtx.createGain(); fxFb2.gain.value = 0.06;       // 长延迟反馈更小
+      // 延迟时间微抖（LFO ±12ms，速率随机）：两条延迟各配一个，打破固定梳状共振
       const detuneLfo = audioCtx.createOscillator();
       detuneLfo.type = 'sine'; detuneLfo.frequency.value = 0.08 + Math.random() * 0.12;
       const detuneAmt = audioCtx.createGain();
@@ -217,6 +220,13 @@
       detuneLfo.connect(detuneAmt);
       detuneAmt.connect(fxDelay.delayTime);
       detuneLfo.start();
+      const detuneLfo2 = audioCtx.createOscillator();
+      detuneLfo2.type = 'sine'; detuneLfo2.frequency.value = 0.08 + Math.random() * 0.12;
+      const detuneAmt2 = audioCtx.createGain();
+      detuneAmt2.gain.value = 0.015;                                 // 长延迟抖动略大
+      detuneLfo2.connect(detuneAmt2);
+      detuneAmt2.connect(fxDelay2.delayTime);
+      detuneLfo2.start();
       fxReturn = audioCtx.createGain(); fxReturn.gain.value = 1;    // -12dB 约束由 frame 动态调制
       dryAn = audioCtx.createAnalyser(); dryAn.fftSize = 2048;
       fxAn  = audioCtx.createAnalyser(); fxAn.fftSize = 2048;
@@ -243,10 +253,14 @@
       fxTrem.connect(fxDrivePre);
       fxDrivePre.connect(fxDrive);
       fxDrive.connect(fxDelay);
+      fxDrive.connect(fxDelay2);        // 两条延迟平行
       fxDelay.connect(swellGain);       // 伪 reverse：输出经 swell 包络
+      fxDelay2.connect(swellGain);
       swellGain.connect(fxReturn);
       fxDelay.connect(fxFb);            // 反馈环路不受 swell 影响（保持稳定）
+      fxDelay2.connect(fxFb2);
       fxFb.connect(fxIn);               // feedback 回混响前（循环 drone）
+      fxFb2.connect(fxIn);
       fxReturn.connect(limiter);        // 返回同样经过限幅，防爆音
       masterGain.connect(dryAn);        // 干声电平分析（-12dB 约束参照）
       fxReturn.connect(fxAn);           // FX 输出电平分析
@@ -470,7 +484,9 @@
             // 靠近共振点：加权混合（feedback 高，音色各不相同）
             fxSend.gain.setTargetAtTime(mix.send / wsum, now, 0.15);
             fxFb.gain.setTargetAtTime(mix.fb / wsum, now, 0.25);
+            fxFb2.gain.setTargetAtTime((mix.fb / wsum) * 0.6, now, 0.25);   // 长延迟反馈更小
             fxDelay.delayTime.setTargetAtTime(mix.delay / wsum, now, 0.25);
+            fxDelay2.delayTime.setTargetAtTime(Math.max(0.9, Math.min(1.4, (mix.delay / wsum) * 2.2)), now, 0.25);  // 平行长延迟
             fxEq.frequency.setTargetAtTime(mix.eqFreq / wsum, now, 0.25);
             fxEq.gain.setTargetAtTime(mix.eqGain / wsum, now, 0.25);
             tremLfo.frequency.setTargetAtTime(mix.tremF / wsum, now, 0.25);
@@ -486,7 +502,9 @@
             // 远离所有共振点：中性基础（低反馈 drone）
             fxSend.gain.setTargetAtTime(0.14, now, 0.25);
             fxFb.gain.setTargetAtTime(0.10, now, 0.25);
+            fxFb2.gain.setTargetAtTime(0.06, now, 0.25);
             fxDelay.delayTime.setTargetAtTime(0.42, now, 0.25);
+            fxDelay2.delayTime.setTargetAtTime(1.05, now, 0.25);
             fxEq.frequency.setTargetAtTime(520, now, 0.25);
             fxEq.gain.setTargetAtTime(0, now, 0.25);
             tremLfo.frequency.setTargetAtTime(1.2, now, 0.25);
@@ -498,6 +516,7 @@
           // 无麦克风：仍保持下限发送/反馈，drone 由反馈环与干声持续喂养
           fxSend.gain.setTargetAtTime(0.08, now, 0.3);
           fxFb.gain.setTargetAtTime(0.08, now, 0.3);
+          fxFb2.gain.setTargetAtTime(0.05, now, 0.3);
           if (swellLfo){ swellLfo.frequency.setTargetAtTime(0.3, now, 0.3); swellBaseSrc.offset.setTargetAtTime(0.6, now, 0.3); swellDepth.gain.setTargetAtTime(0.4, now, 0.3); }
         }
       }
