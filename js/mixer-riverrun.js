@@ -139,11 +139,11 @@
       const rand = (a, b) => a + Math.random() * (b - a);
       const archetypes = [
         // ① 暗长：长延迟 + 低频衰减 EQ + 慢颤音 + 深 swell
-        { fb: rand(0.28, 0.36), delay: rand(0.60, 0.80), eqFreq: rand(300, 500),   eqGain: rand(-6, -4), tremF: rand(0.3, 0.5),  tremD: rand(0.06, 0.09), drive: rand(1.10, 1.25), swR: rand(0.15, 0.25), swBase: rand(0.45, 0.60), send: rand(0.32, 0.45) },
+        { fb: rand(0.14, 0.19), delay: rand(0.60, 0.80), eqFreq: rand(300, 500),   eqGain: rand(-6, -4), tremF: rand(0.3, 0.5),  tremD: rand(0.06, 0.09), drive: rand(1.10, 1.25), swR: rand(0.15, 0.25), swBase: rand(0.45, 0.60), send: rand(0.32, 0.45) },
         // ② 亮闪：短延迟 + 高频提升 EQ + 快颤音 + 浅 swell + 更多 drive
-        { fb: rand(0.24, 0.32), delay: rand(0.15, 0.28), eqFreq: rand(1500, 2500), eqGain: rand(3, 5),    tremF: rand(3.5, 5.0),  tremD: rand(0.03, 0.05), drive: rand(1.50, 1.70), swR: rand(0.50, 0.70), swBase: rand(0.75, 0.85), send: rand(0.20, 0.32) },
+        { fb: rand(0.11, 0.15), delay: rand(0.15, 0.28), eqFreq: rand(1500, 2500), eqGain: rand(3, 5),    tremF: rand(3.5, 5.0),  tremD: rand(0.03, 0.05), drive: rand(1.50, 1.70), swR: rand(0.50, 0.70), swBase: rand(0.75, 0.85), send: rand(0.20, 0.32) },
         // ③ 中雾：中延迟 + 平 EQ + 中速颤音
-        { fb: rand(0.26, 0.34), delay: rand(0.38, 0.52), eqFreq: rand(700, 900),   eqGain: rand(-1, 1),   tremF: rand(1.2, 1.8),  tremD: rand(0.04, 0.06), drive: rand(1.30, 1.45), swR: rand(0.30, 0.40), swBase: rand(0.60, 0.70), send: rand(0.26, 0.38) }
+        { fb: rand(0.12, 0.17), delay: rand(0.38, 0.52), eqFreq: rand(700, 900),   eqGain: rand(-1, 1),   tremF: rand(1.2, 1.8),  tremD: rand(0.04, 0.06), drive: rand(1.30, 1.45), swR: rand(0.30, 0.40), swBase: rand(0.60, 0.70), send: rand(0.26, 0.38) }
       ];
       const order = [0, 1, 2];
       for (let i = 2; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
@@ -208,7 +208,15 @@
       fxDrivePre = audioCtx.createGain(); fxDrivePre.gain.value = 1.3;
       const fxDrive = audioCtx.createWaveShaper(); fxDrive.curve = makeDriveCurve(); fxDrive.oversample = '2x';
       fxDelay = audioCtx.createDelay(1.5); fxDelay.delayTime.value = 0.42;
-      fxFb = audioCtx.createGain(); fxFb.gain.value = 0.18;         // 恒有反馈：delay 一直有 feedback
+      fxFb = audioCtx.createGain(); fxFb.gain.value = 0.1;          // 恒有反馈（总体偏小，避免类正弦单音）
+      // 延迟时间微抖（LFO ±12ms，速率随机）：打破反馈环固定梳状共振，避免单音感
+      const detuneLfo = audioCtx.createOscillator();
+      detuneLfo.type = 'sine'; detuneLfo.frequency.value = 0.08 + Math.random() * 0.12;
+      const detuneAmt = audioCtx.createGain();
+      detuneAmt.gain.value = 0.012;
+      detuneLfo.connect(detuneAmt);
+      detuneAmt.connect(fxDelay.delayTime);
+      detuneLfo.start();
       fxReturn = audioCtx.createGain(); fxReturn.gain.value = 1;    // -12dB 约束由 frame 动态调制
       dryAn = audioCtx.createAnalyser(); dryAn.fftSize = 2048;
       fxAn  = audioCtx.createAnalyser(); fxAn.fftSize = 2048;
@@ -477,7 +485,7 @@
           } else {
             // 远离所有共振点：中性基础（低反馈 drone）
             fxSend.gain.setTargetAtTime(0.14, now, 0.25);
-            fxFb.gain.setTargetAtTime(0.18, now, 0.25);
+            fxFb.gain.setTargetAtTime(0.10, now, 0.25);
             fxDelay.delayTime.setTargetAtTime(0.42, now, 0.25);
             fxEq.frequency.setTargetAtTime(520, now, 0.25);
             fxEq.gain.setTargetAtTime(0, now, 0.25);
@@ -489,7 +497,7 @@
         } else {
           // 无麦克风：仍保持下限发送/反馈，drone 由反馈环与干声持续喂养
           fxSend.gain.setTargetAtTime(0.08, now, 0.3);
-          fxFb.gain.setTargetAtTime(0.12, now, 0.3);
+          fxFb.gain.setTargetAtTime(0.08, now, 0.3);
           if (swellLfo){ swellLfo.frequency.setTargetAtTime(0.3, now, 0.3); swellBaseSrc.offset.setTargetAtTime(0.6, now, 0.3); swellDepth.gain.setTargetAtTime(0.4, now, 0.3); }
         }
       }
@@ -508,13 +516,10 @@
         const envT = Math.min(1, dryRms / 0.2);
         const tau  = envT > fxEnv ? 0.05 : 0.15;
         fxEnv += (envT - fxEnv) * (1 - Math.exp(-1 / 60 / tau));
-        // 输出音量 = 包络 × 0.5（约 -6dB）；闭路约束（fx ≤ 干声×0.5）作为硬顶兜底
-        const FX_LEVEL = 0.5;
-        let target = FX_LEVEL * fxEnv;
-        if (fxRms > 0.002 && dryRms > 0.002){
-          const ceiling = Math.min(1, (FX_LEVEL * dryRms) / fxRms);
-          if (ceiling < target) target = ceiling;
-        }
+        // 输出音量：0.2（最小，drone 不消失）+ 0.3×包络（随干声动态至 0.5，最大保持合适）；
+        // 防爆兜底：FX 输出 RMS 超过 0.35 才按比例压下（不再随干声相对钳制，避免到顶后难以下降）
+        let target = 0.2 + 0.3 * fxEnv;
+        if (fxRms > 0.35) target *= 0.35 / fxRms;
         fxReturn.gain.setTargetAtTime(target, now, 0.02);
       }
 

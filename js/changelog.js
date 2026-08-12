@@ -7,6 +7,12 @@
   const entries = [
     {
       date: '2026-08-13',
+      title: { zh: 'riverrun 混音器：反馈降低并去单音化 + drone 音量下限抬高', en: 'riverrun mixer: feedback lowered & de-tonalized + drone volume floor raised' },
+      body:  { zh: '四项调整回应反馈。① 反馈整体调小：共振点反馈从 0.24–0.36 降到 0.11–0.19，中性基础 0.18→0.10，无麦克风下限 0.12→0.08。② 去单音化：延迟时间加 LFO 微抖（sine ±12ms、速率每次启动随机 0.08–0.2Hz）打破反馈环固定梳状共振，消除「总是一个类正弦波」的单音感。③ drone 输出音量下限抬高：`fxReturn = 0.2 + 0.3×包络`（最小 0.2、最大 0.5——最大保持之前的合适值，最小从 ~0 提升到 0.2，drone 背景不再过小）。④ 去除随干声的相对钳制（旧闭路 fx ≤ 干声×0.5 在干声弱时把输出压得过低，且造成到顶后难以下降），改为绝对防爆兜底（FX 输出 RMS > 0.35 才按比例压下）。attack 50ms / decay 150ms 呼吸感不变。', en: 'Four adjustments responding to feedback. ① Feedback lowered overall: resonance-zone feedback drops from 0.24–0.36 to 0.11–0.19, the neutral baseline 0.18→0.10, and the no-mic floor 0.12→0.08. ② De-tonalization: a sine LFO (±12ms, rate randomized 0.08–0.2Hz each start) wobbles the delay time, breaking the feedback loop\'s fixed comb resonance and removing the monotonous sine-like tone. ③ Drone output floor raised: fxReturn = 0.2 + 0.3×envelope (min 0.2, max 0.5 — the max keeps the previous comfortable level, the min rises from ~0 to 0.2 so the drone never gets too quiet). ④ Removed the dry-relative clamping (the old closed-loop fx ≤ dry×0.5 pushed the output too low when the dry was weak and made the level hard to come down after peaking); replaced by an absolute anti-blowup guard (only pulls down proportionally when the FX output RMS exceeds 0.35). The 50ms-attack / 150ms-decay breathing is unchanged.' },
+      media: ''
+    },
+    {
+      date: '2026-08-13',
       title: { zh: 'riverrun 混音器：FX 输出电平提升（-12dB → -6dB，包络满度参考降低）', en: 'riverrun mixer: FX output level raised (-12dB → -6dB, lower envelope reference)' },
       body:  { zh: '按反馈「FX 音量太小」提升输出电平：包络跟随器的输出系数从 0.25（约 -12dB）提高到 0.5（约 -6dB），干声 RMS 满度参考从 0.25 降到 0.2（包络更常达到 1），闭路硬顶兜底同步放宽到 fx ≤ 干声×0.5。attack 50ms / decay 150ms 的呼吸感不变；FX 仍是明显低于干声的背景层，但可闻度显著提高。', en: 'Per the feedback that the FX volume was too low, the output level was raised: the envelope follower scale went from 0.25 (~-12dB) to 0.5 (~-6dB), the dry-RMS full-scale reference dropped from 0.25 to 0.2 (so the envelope reaches 1 more often), and the closed-loop hard ceiling was relaxed to fx ≤ dry×0.5. The 50ms-attack / 150ms-decay breathing stays the same; the FX remains a background layer clearly below the dry signal but is now much more audible.' },
       media: ''
