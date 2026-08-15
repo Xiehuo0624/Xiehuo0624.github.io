@@ -6,6 +6,18 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-08-16',
+      title: {
+        zh: '安全与稳定性修复：本地服务器路径绕过、WWHBH 双击竞态、项目页空白回归、清除历史中的本地私钥',
+        en: 'Security & stability fixes: local server path bypass, WWHBH double-click race, project page blank regression, and removal of localhost private key from Git history'
+      },
+      body: {
+        zh: '修复本地服务器的黑名单大小写绕过（macOS 大小写不敏感文件系统上 /scripts/LOCALHOST-KEY.PEM 可绕过）并收紧 --host 空值行为；新增 HTTPS 缺证书时按 localhost-san.cnf 自动生成。WWHBH 增加 starting 锁与 isSecureContext 短路，避免双击创建两套麦克风回授图。riverrun 调整触摸屏笔记本鼠标混音判定。首页 resize/orientationchange 在动画后补跑 reindex，reduced-motion 下动画计时归零。补齐 lightbox 双语文案与缓存版本号，并同步更新 STYLEGUIDE / PERFORMANCE / 程序编写说明。修复 project.js 误删 fillContent 导致的项目页空白回归。使用 git-filter-repo 将 scripts/localhost-key.pem 与 scripts/localhost-cert.pem 从全部历史中移除并强推远程，本地 key/cert 已轮换。',
+        en: 'Fixed case-insensitive forbidden-path bypass in the local server (macOS case-insensitive filesystem could serve /scripts/LOCALHOST-KEY.PEM), tightened empty --host handling, and added automatic HTTPS cert generation from localhost-san.cnf when key/cert are missing. WWHBH now has a starting lock and isSecureContext short-circuit to prevent double-activation feedback loops. riverrun mouse-mixing detection improved for touchscreen laptops. Homepage reindexes after animation if resize/orientationchange arrived mid-animation, and reduced-motion now zeroes animation timers. Lightbox labels localized, cache-bust versions completed, and STYLEGUIDE / PERFORMANCE / 程序编写说明 updated. Fixed the project.js fillContent deletion regression that blanked project pages. Used git-filter-repo to remove scripts/localhost-key.pem and scripts/localhost-cert.pem from all history, force-pushed the clean branch, and rotated the local key/cert.'
+      },
+      media: ''
+    },
+    {
       date: '2026-08-13',
       title: { zh: 'SPECTRAL DISSECTOR 更新 26.08.13：附下载链接与 Bug 修复声明', en: 'SPECTRAL DISSECTOR update 26.08.13: download link & bug-fix note' },
       body:  { zh: '在 SPECTRAL DISSECTOR 作品页末尾（2026.07.04 条目之后）追加 2026.08.13 新条目：声明「所有已知功能性Bug已经修复，行为符合预期。」（en: All known functional bugs have been fixed; the plugin now behaves as expected.），并提供插件压缩包下载链接——Spectral Dissector 26.08.13.7z（约 42KB，7-zip 格式，存放于 data/spectral-dissector/），链接样式沿用 the-just-type-study 的 tt-download 下载样式（project.css 的 .tt-download）。', en: 'Appended a new 2026.08.13 entry at the end of the SPECTRAL DISSECTOR page (after the 2026.07.04 entry), stating that all known functional bugs have been fixed and the plugin now behaves as expected (zh: 所有已知功能性Bug已经修复，行为符合预期。), and adding a download link for the plugin archive — Spectral Dissector 26.08.13.7z (~42KB, 7-zip format, stored under data/spectral-dissector/) — reusing the tt-download link style from the-just-type-study (.tt-download in project.css).' },
