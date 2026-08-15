@@ -13,8 +13,9 @@
 |---|---|---|
 | CJK 字体（思源黑体 SC Reg+Bold） | **613 KB** | 每个页面都会拉取，首次访问最大单项 |
 | 英文/数字字体（DejaVu+PlainZero） | ~48 KB | 体积小，可忽略 |
-| 首页 6 张卡片封面（WebP） | 348 KB | 全部首屏可见 |
+| 首页 8 张卡片封面（WebP） | 约 1.5 MB（以实际构建为准） | 全部首屏可见 |
 | `audio/ecce-homo.m4a` | **12 MB** | 仅 ecce-homo 项目页用 |
+| `audio/riverrun/1..12.m4a` | 约 **17 MB** | 仅 riverrun 页启动混音后按需拉流（`preload="metadata"`） |
 | `js/changelog.js`（内联数据） | 33 KB | 仅 changelog 页 |
 | 单页 JS 总量 | 12–43 KB | 多个小文件，HTTP/2 下非瓶颈 |
 
@@ -49,7 +50,7 @@
 
 ### D. 首屏图片优先级提升
 
-- 首页 6 张卡片封面：`decoding="async" fetchpriority="high"`（均为首屏可见，提高与字体/JS 的抢带宽优先级）
+- 首页 8 张卡片封面：`decoding="async" fetchpriority="high"`（均为首屏可见，提高与字体/JS 的抢带宽优先级）
 - 项目页 hero 图（Grid/Edge/Ecce 单图）：`decoding="async"` + `fetchPriority="high"`
 
 ### E. 关键字体预载
@@ -100,10 +101,10 @@
 1. **Chrome DevTools → Lighthouse**：对每个页面跑 Mobile/Desktop，关注 LCP / TBT / TTI。
 2. **Network 面板**：「Disable cache」+「Slow 4G」节流，对比优化前后：
    - ecce-homo 页：进入时不应出现 12 MB 的 `ecce-homo.m4a` 请求（点播放才出现）。
-   - 首页：6 张卡片图应带「High」优先级；字体不应在首页被 `preload`。
+   - 首页：8 张卡片图应带「High」优先级；字体不应在首页被 `preload`。
    - works/about/changelog/project：应见 `SourceHanSansSC-Regular.woff2` 的 `(preload)` 请求。
 3. **悬停预取**：Network 面板勾选后，鼠标悬停首页卡片，应见一条 `prefetch` 类型的 `project-template.html` 请求。
-4. **CLS**：卡片图在固定尺寸容器内 `object-fit:cover`，无布局偏移；Gallery 首帧之外懒加载，注意观察 slider 是否因懒加载图高度跳动（已用 `flex:0 0 100%` 约束宽度，高度由首帧撑起）。
+4. **CLS**：卡片图在固定尺寸容器内 `object-fit:cover`，无布局偏移；Gallery 首帧之外懒加载，注意观察等高胶片条在图片比例差异较大时是否出现高度跳动。
 
 ---
 

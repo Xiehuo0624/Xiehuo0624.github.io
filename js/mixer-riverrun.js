@@ -12,7 +12,7 @@
  *       ╰ 全局并行发送 FX 链（黑箱）：干声带少量混响；send(0.08~0.5 恒有下限) →
  *         混响(合成IR) → 压缩 → EQ → 颤音(微) → drive(微) → 延迟 → 反馈(恒有) →
  *         swell(伪 reverse 包络) → 返回 limiter（drone 永不停止，swell 时长随麦克风位置）
- *         输出经 -12dB 动态约束始终小于干声
+ *         输出 0.2 + 0.3×干声包络（attack 50ms / decay 150ms），RMS>0.35 时防爆兜底
  * 可视化：Canvas 2D，RAF 常驻绘制（启动前也画静态点阵预览）。
  */
 (function(){
@@ -33,12 +33,12 @@
     const stopBtn   = panel.querySelector('#mixer-stop');
 
     /* ---- runtime ---- */
-    let audioCtx = null, masterGain = null, limiter = null;
+    let audioCtx = null, masterGain = null, limiter = null, analysisSink = null;
     // 全局 FX 链节点（frame 中按麦克风位置调制）
     let fxSend = null, fxFb = null, fxDelay = null, fxEq = null;
     let fxTrem = null, tremLfo = null, tremAmt = null, fxDrivePre = null;
     let fxDelay2 = null, fxFb2 = null;              // 平行长延迟
-    // 干声混响 + drone 返回（-12dB 约束用）
+    // 干声混响 + drone 返回（包络跟随/防爆分析用）
     let dryRevSend = null, dryReverb = null, fxReturn = null;
     let dryAn = null, fxAn = null, dryBuf = null, fxBuf = null;
     let fxEnv = 0;                       // 干声包络跟随器状态（attack 50ms / decay 150ms）
@@ -48,6 +48,7 @@
     let fxZones = null;
     let tracks = [];                 // {el,src,analyser,gain,panner,smoothed,targetGain,wave,num,pos}
     let running = false, loading = false;
+  let generation = 0;              // 启动代数：加载被取消/停止时让在途 start() 失效
     let W = 0, H = 0, dpr = 1;
     let positions = [];              // {x,y,nx,ny} 与音轨索引对齐
     let slotOrder = null;            // 音轨→槽位的洗牌映射（每次启动重排）
@@ -63,9 +64,12 @@
     // 纯触屏设备（手机/平板）不启用鼠标麦克风：iOS/Android 在触摸时会派发
     // "兼容性鼠标"指针事件（pointerType='mouse'），会把鼠标麦克风钉在触摸点上且
     // 手指抬起后不释放，导致无任何操作时音轨全部自动播放。
-    // ⚠ 不能用 matchMedia('(pointer: fine)') 单独判断：iOS Safari 会同时报
-    //   coarse 与 fine；navigator.maxTouchPoints 才是可靠的触摸设备标志
+    // 一旦看到真实的 touch/pen pointerdown，才屏蔽后续 mouse 指针事件；这样
+    // 带触摸屏但实际在用鼠标的笔记本仍可混音（触摸后本页鼠标被屏蔽直到刷新）。
+    // isCoarse 仅用于 DPR 上限等性能决策；maxTouchPoints 仍要纳入其中，
+    // 因为 iOS Safari 会同时报告 coarse 与 fine。
     const isCoarse = navigator.maxTouchPoints > 0 || !window.matchMedia('(pointer: fine)').matches;
+    let suppressMouse = false;
     // 低端设备降级：核数 ≤ 4 时减负（analyser 尺寸、拾音连线、FX 约束分析）
     const LOW_END = (navigator.hardwareConcurrency || 8) <= 4;
 
@@ -163,11 +167,15 @@
     async function start(){
       if (running || loading) return;
       loading = true;
+      const gen = ++generation;          // 本次启动的身份标识
       toggleBtn.disabled = true;
       toggleBtn.textContent = App.I18n.t('mixerLoading');
+      stopBtn.textContent = App.I18n.t('mixerCancel');
+      stopBtn.style.display = 'inline-block';   // 加载期间即可取消
 
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') { try { await audioCtx.resume(); } catch(e){} }
+      if (gen !== generation || !loading) return;   // resume 期间被取消
 
       masterGain = audioCtx.createGain();
       masterGain.gain.value = 0.5;
@@ -175,6 +183,11 @@
       limiter.threshold.value = -6;
       limiter.knee.value = 0;
       limiter.ratio.value = 12;
+      // 分析节点的静音下游：Web Audio 图从 destination 反向拉取，
+      // 悬空的 AnalyserNode 不会被处理，必须给它一个 gain=0 的输出路径
+      analysisSink = audioCtx.createGain();
+      analysisSink.gain.value = 0;
+      analysisSink.connect(audioCtx.destination);
       limiter.attack.value = 0.003;
       limiter.release.value = 0.25;
       masterGain.connect(limiter);
@@ -185,7 +198,7 @@
        *          ├→ dryRevSend(0.15 固定) → dryReverb(1.5s IR) → limiter   干声混响，避免太干
        *          └→ fxSend(0.08~0.5 位置调制, 恒有下限) → [fxIn] → droneReverb(2.6s 高wet)
        *              → 压缩 → EQ(520Hz) → 颤音(微) → drive(微) → 延迟 → fxFb(恒有) → fxIn
-       *              → fxReturn（-12dB 动态约束 ≤ 干声×0.251）→ limiter */
+       *              → fxReturn（0.2+0.3×干声包络；RMS>0.35 防爆兜底）→ limiter */
       // 干声混响（短而柔，固定发送）
       dryRevSend = audioCtx.createGain(); dryRevSend.gain.value = 0.15;
       dryReverb = audioCtx.createConvolver();
@@ -227,7 +240,7 @@
       detuneLfo2.connect(detuneAmt2);
       detuneAmt2.connect(fxDelay2.delayTime);
       detuneLfo2.start();
-      fxReturn = audioCtx.createGain(); fxReturn.gain.value = 1;    // -12dB 约束由 frame 动态调制
+      fxReturn = audioCtx.createGain(); fxReturn.gain.value = 1;    // 输出增益由 frame 的干声包络动态调制
       dryAn = audioCtx.createAnalyser(); dryAn.fftSize = 2048;
       fxAn  = audioCtx.createAnalyser(); fxAn.fftSize = 2048;
       dryBuf = new Uint8Array(1024); fxBuf = new Uint8Array(1024);
@@ -262,8 +275,10 @@
       fxFb.connect(fxIn);               // feedback 回混响前（循环 drone）
       fxFb2.connect(fxIn);
       fxReturn.connect(limiter);        // 返回同样经过限幅，防爆音
-      masterGain.connect(dryAn);        // 干声电平分析（-12dB 约束参照）
+      masterGain.connect(dryAn);        // 干声电平分析（包络跟随）
       fxReturn.connect(fxAn);           // FX 输出电平分析
+      dryAn.connect(analysisSink);      // 静音下游，保证 Analyser 被渲染线程处理
+      fxAn.connect(analysisSink);
       tremLfo.connect(tremAmt); tremAmt.connect(fxTrem.gain);
       tremLfo.start();
       swellLfo.start();
@@ -312,9 +327,10 @@
       // 加载进度
       let ready = 0;
       const tick = () => { toggleBtn.textContent = App.I18n.t('mixerLoading') + ' ' + ready + '/' + TRACK_COUNT; };
-      made.forEach((p, i) => p.then(() => { ready++; tick(); }));
+      made.forEach((p) => p.then(() => { if (gen !== generation || !loading) return; ready++; tick(); }));
       tick();
       await Promise.all(made);
+      if (gen !== generation || !loading) return;   // 加载期间被取消：不再起播
 
       // 同步起播：全部 currentTime 归零后紧密连发 play()
       tracks.forEach(t => { try { t.el.currentTime = 0; } catch(e){} });
@@ -323,17 +339,22 @@
       touchMics.clear();               // 清除启动瞬间可能残留的幽灵触摸
       running = true; loading = false;
       toggleBtn.disabled = false;
+      toggleBtn.textContent = App.I18n.t('mixerStart');
+      stopBtn.textContent = App.I18n.t('mixerStop');
       center.style.display = 'none';
       stopBtn.style.display = 'inline-block';
     }
 
     function stop(){
-      if (!running && !loading) {
-        // 即便在加载中也允许取消
-        if (loading) { loading = false; toggleBtn.disabled = false; toggleBtn.textContent = App.I18n.t('mixerStart'); }
-        return;
-      }
+      if (!running && !loading) return;
+
+      // 加载中点击 STOP 就是取消：先让在途 start() 失效，再清理已创建的节点
+      loading = false;
+      generation++;
       running = false;
+      touchMics.clear();
+      mouseMic.x = -9999; mouseMic.y = -9999;
+
       tracks.forEach(t => {
         try { t.el.pause(); } catch(e){}
         try { t.el.src = ''; } catch(e){}
@@ -343,10 +364,15 @@
       try { if (limiter) limiter.disconnect(); } catch(e){}
       try { if (masterGain) masterGain.disconnect(); } catch(e){}
       try { if (audioCtx) audioCtx.close(); } catch(e){}
-      audioCtx = null; masterGain = null; limiter = null;
+      audioCtx = null; masterGain = null; limiter = null; analysisSink = null;
+      fxSend = fxFb = fxDelay = fxEq = fxTrem = tremLfo = tremAmt = fxDrivePre = null;
+      fxDelay2 = fxFb2 = dryRevSend = dryReverb = fxReturn = dryAn = fxAn = swellLfo = swellDepth = swellBaseSrc = null;
+      fxEnv = 0;
 
       center.style.display = '';
       stopBtn.style.display = 'none';
+      stopBtn.textContent = App.I18n.t('mixerStop');
+      toggleBtn.disabled = false;
       toggleBtn.textContent = App.I18n.t('mixerStart');
     }
 
@@ -364,28 +390,26 @@
     // 指示——桌面以滚轮调节（wheel），手机固定 100%，手写笔用 pressure
     function activeMics(){
       const arr = [];
-      if (!isCoarse && mouseMic.x > -1000) arr.push(mouseMic);
+      if (!suppressMouse && mouseMic.x > -1000) arr.push(mouseMic);
       touchMics.forEach(m => arr.push(m));
       return arr;
     }
 
     canvas.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse') return;   // 鼠标单击无任何效果：悬停即混音，按下/松开不介入
+      suppressMouse = true;                    // 真实 touch/pen 已出现，之后忽略兼容性 mouse 指针
       canvas.setPointerCapture(e.pointerId);
       const x = e.offsetX, y = e.offsetY;
       touchMics.set(e.pointerId, { x, y, gain: micGain(e), type: e.pointerType });
     });
     canvas.addEventListener('pointermove', e => {
-      if (e.pointerType === 'mouse' && !isCoarse){
-        mouseMic.x = e.offsetX; mouseMic.y = e.offsetY; mouseMic.gain = mouseGain;
+      if (e.pointerType === 'mouse'){
+        if (!suppressMouse){
+          mouseMic.x = e.offsetX; mouseMic.y = e.offsetY; mouseMic.gain = mouseGain;
+        }
       } else if (touchMics.has(e.pointerId)){
         const m = touchMics.get(e.pointerId);
         m.x = e.offsetX; m.y = e.offsetY; m.gain = micGain(e);
-      } else {
-        // 鼠标未按下也能悬停拾音（仅真正有鼠标的设备）
-        if (e.pointerType === 'mouse' && !isCoarse){
-          mouseMic.x = e.offsetX; mouseMic.y = e.offsetY; mouseMic.gain = mouseGain;
-        }
       }
     });
     function endPointer(e){
@@ -396,8 +420,11 @@
     canvas.addEventListener('pointercancel', endPointer);
     canvas.addEventListener('lostpointercapture', endPointer);
     canvas.addEventListener('pointerleave', e => {   // 指针离开画布：悬停拾音结束
-      if (e.pointerType === 'mouse'){ mouseMic.x = -9999; mouseMic.y = -9999; }
-      else touchMics.delete(e.pointerId);
+      if (e.pointerType === 'mouse'){
+        if (!suppressMouse){ mouseMic.x = -9999; mouseMic.y = -9999; }
+      } else {
+        touchMics.delete(e.pointerId);
+      }
     });   // iOS 系统手势可能丢捕获而不发 pointerup
     window.addEventListener('blur', () => {                      // 切走应用/锁屏时清空所有麦克风
       touchMics.clear();
@@ -549,7 +576,7 @@
     /* 调度：播放中 60fps（RAF）；空闲（未开始/已停止）降到 ~10fps 静态预览，省电 */
     function loop(){
       if (running) raf = requestAnimationFrame(frame);
-      else raf = setTimeout(loop, 100);
+      else raf = setTimeout(frame, 100);   // 空闲也要跑 frame()，才能绘制静态点阵预览
     }
 
     function draw(mics, R){
@@ -642,8 +669,14 @@
 
     /* ============ i18n refresh ============ */
     App.refreshRiverrunMixer = function(){
-      if (loading) toggleBtn.textContent = App.I18n.t('mixerLoading');
-      else if (!running) toggleBtn.textContent = App.I18n.t('mixerStart');
+      stopBtn.textContent = App.I18n.t(loading ? 'mixerCancel' : 'mixerStop');
+      if (loading) {
+        toggleBtn.textContent = App.I18n.t('mixerLoading');
+        stopBtn.style.display = 'inline-block';
+      } else if (!running) {
+        toggleBtn.textContent = App.I18n.t('mixerStart');
+        stopBtn.style.display = 'none';
+      }
     };
 
     /* ============ boot ============ */

@@ -4,6 +4,10 @@
 # Dev / preview tools (not for deployment)
 preview-cards.html
 
+# 本地开发证书/私钥（私钥不应入库；已跟踪的文件需 `git rm --cached` 一次）
+scripts/localhost-key.pem
+scripts/localhost-cert.pem
+
 # Docs (not for deployment)
 docs/
 preview-works-layout.html

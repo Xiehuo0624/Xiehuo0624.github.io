@@ -7,6 +7,11 @@ App.PROJECT_I18N = {
   btnActivate:   { zh:'启动',                     en:'ACTIVATE' },
   btnDeactivate: { zh:'关闭',                     en:'DEACTIVATE' },
   btnDenied:     { zh:'权限被拒',                  en:'PERMISSION DENIED' },
+  btnUnavailable:{ zh:'需要 HTTPS',                 en:'HTTPS REQUIRED' },
+  mixerCancel:    { zh:'取消',                       en:'CANCEL' },
+  lightboxPrev:   { zh:'上一张',                     en:'Previous image' },
+  lightboxNext:   { zh:'下一张',                     en:'Next image' },
+  lightboxClose:  { zh:'关闭',                       en:'Close' },
 
   /* ---- riverrun spatial mixer ---- */
   mixerStart:     { zh:'开始混音',                                  en:'START MIXING' },

@@ -76,7 +76,7 @@
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
 | 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
-| 动画 | `300ms ease-out`（所有卡片同步过渡） | 同左 |
+| 动画 | `300ms ease-out`（所有卡片同步过渡；`prefers-reduced-motion` 下 JS 计时归零并去除过渡） | 同左 |
 
 ### 卡片封面图
 
@@ -253,7 +253,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 正文最大宽 | `800px` | 同左 |
 | 按钮区 padding | `0 0 32px` | 同左 |
 | 按钮 | `width:100%; border:3px solid #000; padding:12px; 14px/700/2px` | 同左 |
-| 按钮 i18n | `btnActivate` / `btnDeactivate` / `btnDenied` | 同左 |
+| 按钮 i18n | `btnActivate` / `btnDeactivate` / `btnDenied` / `btnUnavailable` | 同左 |
 | 按钮激活态 | 黑底白字 (`.on`) | 同左 |
 
 ### 7c. Ecce 布局（顶部单图 + 可选音频 + 文字）
@@ -287,10 +287,10 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 文字区 `.gallery-body` | `max-width:800px` | 同左 |
 | 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
 | 正文行高 | `2.4` | 同左 |
-| 滑动区 `.gallery-slider` | `max-width:800px; scroll-snap-type:x mandatory` | 同左 |
-| 滑动条样式 | `scrollbar-height:3px; thumb:#000; track:#f0f0f0` | 同左 |
-| 单张 `.gallery-slide` | `flex:0 0 100%; scroll-snap-align:start` | 同左 |
-| 图片 | `width:100%; height:auto; object-fit:contain` | 同左 |
+| 滑动区 `.gallery-slider` | `max-width:800px; height:56vh; max-height:520px; min-height:300px; scroll-snap-type:x proximity` | 移动端 `height:46vh; max-height:380px; min-height:240px` |
+| 滑动条样式 | `::-webkit-scrollbar 3px; thumb:#000; track:#f0f0f0` | 同左 |
+| 单张 `.gallery-slide` | `flex:0 0 auto; scroll-snap-align:start` | 同左 |
+| 图片 | `height:100%; width:auto; object-fit:contain`（等高胶片条） | 同左 |
 
 ### 7e-补. Gallery Lightbox（点击放大）
 
@@ -349,9 +349,7 @@ riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互�
 ├── works.html                 作品列表页 HTML
 ├── changelog.html             日志页 HTML
 ├── project-template.html      项目页 HTML
-├── .gitignore                 Git 忽略规则（含 docs/、preview-cards.html）
-│
-├── preview-cards.html          卡片堆叠预览工具（仅本地开发，不部署）
+├── .gitignore                 Git 忽略规则（含 docs/、tmp/、img/originals/、本地 HTTPS key/cert）
 │
 ├── css/
 │   ├── base.css               全局 reset + 基础 + @font-face
@@ -364,6 +362,9 @@ riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互�
 │   └── fonts/                 自托管 webfont（DejaVu Sans Mono + 思源黑体 SC + PlainZero woff2，子集化）
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
+│   ├── 6u104hp/
+│   │   ├── zh.html
+│   │   └── en.html
 │   ├── ecce-homo/
 │   │   ├── zh.html
 │   │   └── en.html
@@ -388,14 +389,15 @@ riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互�
 │
 ├── audio/                        音频资源
 │   ├── ecce-homo.m4a
-│   └── the-just-type-study.m4a
+│   ├── the-just-type-study.m4a
+│   └── riverrun/               riverrun 12 条音轨（1.m4a ~ 12.m4a）
 │
 ├── img/                         图片资源（部署用 WebP，原图留档于 originals/）
 │   ├── ecce-homo.webp
 │   ├── ecce-homo-still.webp
 │   ├── edgedgedge.webp
 │   ├── riverrun.webp           卡片封面
-│   ├── riverrun-2.webp         项目页媒体区单图
+│   ├── riverrun-2.webp         备用图（riverrun 现为 mixer 布局，不引用）
 │   ├── spectral-dissector.webp
 │   ├── spectral-dissector-1.webp    项目页介绍内嵌图1（初版 M4L 截图）
 │   ├── spectral-dissector-2.webp    项目页顶部介绍图
@@ -415,9 +417,9 @@ riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互�
 │   ├── server.py               本地 HTTP/HTTPS 服务器（支持 Range 请求）
 │   ├── start-https.sh          启动脚本（默认 HTTP 8888，--https 启用 4443）
 │   ├── push.sh                 GitHub 推送助手脚本
-│   ├── localhost-cert.pem      SSL 证书（本地 HTTPS 用）
-│   ├── localhost-key.pem       SSL 密钥
-│   └── localhost-san.cnf       SSL 配置
+│   ├── localhost-cert.pem      SSL 证书（本地生成，.gitignore 忽略）
+│   ├── localhost-key.pem       SSL 密钥（本地生成，.gitignore 忽略）
+│   └── localhost-san.cnf       SSL 配置（--https 缺证书时据此自动生成）
 │
 └── js/                         （全局命名空间 App.*，按序加载）
     ├── app.js                 命名空间声明
@@ -442,6 +444,7 @@ riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互�
     ├── project-i18n.js        App.PROJECT_I18N 项目页 UI i18n 数据
     ├── project-data.js        App.projects 项目内容数据
     ├── audio-wwhbh.js         App.initMicButton WWHBH 音频交互
+    ├── mixer-riverrun.js      App.initRiverrunMixer riverrun 空间混音器
     └── project.js             项目页逻辑
 ```
 
@@ -470,7 +473,7 @@ riverrun 作品页的交互式空间混音器，复现 The FET Mixer 的交互�
 
 - **首屏图片（卡片封面 / 项目页 hero 图）**：`decoding="async"` + `fetchpriority="high"`，保持默认 eager。
 - **非首屏图片（Gallery 其余帧、Changelog 媒体）**：`loading="lazy"` + `decoding="async"`，进入视口才下载。
-- **音频 / 视频**：`preload="none"`。`audio/ecce-homo.m4a`（12MB）与 Changelog `<details>` 内视频在用户点播放前不拉取。
+- **音频 / 视频**：单文件音频（`audio/ecce-homo.m4a` 12MB、JustType 录音）与 Changelog `<details>` 内视频 `preload="none"`，用户点播放前不拉取；riverrun 12 条音轨由 `js/mixer-riverrun.js` 设为 `preload="metadata"`（弱网不预缓冲 17MB，播放时才拉流）。
 - **字体**：`@font-face` 全部 `font-display:swap`（不阻塞首屏文字）；文字为主的页（about/works/changelog/project）
   在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。
 - **站内跳转预取**：`js/prefetch.js` 监听 `pointerover/focusin/touchstart`，对同源 `.html` 链接用

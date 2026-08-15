@@ -42,7 +42,7 @@ App.projects = {
     title: { zh:'EDGEDGEDGE', en:'EDGEDGEDGE' },
     brief: { zh:'与钢铁大腿共同创作的回授声音装置，关于模糊的边缘与失控', en:'A feedback sound installation co-created with Gangtie Datui, about blurred edges and loss of control' },
     desc:  { file: true },
-    media: { type: 'bilibili', bvid: 'BV1VbxyzaEKA', cover: 'img/edgedgedge.webp' }
+    media: { type: 'bilibili', bvid: 'BV1VbxyzaEKA' }
   },
 
   'spectral-dissector': {

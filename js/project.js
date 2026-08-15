@@ -5,6 +5,9 @@
   const project   = App.projects[projectId];
   const layoutMap = { grid:'layout-grid', ecce:'layout-ecce', wwhbh:'layout-wwhbh', edge:'layout-edge', gallery:'layout-gallery', mixer:'layout-mixer' };
   const hideSelector = '.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel,.gallery-panel,.mixer-panel';
+  let descRequest = 0;          // 递增序号：语言快速切换时只采纳最后一次请求
+  let descAbort = null;         // 取消上一次仍在途的描述请求
+  let mediaRendered = false;    // 媒体 DOM 只渲染一次；切换语言不打断播放/滚动位置
 
   App.renderBackNav();
 
@@ -35,26 +38,10 @@
   /* ---- get the desc element for the active layout ---- */
   function getDescEl(){
     const layout = project.layout;
-    if (layout === 'grid')    return document.getElementById('grid-desc');
-    if (layout === 'wwhbh')   return document.getElementById('wwhbh-desc');
-    if (layout === 'ecce')    return document.getElementById('ecce-desc');
-    if (layout === 'edge')    return document.getElementById('edge-desc');
-    if (layout === 'gallery') return document.getElementById('gallery-desc');
-    if (layout === 'mixer')  return document.getElementById('mixer-desc');
-    return null;
-  }
-
-  /* ---- fill content (only active layout) ---- */
-  function fillContent(){
-    App.I18n.apply();
-    const t = project.title[App.I18n.currentLang];
-    document.title = t;
-
-    const layout = project.layout;
     if (layout === 'grid') {
       document.getElementById('grid-title').textContent = t;
       /* render media area (single image) */
-      if (project.media) {
+      if (project.media && !mediaRendered) {
         const mediaEl = document.getElementById('grid-media');
         if (mediaEl) {
           mediaEl.innerHTML = '';
@@ -71,7 +58,7 @@
     } else if (layout === 'edge') {
       document.getElementById('edge-title').textContent = t;
       /* render media area */
-      if (project.media) {
+      if (project.media && !mediaRendered) {
         const mediaEl = document.getElementById('edge-media');
         if (mediaEl) {
           mediaEl.innerHTML = '';
@@ -94,7 +81,7 @@
     } else if (layout === 'gallery') {
       document.getElementById('gallery-title').textContent = t;
       /* render gallery slider */
-      if (project.media && project.media.type === 'gallery') {
+      if (!mediaRendered && project.media && project.media.type === 'gallery') {
         const slider = document.getElementById('gallery-slider');
         if (slider) {
           slider.innerHTML = '';
@@ -121,39 +108,53 @@
     } else if (layout === 'ecce') {
       document.getElementById('ecce-title').textContent = t;
       /* render top image (+ optional audio) */
-      const mediaEl = document.getElementById('ecce-media');
-      if (mediaEl) {
-        mediaEl.innerHTML = '';
-        if (project.media && project.media.type === 'image') {
-          const img = document.createElement('img');
-          img.className = 'ecce-still';
-          img.src = project.media.src;
-          img.alt = t;
-          img.decoding = 'async';
-          img.fetchPriority = 'high';
-          mediaEl.appendChild(img);
-        }
-        if (project.audio) {
-          const audio = document.createElement('audio');
-          audio.className = 'ecce-audio';
-          audio.controls = true;
-          audio.preload = 'none';   /* 12MB 音频不在首屏即拉取，点播放才下载 */
-          audio.src = project.audio;
-          mediaEl.appendChild(audio);
+      if (!mediaRendered) {
+        const mediaEl = document.getElementById('ecce-media');
+        if (mediaEl) {
+          mediaEl.innerHTML = '';
+          if (project.media && project.media.type === 'image') {
+            const img = document.createElement('img');
+            img.className = 'ecce-still';
+            img.src = project.media.src;
+            img.alt = t;
+            img.decoding = 'async';
+            img.fetchPriority = 'high';
+            mediaEl.appendChild(img);
+          }
+          if (project.audio) {
+            const audio = document.createElement('audio');
+            audio.className = 'ecce-audio';
+            audio.controls = true;
+            audio.preload = 'none';   /* 12MB 音频不在首屏即拉取，点播放才下载 */
+            audio.src = project.audio;
+            mediaEl.appendChild(audio);
+          }
         }
       }
     }
+    mediaRendered = true;
 
     /* desc: fetch from HTML fragment or use inline string */
     const descEl = getDescEl();
     if (!descEl) return;
 
     if (project.desc.file) {
+      const reqId = ++descRequest;
+      if (descAbort) { try { descAbort.abort(); } catch(e) {} }
+      descAbort = new AbortController();
       descEl.textContent = '…';
-      fetch('data/' + projectId + '/' + App.I18n.currentLang + '.html')
+      fetch('data/' + projectId + '/' + App.I18n.currentLang + '.html', { signal: descAbort.signal })
         .then(r => r.ok ? r.text() : Promise.reject(r.statusText))
-        .then(html => { descEl.innerHTML = html; appendRelated(descEl); })
-        .catch(() => { descEl.textContent = ''; appendRelated(descEl); });
+        .then(html => {
+          if (reqId !== descRequest) return;   // 已有更新语言的请求，丢弃过期响应
+          descEl.innerHTML = html;
+          appendRelated(descEl);
+        })
+        .catch(() => {
+          if (reqId !== descRequest) return;
+          descEl.textContent = '';
+          appendRelated(descEl);
+        });
     } else {
       descEl.innerHTML = project.desc[App.I18n.currentLang];
       appendRelated(descEl);
@@ -204,10 +205,12 @@
   let lbImages = [];
   let lbIndex = 0;
   let lbImg = null;
+  let lbAlt = '';
 
   function openLightbox(images, index, alt) {
     lbImages = images;
     lbIndex = index;
+    lbAlt = alt;
     if (!lbOverlay) {
       lbOverlay = document.createElement('div');
       lbOverlay.className = 'lightbox';
@@ -222,6 +225,9 @@
       const close = document.createElement('button');
       close.className = 'lightbox-close';
       close.textContent = '×';
+      prev.type = 'button'; prev.setAttribute('aria-label', App.I18n.t('lightboxPrev'));
+      next.type = 'button'; next.setAttribute('aria-label', App.I18n.t('lightboxNext'));
+      close.type = 'button'; close.setAttribute('aria-label', App.I18n.t('lightboxClose'));
 
       lbOverlay.appendChild(lbImg);
       lbOverlay.appendChild(prev);
@@ -244,9 +250,16 @@
 
   function lbShow() {
     lbImg.src = lbImages[lbIndex];
+    lbImg.alt = lbAlt;
+    const prev = lbOverlay.querySelector('.lightbox-prev');
+    const next = lbOverlay.querySelector('.lightbox-next');
+    const close = lbOverlay.querySelector('.lightbox-close');
+    prev.setAttribute('aria-label', App.I18n.t('lightboxPrev'));
+    next.setAttribute('aria-label', App.I18n.t('lightboxNext'));
+    close.setAttribute('aria-label', App.I18n.t('lightboxClose'));
     const multi = lbImages.length > 1;
-    lbOverlay.querySelector('.lightbox-prev').style.display = multi ? '' : 'none';
-    lbOverlay.querySelector('.lightbox-next').style.display = multi ? '' : 'none';
+    prev.style.display = multi ? '' : 'none';
+    next.style.display = multi ? '' : 'none';
   }
 
   function lbStep(dir) {

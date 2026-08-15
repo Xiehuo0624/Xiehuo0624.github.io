@@ -32,7 +32,6 @@ App.ABOUT_I18N = {
     zh: '我最喜欢的艺术家应该是Christina Kubisch、Cathy Van Eck。',
     en: 'My favorite artists are probably Christina Kubisch and Cathy Van Eck.'
   },
-  bio7date: { zh:'2026.06.10', en:'2026.06.10' },
   bio8: {
     zh: '我妈说我标点用错了。',
     en: 'My mom says I used the wrong punctuation.'

@@ -57,3 +57,7 @@ body{
   .card-fallback{font-size:16px;letter-spacing:1px}
   .card{border-width:2px}
 }
+
+@media (prefers-reduced-motion: reduce){
+  .card{transition:none !important}
+}

@@ -9,7 +9,9 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
 (function(){
   const stack = document.getElementById('stack');
   let isAnimating = false;
-  const ANIM_MS = 300;
+  const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ANIM_MS = REDUCED_MOTION ? 0 : 300;   // 减少动态偏好下不保留动画计时
+  let reindexPending = false;
 
   /* ---- shuffle card order on each page load ---- */
   (function shuffle(){
@@ -40,6 +42,15 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
 
   reindex();
 
+  /* 跨过 768px 断点或屏幕旋转后重算卡片间距；
+     动画期间收到的事件会在动画收尾后补跑，避免最终布局停留在旧尺寸 */
+  function requestReindex(){
+    if (isAnimating) { reindexPending = true; return; }
+    reindex();
+  }
+  window.addEventListener('resize', requestReindex);
+  window.addEventListener('orientationchange', requestReindex);
+
   /* ---- next / prev ---- */
   function nextCard(){
     if(isAnimating) return;
@@ -59,6 +70,7 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
       setTimeout(() => {
         children.forEach(c => c.style.transition = 'none');
         isAnimating = false;
+        if (reindexPending) { reindexPending = false; reindex(); }
       }, ANIM_MS);
     }, ANIM_MS);
   }
@@ -79,6 +91,7 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     setTimeout(() => {
       children.forEach(c => c.style.transition = 'none');
       isAnimating = false;
+      if (reindexPending) { reindexPending = false; reindex(); }
     }, ANIM_MS);
   }
 
