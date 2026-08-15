@@ -38,6 +38,22 @@
   /* ---- get the desc element for the active layout ---- */
   function getDescEl(){
     const layout = project.layout;
+    if (layout === 'grid')    return document.getElementById('grid-desc');
+    if (layout === 'wwhbh')   return document.getElementById('wwhbh-desc');
+    if (layout === 'ecce')    return document.getElementById('ecce-desc');
+    if (layout === 'edge')    return document.getElementById('edge-desc');
+    if (layout === 'gallery') return document.getElementById('gallery-desc');
+    if (layout === 'mixer')  return document.getElementById('mixer-desc');
+    return null;
+  }
+
+  /* ---- fill content (only active layout) ---- */
+  function fillContent(){
+    App.I18n.apply();
+    const t = project.title[App.I18n.currentLang];
+    document.title = t;
+
+    const layout = project.layout;
     if (layout === 'grid') {
       document.getElementById('grid-title').textContent = t;
       /* render media area (single image) */
