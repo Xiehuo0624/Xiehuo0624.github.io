@@ -6,6 +6,18 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-08-26',
+      title: {
+        zh: '首页 The JustType Study 卡片封面裁切上移：机箱上下留白对齐',
+        en: 'Homepage card cover for The JustType Study cropped upward: equal margins above and below the case'
+      },
+      body: {
+        zh: '将 The JustType Study 首页卡片封面的垂直裁切位置上移，使模块合成器机箱上、下边缘到卡片上、下边缘的距离相等。依据封面图（1200×901）中机箱边界位置（上边缘 y≈162、下边缘 y≈795，垂直中心 y≈478.5，比图片中心低约 28px）计算 object-position：桌面卡片（460×300）取 50% 72.5%；移动端（80vw×46vw，最大 380×240）精确值随屏宽在 62.9%～68.9% 间变化，取 65% 后全移动端误差不超过约 1.8px。实现：index.html 为该卡片 img 增加 card-image--justtype 类，css/index.css 增加对应规则（桌面与 @media(max-width:768px) 两档），index.css 缓存版本号升至 v=3。仅影响首页该卡片；项目页顶部图与其他卡片封面不变。STYLEGUIDE 卡片封面表同步说明。',
+        en: 'Moved the vertical crop of The JustType Study homepage card cover upward so the distances from the modular case top and bottom edges to the card top and bottom edges are equal. Based on the case boundaries measured in the cover image (1200×901; top edge y≈162, bottom edge y≈795, vertical center y≈478.5, about 28px below the image center), the object-position values are: desktop card (460×300) 50% 72.5%; mobile (80vw×46vw, max 380×240) exact values range 62.9%–68.9% with viewport width, and 65% keeps the worst mobile error under ~1.8px. Implementation: index.html adds the card-image--justtype class to that card image, and css/index.css adds the matching rule (desktop plus a @media(max-width:768px) override), with the index.css cache version bumped to v=3. Only the homepage card is affected; the project-page top image and other card covers are unchanged. The STYLEGUIDE card cover table was updated accordingly.'
+      },
+      media: ''
+    },
+    {
       date: '2026-08-16',
       title: {
         zh: '安全与稳定性修复：本地服务器路径绕过、WWHBH 双击竞态、项目页空白回归、清除历史中的本地私钥',

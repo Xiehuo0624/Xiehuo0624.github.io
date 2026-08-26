@@ -84,7 +84,7 @@
 
 | 卡片 | 封面图 | 说明 |
 |------|--------|------|
-| the-just-type-study | `img/the-just-type-study.webp` | |
+| the-just-type-study | `img/the-just-type-study.webp` | 机箱上下留白相等：`object-position:50% 72.5%`（桌面）/ `65%`（移动端，见 `css/index.css` 的 `.card-image--justtype`） |
 | the-fet-mixer | `img/the-fet-mixer.webp` | 实物照片 |
 | riverrun | `img/riverrun.webp` | |
 | edgedgedge | `img/edgedgedge.webp` | 拍摄者：段立言 |

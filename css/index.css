@@ -47,6 +47,11 @@ body{
   border:none;outline:none;
 }
 
+/* The JustType Study：把模块合成器机箱的垂直中心对齐到卡片中心 */
+.card-image--justtype{
+  object-position:50% 72.5%;
+}
+
 @media(max-width:768px){
   .stack-wrap{
     width:80vw;max-width:380px;
@@ -56,6 +61,7 @@ body{
   }
   .card-fallback{font-size:16px;letter-spacing:1px}
   .card{border-width:2px}
+  .card-image--justtype{object-position:50% 65%}
 }
 
 @media (prefers-reduced-motion: reduce){
