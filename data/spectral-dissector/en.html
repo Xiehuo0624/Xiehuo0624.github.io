@@ -1,12 +1,16 @@
+<a class="tt-download" href="data/spectral-dissector/Spectral%20Dissector%2026.09.12.zip" download>↓ Download Spectral Dissector (26.09.12.zip)</a>
+
+<br><br>
+
 A work co-created with Yan Kai.
 
 <br><br>
 
-Spectral Dissector is a fundamental-frequency, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum, inspired by analog filterbanks, SPEAR, Bitwig Loud Split, Bitwig Harmonic Split, Ircam iana~, and others. I have always loved using filterbanks to decompose sound in the frequency domain and recombine it, and I wanted a more precise tool for doing so — I wanted to separate a sound's fundamental, first, second, third harmonics and so on in real time and with precision. The work's original form was a set of six parallel Spectral Gates whose thresholds were chained end to end, controlled by six interrelated thresholds. The image below shows a screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device. The first version was completed around June 2025.
+Spectral Dissector is a fundamental-frequency, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum, inspired by analog filterbanks, SPEAR, Bitwig Loud Split, Bitwig Harmonic Split, Ircam iana~, and others. I have always loved using filterbanks to decompose sound in the frequency domain and recombine it, and I wanted a more precise tool for doing so: to separate a sound's fundamental, first, second, third harmonics and so on in real time and with precision. The work's original form was a set of six parallel Spectral Gates whose thresholds were chained end to end and interlinked. The image below shows a screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device. The first version was completed around June 2025.
 
 <img src="img/spectral-dissector-1.webp" alt="Screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
-In April 2026 I refactored the plugin's architecture: I introduced HPSS and Cepstrum algorithms and, learning from Bitwig Loud Split, added a Rise/Fall control parameter, attempting thereby to separate non-harmonic transients and noise so that harmonic separation becomes more stable, precise, and free of artifacts. At the same time I reworked the interface logic: the per-band logic of each Spectral Gate Band was changed to be governed overall by a single Main Threshold, with a Spacing knob adjusting the loudness difference between each band's threshold, and Tilt compensating the thresholds for high and low frequencies. I also added a [<strong>Focus</strong> (<code>focus</code>) | band-crossing sharpness | large value = clear band boundaries but possible discontinuities; small value = smooth transitions] parameter to emphasize tonal signals. In the current version the envelope-compensation algorithm has been temporarily removed because it conflicts with Cepstrum and HPSS.. too bad. The implementation and UI of the new Max for Live device were done by Yan Kai,
+In April 2026 I refactored the plugin's architecture: I introduced HPSS and Cepstrum algorithms and, drawing on Bitwig Loud Split, added a Rise/Fall control parameter, attempting thereby to separate non-harmonic transients and noise so that harmonic separation becomes more stable, more precise, and freer of artifacts. At the same time I reworked the interface logic: each Spectral Gate Band is now governed overall by a single Main Threshold, with a Spacing knob adjusting the loudness difference between the bands' thresholds and Tilt compensating the thresholds at high and low frequencies. I also added a [<strong>Focus</strong> (<code>focus</code>) | band-crossing sharpness | large value = clear band boundaries but possible discontinuities; small value = smooth transitions] parameter to emphasize tonal signals. In the current version the envelope-compensation algorithm has been temporarily removed because it conflicts with Cepstrum and HPSS... a shame. The implementation and UI of the new Max for Live device were done by Yan Kai.
 
 <br><br>
 
@@ -34,4 +38,12 @@ All known functional bugs have been fixed; the plugin now behaves as expected.
 
 <br><br>
 
-<a class="tt-download" href="data/spectral-dissector/Spectral%20Dissector%2026.08.13.7z" download>↓ Download Spectral Dissector (26.08.13.7z)</a>
+This version adds a <strong>Dry</strong> switch: when it is on, channels 1-2 output the full-band dry signal, which can be sent into the same mix alongside the individual bands. The dry path now runs through the same <code>pfft~</code> as the ten bands, so its latency and phase align exactly with theirs (4032 samples); summing dry with any band no longer causes beating or comb filtering. The switch is off by default.
+
+<br><br>
+
+It also fixes an architecture-level bug: the Perc Band was not in fact separated out of Bands 1-9 as intended, and its signal was duplicated there — purely percussive content, with the harmonic gate closed, fell entirely into Band 9 / Residual while the Perc Band also output it separately. Bands 1-9 now multiply their reconstruction by the harmonic mask <code>1 - perc_mask</code>, and the Perc Band outputs <code>perc_mask</code>; the two are strictly complementary and energy-conserving: Bands 1-9 plus the Perc Band sum to the original input, sample for sample, with no added FFT context or latency.
+
+<br><br>
+
+<span style="display:block;text-align:right">2026.09.12</span>

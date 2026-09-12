@@ -1,12 +1,16 @@
+<a class="tt-download" href="data/spectral-dissector/Spectral%20Dissector%2026.09.12.zip" download>↓ 下载 Spectral Dissector（26.09.12.zip）</a>
+
+<br><br>
+
 与闫开共同创作的作品。
 
 <br><br>
 
-Spectral Dissector是一款基于Spectral Noise Gate、HPSS和Cepstrum的基频、谐波、瞬态、噪音分离插件，灵感来源于模拟的Filterbanks、SPEAR、Bitwig Loud Split、Bitwig Harmonic Split、Ircam iana~等。我非常喜欢用Filterbanks把声音在频域上进行拆解后重新组合，我希望能有一个更精确的工具来达到这一点；我希望能把声音的基频、一次、二次、三次谐波等材料实时地精确地分离。这个作品最初的形态是一组6个并联的Spectral Gates，其Thresholds首尾相连，由6个互相关联的Threshold进行控制。下图为最初版本的Spectral Dissector (Spectral Bank) Max For Live插件截图。初版插件完成时间约为2025年6月。
+Spectral Dissector是一款基于Spectral Noise Gate、HPSS和Cepstrum的基频、谐波、瞬态、噪音分离插件，灵感来源于模拟滤波器组、SPEAR、Bitwig Loud Split、Bitwig Harmonic Split、Ircam iana~等。我非常喜欢用滤波器组把声音在频域上拆解后重新组合，一直希望能有一个更精确的工具，把声音的基频、一次、二次、三次谐波等材料实时、精确地分离。这个作品最初的形态是一组6个并联的Spectral Gates，其阈值首尾相连、互相联动。下图为最初版本的Spectral Dissector（Spectral Bank）Max for Live插件截图。初版插件约完成于2025年6月。
 
-<img src="img/spectral-dissector-1.webp" alt="最初版本的 Spectral Dissector (Spectral Bank) Max for Live 插件截图" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
+<img src="img/spectral-dissector-1.webp" alt="最初版本的Spectral Dissector（Spectral Bank）Max for Live插件截图" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
-我在2026年4月对本插件的架构进行了重构：引入了HPSS和Cepstrum算法，并学习Bitwig Loud Split加入了Rise Fall控制参数，尝试以此分离非谐波性的瞬态和噪音，使谐波的分离更加稳定、精确、减少伪影。同时重做了Interface的逻辑，将每个Spectral Gate Band的逻辑改为了由一个Main Threshold进行总控制，使用Spacing旋钮调整每个Band的Threshold之间的响度差，并通过Tilt为高/低频的Threshold进行补偿。还新增了[<strong>Focus</strong> (<code>focus</code>) | 频带交叉锐度 | 大值=频带边界清晰但可能跳变；小值=过渡平滑]参数以强调乐音信号。现版本中暂时去掉了包络补偿算法，因为其与Cepstrum和HPSS在打架..残念。新版本的Max For live插件的实现与UI由闫开完成，
+我在2026年4月对本插件的架构进行了重构：引入了HPSS和Cepstrum算法，并参照Bitwig Loud Split加入了Rise/Fall控制参数，尝试以此分离非谐波性的瞬态与噪音，使谐波的分离更加稳定、精确，并减少伪影。同时重做了界面逻辑，将每个Spectral Gate Band的逻辑改为由一个Main Threshold总控，由Spacing旋钮调整各Band阈值之间的响度差，并通过Tilt补偿高/低频的阈值。还新增了[<strong>Focus</strong> (<code>focus</code>) | 频带交叉锐度 | 大值=频带边界清晰但可能跳变；小值=过渡平滑]参数，以强调乐音信号。本版本暂时移除了包络补偿算法，因为它与Cepstrum和HPSS在打架……残念。新版本的Max for Live插件实现与UI由闫开完成。
 
 <br><br>
 
@@ -34,4 +38,12 @@ I hate Cepstrum.
 
 <br><br>
 
-<a class="tt-download" href="data/spectral-dissector/Spectral%20Dissector%2026.08.13.7z" download>↓ 下载 Spectral Dissector（26.08.13.7z）</a>
+本版新增<strong>Dry</strong>开关：打开后，通道1-2输出全频带干路信号，可与各个频带一同送入同一套混音。干路改走与十个频带相同的<code>pfft~</code>，延迟与相位和各频带完全对齐（4032 samples），因此「干路 + 频带」相加不会再拍打，也不会产生梳状滤波。开关默认关闭。
+
+<br><br>
+
+同时修复了一个架构层面的Bug：Perc Band并没有如预期那样从Band 1-9中分离出去，它的信号在Band 1-9里还留有一份复制——纯打击成分因谐波门关闭而整块落入Band 9 / Residual，又由Perc Band独立输出一次。现在Band 1-9的重建统一乘以谐波掩膜<code>1 - perc_mask</code>，Perc Band输出<code>perc_mask</code>，两者严格互补、能量守恒：Band 1-9与Perc Band相加即等于原始输入，逐样本成立，且没有新增任何FFT上下文或延迟。
+
+<br><br>
+
+<span style="display:block;text-align:right">2026.09.12</span>
