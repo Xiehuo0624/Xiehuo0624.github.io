@@ -1,5 +1,21 @@
 /* ===== NAVIGATION RENDERING ===== */
 
+/* 语言参数传播的兜底实现。
+ *
+ * 正体定义在 js/app.js，正常加载顺序下必然先于本文件就位；这里的兜底是为了
+ * **新旧文件混用**的情况：GitHub Pages 的 JS 响应带 `max-age=14400`（4 小时），
+ * 部署后的短时间内，访问者可能拿到新的 nav.js 与仍被缓存的旧 app.js。
+ * 旧 app.js 没有 langHref，而 nav.js 在渲染四角导航时同步调用它 —— 一旦缺失就抛
+ * TypeError，**整块导航连同右下角语言切换都不会出现**（2026-09-21 实际发生过）。
+ * 兜底后最坏情况只是链接不带语言参数，绝不再连累导航渲染。 */
+if (typeof App.langHref !== 'function') {
+  App.langHref = function(href){
+    const lang = (App.I18n && App.I18n.currentLang) || 'en';
+    if (lang === 'en') return href;
+    return href + (href.indexOf('?') === -1 ? '?' : '&') + 'lang=' + lang;
+  };
+}
+
 /** 子页面：顶部全宽返回栏 + 语言切换 */
 App.renderBackNav = function() {
   const nav = document.createElement('div');

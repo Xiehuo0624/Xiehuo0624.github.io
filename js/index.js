@@ -210,7 +210,11 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     const card = e.target.closest('.card');
     if(!card || isAnimating) return;
     if(card === stack.lastElementChild){
-      window.location.href = App.langHref(card.dataset.href);
+      /* 判空调用：语言参数传播缺失时退化为不带参数的链接，绝不让导航/跳转崩掉
+         （新旧 JS 混用的成因见 js/nav.js 顶部注释） */
+      const href = card.dataset.href;
+      window.location.href = (typeof App.langHref === 'function')
+        ? App.langHref(href) : href;
     } else {
       nextCard();
     }

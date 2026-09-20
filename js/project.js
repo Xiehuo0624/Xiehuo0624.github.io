@@ -203,7 +203,10 @@
       if (!target) return;
       const a = document.createElement('a');
       a.className = 'project-related-link';
-      a.href = App.langHref('project-template.html?project=' + r.id);
+      /* 判空：新旧 JS 混用时退化为不带参数的链接（成因见 js/nav.js 顶部注释） */
+      a.href = (typeof App.langHref === 'function')
+        ? App.langHref('project-template.html?project=' + r.id)
+        : 'project-template.html?project=' + r.id;
       const role = r.role ? r.role[lang] + ' ' : '';
       a.textContent = role + target.title[lang] + ' →';
       wrap.appendChild(a);

@@ -43,8 +43,9 @@
     if (!/\.html$/.test(a.pathname)) return null;
     if (a.href === location.href) return null;
     /* 带上当前语言，预取的就是用户点进去真正会看到的那一版。
-       查询串不参与 HTML 文档的缓存键，所以不会多占一份缓存。 */
-    return App.langHref(a.pathname);
+       查询串不参与 HTML 文档的缓存键，所以不会多占一份缓存。
+       判空：新旧 JS 混用时退化为不带参数的链接（成因见 js/nav.js 顶部注释）。 */
+    return (typeof App.langHref === 'function') ? App.langHref(a.pathname) : a.pathname;
   }
 
   function onIntent(e){

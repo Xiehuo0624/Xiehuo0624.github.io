@@ -627,8 +627,7 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 │
 └── js/                         （全局命名空间 App.*，按序加载）
     ├── app.js                 命名空间声明 + App.langHref 语言参数传播（i18n 链接唯一出口）
-    ├── i18n.js                App.I18n 公共 i18n 引擎
-    ├── i18n-common.js         App.COMMON_I18N 公共字符串
+    ├── i18n.js                App.I18n 公共 i18n 引擎 + App.COMMON_I18N 公共字符串
     ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
     ├── nav.js                 App.renderBackNav / renderIndexNav + 防拖拽兜底
     ├── prefetch.js            站内链接悬停预取（link rel=prefetch，带当前语言）
@@ -668,9 +667,26 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 ### 脚本加载规则
 
 每个 HTML 的所有 `<script>` 统一放在 `<head>` 中并加 `defer`：浏览器并行下载、按文档顺序执行、不阻塞渲染。
-加载顺序仍为 **app → i18n → i18n-common → autospace → nav → prefetch → 页面数据 → 页面逻辑**，
+加载顺序仍为 **app → i18n → autospace → nav → prefetch → 页面数据 → 页面逻辑**，
 确保 `App.*` 引用在被使用前已声明。`defer` 脚本在文档解析完成后、`DOMContentLoaded` 前执行，
 故 `document.body` 已存在，各页 IIFE 直接操作 DOM 安全（与原先放在 `<body>` 末尾等效但更早开始下载）。
+
+### 缓存版本号规则
+
+GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是 `max-age=600`。
+因此部署后的数小时内可能同时存在「新 HTML + 旧 JS」，且访问者浏览器里也可能留着旧 JS。
+2026-09-21 的一起事故正是如此：新的 `nav.js` 调用了旧 `app.js` 里不存在的 `App.langHref`，
+抛 `TypeError`，导致首页四角导航与语言切换整块不渲染。
+
+两条纪律：
+
+1. **改动了带版本号的 JS，必须同时提号**，否则访问者会吃满 4 小时缓存。
+2. **原本无版本号的文件不要凭空加**：加了等于把它从「每次校验」降级为「缓存 4 小时」，
+   反而更容易陈旧。无版本号的文件靠条件请求自然拿到更新。
+
+跨文件依赖也不能只在加载顺序上成立 —— `App.langHref` 在 `js/nav.js` 顶部有兜底定义，
+各调用点也用 `typeof App.langHref === 'function'` 判空，使新旧文件混用至多退化为
+「链接不带语言参数」，而不会连累导航渲染。
 
 ### 性能与加载策略
 

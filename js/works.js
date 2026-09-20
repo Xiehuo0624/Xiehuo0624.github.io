@@ -14,7 +14,10 @@
       if (!p) return;
       const a = document.createElement('a');
       a.className = 'works-item';
-      a.href = App.langHref('project-template.html?project=' + id);
+      /* 判空：新旧 JS 混用时退化为不带参数的链接（成因见 js/nav.js 顶部注释） */
+      a.href = (typeof App.langHref === 'function')
+        ? App.langHref('project-template.html?project=' + id)
+        : 'project-template.html?project=' + id;
       const title = document.createElement('span');
       title.className = 'works-title' + (p.lowercase ? ' lowercase' : '');
       title.textContent = p.title[lang];

@@ -8,6 +8,18 @@
     {
       date: '2026-09-21',
       title: {
+        zh: '事故：新旧 JS 混用导致导航整块不渲染；语言参数传播加兜底，公共字符串并入 i18n.js',
+        en: 'Incident: mixed old and new JavaScript left the navigation unrendered; the language helper gained a fallback and the shared strings moved into i18n.js'
+      },
+      body: {
+        zh: '上一条提交推送后，**首页四角导航连同右下角语言切换整块消失**。\n成因不是逻辑写错，而是**新旧文件混用**。GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 只有 `max-age=600`，于是同一节点上同时存在两批 JS：新的 `nav.js` 调用了只在新的 `app.js` 里才有的 `App.langHref`，而访问者拿到的是仍被缓存的**旧 `app.js`**（实测线上 63 字节，本地 768 字节）。调用抛 `TypeError`，`renderIndexNav()` 当场中断，导航与语言切换都没能插入 DOM。\n三层修复：\n① `js/nav.js` 顶部为 `App.langHref` 加兜底定义 —— 允许陈旧 `app.js` 自愈，不再连锁。\n② nav / index / prefetch / project / works 五处调用点改用 `typeof App.langHref === \'function\'` 判空，最坏情况退化为「链接不带语言参数」，绝不连累导航渲染。\n③ `js/i18n-common.js` **并入 `js/i18n.js` 并删除** —— 它只有「返回」「语言切换」四行数据却被五个页面各自引用，一旦留在缓存里，全站按钮文案会是旧的而页面是新的。并入后这段数据与引擎同 URL、同版本号，不再各自漂移。\n教训（已写进 STYLEGUIDE「缓存版本号规则」）：改动了带版本号的 JS 必须同时提号；而**原本无版本号的文件不要凭空加号** —— 加了等于把它从「每次校验」降级为「缓存 4 小时」，反而更易陈旧。本次最终只提了两个真正改动的文件：`i18n.js` v3→v4、`nav.js` v2→v3。',
+        en: 'After the previous commit was pushed, the four-corner navigation on the homepage disappeared entirely, along with the language switch in the bottom right.\nThe cause was not faulty logic but mixed file generations. GitHub Pages serves JavaScript with max-age=14400, four hours, against six hundred seconds for HTML, so two generations of script coexisted: the new nav.js called App.langHref, which only the new app.js defines, while the visitor was served the still-cached old app.js, sixty-three bytes against seven hundred and sixty-eight locally. The call threw a TypeError, renderIndexNav stopped where it stood, and neither the navigation nor the language switch reached the DOM.\nThe fix has three layers.\nFirst, nav.js defines App.langHref as a fallback at the top of the file, letting a stale app.js heal itself instead of propagating the failure.\nSecond, the five call sites in nav, index, prefetch, project and works now test the helper with a typeof check, so the worst case is a link without a language parameter rather than an unrendered navigation.\nThird, js/i18n-common.js was folded into js/i18n.js and deleted. It held four lines of button text, for the back link and the language switch, yet was referenced by all five pages; left in cache it would have shown old labels over new pages. Folded in, the data shares one URL and one version with the engine and can no longer drift.\nThe lesson, now recorded in the style guide under cache versioning: a versioned script that changes must have its version raised, while an unversioned one should not be given a version at all, since that demotes it from revalidation to a four-hour cache and makes staleness likelier. Only the two scripts that actually changed were raised, i18n.js from three to four and nav.js from two to three.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-21',
+      title: {
         zh: '语言优先级改为 URL 参数 > localStorage > 默认英文；链接带语言传播，标签页标题随语言切换',
         en: 'Language priority is now URL parameter, then localStorage, then English by default; links carry the language and the tab title follows it'
       },
