@@ -5,7 +5,7 @@ App.renderBackNav = function() {
   const nav = document.createElement('div');
   nav.className = 'back';
   nav.innerHTML =
-    '<a href="index.html" data-i18n="back">[<- 返回]</a>' +
+    '<a href="' + App.langHref('index.html') + '" data-i18n="back">[<- 返回]</a>' +
     '<a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a>';
   document.body.prepend(nav);
 };
@@ -15,23 +15,28 @@ App.renderIndexNav = function() {
   const topLeft = document.createElement('div');
   topLeft.className = 'nav-top-left';
   topLeft.innerHTML =
-    '<a href="about.html" data-i18n="about">[+] 简介与联系</a>' +
-    '<a href="changelog.html" data-i18n="changelog">[>] 进程日志</a>';
+    '<a href="' + App.langHref('about.html') + '" data-i18n="about">[+] 简介与联系</a>' +
+    '<a href="' + App.langHref('changelog.html') + '" data-i18n="changelog">[>] 进程日志</a>';
   document.body.prepend(topLeft);
 
   const topRight = document.createElement('div');
   topRight.className = 'nav-top-right';
   topRight.id = 'name-easter';
+  /* 署名保持汉字，不随语言切换。
+     这是作者标识（与「水火」汉字 logo 一致），属于签名而非正文；
+     审计文档 §3 所指的「英文版残留汉字」是 photographed by 等香鱼 那类
+     嵌在英文句子里的他人署名，不适用于作者签自己的名字。
+     罗马字姓名在 about 页与 CV 里，读者不会找不到。 */
   topRight.textContent = '泻火 曹浩轩';
   document.body.appendChild(topRight);
 
   const bottomLeft = document.createElement('div');
   bottomLeft.className = 'nav-bottom-left';
   bottomLeft.innerHTML =
-    '<a href="project-template.html?project=ecce-homo" data-i18n="linkEcce">ECCE HOMO</a>' +
-    '<a href="project-template.html?project=riverrun" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a>' +
-    '<a href="project-template.html?project=spectral-dissector" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
-    '<a href="works.html" class="nav-all-works" data-i18n="allWorks">[ALL WORKS →]</a>';
+    '<a href="' + App.langHref('project-template.html?project=ecce-homo') + '" data-i18n="linkEcce">ECCE HOMO</a>' +
+    '<a href="' + App.langHref('project-template.html?project=riverrun') + '" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a>' +
+    '<a href="' + App.langHref('project-template.html?project=spectral-dissector') + '" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
+    '<a href="' + App.langHref('works.html') + '" class="nav-all-works" data-i18n="allWorks">[ALL WORKS →]</a>';
   document.body.appendChild(bottomLeft);
 
   const bottomRight = document.createElement('div');

@@ -529,11 +529,19 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 
 | 规则 | 说明 |
 |------|------|
-| 存储 | `localStorage.getItem('lang')`，默认 `'zh'` |
+| 优先级 | `URL ?lang=` > `localStorage` > 默认 **`en`**。默认是英文：本站在申请语境下的主版本是英文，中文仍是一等公民，但需经 `?lang=zh` 或右下角按钮显式选择 |
+| 存储 | `localStorage.getItem('lang')`；切换时经 `_persist()` 同时回写 localStorage 与地址栏 |
+| URL 同步 | `_syncUrl()` 用 `history.replaceState` 把当前语言写回 `?lang=`，**保留 project 等其它查询参数**；用 replaceState 以免污染后退历史，`file://` 下会抛错、已忽略 |
+| 地址栏必要性 | 语言若只存 localStorage，把链接发给别人时对方永远看到默认语言，发链接的人无法控制。`?lang=` 让语言随链接传递（**申请语境下为必需**：招生读者点开链接必须落在英文版） |
+| 首屏定语言 | 五个页面的 `<head>` 各有一段**同步内联脚本**，在首次绘制前把语言写进 `<html data-lang>`；否则中文文案会一闪而过（defer 脚本来不及）。它同时按语言条件注入 CJK 字体预加载（见下行） |
+| 字体条件加载 | `SourceHanSansSC` Regular+Bold 合计 599KB，英文界面一个字都用不到（英文走 `PlainZero` / `DejaVu Sans Mono`），故只在中文界面注入其 preload；浏览器仍可经 CSS `unicode-range` 按需补取 |
+| 链接语言传播 | 所有动态生成的站内链接走 `App.langHref(href)`（唯一出口，勿在别处硬拼 URL）：默认语言不加参数，其它语言追加 `?lang=` / `&lang=`。否则中文界面点进作品页会被打回默认英文 |
 | 切换 | 点击 `#lang-toggle`，zh ↔ en 互切。切换按钮是 `<a href="#">`，靠 `document` 上的 click 委托触发；导航 UI 已禁用文本选择与原生链接拖拽（§2），否则鼠标微动会被浏览器判为拖拽、丢掉 click |
 | 标记 | HTML 元素加 `data-i18n="key"` 属性 |
 | 初始化 | 各页面调用 `I18n.init(data, onToggle?)` |
 | 回调 | 需要语言切换后额外刷新内容时，传入 `onToggle` 回调 |
+| 标签页标题 | `apply()` 在存在 `siteTitle` 条目时更新 `document.title`。`siteTitle` **只定义在首页**（`index-i18n.js`），不放进 `COMMON_I18N`，否则会覆盖内页各自的标题（ABOUT / WORKS / 作品名） |
+| 署名不参与 i18n | 首页四角署名（`.nav-top-right`）保持汉字、不随语言切换：它是作者标识，与「水火」汉字 logo 同属签名，不是待翻译的正文 |
 
 ---
 
@@ -618,12 +626,12 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 │   └── localhost-san.cnf       SSL 配置（--https 缺证书时据此自动生成）
 │
 └── js/                         （全局命名空间 App.*，按序加载）
-    ├── app.js                 命名空间声明
+    ├── app.js                 命名空间声明 + App.langHref 语言参数传播（i18n 链接唯一出口）
     ├── i18n.js                App.I18n 公共 i18n 引擎
     ├── i18n-common.js         App.COMMON_I18N 公共字符串
     ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
     ├── nav.js                 App.renderBackNav / renderIndexNav + 防拖拽兜底
-    ├── prefetch.js            站内链接悬停预取（link rel=prefetch）
+    ├── prefetch.js            站内链接悬停预取（link rel=prefetch，带当前语言）
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据
     ├── index.js               首页逻辑

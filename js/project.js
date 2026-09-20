@@ -203,7 +203,7 @@
       if (!target) return;
       const a = document.createElement('a');
       a.className = 'project-related-link';
-      a.href = 'project-template.html?project=' + r.id;
+      a.href = App.langHref('project-template.html?project=' + r.id);
       const role = r.role ? r.role[lang] + ' ' : '';
       a.textContent = role + target.title[lang] + ' →';
       wrap.appendChild(a);

@@ -1,6 +1,10 @@
 /* ===== INDEX PAGE I18N DATA ===== */
 App.INDEX_I18N = {
   ...App.COMMON_I18N,
+  /* 标签页标题用罗马字：浏览器历史与自动补全能认出 xiehuo / cao haoxuan，
+     汉字标题在地址栏补全里等于不存在。
+     页面内的四角署名是另一回事，保持汉字（见 js/nav.js 的 .nav-top-right）。 */
+  siteTitle:   { zh:'泻火 曹浩轩',                        en:'Xiehuo — Cao Haoxuan' },
   about:       { zh:'[+] 简介与联系',                    en:'[+] About & Contact' },
   changelog:   { zh:'[>] 进程日志',                      en:'[>] Changelog' },
   allWorks:    { zh:'[全部作品 →]',                      en:'[ALL WORKS →]' },

@@ -6,6 +6,42 @@
    * ======================================================== */
   const entries = [
     {
+      date: '2026-09-21',
+      title: {
+        zh: '语言优先级改为 URL 参数 > localStorage > 默认英文；链接带语言传播，标签页标题随语言切换',
+        en: 'Language priority is now URL parameter, then localStorage, then English by default; links carry the language and the tab title follows it'
+      },
+      body: {
+        zh: '本站在申请语境下的主版本是英文，但默认语言一直是中文，且语言只存在 localStorage 里 —— 把链接发给别人时，对方永远看到中文版，发链接的人无法控制。这一条修掉这个结构问题。\n① 优先级：**URL `?lang=` > localStorage > 默认 `en`**。默认由 `zh` 改为 `en`；中文仍是一等公民，经 `?lang=zh` 或右下角按钮选择。\n② `_syncUrl()` 用 `history.replaceState` 把当前语言写回地址栏，**保留 `project` 等其它查询参数**（作品页是 `?project=x&lang=zh`）；用 replaceState 以免污染后退历史，`file://` 下会抛错、已忽略。\n③ 新增 `App.langHref()`（`js/app.js`），作为站内链接语言参数传播的**唯一出口**：默认语言不加参数（URL 保持干净的 `works.html`），其它语言以 `?`／`&` 追加。nav / works / project / index / prefetch 五处链接全部改走它 —— 否则中文界面点进作品页会被打回默认英文。\n④ 五个页面的 `<head>` 各加一段**同步内联脚本**，在首次绘制前把语言写进 `<html data-lang>`。必须是同步内联脚本：defer 脚本在首次绘制之后才跑，中文文案会一闪而过。\n⑤ `apply()` 在存在 `siteTitle` 条目时更新 `document.title`。`siteTitle` **只放首页**（`index-i18n.js`），不放进 `COMMON_I18N` —— 放进去会连带覆盖内页各自的标题（ABOUT / WORKS / 作品名）。',
+        en: 'The English version is the primary one for application purposes, yet the default language was Chinese and the choice lived only in localStorage, so anyone sent a link saw Chinese with no way for the sender to control it. This entry fixes that structure.\n① Priority is now the URL parameter, then localStorage, then English by default, English having replaced Chinese as the fallback; Chinese remains a first-class version, reached via ?lang=zh or the corner button.\n② _syncUrl writes the current language back into the address bar with history.replaceState, preserving other query parameters, since a work page reads ?project=x&lang=zh. replaceState keeps the back history clean, and the error thrown under the file protocol is ignored.\n③ App.langHref in js/app.js becomes the single exit for propagating the language through internal links: the default language adds no parameter, so URLs stay clean, while others append one with ? or &. All five link sites, in nav, works, project, index and prefetch, now go through it, without which entering a work page from the Chinese interface would drop back to English.\n④ Each of the five pages gains a synchronous inline script in the head that sets the language on the html element before first paint. It has to be synchronous and inline: a deferred script runs after first paint and the Chinese text would flash.\n⑤ apply updates the document title when a siteTitle entry exists, and that entry is defined only on the homepage rather than in the shared strings, where it would override the individual titles of the inner pages.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-21',
+      title: {
+        zh: '英文界面不再预加载中日韩字体：首屏少下载 599KB',
+        en: 'The CJK font is no longer preloaded on the English interface, saving 599KB on first paint'
+      },
+      body: {
+        zh: '`SourceHanSansSC` 的 Regular 与 Bold 合计 **599KB**，此前在四个页面被无条件 `preload`。而英文界面的每个字都走 `PlainZero` / `DejaVu Sans Mono`（合计 46KB），思源黑体一个字都用不到 —— 等于让每个英文读者白等半兆字节。\n改为由 `<head>` 的内联脚本按语言条件注入：只在中文界面注入 preload，英文界面完全不发这个请求。CSS 的 `font-family` 栈保持不变，字体仍可经 `unicode-range` 按需补取。\n注入时不带 `fetchpriority=high`：相当于排队等下载，不与 CSS、首屏图片抢带宽。',
+        en: 'The regular and bold weights of SourceHanSansSC total 599KB and used to be preloaded unconditionally on four pages. Every glyph of the English interface comes from PlainZero or DejaVu Sans Mono, 46KB between them, so the CJK face went entirely unused and every English reader waited for half a megabyte to no purpose.\nThe preload is now injected by the inline script in the head according to the language: it appears on the Chinese interface only, and the English interface never issues the request. The CSS font stack is unchanged and the font can still be fetched on demand through unicode-range.\nThe injected link carries no fetchpriority of high, so it queues like any other request rather than competing with the stylesheet and the first images.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-21',
+      title: {
+        zh: '首页四角署名保持汉字；标签页标题用罗马字',
+        en: 'The corner signature stays in Chinese characters; the tab title is romanised'
+      },
+      body: {
+        zh: '曾把首页四角署名（`.nav-top-right`）也改成随语言切换的罗马字 `Xiehuo · Cao Haoxuan`，现已还原为固定的「泻火 曹浩轩」。\n理由是这两件事性质不同。署名是**作者标识**，与「水火」汉字 logo 同属签名，不是待翻译的正文；审计文档 §3 所指的「英文版残留汉字」是 `photographed by 等香鱼` 那类嵌在**英文句子**里的他人署名，读者会在句中撞上读不懂的字，不适用于作者签自己的名字。名字用哪种形式写，由作者决定。\n标签页标题是另一回事：浏览器历史与地址栏自动补全只认罗马字，纯汉字标题在补全里等于不存在，将来有人想搜作者就找不到入口。故英文界面显示 `Xiehuo — Cao Haoxuan`、中文界面显示「泻火 曹浩轩」。它不参与页面排版，与页面内的汉字署名互不冲突。\n`COMMON_I18N` 中原为署名加的 `siteName` 条目已删除，避免留下无人引用的死键。',
+        en: 'The corner signature on the homepage was briefly changed to a romanised form that followed the language, and has been restored to the fixed Chinese characters.\nThe two are different in kind. A signature is an author mark, belonging with the Chinese-character logo as a signature rather than as text awaiting translation. What section 3 of the audit calls leftover Chinese in the English version means names like "photographed by" followed by Chinese characters inside an English sentence, where a reader runs into glyphs they cannot read, and it does not apply to an author signing their own name. Which form the name takes is the author\'s decision.\nThe tab title is another matter: browser history and address-bar completion recognise roman letters only, so a title in pure Chinese is effectively absent from them and anyone looking for the author later has no way in. The English interface therefore shows Xiehuo — Cao Haoxuan and the Chinese one shows the characters. The title takes no part in the page layout and does not conflict with the signature on the page.\nThe siteName entry added to the shared strings for the signature has been removed, leaving no key without a reference.'
+      },
+      media: ''
+    },
+    {
       date: '2026-09-20',
       title: {
         zh: '公开记录更正：两件作品的汇报日期均为 2026.07.01；《声音设计》期末考核不再计入公开记录',

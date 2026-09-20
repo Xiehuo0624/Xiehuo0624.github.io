@@ -14,7 +14,7 @@
       if (!p) return;
       const a = document.createElement('a');
       a.className = 'works-item';
-      a.href = 'project-template.html?project=' + id;
+      a.href = App.langHref('project-template.html?project=' + id);
       const title = document.createElement('span');
       title.className = 'works-title' + (p.lowercase ? ' lowercase' : '');
       title.textContent = p.title[lang];

@@ -42,7 +42,9 @@
     if (a.origin !== location.origin) return null;
     if (!/\.html$/.test(a.pathname)) return null;
     if (a.href === location.href) return null;
-    return a.href;
+    /* 带上当前语言，预取的就是用户点进去真正会看到的那一版。
+       查询串不参与 HTML 文档的缓存键，所以不会多占一份缓存。 */
+    return App.langHref(a.pathname);
   }
 
   function onIntent(e){

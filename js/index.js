@@ -210,7 +210,7 @@ document.getElementById('name-easter').addEventListener('click', () => alert('æˆ
     const card = e.target.closest('.card');
     if(!card || isAnimating) return;
     if(card === stack.lastElementChild){
-      window.location.href = card.dataset.href;
+      window.location.href = App.langHref(card.dataset.href);
     } else {
       nextCard();
     }
