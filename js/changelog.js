@@ -8,6 +8,18 @@
     {
       date: '2026-09-20',
       title: {
+        zh: 'THE INDUCTION MIXER 的公开记录日期更正为 2026.07.01（此前误作 2026.06.30）',
+        en: 'The public record date for THE INDUCTION MIXER corrected to 2026.07.01, previously 2026.06.30'
+      },
+      body: {
+        zh: 'THE INDUCTION MIXER 作品页的公开记录日期由 2026.06.30 更正为 **2026.07.01**，即上海音乐学院音乐工程系期末考试汇报。信息栏「公开记录」行与正文「公开记录」一节各一处，中英文合计四处。\n注意：changelog 的另一条在记述 riverrun 时也用了 06.30，但那是 riverrun 自己的汇报日期，本次未动。若两者其实是同一天的同一场汇报，需要一并对齐。',
+        en: 'The public record date on THE INDUCTION MIXER page is corrected from 2026.06.30 to 2026.07.01, the final presentation for the Department of Music Engineering at the Shanghai Conservatory of Music. Two places in each language: the meta bar row and the body section, four in all.\nNote that another changelog entry uses 06.30 when describing riverrun, but that date belongs to riverrun and was left alone here. If the two were in fact the same session on the same day, they need to be aligned together.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-20',
+      title: {
         zh: '导航栏白底改为竖向渐隐并加磨砂：从文字底边开始淡出，底部不再有硬线',
         en: 'Nav bar background changed to a vertical fade with a matching backdrop blur, fading from the text baseline down'
       },
