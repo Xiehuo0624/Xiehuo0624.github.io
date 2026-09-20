@@ -523,6 +523,22 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 
 > **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
 
+### 7g. 首屏布局选择（绘制前定布局）
+
+六个布局面板**全部写在 `project-template.html` 里**，「显示哪一个」原先只由 defer 的 `js/project.js` 决定。
+defer 脚本要等全部脚本下载完、文档解析结束后才执行，那之前浏览器先画出 CSS 默认可见的 `.project-grid`
+（灰底 + `[ 演示视频 / 硬件照片 ]` + 空信息栏）——**冷缓存 + 真实网络下实测 719ms**（150ms RTT / 1.6Mbps），
+即访客看到的「预设样板页一闪而过」。本机 localhost 无延迟时只闪 1 帧，所以只在真机/首次访问显形。
+
+| 环节 | 做法 |
+|------|------|
+| 数据 | `js/app.js` 与 `js/project-data.js`（合计约 4.8KB）在项目页**不用 defer**，作为同步脚本置于 `<head>`，使 `App.projects` 在首次绘制前可用（实测首屏时刻无回归：479ms vs 改动前 494ms） |
+| 定布局 | `project-template.html` 末尾一段**同步内联脚本**：读 `?project=` → 把布局写进 `<html data-layout="gallery">` → 填好标题、副标题、`document.title`。必须同步内联：改成 `src` 或 `defer` 这一闪就回来 |
+| 显示 | `css/project.css` 末尾：六个面板**默认全部 `display:none`**，只有 `html[data-layout="…"]` 命中的那个显示 |
+| 失败方向 | 属性缺失时所有面板保持隐藏（最坏是**空白一帧**），绝不会再闪出样板。`js/project.js` 随后照旧用行内样式重设一遍，行为与改动前一致 |
+| 语言 | 不依赖 `js/i18n.js`：`<html data-lang>` 已由 `<head>` 前置脚本在绘制前写好，内联脚本直接读它 |
+| 404 | 未知或缺失 `?project=` → `data-layout="grid"`，仍走 `js/project.js` 的 404 文案分支 |
+
 ---
 
 ## 8. i18n 系统
@@ -542,6 +558,27 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 | 回调 | 需要语言切换后额外刷新内容时，传入 `onToggle` 回调 |
 | 标签页标题 | `apply()` 在存在 `siteTitle` 条目时更新 `document.title`。`siteTitle` **只定义在首页**（`index-i18n.js`），不放进 `COMMON_I18N`，否则会覆盖内页各自的标题（ABOUT / WORKS / 作品名） |
 | 署名不参与 i18n | 首页四角署名（`.nav-top-right`）保持汉字、不随语言切换：它是作者标识，与「水火」汉字 logo 同属签名，不是待翻译的正文 |
+
+### 8a. 绘制前定文案（首屏语言闪烁）
+
+`data-i18n` 的文案由 `apply()` 在 defer 脚本运行后写入，那之前浏览器画出来的是 HTML 里的硬编码默认值。
+默认值是中文，所以**英文界面会先闪一段中文**。实测（150ms RTT / 1.6Mbps 冷缓存）：
+
+| 页面 | 闪烁 | 现状 → 处理后 |
+|------|------|----------------|
+| `changelog.html` | 中文「进程日志」**1838ms**（defer 链最后一环是 188KB 的 `changelog.js`） | 首帧即 `CHANGELOG` |
+| `index.html` | 标签页中文「泻火 曹浩轩」**2.7–2.9s**（英文标题在 `index-i18n.js` 里） | 首帧即 `Xiehuo — Cao Haoxuan` |
+| `about.html` | 中文「关于」约 190ms | 首帧即 `ABOUT` |
+| `works.html` | 中文「作品列表」约 150ms | 首帧即 `WORKS` |
+
+| 环节 | 做法 |
+|------|------|
+| 数据 | 该页的 `js/app.js` 与 `<页面>-i18n.js` **不用 defer**，作为同步脚本置于 `<head>`，使 `App.<PAGE>_I18N` 在首次绘制前可用（都是小文件：0.9–4.6KB，与 CSS 并行下载，实测首屏时刻无回归） |
+| 文案 | 页面末尾一段**同步内联脚本**：读 `<html data-lang>` → 取 `App.<PAGE>_I18N.<key>[lang]` → 写入 `h1`。文案不在 HTML 里再抄一份（HTML 保留中文默认值，仅作停用 JS 时的兜底） |
+| 标签页标题 | 首页 `<title>` 静态写**英文**（默认语言），紧跟其后一段内联脚本在 `lang==='zh'` 时改写中文。**必须放在 `<title>` 之后**：放在之前会先造出一个 `<title>`，页面就有两个标题元素了（实测） |
+| 内页不写 `document.title` | 内页静态标题本就是英文、不存在标题闪烁；写了反而会把 `i18n.js` 的 `ORIGINAL_TITLE` 改成「初始语言」，让切换语言后的标题卡住 |
+| 失败方向 | 内联脚本没跑 = 与改动前完全相同（仍显示 HTML 里的默认中文）；`h1` 保留 `data-i18n`，切换语言仍由 `apply()` 接管 |
+| 不要用共享 CSS 做这件事 | 「双语文案 span + `html[data-lang]` 规则」也能达到同样效果，但规则若放进共享的 `base.css`／`nav.css`（4h 缓存），「新 HTML + 旧 CSS」会退化成**中英并排**（实测 132–269ms，阻断 JS 则永久），还要连累 5 个页面提版本号。这条经独立审计实测后否决 |
 
 ---
 
@@ -671,6 +708,17 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 确保 `App.*` 引用在被使用前已声明。`defer` 脚本在文档解析完成后、`DOMContentLoaded` 前执行，
 故 `document.body` 已存在，各页 IIFE 直接操作 DOM 安全（与原先放在 `<body>` 末尾等效但更早开始下载）。
 
+**例外**：以下同步脚本（无 `defer`）用于「首次绘制前」定下布局或文案，见 §7g 与 §8a：
+
+| 页面 | 同步脚本 | 目的 | 体积 |
+|------|----------|------|------|
+| `project-template.html` | `js/app.js` + `js/project-data.js` | 定布局面板（§7g） | 约 4.8KB |
+| `works.html` / `changelog.html` | `js/app.js` + `<页面>-i18n.js` | 定 h1 文案（§8a） | 约 0.9KB |
+| `about.html` | `js/app.js` + `js/about-i18n.js` | 定 h1 文案（§8a） | 约 4.6KB |
+
+其余脚本在全部页面仍全部 `defer`。三者都与 CSS 并行下载，实测首屏时刻无回归
+（项目页 479ms vs 494ms；works 390ms vs 421ms；changelog 428ms vs 424ms；about 437ms vs 436ms）。
+
 ### 缓存版本号规则
 
 GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是 `max-age=600`。
@@ -678,11 +726,17 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
 2026-09-21 的一起事故正是如此：新的 `nav.js` 调用了旧 `app.js` 里不存在的 `App.langHref`，
 抛 `TypeError`，导致首页四角导航与语言切换整块不渲染。
 
+**实测补正（2026-09-21，独立审计复核线上响应头）**：`max-age=14400` 对 `.css` 与**无版本号的**
+`.js`（`app.js`、`nav.js` 等）**同样适用** —— 早先"无版本号的文件靠条件请求自然拿到更新"的说法
+与线上响应头不符，它们一样会吃满 4 小时。因此下面第 2 条纪律的理由不是"提号会降级缓存"，
+而是**降低世代错配**：HTML 只缓存 600 秒，总会比 JS/CSS 先拿到新版，版本号越多，
+新旧混用的组合就越多。
+
 两条纪律：
 
-1. **改动了带版本号的 JS，必须同时提号**，否则访问者会吃满 4 小时缓存。
-2. **原本无版本号的文件不要凭空加**：加了等于把它从「每次校验」降级为「缓存 4 小时」，
-   反而更容易陈旧。无版本号的文件靠条件请求自然拿到更新。
+1. **改动了带版本号的 JS/CSS，必须同时提号**，否则访问者会吃满 4 小时缓存。
+2. **原本无版本号的文件不要凭空加号**：它本来就跟着 HTML 一起更新，凭空加号只会把
+   "同一个文件的两个 URL" 引入缓存，制造更多世代组合。改动它时靠"与 HTML 同批部署"即可。
 
 跨文件依赖也不能只在加载顺序上成立 —— `App.langHref` 在 `js/nav.js` 顶部有兜底定义，
 各调用点也用 `typeof App.langHref === 'function'` 判空，使新旧文件混用至多退化为
@@ -699,4 +753,6 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
   在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。
 - **站内跳转预取**：`js/prefetch.js` 监听 `pointerover/focusin/touchstart`，对同源 `.html` 链接用
   `<link rel="prefetch" as="document">` 预取目标文档（`requestIdleCallback` 内、去重、省流量模式禁用），点击跳转近乎即时。
-- **脚本**：全部 `defer` 置于 `<head>`，与 CSS 并行下载、不阻塞渲染。
+- **脚本**：全部 `defer` 置于 `<head>`，与 CSS 并行下载、不阻塞渲染。**例外**是用于「绘制前定布局／定文案」
+  的同步脚本（项目页 `js/app.js` + `js/project-data.js`；works／changelog／about 的 `js/app.js` + 该页 i18n 数据），
+  见 §7g、§8a 与「脚本加载规则」一节。

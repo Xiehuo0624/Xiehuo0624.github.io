@@ -9,7 +9,20 @@
 (function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>泻火 曹浩轩</title>
+<title>Xiehuo — Cao Haoxuan</title>
+<!-- 绘制前定标签页标题：默认语言（英文）直接用上面的静态 <title>；中文在此改写。
+     必须放在 <title> 之后 —— 放在它之前会在解析中先造出一个 <title>，
+     等解析到真正的 <title> 时页面上就有两个标题元素了（实测）。
+     原标题是硬编码的中文，而英文标题要等 defer 的 js/index-i18n.js，
+     于是英文界面下标签页会先显示中文约 2.7–2.9s。
+     文案与 js/index-i18n.js 的 siteTitle 同源，改动时两边一起改。 -->
+<script>
+(function(){
+  try{
+    if(document.documentElement.dataset.lang === 'zh') document.title = '泻火 曹浩轩';
+  }catch(e){}
+})();
+</script>
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">

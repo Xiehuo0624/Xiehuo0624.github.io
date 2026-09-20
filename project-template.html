@@ -15,20 +15,25 @@
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
 <link rel="stylesheet" href="css/base.css?v=1">
 <link rel="stylesheet" href="css/nav.css?v=1">
-<link rel="stylesheet" href="css/project.css?v=4">
+<link rel="stylesheet" href="css/project.css?v=5">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
      不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：App 命名空间与作品数据必须在首次绘制前就位。
+     文件末尾那段同步内联脚本要靠 App.projects 在绘制前定下显示哪个布局面板，
+     所以这两个文件不能 defer（defer 要等全部脚本下载完、解析结束后才跑，
+     那之前浏览器已经把默认的 grid 样板画在屏幕上了 —— 成因详见文件末尾注释）。
+     共约 4.8KB，与 CSS 并行下载，实测首屏时刻无回归。 -->
+<script src="js/app.js"></script>
+<script src="js/project-data.js?v=3"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
-<script defer src="js/app.js"></script>
 <script defer src="js/i18n.js?v=4"></script>
 <script defer src="js/autospace.js"></script>
 <script defer src="js/nav.js?v=3"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic -->
 <script defer src="js/project-i18n.js?v=3"></script>
-<script defer src="js/project-data.js?v=3"></script>
 <script defer src="js/ink-wwhbh.js?v=1"></script>
 <script defer src="js/audio-wwhbh.js?v=4"></script>
 <script defer src="js/mixer-riverrun.js?v=5"></script>
@@ -114,6 +119,37 @@
     <!-- images inserted dynamically -->
   </div>
 </div>
+
+<!-- ===== 首屏布局选择：必须在首次绘制前执行 =====
+     六个布局面板全都写在 HTML 里，而「显示哪一个」原先只由 defer 的 js/project.js 决定。
+     defer 脚本要等 11 个文件全部下载完、解析结束后才执行，那之前浏览器先画出默认的
+     grid 样板（灰底 + 「[ 演示视频 / 硬件照片 ]」+ 空信息栏），几百毫秒后才换成真正的
+     作品页 —— 冷缓存 + 真实网络下实测 719ms（150ms RTT / 1.6Mbps），即「样板闪过」。
+     这段同步内联脚本在解析阶段就把布局定下来（写进 <html data-layout>）并填好标题，
+     配合 css/project.css 的「默认全隐藏、按 data-layout 显示」规则，第一帧即正确的那一页。
+     失败方向是安全的：属性缺失时 CSS 让所有面板保持隐藏（最坏是空白一帧），
+     绝不会再闪出样板；js/project.js 随后照旧覆盖一遍，行为与改动前一致。
+     语言不用 i18n.js：<html data-lang> 已由 <head> 里的前置脚本在绘制前写好。 -->
+<script>
+(function(){
+  var id = new URLSearchParams(location.search).get('project');
+  var p = (window.App && App.projects && App.projects[id]) || null;
+  var root = document.documentElement;
+  root.dataset.layout = p ? p.layout : 'grid';
+  if (!p) return;                       /* 未知 id：交给 js/project.js 渲染 404 文案 */
+  var lang = root.dataset.lang === 'zh' ? 'zh' : 'en';
+  document.title = p.title[lang];
+  var el = document.getElementById(p.layout + '-title');
+  if (!el) return;
+  el.textContent = p.title[lang];
+  var sub = (p.subtitle || p.brief || {})[lang];
+  if (!sub) return;
+  var sp = document.createElement('span');
+  sp.className = 'work-sub';
+  sp.textContent = sub;
+  el.appendChild(sp);
+})();
+</script>
 
 </body>
 </html>

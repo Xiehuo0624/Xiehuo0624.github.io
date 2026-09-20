@@ -277,3 +277,17 @@ h2 .work-sub{
   .lightbox-nav{width:40px;height:56px;font-size:32px}
   .lightbox-close{top:10px;right:14px;width:40px;height:40px;font-size:28px}
 }
+
+/* ===== 首屏布局选择（绘制前生效）=====
+   六个布局面板默认全部隐藏，只有 <html data-layout="…"> 指定的那个显示。
+   该属性由 project-template.html 末尾的同步内联脚本在首次绘制前写入。
+   默认隐藏是失败安全的方向：属性没写上时最坏是空白，
+   绝不会在 defer 脚本到达之前先闪出默认的 grid 样板布局（改动前的实际表现）。
+   js/project.js 仍会用行内样式重设一遍显示，与本节规则不冲突。 */
+.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel,.gallery-panel,.mixer-panel{display:none}
+html[data-layout="grid"]    .project-grid{display:grid}
+html[data-layout="gallery"] .gallery-panel{display:flex}
+html[data-layout="ecce"]    .ecce-panel{display:flex}
+html[data-layout="edge"]    .edge-panel{display:flex}
+html[data-layout="wwhbh"]   .wwhbh-panel{display:flex}
+html[data-layout="mixer"]   .mixer-panel{display:flex}

@@ -37,7 +37,13 @@
 `<script defer>` 与 CSS 并行下载、按文档顺序执行、不阻塞渲染。`defer` 脚本在文档解析完成后、`DOMContentLoaded` 前执行，`document.body` 已存在，故各页 IIFE 直接操作 DOM 与原先放 body 末尾等效，但下载时机更早。
 
 - 涉及：`index.html` / `works.html` / `about.html` / `changelog.html` / `project-template.html`
-- 核心脚本顺序：`app → i18n → i18n-common → autospace → nav → prefetch → 页面数据 → 页面逻辑`
+- 核心脚本顺序：`app → i18n → autospace → nav → prefetch → 页面数据 → 页面逻辑`
+- **例外（2026-09-21 补）**：用于「绘制前定布局／定文案」的同步脚本：
+  `project-template.html` 的 `js/app.js` + `js/project-data.js`（4.8KB，定布局面板）、
+  `works.html`／`changelog.html` 的 `js/app.js` + 该页 i18n 数据（约 0.9KB）、`about.html` 同（4.6KB）。
+  不同步就会在 defer 到达之前先画出 HTML 里的默认中文，或项目页 CSS 默认可见的 grid 样板——
+  实测闪烁量：项目页样板 719ms、changelog 中文标题 **1838ms**、首页标签页标题 2.7–2.9s、about 190ms、works 150ms。
+  这些文件都与 CSS 并行下载，实测首屏时刻无回归（详见 STYLEGUIDE §7g、§8a）。
 
 ### B. 12 MB 音频改为按需加载
 
@@ -52,6 +58,16 @@
 
 - 首页 8 张卡片封面：`decoding="async" fetchpriority="high"`（均为首屏可见，提高与字体/JS 的抢带宽优先级）
 - 项目页 hero 图（Grid/Edge/Ecce 单图）：`decoding="async"` + `fetchPriority="high"`
+
+> **实测复核（2026-09-21，独立审计 + 复测，未改动本节的设置）**：8 张封面的 `high` 会把 defer 脚本链
+> 挤出带宽 —— 首页四角导航实测 3220ms 才出现（把 8 张降为默认优先级后 621ms）；wwhbh 项目页的
+> `.back` 1293ms（按需加载重脚本后 625ms）。代价在图片侧：洗牌后顶层卡是**随机的**，而浏览器按
+> **体积**而非 DOM 顺序调度封面（edgedgedge 34KB 每次最先到 1578ms，6u104hp 110KB 每次最后到 3862ms），
+> 所以"只给顶层一张 high"并不奏效（可见封面 p50 1789→3442ms）。另外 `fetchpriority="low"` 加在
+> **defer 脚本**上完全无效：defer 必须等所有脚本下载完才执行，降优先级只改变谁先下完。
+> 结论：改优先级是一个取舍而非纯收益，未采纳；若要缩短这段等待，正解是**把三个重脚本
+> （ink/audio/mixer，82.9KB）从每个作品页的 defer 链上拿掉**（6/8 个作品页一行都用不到），
+> 或压缩封面体积（两张图就占 568KB 的 39%）。
 
 ### E. 关键字体预载
 
