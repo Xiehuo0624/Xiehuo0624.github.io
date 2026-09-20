@@ -48,6 +48,17 @@
 .work-meta-k{font-weight:700;color:#888;letter-spacing:1px}
 .work-meta-v{color:#000;min-width:0}
 
+/* 信息栏上方那条分割线（= 标题的 3px 下边框）与它、以及它与信息栏下边框之间
+   必须等距。标题的 margin-bottom:24px 对这个块偏大：1440px 下渲染实测，
+   上边框到第一行 28px、末行到下边框 19px（英文 29 / 17），两条线明显不等距。
+   故描述片段以信息栏开头时，把标题的下边距收到与信息栏 padding-bottom 相同的
+   14px（移动 12px），使上下都约 19px。
+   **这两个值必须与 .work-meta 的 padding-bottom 一起改**，否则又会不等距。
+   :has() 不匹配（描述不是以信息栏开头，或浏览器不支持）时维持标题原有的 24px。 */
+.info-area h2:has(+ #grid-desc > .work-meta),
+.gallery-body h2:has(+ #gallery-desc > .work-meta),
+.edge-body h2:has(+ #edge-desc > .work-meta){margin-bottom:14px}
+
 /* 正文里的分节小标题 */
 .work-sec{display:block;font-weight:700;margin-bottom:8px}
 
@@ -92,6 +103,10 @@ h2 .work-sub{
 
 @media(max-width:768px){
   .work-meta{grid-template-columns:72px 1fr;gap:3px 10px;margin-bottom:24px;padding:0 0 12px;font-size:12px}
+  /* 与信息栏移动端的 padding-bottom（12px）配套，见上 */
+  .info-area h2:has(+ #grid-desc > .work-meta),
+  .gallery-body h2:has(+ #gallery-desc > .work-meta),
+  .edge-body h2:has(+ #edge-desc > .work-meta){margin-bottom:12px}
 }
 
 /* related works cross-links */

@@ -128,6 +128,21 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     previousDelta = currentDelta;
   }, { passive: false });
 
+  /* ---- SWIPE：触摸与鼠标共用的翻牌判定 ---- */
+  const SWIPE_PX = 50;          // 翻牌阈值：主导轴位移不足 50px 一律不翻（防误触）
+
+  function swipeBy(dx, dy){
+    if(Math.abs(dx) < SWIPE_PX && Math.abs(dy) < SWIPE_PX) return;
+
+    if(Math.abs(dx) >= Math.abs(dy)){
+      if(dx < 0) nextCard();
+      else       prevCard();
+    } else {
+      if(dy < 0) nextCard();
+      else       prevCard();
+    }
+  }
+
   /* ---- TOUCH ---- */
   let touchStartX = 0;
   let touchStartY = 0;
@@ -143,22 +158,55 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
 
   document.addEventListener('touchend', e => {
     if(isAnimating) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-
-    if(Math.abs(dx) < 50 && Math.abs(dy) < 50) return;
-
-    if(Math.abs(dx) >= Math.abs(dy)){
-      if(dx < 0) nextCard();
-      else       prevCard();
-    } else {
-      if(dy < 0) nextCard();
-      else       prevCard();
-    }
+    swipeBy(e.changedTouches[0].clientX - touchStartX,
+            e.changedTouches[0].clientY - touchStartY);
   }, { passive: true });
+
+  /* ---- MOUSE DRAG（按住卡片拖动翻牌，与触摸同一套判定）----
+     防误触三层：
+     ① 只在卡片堆上起手，且只认左键 —— 页面别处的鼠标拖动是选字/拖链接，不该翻牌；
+     ② 位移不足 ARM_PX 视为手抖，不进拖拽状态，click 照常派发（正常打开/翻页）；
+     ③ 一旦进入拖拽状态，松手位移不足 SWIPE_PX 不翻牌，且紧随其后的一次 click
+        一律丢弃 —— 否则「拖了一下但没到阈值」会顺手把顶层作品打开。 */
+  const DRAG_ARM_PX = 8;
+  let mouseDrag = null;         // {x, y, armed}：按下到松手之间的拖拽状态
+  let suppressClick = false;    // 拖拽收尾的那次 click 不当作点击
+
+  function endMouseDrag(){
+    mouseDrag = null;
+    stack.classList.remove('dragging');
+  }
+
+  stack.addEventListener('mousedown', e => {
+    suppressClick = false;                    // 每次按下都重新计一次点击资格
+    if(e.button !== 0 || isAnimating) return;
+    mouseDrag = { x: e.clientX, y: e.clientY, armed: false };
+  });
+
+  document.addEventListener('mousemove', e => {
+    if(!mouseDrag || mouseDrag.armed) return;
+    if(Math.hypot(e.clientX - mouseDrag.x, e.clientY - mouseDrag.y) < DRAG_ARM_PX) return;
+    mouseDrag.armed = true;
+    stack.classList.add('dragging');          // 手势已识别：光标转抓取态（css/index.css）
+  });
+
+  document.addEventListener('mouseup', e => {
+    if(!mouseDrag) return;
+    const dx = e.clientX - mouseDrag.x;
+    const dy = e.clientY - mouseDrag.y;
+    const armed = mouseDrag.armed;
+    endMouseDrag();
+    if(!armed) return;                        // 没进拖拽 → click 走正常逻辑
+    suppressClick = true;
+    swipeBy(dx, dy);
+  });
+
+  /* 鼠标在窗口外松开时收不到 mouseup，兜底复位，避免光标卡在 grabbing */
+  window.addEventListener('blur', endMouseDrag);
 
   /* ---- CLICK ---- */
   stack.addEventListener('click', e => {
+    if(suppressClick){ suppressClick = false; return; }   // 拖拽收尾的 click 丢弃
     const card = e.target.closest('.card');
     if(!card || isAnimating) return;
     if(card === stack.lastElementChild){

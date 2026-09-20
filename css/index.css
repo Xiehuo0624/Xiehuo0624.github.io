@@ -28,6 +28,11 @@ body{
   user-select:none;
 }
 
+/* 鼠标拖拽已被识别（位移超过 arm 阈值，见 js/index.js）：光标转抓取态。
+   卡片是「可点开」也是「可拖动」的，静止时保留 pointer 表达主操作，
+   只在拖拽真正成立后改用 grabbing，避免常态下就给出可拖拽的错觉。 */
+.stack-wrap.dragging .card{cursor:grabbing}
+
 /* layer 1 — fallback text */
 .card-fallback{
   position:absolute;inset:0;z-index:1;

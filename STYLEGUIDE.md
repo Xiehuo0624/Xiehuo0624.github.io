@@ -13,6 +13,7 @@
 | 背景色 | `#fff` |
 | 前景色 | `#000` |
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
+| 内容不可拖拽 | `<img>` 一律不可拖拽：`css/base.css` 设 `-webkit-user-drag:none`（Chrome/Safari/Edge），Firefox 不支持该属性、项目页图片又由 JS 动态插入，故由 `js/nav.js` 的 `dragstart` 统一兜底。导航 UI 文字额外不可选中，见 §2。一旦浏览器进入原生拖拽（`dragstart`），`mouseup` 就不再派发 `click`，卡片/按钮会「点不动、只在拖」 |
 | 标题行高 | 所有页面标题（h1/h2）统一 `line-height:1`，消除中英文字体基线差异导致切换语言时横线位置偏移 |
 | viewport | `viewport-fit=cover`（所有页面，启用 `env(safe-area-inset-*)`） |
 | 标签页 `<title>` | 首页 `泻火 曹浩轩`；内页 `ABOUT`/`WORKS`/`CHANGELOG`/`PROJECT`（项目页运行时动态设为作品标题，404 时为 `404 — 未找到`） |
@@ -30,12 +31,16 @@
 | | 桌面端 | 移动端 |
 |--|--------|--------|
 | 位置 | `fixed; top:0; left:0; width:100%` | 同左 |
-| 背景 | `rgba(255,255,255,.75)` | 同左 |
-| padding | `8px 24px` | `8px 12px; padding-top:max(8px, env(safe-area-inset-top))` |
+| 背景 | 竖向渐隐：`0 → var(--fade-top)` 恒为 `rgba(255,255,255,.75)`，`var(--fade-top) → var(--fade-top) + var(--fade-blur)` 线性降到 `rgba(255,255,255,0)` | 同左 |
+| 渐隐起点 `--fade-top` | `33px`（`8px` 容器 padding-top + `25px` 链接外框高；链接是 **inline 盒**，上下 `2px` padding 都撑开容器，`align-items:center` 下弹性行盒就是链接外框，所以外框按 `2+21+2=25px` 算而不是只算 `21px` 行盒，否则文字下方会多出一段纯色板，与「从文字底边开始渐隐」不符） | 同左，但起点改为 `calc(max(8px, env(safe-area-inset-top)) + 25px)`：刘海屏下 padding-top 被安全区顶大时起点须跟着下移 |
+| 过渡带 `--fade-blur` | `44px`（终点 `33 + 44 = 77px`，在内页 `padding-top:80px` 的标题上沿之前收尾，终点前最后 `10px` 透明度已 <2%，不构成可见白蒙；再拉高就会白蒙到标题） | 同左 |
+| padding | `8px 24px calc(8px + var(--fade-blur))`（底部多出的 `--fade-blur` 是纯过渡带，不参与文字定位） | `8px 12px calc(8px + var(--fade-blur))`，再把 `padding-top` 覆盖为 `max(8px, env(safe-area-inset-top))` |
+| 磨砂 | `::before{inset:0; backdrop-filter:blur(4px)}`，同一组 `mask-image` 渐隐（`#000` 到 `transparent`），让模糊与白底同步淡出，底部不留硬边 | 同左 |
 | 链接间距 | `gap:16px` | `gap:8px` |
 | 字号 | `14px` | 同左 |
 | z-index | `100` | 同左 |
 | 交互 | hover → 黑底白字 | 同左 |
+| 文字选择 / 拖拽 | 禁用：`user-select:none` + `-webkit-user-drag:none`（五个导航容器统一，见 `css/nav.css`），`js/nav.js` 的 `dragstart` 兜底 Firefox。导航文字是 UI 标签而非可复制正文；若不禁用链接拖拽，在 `[en] English` / `[zh] 中文` 上按下鼠标只要移动几像素就进入链接拖拽手势，`mouseup` 不再派发 `click`，表现为「点字切不了语言，只是在拖」 | 同左 |
 
 ### 首页导航（四角布局）
 
@@ -75,8 +80,10 @@
 | 卡片居中偏移 | `translate(calc(-50% - 22px), calc(-50% - 28px))` | `translate(calc(-50% - 12px), calc(-50% - 28px))` |
 | Fallback 字号 | `22px` | `16px` |
 | Fallback letter-spacing | `2px` | `1px` |
-| 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover` | 同左 |
+| 卡片图片 `.card-image` | `position:absolute; inset:0; z-index:2; object-fit:cover`；不可拖拽（见 §1，图片拖拽会吞掉卡片的 `click`） | 同左 |
 | 动画 | `300ms ease-out`（所有卡片同步过渡；`prefers-reduced-motion` 下 JS 计时归零并去除过渡） | 同左 |
+| 鼠标拖拽翻牌 | 卡片堆上按住左键拖动，松手时主导轴位移 ≥ `50px` 翻牌（与触摸共用 `js/index.js` 的 `swipeBy()`，方向规则一致：左/上＝下一张，右/下＝上一张）。防误触：只在卡片堆起手、只认左键；位移 < `8px` 仍是点击；进入拖拽后松手不足 `50px` 不翻牌并丢弃随后的 click | 同左（触屏走触摸手势） |
+| 拖拽光标 | 手势成立后 `#stack` 加 `.dragging` → 卡片光标 `pointer` → `grabbing`，松手/失焦恢复 | 同左 |
 
 ### 卡片封面图
 
@@ -263,11 +270,28 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 |------|-----|
 | 容器 | `display:grid; grid-template-columns:88px 1fr`（移动 `72px 1fr`） |
 | 间距 | `gap:3px 14px`（移动 `3px 10px`） |
-| 边框 / 内距 | 上下 `3px solid #000`；`padding:14px 0`（移动 `12px 0`） |
-| 字号 | `12.5px`（移动 `12px`）；`line-height:1.7`；`letter-spacing:0.5px` |
+| 边框 / 内距 | **只有下边框** `3px solid #000`；`padding:0 0 14px`（移动 `0 0 12px`）；**不加上边框**（理由见下） |
+| 上方间距 | 标题 `margin-bottom` 24px，但**描述以信息栏开头时收窄为 14px（移动 12px）**，见下 |
 | 标签 `.work-meta-k` | `font-weight:700; color:#888; letter-spacing:1px` |
 | 值 `.work-meta-v` | `color:#000; min-width:0`（允许长值在网格单元内换行） |
 | 分节小标题 `.work-sec` | `display:block; font-weight:700; margin-bottom:8px` |
+
+**为什么只有下边框**：grid / edge / gallery 三种布局的标题（h2）本身已有 `border-bottom:3px solid #000`，信息栏再加一条上边框就会形成两条平行线（首版实现如此，渲染验证后去掉）。
+
+**上下两条分割线必须等距**（作者 2026-09-20 指出「上侧的分割线距离太远，与下方的分割线距离不均匀」）：这两条线分别是**标题的下边框**与**信息栏自己的下边框**，中间夹着信息栏。标题的 `margin-bottom:24px` 对这个块偏大 —— 1440px 下渲染实测，上线框到第一行 28px、末行到下线框 19px（英文 29 / 17），肉眼可见地不等距。
+
+做法是用 `:has()` 判断描述片段是否以信息栏开头，是则把该情形下标题的下边距收到**与信息栏 `padding-bottom` 相同的值**（桌面 14px、移动 12px），使上下都约 19px：
+
+```css
+.info-area h2:has(+ #grid-desc > .work-meta),
+.gallery-body h2:has(+ #gallery-desc > .work-meta),
+.edge-body h2:has(+ #edge-desc > .work-meta){margin-bottom:14px}
+```
+
+- **间距值必须与 `.work-meta` 的 `padding-bottom` 成对修改**，改一个就要改另一个（桌面 14 / 移动 12），否则等距立刻被破坏
+- 用 `:has()` 而不是给信息栏加负外边距：负外边距要靠 `<p>` 的边距合并才生效，而 `.work-meta` 是 grid 容器，是否参与合并要看浏览器实现；直接改标题自身的 `margin-bottom` 没有这层不确定性
+- `:has()` 不匹配时（描述不是以信息栏开头，或浏览器不支持）维持标题原有的 24px，即退回改动前的样子，不会更糟
+- mixer 布局（riverrun）没有标题下边框：上线框是 `.mixer-desc` 自己的 3px 边框，间距由该容器 `padding-top:14px` 给出，与信息栏的 `padding-bottom:14px` 本来就相等，因此**不在这一条规则的覆盖范围内**，也不需要覆盖
 
 **实现约束**：作品描述被注入的容器在 grid / wwhbh / edge / gallery 四种布局里是 `<p>`（见 `project-template.html`），因此信息栏**只能用 `<span>` 构造** —— `display:grid` 只是 CSS，不影响 HTML 解析，`<span>` 是 phrasing content，安全。**不得使用 `<div>`／`<ul>` 等块级元素**，否则浏览器解析时会提前闭合 `<p>`，破坏页面结构。
 
@@ -506,7 +530,7 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 | 规则 | 说明 |
 |------|------|
 | 存储 | `localStorage.getItem('lang')`，默认 `'zh'` |
-| 切换 | 点击 `#lang-toggle`，zh ↔ en 互切 |
+| 切换 | 点击 `#lang-toggle`，zh ↔ en 互切。切换按钮是 `<a href="#">`，靠 `document` 上的 click 委托触发；导航 UI 已禁用文本选择与原生链接拖拽（§2），否则鼠标微动会被浏览器判为拖拽、丢掉 click |
 | 标记 | HTML 元素加 `data-i18n="key"` 属性 |
 | 初始化 | 各页面调用 `I18n.init(data, onToggle?)` |
 | 回调 | 需要语言切换后额外刷新内容时，传入 `onToggle` 回调 |
@@ -524,8 +548,8 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 ├── .gitignore                 Git 忽略规则（含 docs/、tmp/、img/originals/、本地 HTTPS key/cert）
 │
 ├── css/
-│   ├── base.css               全局 reset + 基础 + @font-face
-│   ├── nav.css                导航栏（两种变体）
+│   ├── base.css               全局 reset + 基础 + @font-face + 图片不可拖拽
+│   ├── nav.css                导航栏（两种变体，含 UI 文字不可选中/拖拽）
 │   ├── index.css              首页卡片堆叠
 │   ├── about.css              关于页
 │   ├── works.css              作品列表页
@@ -598,7 +622,7 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
     ├── i18n.js                App.I18n 公共 i18n 引擎
     ├── i18n-common.js         App.COMMON_I18N 公共字符串
     ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
-    ├── nav.js                 App.renderBackNav / renderIndexNav
+    ├── nav.js                 App.renderBackNav / renderIndexNav + 防拖拽兜底
     ├── prefetch.js            站内链接悬停预取（link rel=prefetch）
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据

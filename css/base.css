@@ -45,3 +45,13 @@
   已单独改为 0.2em（等宽字体默认 0.6em 会过宽），故间距可控且优雅。
 */
 html,body{width:100%;height:100%;font-family:'PlainZero','DejaVu Sans Mono','Source Han Sans SC',Menlo,Consolas,monospace;background:#fff;color:#000}
+
+/* ===== 内容不可拖拽 =====
+   图片是页面内容，不是可拖拽对象：浏览器默认允许把 <img> 拖出半透明幽灵图，
+   并且一旦进入原生拖拽，mouseup 就不再派发 click —— 首页卡片因此既打不开、也不翻页。
+   -webkit-user-drag 覆盖 Chrome/Safari/Edge；Firefox 不支持该属性，
+   由 js/nav.js 的 dragstart 兜底（同时覆盖项目页运行时插入的 <img>）。 */
+img{
+  -webkit-user-drag:none;
+  -webkit-user-select:none;user-select:none;
+}

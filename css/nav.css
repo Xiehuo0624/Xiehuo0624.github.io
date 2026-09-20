@@ -1,7 +1,50 @@
-/* ===== NAV: back + lang toggle ===== */
-.back{position:fixed;top:0;left:0;z-index:100;display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.75);padding:8px 24px;width:100%;box-sizing:border-box}
+/* ===== NAV: back + lang toggle =====
+   背景由纯色改为竖向渐隐：前 --fade-top 高度保持原有 rgba(255,255,255,.75)
+   不变（正好覆盖返回 / 语言切换那一行，含链接自身 padding），
+   从文字行底边开始向下线性降到全透明。
+   文字位置与改动前完全一致：新增的高度全部落在 padding-bottom 过渡带上。
+   过渡带终点 79px 贴着内页 padding-top:80px 的标题上沿，再拉高就会白蒙到标题。
+   ::before 同时用 mask 渐隐磨砂，让模糊也跟着淡出，避免底部出现一条硬边。 */
+.back{
+  position:fixed;top:0;left:0;z-index:100;
+  display:flex;align-items:center;gap:16px;
+  --fade-top:33px;    /* 8px 容器 padding-top + 25px 链接外框高（2px padding + 1.5×14px 行盒
+                         + 2px padding，链接是 inline 盒故上下 padding 都算）。
+                         align-items:center 下弹性行盒即链接外框，文字底边正好 33px */
+  --fade-blur:44px;   /* 过渡带高度：33px → 77px 渐隐到全透明，尾段透明度已 <2% */
+  padding:8px 24px calc(8px + var(--fade-blur));
+  width:100%;box-sizing:border-box;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,.75) 0,
+    rgba(255,255,255,.75) var(--fade-top),
+    rgba(255,255,255,0) calc(var(--fade-top) + var(--fade-blur)));
+}
+.back::before{
+  content:'';position:absolute;inset:0;z-index:-1;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  -webkit-mask-image:linear-gradient(180deg,
+    #000 0,#000 var(--fade-top),
+    transparent calc(var(--fade-top) + var(--fade-blur)));
+  mask-image:linear-gradient(180deg,
+    #000 0,#000 var(--fade-top),
+    transparent calc(var(--fade-top) + var(--fade-blur)));
+}
 .back a{color:#000;text-decoration:none;padding:2px 6px;font-size:14px}
 .back a:hover{background:#000;color:#fff}
+
+/* ===== 导航文字是 UI 标签，不是可选正文 =====
+   除禁用选择外，还必须禁用原生链接拖拽：在 [en] English / [zh] 中文 上按下鼠标，
+   只要移动几像素浏览器就进入链接拖拽手势（dragstart），mouseup 时不再派发 click，
+   表现为「点字切不了语言，只是在拖」。-webkit-user-drag 覆盖 Chrome/Safari/Edge，
+   Firefox 由 js/nav.js 的 dragstart 兜底。 */
+.back a,
+.nav-top-left a,
+.nav-top-right,
+.nav-bottom-left a,
+.nav-bottom-right a{
+  -webkit-user-select:none;user-select:none;
+  -webkit-user-drag:none;
+}
 
 /* ===== 首页四角导航 =====
    竖向偏移统一由容器 padding 承担（--nav-y 单一变量），<a> 竖向 padding
@@ -57,7 +100,13 @@
 .nav-bottom-right a:hover{background:#000;color:#fff}
 
 @media(max-width:768px){
-  .back{gap:8px;padding:8px 12px;padding-top:max(8px, env(safe-area-inset-top))}
+  .back{
+    gap:8px;padding:8px 12px calc(8px + var(--fade-blur));
+    padding-top:max(8px, env(safe-area-inset-top));
+    /* 刘海屏下 padding-top 会被安全区顶大，渐隐起点须跟着下移，
+       否则渐变会从文字中间开始。25 = 链接外框高（1.5×14px 行盒 + 上下各 2px padding）。 */
+    --fade-top:calc(max(8px, env(safe-area-inset-top)) + 25px);
+  }
 
   .nav-top-left{
     top:max(10px, env(safe-area-inset-top));

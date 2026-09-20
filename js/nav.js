@@ -40,3 +40,18 @@ App.renderIndexNav = function() {
     '<a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a>';
   document.body.appendChild(bottomRight);
 };
+
+/* ===== 防拖拽兜底（Firefox + 运行时插入的图片）=====
+   浏览器一旦进入原生拖拽（dragstart），mouseup 就不再派发 click，表现为「点不动、只在拖」。
+   CSS 侧已用 -webkit-user-drag:none 覆盖 Chrome/Safari/Edge（css/base.css 的 <img>、
+   css/nav.css 的导航 UI）；Firefox 不支持该属性，且项目页图片由 JS 动态插入（不带 draggable
+   属性），故在此统一兜底。只拦图片与导航 UI：正文里的下载链接、相关作品链接保持默认可拖，
+   把链接拖到桌面存文件仍是有效操作。 */
+document.addEventListener('dragstart', e => {
+  const el = e.target;
+  if (!el || el.nodeType !== 1) return;
+  if (el.tagName === 'IMG' ||
+      el.closest('.back, .nav-top-left, .nav-top-right, .nav-bottom-left, .nav-bottom-right')) {
+    e.preventDefault();
+  }
+}, true);
