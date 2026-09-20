@@ -27,6 +27,73 @@
 /* ===== shared ===== */
 .redact{background:#000;color:#000;padding:0 4px;letter-spacing:2px;margin:0 2px}
 
+/* 作品信息栏：每件作品描述顶部的字段化事实行。
+   注意：描述被注入的容器在部分布局里是 <p>，因此这里只用 <span> 构造
+   （CSS display 不影响解析，<span> 是 phrasing content，安全）。
+   子元素成对出现，整体作为一个 grid，标签列自动对齐。
+   不留上边框：grid/edge/gallery 三种布局的 h2 本身已有 3px 下边框，
+   再加一条会形成 24px 间隔的双平行线。下边框足以界定这个块。 */
+.work-meta{
+  display:grid;
+  grid-template-columns:88px 1fr;
+  gap:3px 14px;
+  margin:0 0 32px;
+  border-bottom:3px solid #000;
+  padding:0 0 14px;
+  font-size:12.5px;
+  line-height:1.7;
+  letter-spacing:0.5px;
+  text-align:left;
+}
+.work-meta-k{font-weight:700;color:#888;letter-spacing:1px}
+.work-meta-v{color:#000;min-width:0}
+
+/* 正文里的分节小标题 */
+.work-sec{display:block;font-weight:700;margin-bottom:8px}
+
+/* 作品副标题：嵌在标题（h2）内部，位于标题文字与 h2 下边框之间，
+   使副标题与标题成为一个整体（参考 Works 页 .works-title + .works-brief 的配对）。
+   内容取自 project.subtitle，未单独给则退回 project.brief，由 js/project.js 的
+   setTitle() 渲染。只在作品页出现，不参与首页卡片与 Works 列表。
+   注意 text-transform 必须归位，否则继承 h2 的 uppercase。 */
+h2 .work-sub{
+  display:block;
+  font-size:12.5px;font-weight:400;color:#888;
+  letter-spacing:0.5px;line-height:1.5;
+  text-transform:none;
+  margin-top:6px;
+}
+@media(max-width:768px){
+  h2 .work-sub{font-size:11.5px;margin-top:4px}
+}
+
+/* 不换行：用于 12–36V、2025.10.22–25 这类不该在连字符/短横处断开的记号 */
+.nb{white-space:nowrap}
+
+/* 作品页可折叠块：把长引文（如 riverrun 的轨道文本对照）从主叙述里移出来，
+   保持正文可扫读。样式与 changelog 的 details 一致，但用 class 作用域限定，
+   不依赖 changelog.css（那个文件只在 changelog 页加载）。 */
+.work-details{border:2px solid #000;margin:0 0 16px}
+.work-details>summary{padding:10px 14px;cursor:pointer;font-size:13px;font-weight:700;letter-spacing:1px;list-style:none}
+.work-details>summary::-webkit-details-marker{display:none}
+.work-details>summary::before{content:'[+] ';margin-right:6px}
+.work-details[open]>summary::before{content:'[-] '}
+.work-details>summary:hover{background:#000;color:#fff}
+.work-details[open]>summary{border-bottom:2px solid #000}
+.work-details-body{padding:14px}
+
+/* 引文块（riverrun 的轨道文本对照等） */
+.track-text{margin:0 0 16px;padding:12px 16px;border-left:3px solid #000;background:#f9f9f9;font-size:12.5px;line-height:1.9}
+.track-text:last-child{margin-bottom:0}
+
+/* mixer 布局的描述栏只有 380px 宽（css 同文件 .mixer-desc），
+   信息栏的 88px 标签列在这里太占位，收窄到 68px。 */
+.mixer-desc .work-meta{grid-template-columns:68px 1fr;gap:3px 10px}
+
+@media(max-width:768px){
+  .work-meta{grid-template-columns:72px 1fr;gap:3px 10px;margin-bottom:24px;padding:0 0 12px;font-size:12px}
+}
+
 /* related works cross-links */
 .project-related{margin-top:32px;display:flex;flex-direction:column;gap:6px}
 .project-related-link{display:inline-block;align-self:flex-start;font-size:13px;letter-spacing:0.5px;color:#000;text-decoration:none;border-bottom:1px solid #000;padding-bottom:2px}
@@ -34,10 +101,28 @@
 
 /* ===== WWHBH layout ===== */
 .wwhbh-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
+/* 实时晕染层（js/ink-wwhbh.js）。
+   position:fixed 铺满的是「视口」而不是「文档」——这件作品的晕染是
+   「你正在待着的这个房间的状态」，不是某一页的背景，所以滚动时它不跟着走。
+
+   z-index:200 —— **墨盖在整个页面内容之上**（作者要求「全部盖住，包括标题」）。
+   导航是 z-index:100，同样在墨之下。因为墨层是 pointer-events:none，
+   底下的按钮与导航仍然可以正常点击，只是可能看不清；
+   关闭按钮那一小块由 js/ink-wwhbh.js 把墨压淡，保留可辨认的关闭入口。 */
+.wwhbh-ink{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
+.wwhbh-ink canvas{display:block;width:100%;height:100%}
 .wwhbh-body{max-width:800px;width:100%;text-align:left}
 .wwhbh-body h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px}
 .wwhbh-body p{line-height:2.4;font-size:14px;letter-spacing:0.5px;margin-bottom:32px}
-.wwhbh-footer{max-width:800px;width:100%;padding:0 0 32px}
+/* 麦克风状态与控制：紧贴标题下方。
+   页面加载即自动申请权限，这里显示 申请中／待点击／聆听中／被拒／不可用。
+   状态行占据剩余宽度，按钮只在其有意义时（重试／关闭）出现且为自适应宽度。 */
+.wwhbh-mic{display:flex;align-items:center;gap:16px;margin:-14px 0 32px;min-height:34px}
+.wwhbh-status{margin:0;flex:1;font-size:13px;letter-spacing:1px;color:#888;line-height:1.5}
+.wwhbh-status.on{color:#000;font-weight:700}
+/* 待点击时整行可点（浏览器自动播放策略要求至少一次用户手势） */
+.wwhbh-status.clickable{cursor:pointer;color:#000;font-weight:700;text-decoration:underline}
+.wwhbh-mic .btn-mic{width:auto;flex:none;padding:8px 18px;font-size:12px;letter-spacing:1px}
 .btn-mic{
   width:100%;font-size:14px;font-weight:700;
   letter-spacing:2px;text-transform:uppercase;
@@ -99,6 +184,9 @@
   .info-area{padding:20px 16px}
   .info-area h2{font-size:16px}
   .wwhbh-panel{padding:70px 16px 24px}
+  .wwhbh-mic{gap:10px;margin:-10px 0 24px;min-height:30px}
+  .wwhbh-status{font-size:12px}
+  .wwhbh-mic .btn-mic{padding:7px 12px;font-size:11px}
   .ecce-panel{padding:70px 16px 24px}
   .edge-panel{padding:70px 16px 24px}
   .edge-media{aspect-ratio:16/9}

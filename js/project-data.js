@@ -17,12 +17,13 @@ App.projects = {
     audio: 'audio/the-just-type-study.m4a'
   },
 
-  'the-fet-mixer': {
+  'the-induction-mixer': {
     layout: 'gallery',
-    title: { zh:'THE FET MIXER', en:'THE FET MIXER' },
-    brief: { zh:'12输入4输出的空间混音器，基于电磁波传输与拾取', en:'A 12-in 4-out spatial mixer based on electromagnetic wave transmission and pickup' },
+    title: { zh:'THE INDUCTION MIXER', en:'THE INDUCTION MIXER' },
+    subtitle: { zh:'基于近场电磁感应的交互式矩阵电子混音器的乐器设计', en:'An interactive matrix electronic mixer built on near-field electromagnetic induction' },
+    brief: { zh:'基于近场电磁感应的12输入4输出空间混音器', en:'A 12-in 4-out spatial mixer based on near-field electromagnetic induction' },
     desc: { file: true },
-    media: { type: 'gallery', images: ['img/the-fet-mixer.webp','img/the-fet-mixer-2.webp','img/the-fet-mixer-3.webp'] },
+    media: { type: 'gallery', images: ['img/the-induction-mixer.webp','img/the-induction-mixer-2.webp','img/the-induction-mixer-3.webp'] },
     related: [ { id:'riverrun', role:{ zh:'应用于', en:'Used in' } } ]
   },
 
@@ -30,17 +31,17 @@ App.projects = {
     layout: 'mixer',
     title: { zh:'riverrun', en:'riverrun' },
     lowercase: true,
-    brief: { zh:'基于《芬尼根的守灵夜》与 The FET Mixer 的交互式声音装置', en:'An interactive sound installation based on Finnegans Wake and The FET Mixer' },
+    brief: { zh:'基于《芬尼根的守灵夜》多义性的交互式声音作品', en:'An interactive sound work on the polysemy of Finnegans Wake' },
     desc: { file: true },
     audioDir: 'audio/riverrun',
     tracks: 12,
-    related: [ { id:'the-fet-mixer', role:{ zh:'本作品使用', en:'Created with' } } ]
+    related: [ { id:'the-induction-mixer', role:{ zh:'本作品使用', en:'Created with' } } ]
   },
 
   'edgedgedge': {
     layout: 'edge',
     title: { zh:'EDGEDGEDGE', en:'EDGEDGEDGE' },
-    brief: { zh:'与钢铁大腿共同创作的回授声音装置，关于模糊的边缘与失控', en:'A feedback sound installation co-created with Gangtie Datui, about blurred edges and loss of control' },
+    brief: { zh:'与钢铁大腿共同创作的回授声音演出，关于模糊的边缘与失控', en:'A feedback sound performance co-created with Gangtie Datui, about blurred edges and loss of control' },
     desc:  { file: true },
     media: { type: 'bilibili', bvid: 'BV1VbxyzaEKA' }
   },
@@ -65,7 +66,7 @@ App.projects = {
   'wwhbh': {
     layout: 'wwhbh',
     title: { zh:'我们将会曾经在这里', en:'WE WILL HAVE BEEN HERE' },
-    brief: { zh:'基于麦克风与扬声器回授的声音装置，关于时间、记忆与易失性', en:'A microphone-loudspeaker feedback installation about time, memory, and volatility' },
+    brief: { zh:'基于麦克风与扬声器回授的声音概念，关于时间、记忆与易失性', en:'A microphone-loudspeaker feedback concept piece about time, memory, and volatility' },
     desc: { file: true }
   }
 };
@@ -74,7 +75,7 @@ App.projects = {
 App.projectOrder = [
   '6u104hp',
   'the-just-type-study',
-  'the-fet-mixer',
+  'the-induction-mixer',
   'riverrun',
   'edgedgedge',
   'spectral-dissector',

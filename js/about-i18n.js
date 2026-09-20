@@ -20,8 +20,8 @@ App.ABOUT_I18N = {
     en: 'I know that generally speaking, this isn\'t what people come here to see. If I must say, I mainly play around with modular synthesizers, build some myself, and then I research things related to musical interfaces, things related to synthesis methods, and I care quite a bit about the politicization of art. Other than that, nothing much.'
   },
   bio5: {
-    zh: '我现在就读于上海音乐学院音乐工程系，音乐与科技专业。',
-    en: 'I am currently studying at the Shanghai Conservatory of Music, Department of Music Engineering, majoring in Music and Technology.'
+    zh: '我现在就读于上海音乐学院音乐工程系，艺术与科技专业。',
+    en: 'I am currently studying at the Shanghai Conservatory of Music, Department of Music Engineering, majoring in Art and Technology.'
   },
   bio6: {
     zh: '希望大家都幸福。',

@@ -1,4 +1,4 @@
-/* ===== RIVERRUN: spatial mixer (recreates The FET Mixer interaction) =====
+/* ===== RIVERRUN: spatial mixer (recreates The Induction Mixer interaction) =====
  *
  * 12 条音轨在二维「面板」上排布为若干点，点的直径随各轨响度脉动；所有音轨同步循环
  * 播放。用户以光标（抽象指示，非麦克风图标）在面板内移动，即为一只虚拟「麦克风」：

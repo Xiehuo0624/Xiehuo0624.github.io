@@ -1,4 +1,4 @@
-这是我为2026年7月24日的演出设计的Eurorack模块合成器系统，它的尺寸是3+1U，64HP。这个系统包含了一块Monome Teletype的Clone，它是有自己编程语言的编程模块，可以自己设计Script来创作编程音乐；一块Mannequins Just Friends，它是一块数字振荡器，可以经由I2C协议由Teletype进行数字控制；一块Holocene AWMS，这是一块Radio、LFO与SnH；一块Holocene Seiche，这是一块Complex Dual Filters；一块khiat v.dws，这是一块将类似马特诺音波琴拉环的拉线位移传感器转化为电压输出的控制模块；一块sarnesjo设计的1U Nearness Mixer来提供带有Panning的Mixing，一块1U Pico FX来提供Reverb，一块1U的有源Output模块。Pico FX与Output来自fm.things，由我的朋友qoɔ.制作。
+这是我为2026年7月24日的演出设计的Eurorack模块合成器系统，它的尺寸是3+1U，64HP。这个系统包含了一块Monome Teletype的Clone，它是有自己编程语言的编程模块，可以自己设计Script来创作编程音乐；一块Mannequins Just Friends，它是一块数字振荡器，可以经由I2C协议由Teletype进行数字控制；一块Holocene AWMS，这是一块Radio、LFO与S&H；一块Holocene Seiche，这是一块Complex Dual Filters；一块khiat v.dws，这是一块将类似马特诺音波琴拉环的拉线位移传感器转化为电压输出的控制模块；一块sarnesjo设计的1U Nearness Mixer来提供带有Panning的Mixing，一块1U Pico FX来提供Reverb，一块1U的有源Output模块。Pico FX与Output来自fm.things，由我的朋友qoɔ.制作。
 
 <br><br>
 
@@ -6,7 +6,7 @@
 
 <br><br>
 
-在这个系统中，我效仿Instruō harmonàig逻辑，设计了一个只需要输入根音即可设计和弦的脚本，并且（在一位不愿透露姓名的朋友的帮助下）设计了一个和声进行，让Just Friends的输出3-6根据这个和声进行输出柱式和弦。3-6输出的每个输出之间有细微的时间差，将输出的时间差按照这些接口在Nearness上的Panning关系进行设计，我得到了"从左到右被触发"的Organic的柱式和弦。输出1-2为旋律输出，它们的音高为八度关系。旋律的音高由v.dws这款拉环模块输出的电压，输入到Teletype的CV in，使用量化脚本，量化为当前和弦的和弦内音。当输入电压改变时，旋律会被触发，当输入电压长时间不改变时，旋律将会终止。我还设计了一组有节奏的Trigger输出来Ping Seiche的两个Filter，以此设计了打击乐，而AWMS提供了Radio输出、LFO、SnH来帮助这个系统更有呼吸感。
+在这个系统中，我效仿Instruō harmonàig逻辑，设计了一个只需要输入根音即可设计和弦的脚本，并且（在一位不愿透露姓名的朋友的帮助下）设计了一个和声进行，让Just Friends的输出3-6根据这个和声进行输出柱式和弦。3-6输出的每个输出之间有细微的时间差，将输出的时间差按照这些接口在Nearness上的Panning关系进行设计，我得到了"从左到右被触发"的Organic的柱式和弦。输出1-2为旋律输出，它们的音高为八度关系。旋律的音高由v.dws这款拉环模块输出的电压，输入到Teletype的CV in，使用量化脚本，量化为当前和弦的和弦内音。当输入电压改变时，旋律会被触发，当输入电压长时间不改变时，旋律将会终止。我还设计了一组有节奏的Trigger输出来Ping Seiche的两个Filter，以此设计了打击乐，而AWMS提供了Radio输出、LFO、S&H来帮助这个系统更有呼吸感。
 
 <br><br>
 

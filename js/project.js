@@ -53,9 +53,24 @@
     const t = project.title[App.I18n.currentLang];
     document.title = t;
 
+    /* 标题 + 副标题：副标题嵌在 h2 内部，位于标题文字与 h2 下边框之间，
+       使两者成为一个整体（参考 Works 页 .works-title + .works-brief 的配对）。
+       作品未单独给 subtitle 时退回 brief。每次调用先清空 h2，故切语言安全。 */
+    const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) || '';
+    const setTitle = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = t;
+      if (!sub) return;
+      const sp = document.createElement('span');
+      sp.className = 'work-sub';
+      sp.textContent = sub;
+      el.appendChild(sp);
+    };
+
     const layout = project.layout;
     if (layout === 'grid') {
-      document.getElementById('grid-title').textContent = t;
+      setTitle('grid-title');
       /* render media area (single image) */
       if (project.media && !mediaRendered) {
         const mediaEl = document.getElementById('grid-media');
@@ -72,7 +87,7 @@
         }
       }
     } else if (layout === 'edge') {
-      document.getElementById('edge-title').textContent = t;
+      setTitle('edge-title');
       /* render media area */
       if (project.media && !mediaRendered) {
         const mediaEl = document.getElementById('edge-media');
@@ -95,7 +110,7 @@
         }
       }
     } else if (layout === 'gallery') {
-      document.getElementById('gallery-title').textContent = t;
+      setTitle('gallery-title');
       /* render gallery slider */
       if (!mediaRendered && project.media && project.media.type === 'gallery') {
         const slider = document.getElementById('gallery-slider');
@@ -118,11 +133,11 @@
         }
       }
     } else if (layout === 'wwhbh') {
-      document.getElementById('wwhbh-title').textContent = t;
+      setTitle('wwhbh-title');
     } else if (layout === 'mixer') {
-      document.getElementById('mixer-title').textContent = t;
+      setTitle('mixer-title');
     } else if (layout === 'ecce') {
-      document.getElementById('ecce-title').textContent = t;
+      setTitle('ecce-title');
       /* render top image (+ optional audio) */
       if (!mediaRendered) {
         const mediaEl = document.getElementById('ecce-media');
@@ -177,7 +192,7 @@
     }
   }
 
-  /* ---- related works (cross-links, e.g. riverrun ↔ The FET Mixer) ---- */
+  /* ---- related works (cross-links, e.g. riverrun ↔ The Induction Mixer) ---- */
   function appendRelated(descEl){
     if (!project.related || !project.related.length) return;
     const lang = App.I18n.currentLang;
@@ -198,14 +213,14 @@
 
   App.I18n.init(App.PROJECT_I18N, () => {
     fillContent();
-    if (projectId === 'wwhbh') App.refreshMicButton();
+    if (projectId === 'wwhbh') App.refreshWwhbhUI();
     if (project.layout === 'mixer') App.refreshRiverrunMixer();
   });
   fillContent();
 
   /* ---- WWHBH audio ---- */
   if (projectId === 'wwhbh') {
-    App.initMicButton(document.getElementById('btn-mic'));
+    App.initWwhbh(document.getElementById('btn-mic'), document.getElementById('wwhbh-status'));
   }
 
   /* ---- RIVERRUN spatial mixer ---- */
