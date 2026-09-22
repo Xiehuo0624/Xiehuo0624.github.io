@@ -9,8 +9,11 @@
 <script>
 /* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
    原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
-   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}catch(e){}})();
+   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。
+   预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：
+   HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
+   同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。改 base.css 的字体版本号时这里要一起改。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->

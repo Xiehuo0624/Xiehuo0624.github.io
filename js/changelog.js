@@ -14,6 +14,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-09-22',
       title: {
+        zh: '作品页字体预载 URL 补上 `?v=`：中文作品页冷缓存少下 267.7KB',
+        en: 'The work-page font preload gets its ?v=, saving 267.7KB on a Chinese work page'
+      },
+      body: {
+        zh: '① 问题：中文作品页冷缓存下把同一份主字体下了两遍。实测（headless Chrome、每页独立无痕上下文）：站内页 `/zh/` 1 次 267.7KB，中文作品页 3 次 809.5KB —— 多出来的那次是同一份 Regular，白下 267.7KB，占该页字体流量的三分之一。\n② 成因：取字体有两条互不相干的路径，而 **HTTP 缓存键是完整 URL（含查询串）**：作品页内联预载写 `…Regular.woff2`，`base.css` 的 `@font-face` 写 `…Regular.woff2?v=2` —— 两个条目，预载下的那份用不上，`@font-face` 按自己的 URL 再下一次。2026-09-22 加 `?v=` 时 `base.css` 与 `gen-pages.mjs` 都加了号，`gen-projects.mjs` 的 `HEAD_SCRIPT` 是硬编码字符串、漏了；此前两边 URL 相同、预载有效。\n③ 做法：把作品页预载 URL 补成与 `base.css` 逐字相同的 `?v=3`，重生成 16 个作品页；注释里写明「改 base.css 字体版本号时这里要一起改」。\n④ 实测：同一探针复测，中文作品页 3 次/809.5KB → **2 次/541.8KB（省 267.7KB）**；站内页与英文页不变（英文页 0 次）；verify 572 项全过、覆盖率 0 缺字、四个生成器 `--check` 无漂移。\n⑤ 否决：去掉预载（首屏中文会先以兜底字体出现再替换）；版本号单一来源（要动两个生成器与文档，与本次诉求不成比例）。\n探针 `tmp/check-font-preload.mjs`（gitignore）留着，改字体版本号后可直接复测。版本号：`changelog` v15→v16；作品页 HTML 无号，不提号。',
+        en: '① The problem. On a cold cache a Chinese work page downloaded the same main font twice. Measured in headless Chrome, each page in its own incognito context: the site page /zh/ made one request of 267.7KB, while a Chinese work page made three totalling 809.5KB — the extra one being the same Regular file, 267.7KB wasted, a third of that page font traffic.\n② The cause. A page fetches its fonts down two independent paths, and **the HTTP cache key is the whole URL including the query string**: the inline preload on work pages asked for …Regular.woff2 while the @font-face rule in css/base.css asked for …Regular.woff2?v=2. Two entries, so the preloaded copy was never used and @font-face fetched its own. The ?v= was added to the main font on 2026-09-22 in base.css and gen-pages.mjs, but the preload in gen-projects.mjs is a hardcoded string in HEAD_SCRIPT and was missed. Before that both sides used the same URL and the preload worked, so this was not a preload that never worked but one that the version bump quietly broke, with nothing in the checks to report it.\n③ The fix. The work-page preload URL now carries the same ?v=3 as base.css, character for character, and the sixteen work pages were regenerated; the comment above it now says that changing the font version in base.css means changing it here too.\n④ Verified with the same probe: a Chinese work page went from three requests and 809.5KB to **two and 541.8KB, 267.7KB less**; the site pages and the English pages are unchanged, the English pages still requesting no main font at all. The 572 assertions pass, the coverage probe finds no missing glyph, and all four generators report no drift under --check.\n⑤ Rejected: dropping the preload, which would stop the duplicate download but leave the font undiscovered until the CSS is parsed, so Chinese text would paint in a fallback face first; and making the version single-sourced from base.css, which is the durable answer but would touch two generators and the docs for a benefit out of proportion to this fix.\nThe probe tmp/check-font-preload.mjs is kept in the gitignored tmp/ so the next font version bump can be re-measured with it. Cache versions: changelog fifteen to sixteen; the work-page HTML carries no version number and none was invented for it.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-22',
+      title: {
         zh: 'THE INDUCTION MIXER 规格栏补上尺寸：面板322×188mm、箱体厚43.5mm',
         en: 'The Induction Mixer spec line filled in: panel 322×188mm, case 43.5mm thick'
       },
