@@ -381,8 +381,8 @@ for (const lang of ['zh', 'en']) {
   })`);
   checkTrue(`changelog(${lang}) 有日志条目`, info.entries > 10);
   checkTrue(`changelog(${lang}) 首条是本次改动`,
-    /站内四页|four site pages/.test(info.firstTitle));
-  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=14');
+    /规格栏补上尺寸|spec line filled in/.test(info.firstTitle));
+  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=15');
   checkTrue(`changelog(${lang}) 无报错`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
   if (v.net.bad.length) failures.push(`changelog(${lang}) 4xx：${JSON.stringify(v.net.bad)}`);
   if (v.consoleErrors.length) failures.push(`changelog(${lang}) 控制台：${JSON.stringify(v.consoleErrors)}`);

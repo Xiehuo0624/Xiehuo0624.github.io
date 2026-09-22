@@ -136,7 +136,7 @@ function replaceOnce(html, needle, replacement, what) {
 
 const FONT_PRELOAD = `<script>
 /* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=2';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3';document.head.appendChild(f);}catch(e){}})();
 </script>`;
 
 function applyLegacyRegions(html, where) {
