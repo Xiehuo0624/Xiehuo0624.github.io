@@ -1,0 +1,10 @@
+# 由 scripts/gen-projects.mjs 生成，请勿手改（改 CNAME 后重新生成）。
+#
+# 作品页的规范地址是目录式：/works/<id>/（英文）与 /works/<id>/zh/（中文）。
+# 旧的 /project-template.html?project=… 刻意不在这里屏蔽 —— 它自带 noindex，
+# 屏蔽只会让已发出的旧链接无法被重新抓取、读不到那条 noindex。
+
+User-agent: *
+Allow: /
+
+Sitemap: https://caohaoxuan.com/sitemap.xml

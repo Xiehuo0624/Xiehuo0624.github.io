@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh" data-lang="zh" data-lang-fixed>
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<!-- 语言必须在首次绘制前定下来，否则默认中文文案会一闪而过（defer 脚本来不及）。
+     ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
+     必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 旧地址：这一页的规范地址已经是目录式（/about/ 与 /about/zh/ 等，由 scripts/gen-pages.mjs 生成）。
+     本文件继续可用 —— 已发出去的链接不能断 —— 但静态的 noindex 让不跑 JS 的抓取者知道
+     它不是正式页面；页面脚本再用 App.injectCanonical() 补一条指向目录式地址的 canonical。 -->
+<meta name="robots" content="noindex,follow">
+<title>关于</title>
+<meta name="description" content="关于曹浩轩（泻火）：经历、创作方向与联系方式。">
+<link rel="canonical" href="https://caohaoxuan.com/about/zh/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/about/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/about/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/about/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="泻火 曹浩轩">
+<meta property="og:title" content="关于">
+<meta property="og:description" content="关于曹浩轩（泻火）：经历、创作方向与联系方式。">
+<meta property="og:url" content="https://caohaoxuan.com/about/zh/">
+<meta property="og:image" content="https://caohaoxuan.com/img/logo/shuihuo-180.png">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/about.css">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
+     不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：App 命名空间与本页文案数据必须在首次绘制前就位，
+     文件末尾那段同步内联脚本要靠 App.ABOUT_I18N 在绘制前定下标题文案
+     （defer 要等全部脚本下载完才跑，那之前英文界面会先画出 HTML 里硬编码的中文「关于」，
+     实测约 190ms）。两个文件共约 4.6KB，与 CSS 并行下载，实测首屏时刻无回归。 -->
+<script src="js/app.js"></script>
+<script src="js/about-i18n.js?v=4"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic -->
+<script defer src="js/about.js"></script>
+</head>
+<body>
+
+<div class="back" data-baked="1"><a href="./zh/" data-i18n="back">[&lt;- 返回]</a><a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a></div>
+
+<div class="about-page">
+  <div class="bio">
+    <h1 data-i18n="title">关于</h1>
+    <p data-i18n="bio1">我真的非常讨厌解释我是谁，解释我做什么，解释我的作品是做什么、表达什么、关于什么。但是无论如何都还是得做这种事情，这也是没有办法的事情。我是泻火，我是曹浩轩，我是曹天予，我是Jerry，我2004年6月24日出生，你要是乐意在我生日的时候可以给我买点好玩的生日礼物，太贵的我就不要了。</p>
+    <p data-i18n="bio2">我最开始做艺术，或者说梦想着做艺术其实只是因为我精神实在是太差了。为什么要说&quot;只是&quot;呢？可能是因为似乎所有人都可以且理所应当把自己的精神稳定住。但是这当然是不可能的，这简直是这个世界上最难的事情。</p>
+    <p data-i18n="bio3">总之我其实不想做艺术，我也搞不懂自己到底在干嘛，各种事情都随便吧。无论如何我还是学了计算机音乐啊、模块合成器啊、合成法啊各种东西，还看了不少的书、电影、作品之类的，无所谓了。我在说什么呢。总之这几年蛮好的。</p>
+    <p data-i18n="bio4">我知道大家一般来说想看的不是这些东西。要说的话我主要就是玩一玩模块合成器，自己也会做一点，然后就是研究一些乐器界面相关的内容，研究一些合成法相关的内容，还有就是我蛮在乎艺术的政治化的，除此之外也没什么了。</p>
+    <p data-i18n="bio5">我现在就读于上海音乐学院音乐工程系，艺术与科技专业。</p>
+    <p data-i18n="bio6">希望大家都幸福。</p>
+    <p data-i18n="bio7">我最喜欢的艺术家应该是Christina Kubisch、Cathy Van Eck。</p>
+    <span class="bio-date" data-i18n="bio6date">2026.06.10</span>
+    <p data-i18n="bio8">我妈说我标点用错了。</p>
+    <span class="bio-date" data-i18n="bio8date">2026.06.24</span>
+  </div>
+  <div class="contact">
+    <h2 data-i18n="contact">联系</h2>
+    <a href="mailto:caohaoxuan0624@gmail.com">caohaoxuan0624@gmail.com</a>
+  </div>
+</div>
+
+<!-- 绘制前定文案的内联脚本已由生成器删除：文案在生成时按语言烤好，不需要运行时再定 -->
+
+</body>
+</html>

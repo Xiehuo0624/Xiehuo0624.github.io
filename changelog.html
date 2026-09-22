@@ -5,16 +5,22 @@
 <!-- 语言必须在首次绘制前定下来，否则默认中文文案会一闪而过（defer 脚本来不及）。
      ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
      必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
+<!-- gen:legacy-only:lang -->
 <script>
 (function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}}catch(e){}})();
 </script>
+<!-- /gen:legacy-only:lang -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 旧地址：这一页的规范地址已经是目录式（/changelog/ 与 /changelog/zh/ 等，由 scripts/gen-pages.mjs 生成）。
+     本文件继续可用 —— 已发出去的链接不能断 —— 但静态的 noindex 让不跑 JS 的抓取者知道
+     它不是正式页面；页面脚本再用 App.injectCanonical() 补一条指向目录式地址的 canonical。 -->
+<meta name="robots" content="noindex,follow">
 <title>CHANGELOG</title>
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/nav.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/changelog.css">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
@@ -28,12 +34,12 @@
 <script src="js/app.js"></script>
 <script src="js/changelog-i18n.js"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
-<script defer src="js/i18n.js?v=4"></script>
+<script defer src="js/i18n.js?v=6"></script>
 <script defer src="js/autospace.js"></script>
-<script defer src="js/nav.js?v=3"></script>
+<script defer src="js/nav.js?v=5"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic -->
-<script defer src="js/changelog.js?v=9"></script>
+<script defer src="js/changelog.js?v=15"></script>
 </head>
 <body>
 
@@ -42,6 +48,7 @@
   <h1 class="changelog-title" data-i18n="title">进程日志</h1>
 </div>
 
+<!-- gen:legacy-only:prepaint -->
 <!-- ===== 绘制前定文案：必须在首次绘制前执行 =====
      h1 的文案来自 js/changelog-i18n.js，而它是 defer —— 而这里 defer 链的最后一环是
      188KB 的 js/changelog.js，所以英文界面会盯着中文「进程日志」直到 1838ms（全站最久）。
@@ -57,6 +64,7 @@
   if (h) h.textContent = t;
 })();
 </script>
+<!-- /gen:legacy-only:prepaint -->
 
 </body>
 </html>

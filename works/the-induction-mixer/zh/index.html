@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!-- 本文件由 scripts/gen-projects.mjs 生成，请勿手改。
+     改动 project-template.html、js/project-data.js 或 data/<id>/<lang>.html 之后
+     重新运行 `node scripts/gen-projects.mjs`；手改会在下次生成时被覆盖。 -->
+<html lang="zh" data-lang="zh" data-lang-fixed data-project="the-induction-mixer" data-layout="gallery">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
+   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
+   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
+<!-- 标签页标题只写作品名（站内惯例，窄标签栏也不截断）；说明性的一整句放在
+     description 与 og:description 里 —— 预览卡片本来就是「标题 + 说明行」两行结构，
+     拼进标题既会与说明行重复，英文那半还会被截断（最长 133 字符）。 -->
+<title>THE INDUCTION MIXER</title>
+<meta name="description" content="基于近场电磁感应的交互式矩阵电子混音器的乐器设计">
+<link rel="canonical" href="https://caohaoxuan.com/works/the-induction-mixer/zh/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/the-induction-mixer/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/the-induction-mixer/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/the-induction-mixer/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="泻火 曹浩轩">
+<meta property="og:title" content="THE INDUCTION MIXER">
+<meta property="og:description" content="基于近场电磁感应的交互式矩阵电子混音器的乐器设计">
+<meta property="og:url" content="https://caohaoxuan.com/works/the-induction-mixer/zh/">
+<meta property="og:image" content="https://caohaoxuan.com/img/the-induction-mixer.webp">
+<meta property="og:image:alt" content="THE INDUCTION MIXER">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/project.css?v=5">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
+     不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：与模板共用同一套同步加载策略（见 project-template.html 的说明）。
+     生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
+     保持同步只为避免两份加载策略各自漂移。 -->
+<script src="js/app.js"></script>
+<script src="js/project-data.js?v=3"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic（js/ink-wwhbh.js、js/audio-wwhbh.js、js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
+     生成器剪掉，见 scripts/gen-projects.mjs） -->
+<script defer src="js/project-i18n.js?v=4"></script>
+<script defer src="js/project.js?v=6"></script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+<!-- gallery: text on top, horizontal image slider below -->
+<div class="gallery-panel" id="layout-gallery">
+  <div class="gallery-body">
+    <h2 id="gallery-title">THE INDUCTION MIXER<span class="work-sub">基于近场电磁感应的交互式矩阵电子混音器的乐器设计</span></h2>
+    <p id="gallery-desc" data-desc-lang="zh"><span class="work-meta">
+<span class="work-meta-k">创作年份</span><span class="work-meta-v">2025–2026</span>
+<span class="work-meta-k">形态</span><span class="work-meta-v">空间混音器 / 可演奏的电子乐器</span>
+<span class="work-meta-k">规格</span><span class="work-meta-v">12路输入 / 4路输出；12张PCB发射天线；4通道肢体电感传感器（手指探头）；工字电感拾取；全模拟链路；面板322×188mm（宽×深）；箱体厚43.5mm</span>
+<span class="work-meta-k">分工</span><span class="work-meta-v">概念设计与整体方案、拾取器方案、天线方案：我；外壳设计：Ciiyte（蔡易通）；外壳加工：嘉立创；前级放大电路：基于现有方案，由Ciiyte设计</span>
+<span class="work-meta-k">公开记录</span><span class="work-meta-v">上海音乐学院音乐工程系期末考试汇报，2026.07.01</span>
+<span class="work-meta-k">状态</span><span class="work-meta-v">完成</span>
+<span class="work-meta-k">本页文字</span><span class="work-meta-v">2026.06.24</span>
+<span class="work-meta-k">资料</span><span class="work-meta-v">桌面演示视频、3张照片</span>
+</span>
+
+与Ciiyte（蔡易通）共同设计的作品。
+
+<br><br>
+
+<span class="work-sec">作品简介</span>
+
+The Induction Mixer是一台12路输入、4路输出的空间混音器，也是一件可以演奏的乐器。
+
+<br><br>
+
+它不通过线缆传声音：12路音频分别送进面板内侧的12张印刷电路板天线，以近场电磁感应的方式发射出去；你手里拿着一个工字电感做的拾取器在面板上方移动，它和前级放大电路把电磁波变回声音。所以这块面板上同时存在12个看不见的声源，各自待在固定的位置上。你把手移到哪里，就听见哪里的声音；离得远，那个声音就淡下去。
+
+<br><br>
+
+面板上有12个输入电平旋钮、12个输入接口和输出控制。它有12路输入，但只有4路输出——你听到的，是四个拾取通道在12个声源之间移动的结果。
+
+<br><br>
+
+<span class="work-sec">作品动机</span>
+
+通常，混音是作曲之后的一道工序——先把音乐写出来，再把混音调好听。而这台乐器上只有混音：12路素材是给定的，你能改变的只有"在哪里听"和"听多少"。所以我想试一件事：<span style="font-weight:700">如果混音本身就是作曲，会怎么样。</span>
+
+<br><br>
+
+传统的数字音频工作站把混音消解在二维屏幕、线性推子和参数编码器里。声音的调配于是变成一种视觉主导的操作，身体几乎不参与其中——这可以叫做“去身体化”。我想做的是相反的事：把混音和路由还原成三维空间里的手势。手的移动、皮肤对位置的感知、和不可见电磁场的边界，在这里贴合成同一件事。
+
+<br><br>
+
+这台乐器因此有两种状态。演奏态是一套结构化的电磁声学图谱，供一个人在私密、直觉的状态下即兴；装置态则拆掉了传统音乐界面的技术门槛，让观众用身体直接介入，共同解密和重构一片电磁景观，从而松动“创作者—聆听者”之间那条权力的边界。
+
+<br><br>
+
+<span class="work-sec">灵感溯源</span>
+
+Christina Kubisch的<span style="font-style:italic">Electrical Walks</span>给了我最初的启示。她让观众戴上自制的感应耳机在城市里行走，听见平时听不见的电磁波。用她自己的说法，照明系统、无线通信、雷达、防盗器、监控摄像头、手机、天线、导航系统、ATM、路由器、霓虹灯、公交网络，全都在发出声音——它们“像披着隐形斗篷，却有着惊人的存在感”。她的<span style="font-style:italic">The Mixer Project</span>则更进一步：每个参与者都以一种新的方式重新发现自己城市的声音世界，成为一件独立作品的作曲家，甚至可以把它带回家。
+
+<br><br>
+
+Cathy Van Eck的<span style="font-style:italic">Between Air and Electricity: Microphones and Loudspeakers as Musical Instruments</span>梳理了麦克风和扬声器怎样被当成乐器使用。这本书是我理解“乐器是身体和声音之间的中间物”的起点。
+
+<br><br>
+
+跟她们不一样的地方是：我想在保留这套哲学与美学的前提下，让这件东西更接近一件乐器，而不是一件装置。所以它有一块可以演奏的面板，演奏方式是手的移动，而不是在空间里行走。
+
+<br><br>
+
+<span class="work-sec">技术介绍</span>
+
+先说级联逻辑：12个输入端用的是Switched Tip（开关型）3.5mm接口，信号从上一级的常闭触点依次向下串连级联（1→2→3→4……）。当你在任意一个通道插入外接音频时，上一级传来的级联线路会在物理上被自适应切断。所以如果只接入In 1、4、7、10，整台机器会自动重组、裂变成四个独立的电磁声学功能块——不需要任何设置，也没有开关。这也是“12进4出”的由来。
+
+<br><br>
+
+天线不是设计出来的，是买来的：我买了一批不同类型的天线，逐一测试它们在什么距离、什么朝向下能拾取到什么，最后选定了现在用的这一种。工作量主要在试，不在算。
+
+<br><br>
+
+全链路是模拟的——从输入、天线、近场电磁场域，到四通道电感传感器和前级放大，中间没有任何数字化环节，信号捕捉在物理上是零延迟的。
+
+<br><br>
+
+前级放大电路基于一套现有的方案，由Ciiyte（蔡易通）设计；外壳同样由Ciiyte设计，嘉立创加工。
+
+<br><br>
+
+<span class="work-sec">我的工作</span>
+
+概念设计与整体方案<br>
+拾取器（四通道肢体电感传感器）的方案<br>
+天线方案：实购多种天线逐一测试后选定
+
+<br><br>
+
+<span class="work-sec">后完成</span>
+
+这台乐器本身没有留下什么需要修的问题——它做出来就能用。它很快被用进了riverrun：12条《芬尼根的守灵夜》的音轨经由它的12张天线演奏。它于是从一件独立的作品，变成了一件用来做别的东西的乐器。
+
+<br><br>
+
+但作为一件乐器，它自己的演奏可能性我还没有充分展开：目前只用它做过这一件作品。
+
+<br><br>
+
+<span class="work-sec">公开记录</span>
+
+2026.07.01，上海音乐学院音乐工程系期末考试汇报（2025-2026学年第2学期）。目前只有几段在导师办公室录的桌面演示视频，拍得很粗糙，不是现场演出记录。
+</p>
+  </div>
+  <div class="gallery-slider" id="gallery-slider">
+    <!-- images inserted dynamically -->
+  </div>
+</div>
+
+<!-- 末尾那段「读 ?project= 定布局」的同步脚本已由生成器删除：
+     语言、作品、布局写在 <html> 上，标题、副标题、正文都在生成时填好，
+     首帧即成品，不依赖任何脚本。未使用的布局面板同时被剪掉。 -->
+
+</body>
+</html>

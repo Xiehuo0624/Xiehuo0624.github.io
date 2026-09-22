@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 由 scripts/gen-projects.mjs 生成，请勿手改。
+     只列规范地址：旧的 project-template.html?project=… 带 noindex，不进这里。 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://caohaoxuan.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/about/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/about/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/about/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/changelog/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/changelog/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/changelog/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/changelog/zh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/6u104hp/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/6u104hp/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/6u104hp/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/6u104hp/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/6u104hp/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/6u104hp/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/6u104hp/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/6u104hp/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/the-just-type-study/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/the-just-type-study/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/the-just-type-study/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/the-just-type-study/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/the-just-type-study/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/the-just-type-study/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/the-just-type-study/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/the-just-type-study/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/the-induction-mixer/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/the-induction-mixer/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/the-induction-mixer/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/the-induction-mixer/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/the-induction-mixer/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/the-induction-mixer/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/the-induction-mixer/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/the-induction-mixer/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/riverrun/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/riverrun/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/riverrun/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/riverrun/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/riverrun/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/riverrun/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/riverrun/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/riverrun/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/edgedgedge/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/edgedgedge/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/edgedgedge/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/edgedgedge/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/edgedgedge/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/edgedgedge/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/edgedgedge/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/edgedgedge/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/spectral-dissector/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/spectral-dissector/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/spectral-dissector/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/spectral-dissector/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/spectral-dissector/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/spectral-dissector/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/spectral-dissector/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/spectral-dissector/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/ecce-homo/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/ecce-homo/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/ecce-homo/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/ecce-homo/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/ecce-homo/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/ecce-homo/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/ecce-homo/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/ecce-homo/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/wwhbh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/wwhbh/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/wwhbh/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/wwhbh/"/>
+  </url>
+  <url>
+    <loc>https://caohaoxuan.com/works/wwhbh/zh/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/wwhbh/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/wwhbh/zh/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/wwhbh/"/>
+  </url>
+</urlset>

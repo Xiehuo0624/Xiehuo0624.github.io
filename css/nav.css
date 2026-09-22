@@ -32,6 +32,12 @@
 .back a{color:#000;text-decoration:none;padding:2px 6px;font-size:14px}
 .back a:hover{background:#000;color:#fff}
 
+/* ===== 语言按钮与返回栏的汉字（返回／中文）=====
+   2026-09-22 曾把这两处移出思源字体栈、改走系统字体（macOS 苹方／Windows 雅黑），为的是省下
+   英文页那整份 295KB。现在 `SiteCJK`（几 KB 的小面，见 scripts/gen-cjk-extras.py）已覆盖这几个字，
+   于是**撤掉这条规则**：导航标签回到全站字体栈，与正文同款字形 —— 跨平台不再出现两种字体混排。
+   代价：英文页会为语言按钮的「中文」二字下载 SiteCJK（约 5KB），远小于原来的 295KB。 */
+
 /* ===== 导航文字是 UI 标签，不是可选正文 =====
    除禁用选择外，还必须禁用原生链接拖拽：在 [en] English / [zh] 中文 上按下鼠标，
    只要移动几像素浏览器就进入链接拖拽手势（dragstart），mouseup 时不再派发 click，

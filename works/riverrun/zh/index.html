@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!-- 本文件由 scripts/gen-projects.mjs 生成，请勿手改。
+     改动 project-template.html、js/project-data.js 或 data/<id>/<lang>.html 之后
+     重新运行 `node scripts/gen-projects.mjs`；手改会在下次生成时被覆盖。 -->
+<html lang="zh" data-lang="zh" data-lang-fixed data-project="riverrun" data-layout="mixer">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
+   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
+   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
+<!-- 标签页标题只写作品名（站内惯例，窄标签栏也不截断）；说明性的一整句放在
+     description 与 og:description 里 —— 预览卡片本来就是「标题 + 说明行」两行结构，
+     拼进标题既会与说明行重复，英文那半还会被截断（最长 133 字符）。 -->
+<title>riverrun</title>
+<meta name="description" content="基于《芬尼根的守灵夜》多义性的交互式声音作品">
+<link rel="canonical" href="https://caohaoxuan.com/works/riverrun/zh/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/riverrun/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/riverrun/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/riverrun/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="泻火 曹浩轩">
+<meta property="og:title" content="riverrun">
+<meta property="og:description" content="基于《芬尼根的守灵夜》多义性的交互式声音作品">
+<meta property="og:url" content="https://caohaoxuan.com/works/riverrun/zh/">
+<meta property="og:image" content="https://caohaoxuan.com/img/riverrun.webp">
+<meta property="og:image:alt" content="riverrun">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/project.css?v=5">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
+     不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：与模板共用同一套同步加载策略（见 project-template.html 的说明）。
+     生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
+     保持同步只为避免两份加载策略各自漂移。 -->
+<script src="js/app.js"></script>
+<script src="js/project-data.js?v=3"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic（js/ink-wwhbh.js、js/audio-wwhbh.js 只在 wwhbh / mixer 布局用到，本页已由
+     生成器剪掉，见 scripts/gen-projects.mjs） -->
+<script defer src="js/project-i18n.js?v=4"></script>
+<script defer src="js/mixer-riverrun.js?v=5"></script>
+<script defer src="js/project.js?v=6"></script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+<!-- riverrun: interactive spatial mixer (recreates The Induction Mixer) -->
+<div class="mixer-panel" id="layout-mixer">
+  <div class="mixer-header">
+    <h2 id="mixer-title">riverrun<span class="work-sub">基于《芬尼根的守灵夜》多义性的交互式声音作品</span></h2>
+  </div>
+  <div class="mixer-body">
+    <div class="mixer-stage" id="mixer-stage">
+      <canvas class="mixer-canvas" id="mixer-canvas"></canvas>
+
+      <div class="mixer-hud">
+        <button class="btn-mixer-sm" id="mixer-stop" data-i18n="mixerStop">STOP</button>
+      </div>
+
+      <div class="mixer-center" id="mixer-center">
+        <button class="btn-mixer" id="mixer-toggle" data-i18n="mixerStart">START MIXING</button>
+      </div>
+    </div>
+    <div class="mixer-desc" id="mixer-desc" data-desc-lang="zh"><span class="work-meta">
+<span class="work-meta-k">创作年份</span><span class="work-meta-v">2026</span>
+<span class="work-meta-k">形态</span><span class="work-meta-v">交互式声音作品（数字版已完成，在线可玩；另有Induction Mixer演奏版）</span>
+<span class="work-meta-k">规格</span><span class="work-meta-v">12条音轨，中英文交替录制，同步循环</span>
+<span class="work-meta-k">分工</span><span class="work-meta-v">作品、系统设计与有声书录制：我；文本处理参考戴从容译本</span>
+<span class="work-meta-k">公开记录</span><span class="work-meta-v">上海音乐学院音乐工程系期末考试汇报 2026.07.01</span>
+<span class="work-meta-k">状态</span><span class="work-meta-v">数字版完成并在线可玩</span>
+<span class="work-meta-k">本页文字</span><span class="work-meta-v">2026.06.24</span>
+<span class="work-meta-k">资料</span><span class="work-meta-v">网页版可交互（12轨）；Induction Mixer演奏录像（手机录制）</span>
+</span>
+
+<br><br>
+
+<span class="work-sec">作品简介</span>
+
+riverrun是一件关于詹姆斯·乔伊斯（James Joyce）《芬尼根的守灵夜》（Finnegans Wake）的声音作品。它目前有两个版本：一个可以直接在网页上玩，另一个用The Induction Mixer演奏这12条音轨。
+
+<br><br>
+
+两个版本共同的东西是：12条同步循环的音轨，每一条是同一个词的一种读法。作品要求观众在其中移动——用手，或者用光标——从而听见什么、以及必然听不见什么。
+
+<br><br>
+
+<span class="work-sec">作品动机：错失感</span>
+
+《芬尼根的守灵夜》是一部无法被完整阅读的书。乔伊斯花了十七年写成，书中混用了八十种以上的语言，几乎每个词都是几个词的复合（portmanteau）。戴从容的中文译本是这项工作能做到的极限——但它带来的巨量注释，让阅读以另一种方式变得困难了。
+
+<br><br>
+
+我想做的不是"再现"这种困难，而是让观众在身体上重新经历它。
+
+<br><br>
+
+12条音轨同时存在于空间中，而人的听觉和身体位置都是有限的：<span style="font-weight:700">在同一时刻捕捉到某一个意象，就必然意味着丢失其他意象。</span>这种基于物理位置和生理局限的错失感，正是原著阅读体验的空间化重塑。观众不再是被动的聆听者，而是必须主动移动才能听见声音的演奏者。
+
+<br><br>
+
+听觉上的两个极端是可以分辨的：当12条音轨同时以低音量存在时，密集而微弱的语言呢喃带来一种稳定的压迫感和信息过载的混乱；而当某一条轨道被单独拉大时，突出的清晰语义会让人产生在噪音中"<span style="font-weight:700">抓住救命稻草</span>"的聚焦感与安全感。意义在移动中浮现，也在移动中消解。
+
+<br><br>
+
+<span class="work-sec">灵感溯源：为什么是这本书</span>
+
+我读这本书不是因为文学，而是因为当时在学拉康派的精神分析。它在当代的精神分析、哲学与美学研究里是一个绕不开的坐标——德勒兹与加塔利在《千高原》里就讨论过它，他们有一个著名的判断：乔伊斯的词是"多根的"，这些词打碎了词乃至语言的线性统一，却又重新建立起句子、文本和知识的<span style="font-weight:700">循环的统一</span>。
+
+<br><br>
+
+所以这本书对我与其说是一个具名参照，不如说是一个引子。我从它那里拿走的不是一个写法，而是一个问题：意义可以被无限地拆开，但拆开之后，一个人到底能拿到多少？
+
+<br><br>
+
+<span class="work-sec">技术介绍：文本怎么拆</span>
+
+原作的"多轨"特征不是我的发明，它本来就在文本里。开篇第一个词"riverrun"可以被解构为river run（大河奔流）、reverend（尊敬的神父）、Erinnerung [德语]（记忆）——大河奔流、神父顺流而下、以及记忆似水的意象，在一个词里同时展开。
+
+<br><br>
+
+我把这种多义性直接做成了物理层面的多轨：同一个词的不同解读被分配到不同的音轨，由不同的发音方式（中英文交替）各录制五个版本。12条音轨全部是我自己录的。观众在混音的时候，实际上是在替乔伊斯完成一次他没能停下的造句。
+
+<br><br>
+
+<details class="work-details"><summary>三条核心轨道的文本对照</summary><div class="work-details-body">
+<div class="track-text"><span style="font-style:italic">riverrun, past Eve and Adam's,<br>
+from swerve of shore to bend of bay,<br>
+brings us by a commodius<br>
+vicus [拉丁]<br>
+of recirculation back to<br>
+Howth Castle and Environs.</span><br><br>
+<span style="font-weight:700">轨道A（大河奔流）</span><br>
+大河奔流流过 都柏林的一座教堂 从起伏的海岸 到凹进的港湾 又沿着宽阔回环的 维柯路 将我们带回到 霍斯堡和郊外。</div>
+<div class="track-text"><span style="font-style:italic">reverend, past Eve and Adam's,<br>
+from swerve of shore to Dublin Bay,<br>
+brings us by a Commodus<br>
+Vico<br>
+of recirculation back to<br>
+Humphrey Chimpden Earwicker.</span><br><br>
+<span style="font-weight:700">轨道B（尊敬的神父）</span><br>
+尊敬的神父经过 亚当和夏娃之家教堂 从起伏的海岸 到都柏林湾 又沿着康茂德回环的 村镇 将我们带回到 汉弗利·卿普顿·壹耳微蚵。</div>
+<div class="track-text"><span style="font-style:italic">Erinnerung [德], past Eve and Adam's,<br>
+from swerve of shore to bend of bay,<br>
+brings us by a commodius<br>
+Vico [意]<br>
+of recirculation back to<br>
+Here Comes Everybody.</span><br><br>
+<span style="font-weight:700">轨道C（记忆）</span><br>
+记忆流过 伊甸园 从起伏的海岸 到凹进的港湾 又沿着宽阔回环的 维科 将我们带回到 此即人人。</div>
+</div></details>
+
+<br>
+
+这件作品曾名《此即人人》（Here Comes Everybody）——那正是轨道C结尾的那个词。
+
+<br><br>
+
+<span class="work-sec">两个版本</span>
+
+<span style="font-weight:700">演奏版</span>：用The Induction Mixer演奏这12条音轨。12条音轨送进面板内侧的12张天线，以近场电磁感应的方式发射出去；演奏者手持拾音传感器在面板上方移动，手在哪里，就听见哪里的声音，离得远，那个声音就淡下去。现有一段6分13秒的手机录像记录了这个演奏——声音是立体声的，但手机录制的空间效果有限。
+
+<br><br>
+
+<span style="font-weight:700">数字版</span>：在这个网站上，这件作品化作一个交互式空间混音器——12条同步循环的音轨以带编号的点排布在二维面板上，观众移动光标（一只虚拟麦克风）在其中游走，靠近某点该轨便随之浮现，远离则沉入背景；多点触控设备上，每根手指都是一只独立麦克风。混音经由内置的并行效果链渲染成一片持续弥漫的声场：混响、回声与缓慢起伏的渐入相互缠绕，构成作品的模糊底衬。
+
+<br><br>
+
+数字版不是演奏版的替代品，而是同一件事在没有硬件的地方再做一次：把"必须移动才能听见"这个条件，用另一种方式交还给观众。
+
+<br><br>
+
+<span class="work-sec">它和The Induction Mixer的关系</span>
+
+除了作为演奏界面，riverrun的数字版在软件层面还重新实现了一次The Induction Mixer的核心想法。它保留下来的，是那件乐器的设计美学——<span style="font-weight:700">听的位置本身就是创作</span>，声源分布在空间里，听众必须移动才能听见。它放弃的，是对硬件的执着。
+
+<br><br>
+
+这对我是一件重要的事：一件作品的美学内核，可以在换掉整个媒介之后依然成立。
+
+<br><br>
+
+<span class="work-sec">公开记录</span>
+
+2026.07.01，上海音乐学院音乐工程系期末考试汇报。
+</div>
+  </div>
+</div>
+
+
+
+<!-- 末尾那段「读 ?project= 定布局」的同步脚本已由生成器删除：
+     语言、作品、布局写在 <html> 上，标题、副标题、正文都在生成时填好，
+     首帧即成品，不依赖任何脚本。未使用的布局面板同时被剪掉。 -->
+
+</body>
+</html>

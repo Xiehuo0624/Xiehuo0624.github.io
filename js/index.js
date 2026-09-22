@@ -210,11 +210,19 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     const card = e.target.closest('.card');
     if(!card || isAnimating) return;
     if(card === stack.lastElementChild){
-      /* 判空调用：语言参数传播缺失时退化为不带参数的链接，绝不让导航/跳转崩掉
-         （新旧 JS 混用的成因见 js/nav.js 顶部注释） */
-      const href = card.dataset.href;
-      window.location.href = (typeof App.langHref === 'function')
-        ? App.langHref(href) : href;
+      /* 优先 data-project：目录式作品页地址，语言由 App.projectHref() 带上。
+         data-href 是旧地址的留档 —— HTML 只缓存 600 秒而 JS 要缓存 4 小时，
+         新旧混用期间拿到的可能仍是只写了 data-href 的那份 HTML；此时退回旧地址，
+         而不是把 undefined 拼进 location（那会跳到字面量 "undefined"）。
+         两层判空：函数缺失或两个属性都没有时，宁可不跳，也不跳错
+         （新旧 JS 混用的成因见 js/nav.js 顶部注释）。 */
+      const id = card.dataset.project;
+      const href = (id && typeof App.projectHref === 'function')
+        ? App.projectHref(id)
+        : (typeof App.langHref === 'function')
+          ? App.langHref(card.dataset.href)
+          : card.dataset.href;
+      if (href) window.location.href = href;
     } else {
       nextCard();
     }

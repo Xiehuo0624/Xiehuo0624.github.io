@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!-- 本文件由 scripts/gen-projects.mjs 生成，请勿手改。
+     改动 project-template.html、js/project-data.js 或 data/<id>/<lang>.html 之后
+     重新运行 `node scripts/gen-projects.mjs`；手改会在下次生成时被覆盖。 -->
+<html lang="zh" data-lang="zh" data-lang-fixed data-project="wwhbh" data-layout="wwhbh">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
+   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
+   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
+<!-- 标签页标题只写作品名（站内惯例，窄标签栏也不截断）；说明性的一整句放在
+     description 与 og:description 里 —— 预览卡片本来就是「标题 + 说明行」两行结构，
+     拼进标题既会与说明行重复，英文那半还会被截断（最长 133 字符）。 -->
+<title>我们将会曾经在这里</title>
+<meta name="description" content="基于麦克风与扬声器回授的声音概念，关于时间、记忆与易失性">
+<link rel="canonical" href="https://caohaoxuan.com/works/wwhbh/zh/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/wwhbh/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/wwhbh/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/wwhbh/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="泻火 曹浩轩">
+<meta property="og:title" content="我们将会曾经在这里">
+<meta property="og:description" content="基于麦克风与扬声器回授的声音概念，关于时间、记忆与易失性">
+<meta property="og:url" content="https://caohaoxuan.com/works/wwhbh/zh/">
+<meta property="og:image" content="https://caohaoxuan.com/img/wwhbh.webp">
+<meta property="og:image:alt" content="我们将会曾经在这里">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/project.css?v=5">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
+     不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：与模板共用同一套同步加载策略（见 project-template.html 的说明）。
+     生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
+     保持同步只为避免两份加载策略各自漂移。 -->
+<script src="js/app.js"></script>
+<script src="js/project-data.js?v=3"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic（js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
+     生成器剪掉，见 scripts/gen-projects.mjs） -->
+<script defer src="js/project-i18n.js?v=4"></script>
+<script defer src="js/ink-wwhbh.js?v=1"></script>
+<script defer src="js/audio-wwhbh.js?v=4"></script>
+<script defer src="js/project.js?v=6"></script>
+</head>
+<body>
+
+
+
+<!-- wwbh: text + mic button -->
+<div class="wwhbh-panel" id="layout-wwhbh">
+  <!-- 实时晕染层（js/ink-wwhbh.js）：position:fixed 铺满视口，z-index:200，
+       **盖在整个页面内容与导航之上**；pointer-events:none 所以底下仍可点击。
+       aria-hidden：纯装饰，不该被读屏念出来。 -->
+  <div class="wwhbh-ink" id="wwhbh-ink" aria-hidden="true"><canvas id="wwhbh-ink-cv"></canvas></div>
+  <div class="wwhbh-body">
+    <h2 id="wwhbh-title">我们将会曾经在这里<span class="work-sub">基于麦克风与扬声器回授的声音概念，关于时间、记忆与易失性</span></h2>
+    <!-- 麦克风状态与控制：必须紧贴标题，不能放在长文末尾 ——
+         挂起状态下「▶ 点击开始聆听」是必需的操作入口，埋在几千字下面会被错过。 -->
+    <div class="wwhbh-mic">
+      <p class="wwhbh-status" id="wwhbh-status"></p>
+      <button class="btn-mic" id="btn-mic" style="display:none"></button>
+    </div>
+    <p id="wwhbh-desc" data-desc-lang="zh"><span class="work-sec">正在发生的事</span>
+
+这个页面已经在用你的麦克风和扬声器演奏了。你不需要按任何按钮，继续往下读就好。
+
+<br><br>
+
+你此刻制造的每一个声音，90秒之后会从扬声器里回来一次。回来之后它会再进入麦克风，再等90秒，再回来一次，每一次都比上一次轻18分贝。它会一直这样循环下去，直到轻到听不见为止——而每一次循环，都在把上一次的痕迹擦掉一点。
+
+<br><br>
+
+声音里最重要的是<span style="font-weight:700">时间</span>，不是旋律。这件作品不要求你听出什么，它只要求你和它待够一段时间。所以请读慢一点。
+
+<br><br>
+
+这件作品是一个<span style="font-weight:700">概念</span>，不是一件固定的装置。它需要的东西很少：一个麦克风、一个足够长的延时、一个扬声器。这几样东西在任何房间、任何设备上都成立——包括你现在正在用的这一个。
+
+<br><br>
+
+如果你现在说一句话，90秒后你会听见自己刚才的声音。但到那时候，你多半已经不记得自己说过什么了。录音替我们记录下我们不知道自己说过的话，又或者其实我们从来都没说过。
+
+<br><br>
+
+本作品封面图由南美大虾设计。
+
+<br><br>
+
+这个作品非常像Alvin Lucier的I'm Sitting in a Room，但是很有趣的是：在创作这个作品时，我还不知道I'm Sitting in a Room。
+这个作品最初的创作灵感是来源于Cathy Van Eck的一系列基于麦克风与扬声器回授的作品（主要是Words, Words, Words, Empty Chairs, 和What We Keep）和我当时对存在主义哲学（由What We Keep唤起，又可以追溯到动漫作品《黑礁》）、记忆（riverrun, past Eve and Adam's..）、不留下记录的艺术实践/表演/作品的兴趣。
+
+<br><br>
+
+这个作品被我提交为大二上的期末作品，我在同时期与Allen共同创作了Ecce Homo。
+在期末答辩的时候，一位老师（令人难过的是，我在当时认为她是答辩老师中唯一一位可以理解和接受我的创作的老师）问我："你知道你的分数会很低的，对吧？"
+我回答说："我知道。"
+其实我当时不知道，我不觉得这个作品很差，这个作品是关于我当时内心最深处的焦虑和痛苦的：我一直以来都是一个难以不被注意的人，并且我同时享受和厌烦这一点。
+我在当时已经长期地愿望和幻想了在意外（如交通事故）中死亡并被不留痕迹的完全遗忘。
+
+<br><br>
+
+<span style="display:block;text-align:right">2026.06.15</span>
+
+<br><br>
+
+所有的声音，所有的记忆都消失了，所有留下它们的尝试都已经失败。
+我们现在在这里，我们将会曾经在这里。
+摄影是比现实更真实的现实，录音也是。
+录音替我们记录下我们不知道自己说过的话，又或者其实我们从来都没说过。
+按下播放键，等待，你会听到过去的声音，关掉这个网页，一切就都消失了。
+我不需要磁带来证明这一切，只有我的被彻底忘记才证明我活过。
+
+<br><br>
+
+<span style="display:block;text-align:right">2026.06.10</span>
+
+<br><br>
+
+这是我在2026.06.10写下的作品介绍，"<span style="font-weight:700">摄影是比现实更真实的现实，录音也是。录音替我们记录下我们不知道自己说过的话，又或者其实我们从来都没说过。</span>"这个想法来源于苏珊·桑塔格的一些著作（《论摄影》与《关于他人的痛苦》），也来源于我和朋友在一起体验《我们将会曾经在这里》时发生的一些事情：一位朋友在扬声器中听到自己的声音，其中包括他从来没说过，我也从来没有听到过的话语。
+
+<br><br>
+
+这个作品其实只是（为什么要说<span style="font-weight:700">只是</span>呢？难道这样精简的小体量作品不是我所<span style="font-weight:700">最</span>热爱的吗？其实这只是（<span style="font-weight:700">只是？</span>）对自己习惯性的无端（真的无端吗？）刁难）一个麦克风（最好是全指向的），一个足够长的延时效果器（100%干湿比，延时时间可变，无Feedback，我一般会使用数字的），一个扬声器（一般我会使用全频的监听音箱，但是如果有自己的音色特色也是很好的），和一个限制器（防止听力损伤）：麦克风录制的音频进入延时效果器，延时效果器的输出连接到扬声器，扬声器再在物理世界中Feedback回到麦克风（我一般会通过调整麦克风增益和扬声器音量来保证Feedback的响度在-12至-18dB之间），限制器一般会被放在麦克风和延时效果器之间，但是只要能避免麦克风与扬声器之间无限的正反馈循环以保护听众的听力和音频设备就足够了。
+
+<br><br>
+
+<span style="font-weight:700">时间</span>才是这里最重要的部分：为你的场所选择时间。
+我本来计划设置三套这样的设备在学校的大厅，互相之间延时时间有细微的区别，但是总的来说，在1小时30分钟左右。
+因为我们学校一节课的时间是1小时30分钟，这是这个场所的<span style="font-weight:700">周期</span>。
+
+<br><br>
+
+<span style="font-weight:700">时间的周期</span>，是的，<span style="font-weight:700">时间的周期</span>。
+这是我当时最迷恋的概念之一：我在海边的沙滩上站着，看着海浪是如何一个追上另一个，一个在退回海中的过程中抵消另一个，在海浪的不同<span style="font-weight:700">周期</span>互相Phase in, Phase out的过程中，你会看到它们汇聚和抵消的位置也在随之变化：于是有了不同位置，不同强弱的浪潮。
+我站在沙滩上，等待最大的浪潮冲刷我的脚，等待最小的浪潮消失在远方。
+这是我对时间、记忆、周期的迷恋的由来。
+
+<br><br>
+
+另一个很重要的部分是<span style="font-weight:700">易失性</span>。
+相对于I'm Sitting in a Room所留下的一盘盘磁带，Buffer中的数据无疑是及其<span style="font-weight:700">易失</span>的。
+它们存储在RAM中，难以被保留，一旦关闭系统就会永久消失，原有的数据在一遍遍写入的过程中也被反复擦写。
+<span style="font-weight:700">我不需要磁带来证明这一切，只有我的被彻底忘记才证明我活过。</span>
+我一直以来都是一个难以不被注意的人，我尝试以一种破坏性的方式来摆脱这部分特质。
+
+<br><br>
+
+尽管如此，这部分的作品设计和哲学无疑是可以和应当被批评的。
+我在前天看了《我们的土地》，尽管我一直知道，但是当这些具体的事件被摆到我的面前时，还是不禁震惊于：有如此多的人被消失。
+并不是所有人都在我们的主流叙事和社会中存在，而他们的被遗忘是我所不能接受的。
+由此看来，我对我的被遗忘的梦想和幻想就无疑显得十分……特权。
+
+<br><br>
+
+做艺术太难了。
+
+<br><br>
+
+<span style="display:block;text-align:right">2026.06.15</span>
+</p>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- 末尾那段「读 ?project= 定布局」的同步脚本已由生成器删除：
+     语言、作品、布局写在 <html> 上，标题、副标题、正文都在生成时填好，
+     首帧即成品，不依赖任何脚本。未使用的布局面板同时被剪掉。 -->
+
+</body>
+</html>

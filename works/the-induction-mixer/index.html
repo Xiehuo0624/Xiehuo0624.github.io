@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!-- 本文件由 scripts/gen-projects.mjs 生成，请勿手改。
+     改动 project-template.html、js/project-data.js 或 data/<id>/<lang>.html 之后
+     重新运行 `node scripts/gen-projects.mjs`；手改会在下次生成时被覆盖。 -->
+<html lang="en" data-lang="en" data-lang-fixed data-project="the-induction-mixer" data-layout="gallery">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
+   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
+   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
+<!-- 标签页标题只写作品名（站内惯例，窄标签栏也不截断）；说明性的一整句放在
+     description 与 og:description 里 —— 预览卡片本来就是「标题 + 说明行」两行结构，
+     拼进标题既会与说明行重复，英文那半还会被截断（最长 133 字符）。 -->
+<title>THE INDUCTION MIXER</title>
+<meta name="description" content="An interactive matrix electronic mixer built on near-field electromagnetic induction">
+<link rel="canonical" href="https://caohaoxuan.com/works/the-induction-mixer/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/works/the-induction-mixer/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/works/the-induction-mixer/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/works/the-induction-mixer/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Xiehuo — Cao Haoxuan">
+<meta property="og:title" content="THE INDUCTION MIXER">
+<meta property="og:description" content="An interactive matrix electronic mixer built on near-field electromagnetic induction">
+<meta property="og:url" content="https://caohaoxuan.com/works/the-induction-mixer/">
+<meta property="og:image" content="https://caohaoxuan.com/img/the-induction-mixer.webp">
+<meta property="og:image:alt" content="THE INDUCTION MIXER">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/project.css?v=5">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
+     不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：与模板共用同一套同步加载策略（见 project-template.html 的说明）。
+     生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
+     保持同步只为避免两份加载策略各自漂移。 -->
+<script src="js/app.js"></script>
+<script src="js/project-data.js?v=3"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic（js/ink-wwhbh.js、js/audio-wwhbh.js、js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
+     生成器剪掉，见 scripts/gen-projects.mjs） -->
+<script defer src="js/project-i18n.js?v=4"></script>
+<script defer src="js/project.js?v=6"></script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+<!-- gallery: text on top, horizontal image slider below -->
+<div class="gallery-panel" id="layout-gallery">
+  <div class="gallery-body">
+    <h2 id="gallery-title">THE INDUCTION MIXER<span class="work-sub">An interactive matrix electronic mixer built on near-field electromagnetic induction</span></h2>
+    <p id="gallery-desc" data-desc-lang="en"><span class="work-meta">
+<span class="work-meta-k">Year</span><span class="work-meta-v">2025–2026</span>
+<span class="work-meta-k">Type</span><span class="work-meta-v">Spatial mixer / playable electronic instrument</span>
+<span class="work-meta-k">Specs</span><span class="work-meta-v">12 inputs / 4 outputs; 12 PCB transmitting antennas; 4-channel body-inductance sensors (finger probes); ferrite-rod inductor pickup; fully analogue signal path; panel 322×188mm (W×D); case thickness 43.5mm</span>
+<span class="work-meta-k">Roles</span><span class="work-meta-v">Concept and overall design, pickup design, antenna design: me; case design: Ciiyte (Cai Yitong); case fabrication: JLCPCB; preamplifier: based on an existing design by Ciiyte</span>
+<span class="work-meta-k">Shown</span><span class="work-meta-v">Final presentation, Department of Music Engineering, Shanghai Conservatory of Music, 2026.07.01</span>
+<span class="work-meta-k">Status</span><span class="work-meta-v">Complete</span>
+<span class="work-meta-k">Page text</span><span class="work-meta-v">2026.06.24</span>
+<span class="work-meta-k">Media</span><span class="work-meta-v">Desk demo videos, 3 photographs</span>
+</span>
+
+A work co-designed with Ciiyte (Cai Yitong).
+
+<br><br>
+
+<span class="work-sec">Overview</span>
+
+The Induction Mixer is a 12-input, 4-output spatial mixer, and a playable instrument.
+
+<br><br>
+
+It does not pass sound through cables: the 12 audio inputs each feed one of the 12 printed-circuit-board antennas inside the panel, which transmit them by near-field electromagnetic induction; you hold a pickup made from a ferrite-rod inductor above the panel, and the pickup and preamplifier turn the field back into sound. So the panel holds 12 invisible sound sources at once, each fixed in its own position. Where you move your hand is what you hear; move away and that source fades.
+
+<br><br>
+
+The panel carries 12 input level knobs, 12 input jacks and output control. It has 12 inputs but only 4 outputs — what you hear is the result of the four pickup channels moving between those 12 sources.
+
+<br><br>
+
+<span class="work-sec">Motivation</span>
+
+Usually mixing is a stage that comes after composition — the music is written first, and then the mix is made to sound good. On this instrument there is nothing but mixing: the 12 sources are given, and the only things you can change are where you listen and how much you hear. So I wanted to try one thing: <span style="font-weight:700">what if mixing itself were composition?</span>
+
+<br><br>
+
+A digital audio workstation dissolves mixing into a two-dimensional screen, linear faders and parameter encoders. Balancing sound becomes a visually dominated operation in which the body barely takes part — you could call it disembodiment. I wanted to do the opposite: to turn mixing and routing back into gesture in three-dimensional space. The movement of the hand, the skin's sense of position, and the boundary of an invisible electromagnetic field are made to coincide.
+
+<br><br>
+
+The instrument therefore has two states. In its played state it is a structured electromagnetic-acoustic map for one person to improvise with, privately and intuitively. In its installed state it removes the technical threshold of a conventional musical interface, letting an audience step in bodily to decipher and rebuild an electromagnetic landscape together — loosening the line of power between composer and listener.
+
+<br><br>
+
+<span class="work-sec">Where it comes from</span>
+
+Christina Kubisch's <span style="font-style:italic">Electrical Walks</span> was the first thing that showed me this. She sends visitors out into the city wearing sensitive wireless headphones that make the electromagnetic fields around us audible. In her own words: "Lighting systems, wireless communications, radar, anti-theft security devices, surveillance cameras, cellphones, computers, antennae, navigation systems, ATMs, Wi-Fi routers, neon signs, public transportation networks, etc, all generate electrical fields — hidden as if under cloaks of invisibility, but with incredible presence." Her <span style="font-style:italic">The Mixer Project</span> goes further: "Every participant rediscovers the sound world of his own city in a new way. He becomes a composer of an individual piece which he/she even can take home."
+
+<br><br>
+
+Cathy Van Eck's <span style="font-style:italic">Between Air and Electricity: Microphones and Loudspeakers as Musical Instruments</span> surveys how microphones and loudspeakers have been used as instruments. That book is where I started to understand the instrument as a mediator between body and sound.
+
+<br><br>
+
+Where this work differs is that I wanted to keep their philosophy and aesthetics while making the thing closer to an instrument than to an installation. So it has a playable panel, and the way you play it is by moving your hand, not by walking through a space.
+
+<br><br>
+
+<span class="work-sec">How it works</span>
+
+First, the cascade logic. The 12 inputs use Switched Tip 3.5mm jacks: signal is cascaded down from one channel's normally-closed contact to the next (1→2→3→4 and so on). When you plug external audio into any channel, the cascade arriving from the channel above is physically broken. So if you only patch into In 1, 4, 7 and 10, the instrument reorganises itself into four independent electromagnetic-acoustic blocks — with no settings and no switches. This is also where the 12-in 4-out configuration comes from.
+
+<br><br>
+
+The antennas were not designed but bought: I ordered a batch of different types and tested them one by one — at what distance, at what angle, what each of them would pick up — and settled on the type now in use. The work was mostly in testing, not in calculating.
+
+<br><br>
+
+The whole signal path is analogue — from the inputs, the antennas and the near-field layer, through the four inductive sensors to the preamplifier, with no digital stage anywhere in between. Signal capture is physically zero-latency.
+
+<br><br>
+
+The preamplifier is based on an existing design by Ciiyte (Cai Yitong); the case was also designed by Ciiyte and fabricated by JLCPCB.
+
+<br><br>
+
+<span class="work-sec">My contribution</span>
+
+Concept and overall design<br>
+Pickup design (the four-channel body-inductance sensors)<br>
+Antenna design: bought a range of antennas and tested them one by one before choosing
+
+<br><br>
+
+<span class="work-sec">Postlude</span>
+
+The instrument itself left no problems that needed fixing — it worked as soon as it was built. It was quickly put to use in riverrun: the 12 tracks of <span style="font-style:italic">Finnegans Wake</span> are played through its 12 antennas. It thus turned from a work in its own right into an instrument for making something else.
+
+<br><br>
+
+But as an instrument, its own performing possibilities are still largely unexplored: I have only used it in this one piece so far.
+
+<br><br>
+
+<span class="work-sec">Where it has been shown</span>
+
+2026.07.01, final presentation for the Department of Music Engineering, Shanghai Conservatory of Music (second semester, 2025–2026). The only documentation is a few desk demo videos recorded in my tutor's office — crudely shot, and not a record of a live performance.
+</p>
+  </div>
+  <div class="gallery-slider" id="gallery-slider">
+    <!-- images inserted dynamically -->
+  </div>
+</div>
+
+<!-- 末尾那段「读 ?project= 定布局」的同步脚本已由生成器删除：
+     语言、作品、布局写在 <html> 上，标题、副标题、正文都在生成时填好，
+     首帧即成品，不依赖任何脚本。未使用的布局面板同时被剪掉。 -->
+
+</body>
+</html>

@@ -8,7 +8,9 @@
 
 | 属性 | 值 |
 |------|------|
-| 字体 | 英文/数字：`'DejaVu Sans Mono'`（自托管 webfont，与 macOS Menlo 同源，跨平台一致）；中文：`'Source Han Sans SC'`（思源黑体 SC，自托管子集化，Regular/Bold 各约 300KB）；`'PlainZero'`（仅 U+0030，用同家族 DejaVu Sans 的纯净 0 覆盖 DejaVu Sans Mono 的点 0）。字体栈：`'PlainZero','DejaVu Sans Mono','Source Han Sans SC',Menlo,Consolas,monospace` |
+| 字体 | 英文/数字：`'DejaVu Sans Mono'`（自托管 webfont，与 macOS Menlo 同源，跨平台一致）；中文：`'SiteCJK'`（**英文侧零散用到的 16 个字，含署名与「返回／中文」，3.4KB**，由 `scripts/gen-cjk-extras.py` 生成）与 `'Source Han Sans SC'`（**按站内实际用字切出的主字体，1450 字，Regular 274KB / Bold 280KB**，由 `scripts/gen-cjk-main.py` 从官方 Noto Sans SC 生成）；`'LocalIPA'`（音标区段走 `local()`，0 字节 —— 官方中文字体本身没有音标字形）；`'PlainZero'`（仅 U+0030，用同家族 DejaVu Sans 的纯净 0 覆盖 DejaVu Sans Mono 的点 0）。字体栈：`'PlainZero','DejaVu Sans Mono','LocalIPA','SiteCJK','Source Han Sans SC',Menlo,Consolas,monospace` |
+| 中文必须全量覆盖 | 主字体子集按**站内实际用字**推导（作品片段、i18n 数据、`project-data.js`、changelog 条目、页面可见文本），覆盖不到的字会静默落到系统字体、与思源混排 —— 2026-09 之前就发生了（234 字）。改了中文内容后跑 `python3 scripts/gen-cjk-main.py`，并用覆盖率探针 `scripts/verify/coverage.mjs` 复验「渲染出的每个中日韩字符都有自托管字形」 |
+| 英文字体不该被 CJK 拖累 | 字体栈的语义是「前者缺字形才轮到后者」，所以 DejaVu 子集缺字形的字符会一路落到整份思源（295KB）。英文侧实测只有十几处这种字符（署名、`此即人人`、`南美大虾`、音标 `ɔ`），故切一份 4KB 的 `SiteCJK` 排在思源之前、并用 `unicode-range` 只声明它真正拥有的字；`ɔ` 连思源子集都没有，交给 `LocalIPA`（全 `local()`，本机 Menlo／Segoe UI 承担，实测渲染与改动前逐像素一致）。改了英文片段后跑 `python3 scripts/gen-cjk-extras.py`，`--check` 查漂移 |
 | 中英/中数间距 | `js/autospace.js` 自动在 CJK↔英数 边界插入 thin space（U+2009）；DejaVu Sans Mono 中 U+2009 的字宽已单独改为 0.2em（等宽字体默认 0.6em 会过宽）。全站自动生效，幂等，覆盖动态注入内容 |
 | 背景色 | `#fff` |
 | 前景色 | `#000` |
@@ -539,13 +541,67 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 语言 | 不依赖 `js/i18n.js`：`<html data-lang>` 已由 `<head>` 前置脚本在绘制前写好，内联脚本直接读它 |
 | 404 | 未知或缺失 `?project=` → `data-layout="grid"`，仍走 `js/project.js` 的 404 文案分支 |
 
+### 7h. 作品页地址与静态生成
+
+作品页的规范地址是**目录式**，语言写在路径里：
+
+| 地址 | 内容 |
+|------|------|
+| `works/<id>/` | 英文（默认语言） |
+| `works/<id>/zh/` | 中文 |
+| `project-template.html?project=<id>[&lang=xx]` | 旧地址，**保留可用**，但带 `noindex` |
+
+16 个页面由 `scripts/gen-projects.mjs` 从 `project-template.html`（唯一模板）+ `js/project-data.js` + `data/<id>/<lang>.html` 生成，产物**提交进仓库**（部署仍是纯静态，服务器上不跑生成器）。
+
+| 项 | 规则 |
+|----|------|
+| 为什么生成 | 一个模板 + 客户端路由的代价是**服务器返回的 HTML 里没有作品内容**：`<title>` 是 `PROJECT`、正文是「[ 演示视频 / 硬件照片 ]」样板，不执行 JS 的抓取者（微信／X／Slack 链接预览、搜索引擎）看到的是空模板，八个作品共用一个标题、全站 0 处 `og:*`。生成是把内容写死在 HTML 里，而不是要求抓取者去跑 JS |
+| 生成什么 | `<html>` 的 `data-lang`／`data-project`／`data-layout`；`<title>`；当前布局 `<h2>` 的标题与副标题；正文容器（片段内容 + `data-desc-lang`）；主图或 bilibili 内嵌页（`data-baked="1"`）；`description`／`canonical`／`hreflang`／`og:*`／`twitter:card` |
+| 剪枝 | 未使用的五个布局面板连同其注释一并删除 —— 不剪的话样板文案与另外五个布局的控件仍会留在 HTML 里。剪枝后自检：只剩一个面板、`<div>` 配平 |
+| 不生成什么 | Gallery 的图片仍由 `js/project.js` 渲染（要配灯箱绑定）；语言切换仍走 fetch 回退 |
+| 脚本剪枝 | 只被个别布局用到的脚本按布局剪掉：`js/ink-wwhbh.js`（40KB）与 `js/audio-wwhbh.js`（6KB）只在 wwhbh 布局挂、`js/mixer-riverrun.js`（35KB）只在 mixer 布局挂 —— 八个作品里六个用不到，未压缩合计约 81KB。`js/project.js` 只在 projectId／layout 匹配时才调用对应 `App.init*`，剪掉不会抛错。**旧地址 `project-template.html` 保持全挂**（它要承载所有布局） |
+| 相对路径 | 生成页在子目录里，故插 `<base href="/">`：`css/`、`js/`、`img/`、`data/` 以及正文片段里的下载链接都按站点根解析。**代价**：生成页不能用 `file://` 打开预览，必须走本地服务器（`scripts/start-https.sh`） |
+| 不要手改产物 | 每个生成页头部有声明。改了模板／数据／片段后跑 `node scripts/gen-projects.mjs`；`--check` 只比对不写入，发现漂移时退出码 1 |
+| 失败方向 | 生成器遇到任何不一致都**报错中止且不写任何文件**（找不到容器、正文容器非空、片段缺文件、块级元素要塞进 `<p>`、封面图不存在、`works/` 下有数据里没有的目录）。宁可当场报错，也不生成一份「差不多能用」的页面 |
+| 封面约定 | `og:image` 用首页卡片封面 `img/<id>.webp`（1200px 宽，八个作品都有）。缺图时**生成失败**，不静默降级 |
+| 标题用词 | 标签页 `<title>` 只写作品名（站内惯例，窄标签栏不截断）；说明性的一整句放 `description` 与 `og:description`（即 `subtitle` 或退回 `brief`）。**不把副标题拼进标题**：英文 66–133 字符必被预览截断，且与说明行重复 |
+| 旧地址 | 不删：已发出的链接必须一直能打开。静态 `<meta name="robots" content="noindex,follow">` 覆盖不跑 JS 的抓取者；`js/project.js` 在旧地址上再补一条 canonical 指向目录式地址，覆盖跑 JS 的抓取者。**不做跳转**（GitHub Pages 给不了真 301） |
+| 路径式语言 | 生成页带 `data-lang-fixed`：不吃 localStorage、不把 `?lang=` 写回地址栏（否则刚复制出来的干净地址立刻又被弄脏），切换语言 = 跳到另一语言那份页面。目标从 `link[rel=alternate][hreflang]` 读（与给搜索引擎的 hreflang 是同一份数据，不另存映射表），且**只取路径**：用绝对地址会把本地预览与 github.io 镜像上的读者甩到正式域名 |
+| 首页与列表链接 | 一律经 `App.projectHref(id)`（`js/app.js`）。它自带语言，**不要再套 `App.langHref`**，否则得到 `works/x/zh/?lang=zh` 这种自相矛盾的地址 |
+| 首页卡片 | `.card` 同时带 `data-project`（规范来源）与 `data-href`（旧地址留档）。后者只在「新 HTML 配旧缓存 app.js」的窗口里兜底，**不要删、也不要以它为准** |
+| 收尾产物 | `sitemap.xml` 与 `robots.txt`（由生成器写，域名取自 `CNAME`，避免两处漂移）；`404.html`（GitHub Pages 对任意不存在的路径都返回它，故资源引用一律以 `/` 开头）；`works/index.html`（`/works/` 被手改短时转发到 `/works.html`，并保留 `?lang=`） |
+
+### 7i. 站内页地址与静态生成
+
+站内四页（首页／作品列表／简介／进程日志）与作品页用**同一套**「语言写在路径里」的规范地址：
+
+| 页面 | 英文 | 中文 |
+|------|------|------|
+| 首页 | `/` | `/zh/` |
+| 作品列表 | `/works/` | `/works/zh/` |
+| 简介 | `/about/` | `/about/zh/` |
+| 进程日志 | `/changelog/` | `/changelog/zh/` |
+| 作品页 | `/works/<id>/` | `/works/<id>/zh/` |
+
+| 项 | 规则 |
+|----|------|
+| 生成器 | `scripts/gen-pages.mjs`，模板就是根目录那四个 HTML（`index.html`／`works.html`／`about.html`／`changelog.html`），`--check` 查漂移 |
+| 首页的特殊处 | 英文规范地址 `/` 就是 `index.html` 自己，所以生成器**不写 index.html**，只从它派生 `/zh/`；`/?lang=zh` 由该文件里一段兼容脚本跳到 `/zh/` |
+| 模板里的标记 | `<!-- gen:legacy-only:lang -->`（按 `?lang=` 定语言的前置脚本）与 `:prepaint`（绘制前定文案）只对旧地址生效，生成页换成写死语言的版本 |
+| 烤什么 | 该语言的标题、`data-i18n` 文案（简介 8 段正文、卡片降级文案等）、作品列表的 8 条静态 `<a>`、四角导航与返回栏 |
+| 不烤什么 | **进程日志的正文刻意不烤**（98 条、约 200KB × 2 语言；该页靠点进来读，不靠搜索发现），只烤标题与元信息 |
+| 导航 | 烤好的静态导航存在时 `js/nav.js` 不再重复创建；首页的四角导航因此成了爬虫从 `/` 走到 `/works/` 与各作品页的路径 |
+| 链接出口 | 站内页走 `App.pageHref(name)`、作品页走 `App.projectHref(id)`，两者的返回值都已含语言，**不要再套 `App.langHref`** |
+| 旧地址 | `.html` 与 `?lang=` 全部保留可用（已发出去的链接不能断），带静态 `noindex` + `App.injectCanonical()` 指向目录式地址 |
+| 语言决定权 | 规范页面的语言**只由目录决定**：`?lang=` 一律忽略（要中文请去 `/zh/`），同一地址永远同一语言、可放心分享 |
+
 ---
 
 ## 8. i18n 系统
 
 | 规则 | 说明 |
 |------|------|
-| 优先级 | `URL ?lang=` > `localStorage` > 默认 **`en`**。默认是英文：本站在申请语境下的主版本是英文，中文仍是一等公民，但需经 `?lang=zh` 或右下角按钮显式选择 |
+| 优先级 | **规范页面（目录式地址）的语言由路径决定**，不吃 localStorage、也不看 `?lang=`；旧地址（`.html`、`project-template.html?project=…`）仍按 `URL ?lang=` > `localStorage` > 默认 **`en`**。默认是英文：本站在申请语境下的主版本是英文，中文是一等公民，经 `/zh/` 或右下角按钮选择 |
 | 存储 | `localStorage.getItem('lang')`；切换时经 `_persist()` 同时回写 localStorage 与地址栏 |
 | URL 同步 | `_syncUrl()` 用 `history.replaceState` 把当前语言写回 `?lang=`，**保留 project 等其它查询参数**；用 replaceState 以免污染后退历史，`file://` 下会抛错、已忽略 |
 | 地址栏必要性 | 语言若只存 localStorage，把链接发给别人时对方永远看到默认语言，发链接的人无法控制。`?lang=` 让语言随链接传递（**申请语境下为必需**：招生读者点开链接必须落在英文版） |
@@ -553,8 +609,10 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 字体条件加载 | `SourceHanSansSC` Regular+Bold 合计 599KB，英文界面一个字都用不到（英文走 `PlainZero` / `DejaVu Sans Mono`），故只在中文界面注入其 preload；浏览器仍可经 CSS `unicode-range` 按需补取 |
 | 链接语言传播 | 所有动态生成的站内链接走 `App.langHref(href)`（唯一出口，勿在别处硬拼 URL）：默认语言不加参数，其它语言追加 `?lang=` / `&lang=`。否则中文界面点进作品页会被打回默认英文 |
 | 切换 | 点击 `#lang-toggle`，zh ↔ en 互切。切换按钮是 `<a href="#">`，靠 `document` 上的 click 委托触发；导航 UI 已禁用文本选择与原生链接拖拽（§2），否则鼠标微动会被浏览器判为拖拽、丢掉 click |
+| 路径式语言（作品页） | 生成页（`works/<id>/`、`works/<id>/zh/`）带 `data-lang-fixed`：语言由**路径**决定，不吃 localStorage、不把 `?lang=` 写回地址栏，`#lang-toggle` 改为跳到另一语言那份页面（目标读 `hreflang` 且只取路径）。其余页面仍走 `?lang=`。成因见 §7h |
 | 标记 | HTML 元素加 `data-i18n="key"` 属性 |
 | 初始化 | 各页面调用 `I18n.init(data, onToggle?)` |
+| 公共字符串 | `back`／`langToggle` 只定义在 `js/i18n.js` 一处，由 `init()` 在注册页面数据时合并（`Object.assign({}, App.COMMON_I18N, data)`）。**各页数据文件不要再写 `...App.COMMON_I18N`**：works／about／changelog／404 的数据文件是同步 `<head>` 脚本，执行时 i18n.js 还没跑，spread 到 `undefined` 会静默少键，导航停在硬编码中文上（2026-09-22 实测） |
 | 回调 | 需要语言切换后额外刷新内容时，传入 `onToggle` 回调 |
 | 标签页标题 | `apply()` 在存在 `siteTitle` 条目时更新 `document.title`。`siteTitle` **只定义在首页**（`index-i18n.js`），不放进 `COMMON_I18N`，否则会覆盖内页各自的标题（ABOUT / WORKS / 作品名） |
 | 署名不参与 i18n | 首页四角署名（`.nav-top-right`）保持汉字、不随语言切换：它是作者标识，与「水火」汉字 logo 同属签名，不是待翻译的正文 |
@@ -585,11 +643,22 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 ## 9. 文件结构
 
 ```
-├── index.html                 首页 HTML
-├── about.html                 关于页 HTML
-├── works.html                 作品列表页 HTML
-├── changelog.html             日志页 HTML
-├── project-template.html      项目页 HTML
+├── index.html                 首页 HTML（英文规范地址 /；同时是 /zh/ 的模板）
+├── about.html                 关于页 HTML（旧地址；同时是 /about/ 的模板，带 noindex）
+├── works.html                 作品列表 HTML（旧地址；同时是 /works/ 的模板，带 noindex）
+├── changelog.html             日志页 HTML（旧地址；同时是 /changelog/ 的模板，带 noindex）
+├── project-template.html      项目页模板：旧地址入口 + **生成器的唯一模板来源**（见 §7h）
+├── 404.html                   自定义 404（可能被任意深度的地址命中，故资源引用一律以 / 开头）
+├── robots.txt                 由 scripts/gen-projects.mjs 生成（sitemap 地址取自 CNAME）
+├── sitemap.xml                由 scripts/gen-projects.mjs 生成（只列规范地址 + hreflang 对照）
+├── works/                     生成产物，勿手改（§7h／§7i）
+│   ├── index.html             作品列表（英文规范地址 /works/）
+│   ├── zh/index.html          作品列表（中文 /works/zh/）
+│   ├── <id>/index.html        英文作品页 × 8
+│   └── <id>/zh/index.html     中文作品页 × 8
+├── zh/index.html              首页中文版（/zh/；英文版就是根目录的 index.html）
+├── about/                     /about/ 与 /about/zh/（内容烤入，§7i）
+├── changelog/                 /changelog/ 与 /changelog/zh/（只烤标题，§7i）
 ├── .gitignore                 Git 忽略规则（含 docs/、tmp/、img/originals/、本地 HTTPS key/cert）
 │
 ├── css/
@@ -600,7 +669,8 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   ├── works.css              作品列表页
 │   ├── changelog.css          日志页时间线
 │   ├── project.css            项目页六种布局
-│   └── fonts/                 自托管 webfont（DejaVu Sans Mono + 思源黑体 SC + PlainZero woff2，子集化）
+│   ├── 404.css                404 页
+│   └── fonts/                 自托管 webfont（DejaVu Sans Mono + 思源黑体主字体 + SiteCJK + PlainZero woff2，子集化）
 │
 ├── data/                        作品描述 HTML 片段（运行时 fetch 加载）
 │   ├── 6u104hp/
@@ -655,6 +725,10 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   └── 我们将会曾经在这里 2026.06.15.docx
 │
 ├── scripts/                     开发工具与本地服务器
+│   ├── gen-projects.mjs        作品页静态生成器（§7h；`--check` 只比对不写入）
+│   ├── gen-pages.mjs           站内页静态生成器（§7i；模板是根目录那四个 HTML）
+│   ├── gen-cjk-extras.py       SiteCJK 微型子集生成器（英文侧零散汉字；`--check` 查漂移）
+│   ├── gen-cjk-main.py         中文主字体生成器（按站内实际用字从官方字体重切；`--check` 查漂移）
 │   ├── server.py               本地 HTTP/HTTPS 服务器（支持 Range 请求）
 │   ├── start-https.sh          启动脚本（默认 HTTP 8888，--https 启用 4443）
 │   ├── push.sh                 GitHub 推送助手脚本
@@ -663,11 +737,11 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   └── localhost-san.cnf       SSL 配置（--https 缺证书时据此自动生成）
 │
 └── js/                         （全局命名空间 App.*，按序加载）
-    ├── app.js                 命名空间声明 + App.langHref 语言参数传播（i18n 链接唯一出口）
+    ├── app.js                 命名空间声明 + App.langHref 语言参数传播 + App.projectHref 作品页地址（两者都是链接唯一出口）
     ├── i18n.js                App.I18n 公共 i18n 引擎 + App.COMMON_I18N 公共字符串
     ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
-    ├── nav.js                 App.renderBackNav / renderIndexNav + 防拖拽兜底
-    ├── prefetch.js            站内链接悬停预取（link rel=prefetch，带当前语言）
+    ├── nav.js                 App.renderBackNav / renderIndexNav + 防拖拽兜底 + langHref/projectHref 兜底定义
+    ├── prefetch.js            站内链接悬停预取（link rel=prefetch，认 .html 与目录式地址，照链接自身 href）
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据
     ├── index.js               首页逻辑
@@ -680,6 +754,9 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
     │
     ├── changelog-i18n.js      App.CHANGELOG_I18N 日志页 i18n 数据
     ├── changelog.js           日志页数据 + 渲染
+    │
+    ├── 404-i18n.js            App.NOTFOUND_I18N 404 页 i18n 数据
+    ├── 404.js                 404 页逻辑（返回栏 + 出口链接带语言）
     │
     ├── project-i18n.js        App.PROJECT_I18N 项目页 UI i18n 数据
     ├── project-data.js        App.projects 项目内容数据
@@ -695,6 +772,8 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 - 运行时 `fillContent()` 检测 `desc.file`，fetch 对应 HTML 片段并设置 `innerHTML`
 - 加载中显示 `…` 占位，加载失败则清空
 - 语言切换时重新 fetch 对应语言文件
+- **生成页例外（§7h）**：正文在生成时就烤进容器（`data-desc-lang` 记下那一版语言），`fillContent()` 命中同语言时直接用、**不再 fetch**（少一次往返，也不会先清空再填回）；语言不一致时才回到上面的 fetch 路径
+- 生成器拒绝把含块级元素的片段塞进 `<p>` 容器（会提前闭合 `<p>`，页面结构当场坏掉），见「作品信息栏」一节
 - HTML 片段为纯 HTML（无 `<html>/<body>`），源文件按句换行、空行分段，渲染时换行被浏览器折叠，段落由 `<br><br>` 控制
 - 文本引用块使用 `border-left:3px solid #000; background:#f9f9f9; padding:12px 16px; font-size:13px; line-height:1.8` 的内联样式
 - 引用块内外文原文（拉丁/德/英等）斜体（`<span style="font-style:italic">`），中文翻译正常显示
@@ -715,6 +794,14 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | `project-template.html` | `js/app.js` + `js/project-data.js` | 定布局面板（§7g） | 约 4.8KB |
 | `works.html` / `changelog.html` | `js/app.js` + `<页面>-i18n.js` | 定 h1 文案（§8a） | 约 0.9KB |
 | `about.html` | `js/app.js` + `js/about-i18n.js` | 定 h1 文案（§8a） | 约 4.6KB |
+| `works/<id>/`（生成页） | `js/app.js` + `js/project-data.js` | 与模板共用同一套加载策略；布局已写死在 HTML 上，同步加载不再是首屏前提（§7h） | 约 4.8KB |
+| `404.html` | `js/app.js` + `js/404-i18n.js` | 定文案（§8a） | 约 1KB |
+
+**生成页不要再改成 `defer`**（2026-09-22 实测结论）：生成页的布局与内容都已写死在 HTML 里，
+「那这两个同步脚本就能 defer 了吧」是自然会有的想法，但实测**没有收益**：7 次中位数 FCP 568ms（同步）
+vs 588ms（defer），5 次那轮 FCP +8ms／LCP +32ms／load −66ms。原因是这两个文件合计 5.8KB、与 CSS 并行下载、
+1.6Mbps 下约 28ms，而首屏在等 CSS —— **渲染阻塞只有在「阻塞资源的到达晚于首屏所需的其他资源」时才有代价**。
+保持同步的另一层好处是模板与生成页共用同一套加载策略，不会各自漂移。
 
 其余脚本在全部页面仍全部 `defer`。三者都与 CSS 并行下载，实测首屏时刻无回归
 （项目页 479ms vs 494ms；works 390ms vs 421ms；changelog 428ms vs 424ms；about 437ms vs 436ms）。
@@ -742,6 +829,10 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
 各调用点也用 `typeof App.langHref === 'function'` 判空，使新旧文件混用至多退化为
 「链接不带语言参数」，而不会连累导航渲染。
 
+`App.projectHref` 同理，而且它的暴露面更大：nav / works / project / index 四处都会调用。
+兜底写在 `js/nav.js` 顶部，退化为**旧的 `?project=` 链接** —— 旧地址保留可用（§7h），
+所以混用至多表现为「地址不漂亮」，不会出现死链，也不会整块导航不渲染。
+
 ### 性能与加载策略
 
 详见 `PERFORMANCE.md`。要点：
@@ -751,8 +842,13 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
 - **音频 / 视频**：单文件音频（`audio/ecce-homo.m4a` 12MB、JustType 录音）与 Changelog `<details>` 内视频 `preload="none"`，用户点播放前不拉取；riverrun 12 条音轨由 `js/mixer-riverrun.js` 设为 `preload="metadata"`（弱网不预缓冲 17MB，播放时才拉流）。
 - **字体**：`@font-face` 全部 `font-display:swap`（不阻塞首屏文字）；文字为主的页（about/works/changelog/project）
   在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。
-- **站内跳转预取**：`js/prefetch.js` 监听 `pointerover/focusin/touchstart`，对同源 `.html` 链接用
-  `<link rel="prefetch" as="document">` 预取目标文档（`requestIdleCallback` 内、去重、省流量模式禁用），点击跳转近乎即时。
+- **别让整份 CJK 字体被几个字拖下来**：`SiteCJK`（3.4KB，16 字）与 `LocalIPA`（0 字节）都排在主字体之前，
+  且带 `unicode-range` —— 页面里没有这些字时连它们都不会被请求。实测英文页因此都不下载主字体（273KB）；
+  changelog 英文页在折叠态只有 7 个可见汉字，**展开含中文的条目时才按需拉主字体**。见 `scripts/gen-cjk-extras.py`。
+- **站内跳转预取**：`js/prefetch.js` 监听 `pointerover/focusin/touchstart`，对同源 `.html` 与**目录式作品页**
+  （`works/<id>/`、`works/<id>/zh/`）用 `<link rel="prefetch" as="document">` 预取目标文档（`requestIdleCallback` 内、
+  去重、省流量模式禁用），点击跳转近乎即时。预取的是**链接自身的 href**：语言在渲染时就由 `App.langHref()` /
+  `App.projectHref()` 写好了，按当前语言重算一遍只会算错（旧实现取 `a.pathname` 重建，会丢掉 `?project=`）。
 - **脚本**：全部 `defer` 置于 `<head>`，与 CSS 并行下载、不阻塞渲染。**例外**是用于「绘制前定布局／定文案」
-  的同步脚本（项目页 `js/app.js` + `js/project-data.js`；works／changelog／about 的 `js/app.js` + 该页 i18n 数据），
-  见 §7g、§8a 与「脚本加载规则」一节。
+  的同步脚本（项目页与作品生成页 `js/app.js` + `js/project-data.js`；works／changelog／about／404 的 `js/app.js` + 该页 i18n 数据），
+  见 §7g、§7h、§8a 与「脚本加载规则」一节。

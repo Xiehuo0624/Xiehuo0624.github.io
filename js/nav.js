@@ -16,23 +16,50 @@ if (typeof App.langHref !== 'function') {
   };
 }
 
-/** 子页面：顶部全宽返回栏 + 语言切换 */
+/* App.pageHref 的兜底，理由同上：新的 nav/404/works 都调它，而 app.js 没有版本号、
+ * 可能仍是缓存里的旧版。退化为旧的 .html 地址（仍然可用），最坏只是地址不漂亮。 */
+if (typeof App.pageHref !== 'function') {
+  App.pageHref = function(name){
+    const href = (name === 'index') ? 'index.html' : name + '.html';
+    return (typeof App.langHref === 'function') ? App.langHref(href) : href;
+  };
+}
+
+/* App.projectHref 的兜底，理由同上一条，只是这次的触发面更大：
+ * 新的 nav/works/project/index 都会调用它，而**作品页地址刚由 ?project= 改成目录式**
+ * （成因与取舍见 scripts/gen-projects.mjs）。陈旧 app.js 里没有这个函数，
+ * 兜底成旧的 ?project= 链接 —— 旧地址依然可用（project-template.html 未删），
+ * 于是混用至多退化为「地址不漂亮」，不会出现点了没反应的死链或整块导航不渲染。 */
+if (typeof App.projectHref !== 'function') {
+  App.projectHref = function(id){
+    const href = 'project-template.html?project=' + id;
+    return (typeof App.langHref === 'function') ? App.langHref(href) : href;
+  };
+}
+
+/** 子页面：顶部全宽返回栏 + 语言切换
+ *  生成页（/about/、/works/、/changelog/ 与作品页）把它静态烤在 HTML 里，爬虫才看得到
+ *  「返回」与语言按钮；这种情况下本函数直接返回，不再重复创建。 */
 App.renderBackNav = function() {
+  if (document.querySelector('.back')) return;
   const nav = document.createElement('div');
   nav.className = 'back';
   nav.innerHTML =
-    '<a href="' + App.langHref('index.html') + '" data-i18n="back">[<- 返回]</a>' +
+    '<a href="' + App.pageHref('index') + '" data-i18n="back">[<- 返回]</a>' +
     '<a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a>';
   document.body.prepend(nav);
 };
 
-/** 首页：四角导航 */
+/** 首页：四角导航
+ *  首页把这四角静态烤在 HTML 里（英文），爬虫因此能从首页走到作品列表与各作品；
+ *  已存在时直接返回。 */
 App.renderIndexNav = function() {
+  if (document.querySelector('.nav-bottom-left')) return;
   const topLeft = document.createElement('div');
   topLeft.className = 'nav-top-left';
   topLeft.innerHTML =
-    '<a href="' + App.langHref('about.html') + '" data-i18n="about">[+] 简介与联系</a>' +
-    '<a href="' + App.langHref('changelog.html') + '" data-i18n="changelog">[>] 进程日志</a>';
+    '<a href="' + App.pageHref('about') + '" data-i18n="about">[+] 简介与联系</a>' +
+    '<a href="' + App.pageHref('changelog') + '" data-i18n="changelog">[>] 进程日志</a>';
   document.body.prepend(topLeft);
 
   const topRight = document.createElement('div');
@@ -48,11 +75,13 @@ App.renderIndexNav = function() {
 
   const bottomLeft = document.createElement('div');
   bottomLeft.className = 'nav-bottom-left';
+  /* 作品链接走 App.projectHref()：它自带语言（中文界面上就是 works/<id>/zh/），
+     所以不能再套一层 App.langHref，否则得到 works/<id>/zh/?lang=zh。 */
   bottomLeft.innerHTML =
-    '<a href="' + App.langHref('project-template.html?project=ecce-homo') + '" data-i18n="linkEcce">ECCE HOMO</a>' +
-    '<a href="' + App.langHref('project-template.html?project=riverrun') + '" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a>' +
-    '<a href="' + App.langHref('project-template.html?project=spectral-dissector') + '" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
-    '<a href="' + App.langHref('works.html') + '" class="nav-all-works" data-i18n="allWorks">[ALL WORKS →]</a>';
+    '<a href="' + App.projectHref('ecce-homo') + '" data-i18n="linkEcce">ECCE HOMO</a>' +
+    '<a href="' + App.projectHref('riverrun') + '" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a>' +
+    '<a href="' + App.projectHref('spectral-dissector') + '" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>' +
+    '<a href="' + App.pageHref('works') + '" class="nav-all-works" data-i18n="allWorks">[ALL WORKS →]</a>';
   document.body.appendChild(bottomLeft);
 
   const bottomRight = document.createElement('div');

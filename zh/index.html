@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" data-lang="zh" data-lang-fixed>
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<!-- ===== 首页 = 英文规范地址 =====
+     2026-09-22 起首页也走「语言写在路径里」：英文在 /（本文件），中文在 /zh/
+     （由 scripts/gen-pages.mjs 从本文件生成）。所以本页语言**写死为 en**、不吃 localStorage ——
+     否则同一个 / 会因访问者的偏好显示不同语言，分享出去的链接无法预期。
+     旧链接 /?lang=zh 仍可用：下面的兼容脚本把它跳到 /zh/。 -->
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>泻火 曹浩轩</title>
+<meta name="description" content="曹浩轩（泻火）的声音作品、乐器设计与交互作品：从频谱分离插件到电磁感应混音器，共八件。">
+<link rel="canonical" href="https://caohaoxuan.com/zh/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="泻火 曹浩轩">
+<meta property="og:title" content="泻火 曹浩轩">
+<meta property="og:description" content="曹浩轩（泻火）的声音作品、乐器设计与交互作品：从频谱分离插件到电磁感应混音器，共八件。">
+<meta property="og:url" content="https://caohaoxuan.com/zh/">
+<meta property="og:image" content="https://caohaoxuan.com/img/spectral-dissector.webp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 绘制前定文案的内联脚本已由生成器删除：文案在生成时按语言烤好，不需要运行时再定 -->
+<meta name="description" content="Sound art, instrument design and interactive work by Cao Haoxuan (Xiehuo): eight works, from a spectral separation plugin to an electromagnetic mixer.">
+<link rel="canonical" href="https://caohaoxuan.com/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Xiehuo — Cao Haoxuan">
+<meta property="og:title" content="Xiehuo — Cao Haoxuan">
+<meta property="og:description" content="Sound art, instrument design and interactive work by Cao Haoxuan (Xiehuo): eight works, from a spectral separation plugin to an electromagnetic mixer.">
+<meta property="og:url" content="https://caohaoxuan.com/">
+<meta property="og:image" content="https://caohaoxuan.com/img/spectral-dissector.webp">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/index.css?v=4">
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/app.js"></script>
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic -->
+<script defer src="js/index-i18n.js?v=2"></script>
+<script defer src="js/index.js?v=5"></script>
+</head>
+<body>
+
+<!-- 四角导航在这里静态写死（英文），js/nav.js 检测到已存在就不再重复创建。
+     这样不跑 JS 的抓取者也能从首页沿着「作品列表 → 各作品」走下去；
+     此前这四角全靠 JS 注入，爬虫在首页看不到任何站内链接。 -->
+<div class="nav-top-left"><a href="about/zh/" data-i18n="about">[+] 简介与联系</a><a href="changelog/zh/" data-i18n="changelog">[&gt;] 进程日志</a></div>
+<div class="nav-top-right" id="name-easter">泻火 曹浩轩</div>
+<div class="nav-bottom-left"><a href="works/ecce-homo/zh/" data-i18n="linkEcce">瞧！这个人</a><a href="works/riverrun/zh/" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a><a href="works/spectral-dissector/zh/" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a><a href="works/zh/" class="nav-all-works" data-i18n="allWorks">[全部作品 →]</a></div>
+<div class="nav-bottom-right"><a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a></div>
+
+<!-- DOM order: firstChild = bottom of stack, lastChild = visual top -->
+<!-- 每张卡片两个地址属性：data-project 是规范来源（目录式作品页 works/<id>/，中文界面为
+     works/<id>/zh/，由 js/index.js 经 App.projectHref() 解析）；data-href 是旧地址留档，
+     只在「新 HTML 配旧缓存 app.js（缺 App.projectHref）」的新旧混用窗口里兜底 ——
+     JS 缓存 4 小时而 HTML 只有 600 秒，这个窗口是真实存在的（见 js/nav.js 顶部注释）。
+     不要删 data-href，也不要以它为准。 -->
+<div class="stack-wrap" id="stack">
+  <div class="card" data-project="the-just-type-study" data-href="project-template.html?project=the-just-type-study">
+    <div class="card-fallback" data-i18n="cardJustType">The JustType Study</div>
+    <img class="card-image card-image--justtype" src="img/the-just-type-study.webp" alt="The JustType Study" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card" data-project="the-induction-mixer" data-href="project-template.html?project=the-induction-mixer">
+    <div class="card-fallback" data-i18n="cardFetMixer">THE INDUCTION MIXER</div>
+    <img class="card-image" src="img/the-induction-mixer.webp" alt="THE INDUCTION MIXER" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card lowercase" data-project="riverrun" data-href="project-template.html?project=riverrun">
+    <div class="card-fallback" data-i18n="cardRiverrun">riverrun</div>
+    <img class="card-image" src="img/riverrun.webp" alt="riverrun" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card" data-project="edgedgedge" data-href="project-template.html?project=edgedgedge">
+    <div class="card-fallback" data-i18n="cardEdgedgedge">EDGEDGEDGE</div>
+    <img class="card-image" src="img/edgedgedge.webp" alt="EDGEDGEDGE" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card" data-project="spectral-dissector" data-href="project-template.html?project=spectral-dissector">
+    <div class="card-fallback" data-i18n="cardSpectral">SPECTRAL DISSECTOR</div>
+    <img class="card-image" src="img/spectral-dissector.webp" alt="SPECTRAL DISSECTOR" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card" data-project="ecce-homo" data-href="project-template.html?project=ecce-homo">
+    <div class="card-fallback" data-i18n="cardEcce">瞧！这个人</div>
+    <img class="card-image" src="img/ecce-homo.webp" alt="ECCE HOMO" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card" data-project="wwhbh" data-href="project-template.html?project=wwhbh">
+    <div class="card-fallback" data-i18n="cardWwbh">我们将会曾经在这里</div>
+    <img class="card-image" src="img/wwhbh.webp" alt="We Will Have Been Here" decoding="async" fetchpriority="high">
+  </div>
+  <div class="card" data-project="6u104hp" data-href="project-template.html?project=6u104hp">
+    <div class="card-fallback" data-i18n="card6u104hp">6U104HP</div>
+    <img class="card-image" src="img/6u104hp.webp" alt="6U104HP" decoding="async" fetchpriority="high">
+  </div>
+</div>
+
+</body>
+</html>

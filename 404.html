@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<!-- 语言必须在首次绘制前定下来，否则默认中文文案会一闪而过（defer 脚本来不及）。
+     ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
+     必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
+<script>
+(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 本页由 GitHub Pages 对**任何**不存在的路径返回，因此它可能出现在任意深度
+     （/works/bogus/、/foo/bar/baz.html …）。所有资源引用一律以 / 开头，
+     用相对路径会按出错的那个目录去解析，页面会连样式都加载不到。
+     地址本身带 HTTP 404 状态码，故不需要 noindex。 -->
+<title>404</title>
+<link rel="icon" href="/favicon.ico?v=1" sizes="any">
+<link rel="icon" href="/img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="/css/base.css?v=4">
+<link rel="stylesheet" href="/css/nav.css?v=3">
+<link rel="stylesheet" href="/css/404.css">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。 -->
+<!-- 渲染关键：App 命名空间与本页文案数据必须在首次绘制前就位，
+     文件末尾那段同步内联脚本要靠 App.NOTFOUND_I18N 在绘制前定下文案。
+     两个文件共约 1KB，与 CSS 并行下载。 -->
+<script src="/js/app.js"></script>
+<script src="/js/404-i18n.js"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="/js/i18n.js?v=6"></script>
+<script defer src="/js/autospace.js"></script>
+<script defer src="/js/nav.js?v=5"></script>
+<script defer src="/js/prefetch.js"></script>
+<!-- page logic -->
+<script defer src="/js/404.js"></script>
+</head>
+<body>
+
+<div class="notfound-page">
+  <h1 data-i18n="title">404</h1>
+  <!-- 静态文案用**默认语言（英文）**：JS 没跑时读者看到的是本站主版本，而不是一段空白。
+       既有页面（works / about / changelog）里硬编码的是中文，那是它们上线时默认语言还是
+       中文留下的；本页是新增的，没有这份包袱。绘制前的内联脚本随后按语言改写。 -->
+  <p data-i18n="lead">Nothing lives at this address. The link may be mistyped, or the page may have moved — the eight works are still here.</p>
+  <div class="notfound-links">
+    <a href="/index.html" data-page-href="index" data-i18n="home">[&lt;- HOME]</a>
+    <a href="/works.html" data-page-href="works" data-i18n="works">[ALL WORKS →]</a>
+  </div>
+</div>
+
+<!-- ===== 绘制前定文案：必须在首次绘制前执行 =====
+     defer 要等全部脚本下载完才跑，那之前浏览器画的是 HTML 里硬编码的那一版文案。
+     文案读自 js/404-i18n.js，本文件不重复一份；元素保留 data-i18n，切换语言仍由 apply() 接管。
+     失败方向：脚本没跑 = 显示 HTML 里的英文原文（默认语言），不是空白、也不是旧语言。 -->
+<script>
+(function(){
+  var lang = document.documentElement.dataset.lang === 'zh' ? 'zh' : 'en';
+  var data = App.NOTFOUND_I18N;
+  var h = document.querySelector('[data-i18n="title"]');
+  if (h) h.textContent = data.title[lang];
+  var p = document.querySelector('[data-i18n="lead"]');
+  if (p) p.textContent = data.lead[lang];
+})();
+</script>
+
+</body>
+</html>

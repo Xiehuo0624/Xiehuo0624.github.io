@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-lang-fixed>
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<!-- 语言必须在首次绘制前定下来，否则默认中文文案会一闪而过（defer 脚本来不及）。
+     ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
+     必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
+<script>
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=2';document.head.appendChild(f);}catch(e){}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- 旧地址：这一页的规范地址已经是目录式（/about/ 与 /about/zh/ 等，由 scripts/gen-pages.mjs 生成）。
+     本文件继续可用 —— 已发出去的链接不能断 —— 但静态的 noindex 让不跑 JS 的抓取者知道
+     它不是正式页面；页面脚本再用 App.injectCanonical() 补一条指向目录式地址的 canonical。 -->
+<meta name="robots" content="noindex,follow">
+<title>ABOUT</title>
+<meta name="description" content="About Cao Haoxuan (Xiehuo): background, practice and contact.">
+<link rel="canonical" href="https://caohaoxuan.com/about/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/about/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/about/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/about/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Xiehuo — Cao Haoxuan">
+<meta property="og:title" content="ABOUT">
+<meta property="og:description" content="About Cao Haoxuan (Xiehuo): background, practice and contact.">
+<meta property="og:url" content="https://caohaoxuan.com/about/">
+<meta property="og:image" content="https://caohaoxuan.com/img/logo/shuihuo-180.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
+<link rel="stylesheet" href="css/about.css">
+<!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
+     用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
+     等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
+     不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- 渲染关键：App 命名空间与本页文案数据必须在首次绘制前就位，
+     文件末尾那段同步内联脚本要靠 App.ABOUT_I18N 在绘制前定下标题文案
+     （defer 要等全部脚本下载完才跑，那之前英文界面会先画出 HTML 里硬编码的中文「关于」，
+     实测约 190ms）。两个文件共约 4.6KB，与 CSS 并行下载，实测首屏时刻无回归。 -->
+<script src="js/app.js"></script>
+<script src="js/about-i18n.js?v=4"></script>
+<!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
+<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/autospace.js"></script>
+<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/prefetch.js"></script>
+<!-- page data + logic -->
+<script defer src="js/about.js"></script>
+</head>
+<body>
+
+<div class="back" data-baked="1"><a href="./" data-i18n="back">[&lt;- BACK]</a><a href="#" id="lang-toggle" data-i18n="langToggle">[zh] 中文</a></div>
+
+<div class="about-page">
+  <div class="bio">
+    <h1 data-i18n="title">ABOUT</h1>
+    <p data-i18n="bio1">I really hate explaining who I am, what I do, what my works are about, what they express, what they concern. But no matter what, I still have to do this sort of thing — there's just no way around it. I am Xiehuo, I am Cao Haoxuan, I am Cao Tianyu, I am Jerry. I was born on June 24, 2004. If you'd like, you can get me something fun for my birthday, but nothing too expensive — I won't take it.</p>
+    <p data-i18n="bio2">In the beginning I made art, or rather dreamed of making art, simply because my mental state was truly terrible. Why say &quot;simply&quot;? Maybe because it seems like everyone can and ought to be able to stabilize their own mind. But of course that's impossible — it is simply the hardest thing in this world.</p>
+    <p data-i18n="bio3">Anyway, I don't actually want to make art, and I can't even figure out what I'm doing. Whatever, everything is whatever. Regardless, I still studied computer music, modular synthesizers, synthesis methods and all sorts of things, and read quite a few books, watched films, experienced works — whatever. What am I even saying. Anyway, these past few years have been pretty good.</p>
+    <p data-i18n="bio4">I know that generally speaking, this isn't what people come here to see. If I must say, I mainly play around with modular synthesizers, build some myself, and then I research things related to musical interfaces, things related to synthesis methods, and I care quite a bit about the politicization of art. Other than that, nothing much.</p>
+    <p data-i18n="bio5">I am currently studying at the Shanghai Conservatory of Music, Department of Music Engineering, majoring in Art and Technology.</p>
+    <p data-i18n="bio6">I hope everyone is happy.</p>
+    <p data-i18n="bio7">My favorite artists are probably Christina Kubisch and Cathy Van Eck.</p>
+    <span class="bio-date" data-i18n="bio6date">2026.06.10</span>
+    <p data-i18n="bio8">My mom says I used the wrong punctuation.</p>
+    <span class="bio-date" data-i18n="bio8date">2026.06.24</span>
+  </div>
+  <div class="contact">
+    <h2 data-i18n="contact">CONTACT</h2>
+    <a href="mailto:caohaoxuan0624@gmail.com">caohaoxuan0624@gmail.com</a>
+  </div>
+</div>
+
+<!-- 绘制前定文案的内联脚本已由生成器删除：文案在生成时按语言烤好，不需要运行时再定 -->
+
+</body>
+</html>

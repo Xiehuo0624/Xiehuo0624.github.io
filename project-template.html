@@ -2,42 +2,60 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
+<!-- gen:legacy-only:lang -->
 <!-- 语言必须在首次绘制前定下来，否则默认中文文案会一闪而过（defer 脚本来不及）。
      ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
-     必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
+     必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。
+     本块只在旧地址（本文件）生效：生成页的语言写在路径里，由 scripts/gen-projects.mjs
+     换成「只按语言预载字体」的那一小段 —— 让 localStorage 覆盖路径语言会得到
+     「打开 /works/x/ 却是中文」这种自相矛盾的页面。 -->
 <script>
 (function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}}catch(e){}})();
 </script>
+<!-- /gen:legacy-only:lang -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- gen:legacy-only:noindex -->
+<!-- 旧地址：作品页的规范地址已经是目录式（works/<id>/ 与 works/<id>/zh/，由
+      scripts/gen-projects.mjs 生成）。本文件继续可用 —— 已发出去的 ?project= 链接不能断，
+      也不能把访问者甩到一个空壳上。但它不该被搜索引擎当成正式页面：静态的 noindex 给
+      不执行 JS 的抓取者结论，js/project.js 再补一条指向目录式地址的 canonical，
+      两条一起覆盖两种抓取方式。本文件同时是生成器的模板来源，改这里等于改所有作品页。
+      本块只在旧地址生效：生成页是规范地址，必须可被索引，生成器会把整块删掉。 -->
+<meta name="robots" content="noindex,follow">
+<!-- /gen:legacy-only:noindex -->
 <title>PROJECT</title>
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/nav.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=5">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
      不带 fetchpriority=high：相当于排队等下载，不跟 CSS / 首屏图片抢带宽。 -->
+<!-- gen:legacy-only:sync -->
 <!-- 渲染关键：App 命名空间与作品数据必须在首次绘制前就位。
      文件末尾那段同步内联脚本要靠 App.projects 在绘制前定下显示哪个布局面板，
      所以这两个文件不能 defer（defer 要等全部脚本下载完、解析结束后才跑，
      那之前浏览器已经把默认的 grid 样板画在屏幕上了 —— 成因详见文件末尾注释）。
-     共约 4.8KB，与 CSS 并行下载，实测首屏时刻无回归。 -->
+     共约 4.8KB，与 CSS 并行下载，实测首屏时刻无回归。
+     本块只在旧地址生效。生成页的布局与标题都写在 HTML 里，同步加载不再是首屏正确性的
+     前提；之所以仍然保持同步，是为了与模板共用同一套加载策略，避免两份各自漂移。 -->
+<!-- /gen:legacy-only:sync -->
 <script src="js/app.js"></script>
 <script src="js/project-data.js?v=3"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
-<script defer src="js/i18n.js?v=4"></script>
+<script defer src="js/i18n.js?v=6"></script>
 <script defer src="js/autospace.js"></script>
-<script defer src="js/nav.js?v=3"></script>
+<script defer src="js/nav.js?v=5"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic -->
-<script defer src="js/project-i18n.js?v=3"></script>
+<script defer src="js/project-i18n.js?v=4"></script>
 <script defer src="js/ink-wwhbh.js?v=1"></script>
 <script defer src="js/audio-wwhbh.js?v=4"></script>
 <script defer src="js/mixer-riverrun.js?v=5"></script>
-<script defer src="js/project.js?v=5"></script>
+<script defer src="js/project.js?v=6"></script>
 </head>
 <body>
 
@@ -120,6 +138,7 @@
   </div>
 </div>
 
+<!-- gen:legacy-only:layout -->
 <!-- ===== 首屏布局选择：必须在首次绘制前执行 =====
      六个布局面板全都写在 HTML 里，而「显示哪一个」原先只由 defer 的 js/project.js 决定。
      defer 脚本要等 11 个文件全部下载完、解析结束后才执行，那之前浏览器先画出默认的
@@ -129,7 +148,9 @@
      配合 css/project.css 的「默认全隐藏、按 data-layout 显示」规则，第一帧即正确的那一页。
      失败方向是安全的：属性缺失时 CSS 让所有面板保持隐藏（最坏是空白一帧），
      绝不会再闪出样板；js/project.js 随后照旧覆盖一遍，行为与改动前一致。
-     语言不用 i18n.js：<html data-lang> 已由 <head> 里的前置脚本在绘制前写好。 -->
+     语言不用 i18n.js：<html data-lang> 已由 <head> 里的前置脚本在绘制前写好。
+     本块只在旧地址生效：生成页在生成时就把语言、作品、布局写进 <html>，标题与正文也
+     直接填好，这段脚本连同未使用的布局面板一起被生成器删掉。 -->
 <script>
 (function(){
   var id = new URLSearchParams(location.search).get('project');
@@ -150,6 +171,7 @@
   el.appendChild(sp);
 })();
 </script>
+<!-- /gen:legacy-only:layout -->
 
 </body>
 </html>

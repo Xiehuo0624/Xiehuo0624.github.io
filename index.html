@@ -1,77 +1,107 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en" data-lang="en" data-lang-fixed>
 <head>
 <meta charset="UTF-8">
-<!-- 语言必须在首次绘制前定下来，否则默认中文文案会一闪而过（defer 脚本来不及）。
-     ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
-     必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
+<!-- ===== 首页 = 英文规范地址 =====
+     2026-09-22 起首页也走「语言写在路径里」：英文在 /（本文件），中文在 /zh/
+     （由 scripts/gen-pages.mjs 从本文件生成）。所以本页语言**写死为 en**、不吃 localStorage ——
+     否则同一个 / 会因访问者的偏好显示不同语言，分享出去的链接无法预期。
+     旧链接 /?lang=zh 仍可用：下面的兼容脚本把它跳到 /zh/。 -->
+<!-- gen:legacy-only:lang -->
 <script>
-(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='css/fonts/SourceHanSansSC-Regular.woff2';document.head.appendChild(f);}}catch(e){}})();
+/* 旧地址兼容：/?lang=zh → /zh/。本区块只在本文件生效，生成页（/zh/）会换成写死语言的版本。 */
+(function(){try{if(new URLSearchParams(location.search).get('lang')==='zh')location.replace('/zh/');}catch(e){}})();
 </script>
+<!-- /gen:legacy-only:lang -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Xiehuo — Cao Haoxuan</title>
-<!-- 绘制前定标签页标题：默认语言（英文）直接用上面的静态 <title>；中文在此改写。
-     必须放在 <title> 之后 —— 放在它之前会在解析中先造出一个 <title>，
-     等解析到真正的 <title> 时页面上就有两个标题元素了（实测）。
-     原标题是硬编码的中文，而英文标题要等 defer 的 js/index-i18n.js，
-     于是英文界面下标签页会先显示中文约 2.7–2.9s。
-     文案与 js/index-i18n.js 的 siteTitle 同源，改动时两边一起改。 -->
-<script>
-(function(){
-  try{
-    if(document.documentElement.dataset.lang === 'zh') document.title = '泻火 曹浩轩';
-  }catch(e){}
-})();
-</script>
+<!-- gen:legacy-only:prepaint -->
+<!-- 标题与文案已按英文烤好（语言写死在 <html data-lang> 上），不需要绘制前定文案的脚本 -->
+<!-- /gen:legacy-only:prepaint -->
+<meta name="description" content="Sound art, instrument design and interactive work by Cao Haoxuan (Xiehuo): eight works, from a spectral separation plugin to an electromagnetic mixer.">
+<link rel="canonical" href="https://caohaoxuan.com/">
+<link rel="alternate" hreflang="en" href="https://caohaoxuan.com/">
+<link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/zh/">
+<link rel="alternate" hreflang="x-default" href="https://caohaoxuan.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Xiehuo — Cao Haoxuan">
+<meta property="og:title" content="Xiehuo — Cao Haoxuan">
+<meta property="og:description" content="Sound art, instrument design and interactive work by Cao Haoxuan (Xiehuo): eight works, from a spectral separation plugin to an electromagnetic mixer.">
+<meta property="og:url" content="https://caohaoxuan.com/">
+<meta property="og:image" content="https://caohaoxuan.com/img/spectral-dissector.webp">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/nav.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/index.css?v=4">
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/app.js"></script>
-<script defer src="js/i18n.js?v=4"></script>
+<script defer src="js/i18n.js?v=6"></script>
 <script defer src="js/autospace.js"></script>
-<script defer src="js/nav.js?v=3"></script>
+<script defer src="js/nav.js?v=5"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic -->
-<script defer src="js/index-i18n.js?v=1"></script>
-<script defer src="js/index.js?v=4"></script>
+<script defer src="js/index-i18n.js?v=2"></script>
+<script defer src="js/index.js?v=5"></script>
 </head>
 <body>
 
+<!-- 四角导航在这里静态写死（英文），js/nav.js 检测到已存在就不再重复创建。
+     这样不跑 JS 的抓取者也能从首页沿着「作品列表 → 各作品」走下去；
+     此前这四角全靠 JS 注入，爬虫在首页看不到任何站内链接。 -->
+<div class="nav-top-left">
+  <a href="about/" data-i18n="about">[+] About &amp; Contact</a>
+  <a href="changelog/" data-i18n="changelog">[&gt;] Changelog</a>
+</div>
+<div class="nav-top-right" id="name-easter">泻火 曹浩轩</div>
+<div class="nav-bottom-left">
+  <a href="works/ecce-homo/" data-i18n="linkEcce">ECCE HOMO</a>
+  <a href="works/riverrun/" class="nav-lowercase" data-i18n="linkRiverrun">riverrun</a>
+  <a href="works/spectral-dissector/" data-i18n="linkSpectral">SPECTRAL DISSECTOR</a>
+  <a href="works/" class="nav-all-works" data-i18n="allWorks">[ALL WORKS →]</a>
+</div>
+<div class="nav-bottom-right"><a href="#" id="lang-toggle" data-i18n="langToggle">[zh] 中文</a></div>
+
 <!-- DOM order: firstChild = bottom of stack, lastChild = visual top -->
+<!-- 每张卡片两个地址属性：data-project 是规范来源（目录式作品页 works/<id>/，中文界面为
+     works/<id>/zh/，由 js/index.js 经 App.projectHref() 解析）；data-href 是旧地址留档，
+     只在「新 HTML 配旧缓存 app.js（缺 App.projectHref）」的新旧混用窗口里兜底 ——
+     JS 缓存 4 小时而 HTML 只有 600 秒，这个窗口是真实存在的（见 js/nav.js 顶部注释）。
+     不要删 data-href，也不要以它为准。 -->
 <div class="stack-wrap" id="stack">
-  <div class="card" data-href="project-template.html?project=the-just-type-study">
+  <div class="card" data-project="the-just-type-study" data-href="project-template.html?project=the-just-type-study">
     <div class="card-fallback" data-i18n="cardJustType">The JustType Study</div>
     <img class="card-image card-image--justtype" src="img/the-just-type-study.webp" alt="The JustType Study" decoding="async" fetchpriority="high">
   </div>
-  <div class="card" data-href="project-template.html?project=the-induction-mixer">
+  <div class="card" data-project="the-induction-mixer" data-href="project-template.html?project=the-induction-mixer">
     <div class="card-fallback" data-i18n="cardFetMixer">THE INDUCTION MIXER</div>
     <img class="card-image" src="img/the-induction-mixer.webp" alt="THE INDUCTION MIXER" decoding="async" fetchpriority="high">
   </div>
-  <div class="card lowercase" data-href="project-template.html?project=riverrun">
+  <div class="card lowercase" data-project="riverrun" data-href="project-template.html?project=riverrun">
     <div class="card-fallback" data-i18n="cardRiverrun">riverrun</div>
     <img class="card-image" src="img/riverrun.webp" alt="riverrun" decoding="async" fetchpriority="high">
   </div>
-  <div class="card" data-href="project-template.html?project=edgedgedge">
+  <div class="card" data-project="edgedgedge" data-href="project-template.html?project=edgedgedge">
     <div class="card-fallback" data-i18n="cardEdgedgedge">EDGEDGEDGE</div>
     <img class="card-image" src="img/edgedgedge.webp" alt="EDGEDGEDGE" decoding="async" fetchpriority="high">
   </div>
-  <div class="card" data-href="project-template.html?project=spectral-dissector">
+  <div class="card" data-project="spectral-dissector" data-href="project-template.html?project=spectral-dissector">
     <div class="card-fallback" data-i18n="cardSpectral">SPECTRAL DISSECTOR</div>
     <img class="card-image" src="img/spectral-dissector.webp" alt="SPECTRAL DISSECTOR" decoding="async" fetchpriority="high">
   </div>
-  <div class="card" data-href="project-template.html?project=ecce-homo">
+  <div class="card" data-project="ecce-homo" data-href="project-template.html?project=ecce-homo">
     <div class="card-fallback" data-i18n="cardEcce">ECCE HOMO</div>
     <img class="card-image" src="img/ecce-homo.webp" alt="ECCE HOMO" decoding="async" fetchpriority="high">
   </div>
-  <div class="card" data-href="project-template.html?project=wwhbh">
+  <div class="card" data-project="wwhbh" data-href="project-template.html?project=wwhbh">
     <div class="card-fallback" data-i18n="cardWwbh">WE WILL HAVE BEEN HERE</div>
     <img class="card-image" src="img/wwhbh.webp" alt="We Will Have Been Here" decoding="async" fetchpriority="high">
   </div>
-  <div class="card" data-href="project-template.html?project=6u104hp">
+  <div class="card" data-project="6u104hp" data-href="project-template.html?project=6u104hp">
     <div class="card-fallback" data-i18n="card6u104hp">6U104HP</div>
     <img class="card-image" src="img/6u104hp.webp" alt="6U104HP" decoding="async" fetchpriority="high">
   </div>

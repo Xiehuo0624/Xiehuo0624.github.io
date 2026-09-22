@@ -1,6 +1,8 @@
 /* ===== ABOUT PAGE I18N DATA ===== */
 App.ABOUT_I18N = {
-  ...App.COMMON_I18N,
+/* 公共字符串（返回、语言切换）由 i18n 引擎在 init() 时合并，不在这里再抄一份 ——
+   本文件可能是同步 <head> 脚本，执行时 js/i18n.js 还没跑，`...App.COMMON_I18N`
+   会展开到 undefined 而静默少掉 back / langToggle 两个键（2026-09-22 修）。 */
   title:   { zh:'关于',  en:'ABOUT' },
   contact: { zh:'联系',  en:'CONTACT' },
   bio1: {

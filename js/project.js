@@ -1,13 +1,28 @@
 /* ===== PROJECT PAGE ===== */
 (function(){
   const urlParams = new URLSearchParams(location.search);
-  const projectId = urlParams.get('project');
+  const root = document.documentElement;
+  /* 作品 id 有两个来源，不是二选一而是「先静态后参数」：
+     目录式生成页把它写在 <html data-project>（HTML 里写死，解析阶段就在，不吃 JS 缓存），
+     旧地址 project-template.html?project=… 仍走查询参数（见 scripts/gen-projects.mjs）。 */
+  const projectId = root.dataset.project || urlParams.get('project');
+  /* 目录式页面（生成页）带 data-lang-fixed：语言由路径决定，见 js/i18n.js 文件头。
+     这类页面的正文与主图已烤进 HTML，下面的 baked 分支据此跳过重复渲染。 */
+  const FIXED_LANG = root.hasAttribute('data-lang-fixed');
   const project   = App.projects[projectId];
   const layoutMap = { grid:'layout-grid', ecce:'layout-ecce', wwhbh:'layout-wwhbh', edge:'layout-edge', gallery:'layout-gallery', mixer:'layout-mixer' };
   const hideSelector = '.project-grid,.wwhbh-panel,.ecce-panel,.edge-panel,.gallery-panel,.mixer-panel';
   let descRequest = 0;          // 递增序号：语言快速切换时只采纳最后一次请求
   let descAbort = null;         // 取消上一次仍在途的描述请求
   let mediaRendered = false;    // 媒体 DOM 只渲染一次；切换语言不打断播放/滚动位置
+
+  /** 该容器（主图 / bilibili 内嵌页）是否已由生成器烤进 HTML。
+   *  烤进去的元素扫描器在 JS 之前就发现并下载了，再用 JS 重建一遍等于让图片重新入队、
+   *  让 iframe 重新装载。属性写在 HTML 上，不依赖脚本执行顺序。 */
+  function isBaked(id){
+    const el = document.getElementById(id);
+    return !!(el && el.dataset.baked === '1');
+  }
 
   App.renderBackNav();
 
@@ -34,6 +49,20 @@
   const activeEl = document.getElementById(layoutMap[project.layout]);
   activeEl.style.display = (project.layout === 'grid') ? 'grid' : 'flex';
   if (project.lowercase) activeEl.classList.add('lowercase');
+
+  /* ---- 旧地址声明规范地址 ----
+     旧地址 project-template.html?project=… 继续可用（已发出的链接不能断），但同一份内容
+     不该有两个地址争索引：这里补一条 canonical 指向目录式地址。project-template.html 里
+     另有一条静态的 noindex，给不执行 JS 的抓取者同样的结论 —— 两条一起，旧地址在两种
+     抓取方式下都不会被当成正式页面。只在旧地址上做：生成页的 canonical 是静态写好的。 */
+  if (!FIXED_LANG && typeof App.projectHref === 'function') {
+    try {
+      const link = document.createElement('link');
+      link.rel = 'canonical';
+      link.href = new URL(App.projectHref(projectId, App.I18n.currentLang), location.href).href;
+      document.head.appendChild(link);
+    } catch(e) {}
+  }
 
   /* ---- get the desc element for the active layout ---- */
   function getDescEl(){
@@ -72,7 +101,7 @@
     if (layout === 'grid') {
       setTitle('grid-title');
       /* render media area (single image) */
-      if (project.media && !mediaRendered) {
+      if (project.media && !mediaRendered && !isBaked('grid-media')) {
         const mediaEl = document.getElementById('grid-media');
         if (mediaEl) {
           mediaEl.innerHTML = '';
@@ -89,7 +118,7 @@
     } else if (layout === 'edge') {
       setTitle('edge-title');
       /* render media area */
-      if (project.media && !mediaRendered) {
+      if (project.media && !mediaRendered && !isBaked('edge-media')) {
         const mediaEl = document.getElementById('edge-media');
         if (mediaEl) {
           mediaEl.innerHTML = '';
@@ -112,7 +141,7 @@
     } else if (layout === 'gallery') {
       setTitle('gallery-title');
       /* render gallery slider */
-      if (!mediaRendered && project.media && project.media.type === 'gallery') {
+      if (!mediaRendered && project.media && project.media.type === 'gallery' && !isBaked('gallery-slider')) {
         const slider = document.getElementById('gallery-slider');
         if (slider) {
           slider.innerHTML = '';
@@ -139,7 +168,7 @@
     } else if (layout === 'ecce') {
       setTitle('ecce-title');
       /* render top image (+ optional audio) */
-      if (!mediaRendered) {
+      if (!mediaRendered && !isBaked('ecce-media')) {
         const mediaEl = document.getElementById('ecce-media');
         if (mediaEl) {
           mediaEl.innerHTML = '';
@@ -169,6 +198,15 @@
     const descEl = getDescEl();
     if (!descEl) return;
 
+    /* 生成页：正文已经烤在 HTML 里，`data-desc-lang` 记的就是烤进去的那一版语言。
+       与当前语言一致时直接用，不再发一次 fetch —— 少一次往返，也不会先清空再填回
+       （爬虫不跑 JS，正文必须本来就在 HTML 里，见 scripts/gen-projects.mjs）。
+       不一致时（语言切换、或将来出现页内换语言）仍走下面的 fetch，行为与改动前一致。 */
+    if (descEl.dataset.descLang === App.I18n.currentLang) {
+      appendRelated(descEl);
+      return;
+    }
+
     if (project.desc.file) {
       const reqId = ++descRequest;
       if (descAbort) { try { descAbort.abort(); } catch(e) {} }
@@ -195,6 +233,9 @@
   /* ---- related works (cross-links, e.g. riverrun ↔ The Induction Mixer) ---- */
   function appendRelated(descEl){
     if (!project.related || !project.related.length) return;
+    /* 幂等：正文烤在 HTML 里时本函数会被调用不止一次（初始化 + 语言回调 + 上面的
+       baked 分支），不去重会叠出两组「相关作品」链接。 */
+    descEl.querySelectorAll(':scope > .project-related').forEach(n => n.remove());
     const lang = App.I18n.currentLang;
     const wrap = document.createElement('div');
     wrap.className = 'project-related';
@@ -203,9 +244,10 @@
       if (!target) return;
       const a = document.createElement('a');
       a.className = 'project-related-link';
-      /* 判空：新旧 JS 混用时退化为不带参数的链接（成因见 js/nav.js 顶部注释） */
-      a.href = (typeof App.langHref === 'function')
-        ? App.langHref('project-template.html?project=' + r.id)
+      /* 判空：新旧 JS 混用时退化为旧的 ?project= 链接（仍可用；成因见 js/nav.js
+         顶部注释）。地址自带语言，故不再套 App.langHref。 */
+      a.href = (typeof App.projectHref === 'function')
+        ? App.projectHref(r.id)
         : 'project-template.html?project=' + r.id;
       const role = r.role ? r.role[lang] + ' ' : '';
       a.textContent = role + target.title[lang] + ' →';
