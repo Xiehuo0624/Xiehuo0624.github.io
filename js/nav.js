@@ -91,6 +91,30 @@ App.renderIndexNav = function() {
   document.body.appendChild(bottomRight);
 };
 
+/* ===== Esc 返回 =====
+ *
+ * 子页面按 Esc 等同于点顶部那个「返回」按钮 —— 回到首页（中文界面回 /zh/）。
+ * 首页没有返回栏，不响应。三条约束，每条都有理由：
+ *
+ * ① **目标直接读页面上那个链接的 href，不在这里把地址重算一遍。**
+ *    返回栏的去向有三种写法：生成页把地址烤进 HTML（'./' 或 './zh/'，配 `<base href="/">`）、
+ *    手写模板由本文件现生成（App.pageHref('index') 同样给 './' 或 './zh/'）、
+ *    旧地址还挂着 ?lang=。在 JS 里重算就是第二份真相，迟早与可见按钮漂移，
+ *    而「按 Esc 等于点它」正是本功能对用户的承诺 —— 读 DOM 则天然同步：
+ *    按钮修好了，快捷键跟着好。
+ * ② **没有返回栏就不响应**：首页是四角导航，没有「返回」这个动作。
+ * ③ **Lightbox 打开时先关它，本次按键不跳页**（Esc 逐层退出）。
+ *    js/project.js 的 Lightbox 只在首次打开时创建遮罩、Esc 由它自己处理；
+ *    本文件的监听器注册在前（nav.js 在 project.js 之前），故这里必须先让路，
+ *    否则一次 Esc 会既关掉放大图又离开整页。将来的浮层沿用同一约定：
+ *    要么在这里加一条判断，要么在自己的处理器里 e.preventDefault()（下面也认）。 */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || e.defaultPrevented) return;
+  if (document.querySelector('.lightbox.open')) return;
+  const back = document.querySelector('.back a[data-i18n="back"]');
+  if (back && back.href) location.href = back.href;   /* .href 是解析后的绝对地址，base 与语言都已算进去 */
+});
+
 /* ===== 防拖拽兜底（Firefox + 运行时插入的图片）=====
    浏览器一旦进入原生拖拽（dragstart），mouseup 就不再派发 click，表现为「点不动、只在拖」。
    CSS 侧已用 -webkit-user-drag:none 覆盖 Chrome/Safari/Edge（css/base.css 的 <img>、

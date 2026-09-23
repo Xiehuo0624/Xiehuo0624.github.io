@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /* 作品页改造的实测验证：headless Chrome + CDP。
  * 覆盖：16 个生成页的结构/元信息/媒体/正文、旧地址、语言切换跳转、
- *       首页卡片与作品列表链接、404 页、以及控制台报错与 4xx 请求。
+ *       首页卡片与作品列表链接、404 页、Gallery Lightbox、字体 URL 一致性、
+ *       Esc 返回（子页面 → 首页、首页不响应、Lightbox 优先、旧地址与 404 的落点），
+ *       以及控制台报错与 4xx 请求。
  * 用法：先起本地服务（python3 -m http.server 8765），再 node scripts/verify/verify.mjs
  */
 import { spawn } from 'node:child_process';
@@ -354,12 +356,16 @@ console.log('=== 五、/works/ 转发与 404 页 ===');
   const info = await v.evaluate(`({
     lead: document.querySelector('[data-i18n=lead]').textContent,
     h1: document.querySelector('h1').textContent,
-    links: [...document.querySelectorAll('.notfound-links a')].map(a=>a.getAttribute('href')),
+    links: [...document.querySelectorAll('.notfound-links a')].map(a => new URL(a.href).pathname),
     css: !!getComputedStyle(document.querySelector('.notfound-page')).maxWidth
   })`);
   checkTrue('404 中文文案', /地址/.test(info.lead));
   check('404 标题', info.h1, '404');
-  check('404 出口指向目录式地址（随语言）', info.links, ['zh/', 'works/zh/']);
+  /* 比的是**解析后的路径**而不是 href 的字面写法：写一半的地址（'./zh/'）与写全的
+     地址（'/zh/'）对读者是一回事，而字面写法会随 App.pageHref 的实现变。
+     这一条在 2026-09-23 之前是真的会失败的 —— 那时 404 页没有 <base>，
+     两个出口解析成 /404.html 自身与 /works/zh/。 */
+  check('404 出口指向目录式地址（随语言）', info.links, ['/zh/', '/works/zh/']);
   checkTrue('404 样式已加载', info.css);
   checkTrue('404 无报错', v.consoleErrors.length === 0 && v.net.bad.length === 0);
   await v.close();
@@ -657,6 +663,21 @@ console.log('=== 十二、字体 URL 一致性（必须与 css/base.css 逐字�
   checkTrue(`扫到主字体 URL 引用（当前 ${refs} 处）`, refs > 0);
   check(`与 css/base.css 不一致的引用（须为空）`, mismatched, []);
 
+  /* base.css **自身**的号（`base.css?v=N`，递增整数）：六份 HTML 必须一致。
+     它是与上面那个字体哈希**不同的版本键**，所以前面那条查不到它。历史上它会静默漂：
+     scripts/gen-cjk-main.py 提号时取六份里的**最大值**再统一写回，六份不一致时它既不报错、
+     也不失败，只是顺手抹平（2026-09-23 实测撞上：起点是 v10 与 v11 混用，直到那次重切才归一）。
+     漂着的后果与字体 URL 分叉同类 —— 六份 HTML 里有两份指向不同的 base.css 缓存键。 */
+  const cssVer = ['index.html', 'works.html', 'about.html', 'changelog.html', '404.html',
+                  'project-template.html'].map(f => {
+    const m = readFileSync(join(ROOT, f), 'utf8').match(/base\.css\?v=(\d+)/);
+    return [f, m ? m[1] : null];
+  });
+  const uniqVer = [...new Set(cssVer.map(x => x[1]))];
+  check(`六份 HTML 的 base.css 号（当前 ${uniqVer.map(v => v ? 'v' + v : '缺失').join(' / ')}）`,
+        uniqVer.length === 1 ? [] : cssVer, []);
+  checkTrue('六份 HTML 都带 base.css 号', cssVer.every(x => x[1] !== null));
+
   /* 静态比对之外，再按**实际请求**确认一遍：漏同步的症状就是同一份字体被请求两次。
      覆盖三种页面：手写模板的旧地址、生成的作品页、生成的站内页。 */
   const expectUrl = `${BASE}/css/fonts/${canonical.replace(/^fonts\//, '')}`;
@@ -669,6 +690,117 @@ console.log('=== 十二、字体 URL 一致性（必须与 css/base.css 逐字�
     check(`${path} 主字体请求 URL`, urls[0] || null, expectUrl);
     await v.close();
   }
+}
+
+/* ---------- 十三、Esc 返回：与页面上的「返回」按钮同目标 ---------- */
+console.log('=== 十三、Esc 返回（子页面 → 首页；首页不响应；Lightbox 优先；旧地址与 404）===');
+{
+  /* 约定（2026-09-23 作者定）：只在有返回栏的子页面生效，目标**与可见的「返回」按钮
+     完全一致**（首页，中文界面 /zh/）；首页没有返回栏故不响应；Lightbox 打开时
+     先关放大图、本次按键不跳页（再按一次才返回）。
+     实现读的是按钮的 href（js/nav.js），所以这里既断言**具体落点**，也断言
+     「落点 = 按钮 href」这条不变量 —— 后者才是「按 Esc 等于点它」的正式表述。 */
+  const esc = v => v.evaluate(`(window.__escProbe = 'alive', document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})), 1)`);
+  const state = v => v.evaluate(`({
+    path: location.pathname,
+    href: location.href,
+    probe: window.__escProbe || null,
+    back: (document.querySelector('.back a[data-i18n="back"]') || {}).href || null
+  })`);
+  /* href → pathname；拿不到（返回栏缺失的回归）返回 null，让断言报一条失败，
+     而不是让 new URL 抛错把整轮验证中断在页面中间。 */
+  const pathOf = href => { try { return new URL(href).pathname; } catch { return null; } };
+
+  /* 八页中英各半：作品页（返回栏由 JS 渲染）与三个站内页（返回栏烤在 HTML 里） */
+  for (const [path, want] of [
+    ['/works/6u104hp/', '/'], ['/works/6u104hp/zh/', '/zh/'],
+    ['/works/', '/'],         ['/works/zh/', '/zh/'],
+    ['/about/', '/'],         ['/about/zh/', '/zh/'],
+    ['/changelog/', '/'],     ['/changelog/zh/', '/zh/']
+  ]) {
+    const v = await visit(path, { waitMs: 1000 });
+    const before = await state(v);
+    checkTrue(`${path} 有返回栏（Esc 才有意义）`, !!before.back);
+    await esc(v);
+    await sleep(900);
+    const after = await state(v);
+    check(`${path} 按 Esc 回首页`, after.path, want);
+    check(`${path} 落点 = 返回按钮的 href`, after.path, pathOf(before.back));
+    checkTrue(`${path} Esc 无控制台报错`, v.consoleErrors.length === 0 && v.exceptions.length === 0);
+    await v.close();
+  }
+
+  /* 首页：没有返回栏，Esc 必须什么都不做（不跳转、不重载） */
+  const home = await visit('/', { waitMs: 900 });
+  const homeBefore = await state(home);
+  checkTrue('首页没有返回栏', homeBefore.back === null);
+  await esc(home);
+  await sleep(900);
+  const homeAfter = await state(home);
+  checkTrue('首页按 Esc 不跳转（标记还在 = 没重载）',
+    homeAfter.probe === 'alive' && homeAfter.href === homeBefore.href);
+  await home.close();
+
+  /* Lightbox 打开时：Esc 只关放大图，不离开本页；再按一次才返回 */
+  const lb = await visit('/works/6u104hp/', { waitMs: 1200 });
+  await lb.evaluate(`document.querySelector('.gallery-grid img').click()`);
+  await sleep(400);
+  const lbBefore = await state(lb);
+  checkTrue('Lightbox 已打开', await lb.evaluate(`!!document.querySelector('.lightbox.open')`));
+  await esc(lb);
+  await sleep(900);
+  const lbAfter = await lb.evaluate(`({
+    open: !!document.querySelector('.lightbox.open'),
+    href: location.href,
+    probe: window.__escProbe || null
+  })`);
+  checkTrue('第一次 Esc 只关 Lightbox', lbAfter.open === false);
+  checkTrue('第一次 Esc 不离开本页（标记还在）',
+    lbAfter.probe === 'alive' && lbAfter.href === lbBefore.href);
+  await esc(lb);
+  await sleep(900);
+  check('第二次 Esc 才回首页', (await state(lb)).path, '/');
+  await lb.close();
+
+  /* 旧地址（.html 与 ?project=）：返回栏由 js/nav.js 现生成，同样回首页。
+     这五个页面都没有 `<base>`，所以 2026-09-23 之前英文界面的返回按钮解析回**自身**
+     （App.pageHref('index') 当时返回空串，而空串 = 本页）。落点写死正是防它复发。 */
+  for (const [path, want] of [
+    ['/works.html?lang=en', '/'],  ['/works.html?lang=zh', '/zh/'],
+    ['/about.html', '/'],          ['/changelog.html', '/'],
+    ['/project-template.html?project=riverrun', '/']
+  ]) {
+    const v = await visit(path, { waitMs: 900 });
+    const before = await state(v);
+    check(`${path} 返回按钮指向首页`, pathOf(before.back), want);
+    await esc(v);
+    await sleep(900);
+    check(`${path} 按 Esc 回首页`, (await state(v)).path, want);
+    await v.close();
+  }
+
+  /* 404：它由 GitHub Pages 服务在**任意深度**的不存在路径上，所以页面必须声明
+     `<base href="/">`，让脚本生成的相对地址一律从站点最外层算起（2026-09-23 修：
+     修之前 /works/bogus/ 上返回链接解析回自身、出口链接解析成 /works/bogus/works/，
+     英文读者被困在 404 页里出不去）。
+     本地 http.server 不会把 404.html 服务在深层路径上，故这里断言两件等价的事：
+     ① 页面确实声明了 base 且基准就是站点根；② 在 /404.html 上，返回栏与两个出口
+     都解析成站点根的地址。深层路径的实测见 tmp/ghpages-404-server.py + tmp/esc-probe.mjs。 */
+  const nf = await visit('/404.html', { waitMs: 900 });
+  const nfInfo = await nf.evaluate(`({
+    baseAttr: (document.querySelector('base') || {}).getAttribute ? document.querySelector('base').getAttribute('href') : null,
+    baseURI: document.baseURI,
+    back: (document.querySelector('.back a[data-i18n="back"]') || {}).href || null,
+    exits: [...document.querySelectorAll('.notfound-links a')].map(a => a.href)
+  })`);
+  check('404 页声明 <base href="/">', nfInfo.baseAttr, '/');
+  check('404 页基准地址 = 站点根', nfInfo.baseURI, BASE + '/');
+  check('404 页返回链接 = 首页', pathOf(nfInfo.back), '/');
+  check('404 页两个出口 = 首页与作品列表', nfInfo.exits.map(pathOf), ['/', '/works/']);
+  await esc(nf);
+  await sleep(900);
+  check('404 页按 Esc 回首页', (await state(nf)).path, '/');
+  await nf.close();
 }
 
 /* ---------- 汇总 ---------- */

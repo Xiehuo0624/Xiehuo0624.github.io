@@ -45,10 +45,18 @@ App.projectHref = function(id, forcedLang){
  * 并由 App.injectCanonical() 声明规范地址。
  *
  * 与 App.langHref 的分工：langHref 给「仍以 ?lang= 表达语言」的旧页面用（本项目里只剩旧地址），
- * 新页面一律走 pageHref / projectHref —— 它们的返回值里已经带了语言，**不要再套 langHref**。 */
+ * 新页面一律走 pageHref / projectHref —— 它们的返回值里已经带了语言，**不要再套 langHref**。
+ *
+ * **首页那一项必须写成 './'，不能写成空串（2026-09-23 修）**：地址写一半时，浏览器默认
+ * 「按当前这一页所在的位置」补全，而**空串补出来的就是本页自己** —— `/works.html` 上的
+ * `href=""` 解析回 `/works.html`，点「返回」等于重载。原先只有生成页侥幸没露馅，因为
+ * 它们带 `<base href="/">`（见 scripts/gen-pages.mjs），空串在那儿的补全起点是站点最外层；
+ * 而 `works.html`／`about.html`／`changelog.html`／`project-template.html`／`404.html`
+ * 没有这一句，英文界面的返回按钮就指向了自己（中文的 `zh/` 从最外层数恰好正确，故一直没发现）。
+ * 生成器自己那份 pageHref 一直写的是 './' —— 两份写法不一致正是这个 bug 的根子，现在逐字统一。 */
 App.pageHref = function(name, forcedLang){
   const lang = forcedLang || (window.App.I18n && App.I18n.currentLang) || 'en';
-  const base = (name === 'index') ? '' : name + '/';          /* 'works' → 'works/' */
+  const base = (name === 'index') ? './' : name + '/';        /* 'works' → 'works/'，首页 → './' */
   return base + (lang === 'zh' ? 'zh/' : '');
 };
 

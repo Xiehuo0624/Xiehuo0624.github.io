@@ -9,7 +9,7 @@
 <script>
 /* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
    预载 URL 由 mainFontHref() 从 css/base.css 现读，不在这里硬编码版本号。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=09c9aefe';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=15a961bb';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 旧地址：这一页的规范地址已经是目录式（/works/ 与 /works/zh/ 等，由 scripts/gen-pages.mjs 生成）。
@@ -34,7 +34,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=9">
+<link rel="stylesheet" href="css/base.css?v=12">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/works.css">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -50,7 +50,7 @@
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/i18n.js?v=6"></script>
 <script defer src="js/autospace.js"></script>
-<script defer src="js/nav.js?v=5"></script>
+<script defer src="js/nav.js?v=6"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic -->
 <script defer src="js/project-data.js?v=4"></script>

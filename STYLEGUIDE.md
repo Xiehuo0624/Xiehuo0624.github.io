@@ -43,6 +43,7 @@
 | z-index | `100` | 同左 |
 | 交互 | hover → 黑底白字 | 同左 |
 | 文字选择 / 拖拽 | 禁用：`user-select:none` + `-webkit-user-drag:none`（五个导航容器统一，见 `css/nav.css`），`js/nav.js` 的 `dragstart` 兜底 Firefox。导航文字是 UI 标签而非可复制正文；若不禁用链接拖拽，在 `[en] English` / `[zh] 中文` 上按下鼠标只要移动几像素就进入链接拖拽手势，`mouseup` 不再派发 `click`，表现为「点字切不了语言，只是在拖」 | 同左 |
+| 键盘 | `Esc` = 点击「返回」（回首页，中文界面回 `/zh/`）。目标**现读该链接的 `href`**，不在 JS 里重算地址 —— 返回栏的三种地址写法（生成页带 `<base>`、手写模板相对地址、旧地址带 `?lang=`）因此自动正确，按钮修好快捷键跟着好。首页没有返回栏故不响应；Lightbox 打开时先关它、本次按键不跳页（`Esc` 逐层退出，见 §7e-补）。实现见 `js/nav.js` 末尾，取舍见 `程序编写说明.md` §11.1b | 同左（外接键盘；不另做触屏入口，触屏本来就有返回按钮） |
 
 ### 首页导航（四角布局）
 
@@ -576,6 +577,7 @@ media: {
 | 关闭 `.lightbox-close` | 右上角，`44×44px` |
 | 位置指示 `.lightbox-count` | 底部居中 `16px`，白字 `12px`，`aria-hidden`；移动端 `bottom:10px; 11px` |
 | 交互 | 点击空白/ESC 关闭；←/→ 切换；多图才显示导航钮 |
+| 与 Esc 返回的优先级 | Lightbox 打开时 `ESC` **只关放大图、不跳页**（`Esc` 逐层退出；再按一次才回首页）。`js/nav.js` 的全局 Esc 返回处理器靠 `.lightbox.open` 让路 —— 它的监听器注册在 `project.js` 之前，不让路就会一次 `Esc` 既关图又离开整页 |
 | 翻页范围 | **全部图**（不分段分组）：从任意一张进入都能一路翻到底，索引与点击处一致 |
 | 逻辑位置 | `js/project.js` 的 `openLightbox()`，网格渲染时绑定 click |
 
@@ -645,7 +647,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 路径式语言 | 生成页带 `data-lang-fixed`：不吃 localStorage、不把 `?lang=` 写回地址栏（否则刚复制出来的干净地址立刻又被弄脏），切换语言 = 跳到另一语言那份页面。目标从 `link[rel=alternate][hreflang]` 读（与给搜索引擎的 hreflang 是同一份数据，不另存映射表），且**只取路径**：用绝对地址会把本地预览与 github.io 镜像上的读者甩到正式域名 |
 | 首页与列表链接 | 一律经 `App.projectHref(id)`（`js/app.js`）。它自带语言，**不要再套 `App.langHref`**，否则得到 `works/x/zh/?lang=zh` 这种自相矛盾的地址 |
 | 首页卡片 | `.card` 同时带 `data-project`（规范来源）与 `data-href`（旧地址留档）。后者只在「新 HTML 配旧缓存 app.js」的窗口里兜底，**不要删、也不要以它为准** |
-| 收尾产物 | `sitemap.xml` 与 `robots.txt`（由生成器写，域名取自 `CNAME`，避免两处漂移）；`404.html`（GitHub Pages 对任意不存在的路径都返回它，故资源引用一律以 `/` 开头）；`works/index.html`（`/works/` 被手改短时转发到 `/works.html`，并保留 `?lang=`） |
+| 收尾产物 | `sitemap.xml` 与 `robots.txt`（由生成器写，域名取自 `CNAME`，避免两处漂移）；`404.html`（GitHub Pages 对任意不存在的路径都返回它，故资源引用一律以 `/` 开头，**并声明 `<base href="/">`** —— 见 §7i）；`works/index.html`（`/works/` 被手改短时转发到 `/works.html`，并保留 `?lang=`） |
 
 ### 7i. 站内页地址与静态生成
 
@@ -670,6 +672,8 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 链接出口 | 站内页走 `App.pageHref(name)`、作品页走 `App.projectHref(id)`，两者的返回值都已含语言，**不要再套 `App.langHref`** |
 | 旧地址 | `.html` 与 `?lang=` 全部保留可用（已发出去的链接不能断），带静态 `noindex` + `App.injectCanonical()` 指向目录式地址 |
 | 语言决定权 | 规范页面的语言**只由目录决定**：`?lang=` 一律忽略（要中文请去 `/zh/`），同一地址永远同一语言、可放心分享 |
+| `<base href="/">` | **谁需要**：① 生成页（生成器自动写在 `<meta charset>` 之后）；② `404.html`（GitHub Pages 把它服务在**任意深度**的不存在路径上，必须从站点最外层算）。**谁不需要**：四个手写根模板 —— 它们与站点根同层，相对地址本来就解析正确，加了反而毁掉 `file://` 双击预览（实测：`../css/base.css` 无 base 时补成 `file:///Users/…/Website/css/base.css`、规则真的加载；加 base 后补成 `file:///css/base.css`，加载失败）。判据一句话：**页面不在站点最外层，或可能出现在任意深度，就必须自带 base** |
+| 写一半的地址 | 相对地址的补全起点是「当前这一页」，所以**空串补出来的是本页自己**。`App.pageHref('index')` 因此返回 `'./'`（中文 `'./zh/'`），与 `scripts/gen-pages.mjs` 里那份同名函数逐字一致 —— 2026-09-23 之前那份返回空串，五个没有 base 的手写页面上英文「返回」按钮就指向了自己 |
 
 ---
 
@@ -805,6 +809,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   ├── gen-pages.mjs           站内页静态生成器（§7i；模板是根目录那四个 HTML）
 │   ├── gen-cjk-extras.py       SiteCJK 微型子集生成器（英文侧零散汉字；`--check` 查漂移）
 │   ├── gen-cjk-main.py         中文主字体生成器（按站内实际用字从官方字体重切；`--check` 查漂移）
+│   ├── style-probe.py          文案风格探针（标点/语气特征对作者原笔基线；`--check` 超阈值退 1）
 │   ├── server.py               本地 HTTP/HTTPS 服务器（支持 Range 请求）
 │   ├── start-https.sh          启动脚本（默认 HTTP 8888，--https 启用 4443）
 │   ├── push.sh                 GitHub 推送助手脚本
@@ -816,7 +821,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
     ├── app.js                 命名空间声明 + App.langHref 语言参数传播 + App.projectHref 作品页地址（两者都是链接唯一出口）
     ├── i18n.js                App.I18n 公共 i18n 引擎 + App.COMMON_I18N 公共字符串
     ├── autospace.js           App.autospace 中英/中数自动间距（U+2009）
-    ├── nav.js                 App.renderBackNav / renderIndexNav + 防拖拽兜底 + langHref/projectHref 兜底定义
+    ├── nav.js                 App.renderBackNav / renderIndexNav + Esc 返回（读返回栏 href）+ 防拖拽兜底 + langHref/projectHref 兜底定义
     ├── prefetch.js            站内链接悬停预取（link rel=prefetch，认 .html 与目录式地址，照链接自身 href）
     │
     ├── index-i18n.js          App.INDEX_I18N 首页 i18n 数据

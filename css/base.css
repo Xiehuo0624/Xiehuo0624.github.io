@@ -38,12 +38,12 @@
    仍需手改，一致性由 scripts/verify/verify.mjs 第十二节逐字比对兜住。 */
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Regular.woff2?v=09c9aefe') format('woff2');
+  src:url('fonts/SourceHanSansSC-Regular.woff2?v=15a961bb') format('woff2');
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Bold.woff2?v=09c9aefe') format('woff2');
+  src:url('fonts/SourceHanSansSC-Bold.woff2?v=15a961bb') format('woff2');
   font-weight:700;font-style:normal;font-display:swap
 }
 
