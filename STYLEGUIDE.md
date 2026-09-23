@@ -809,7 +809,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   ├── gen-pages.mjs           站内页静态生成器（§7i；模板是根目录那四个 HTML）
 │   ├── gen-cjk-extras.py       SiteCJK 微型子集生成器（英文侧零散汉字；`--check` 查漂移）
 │   ├── gen-cjk-main.py         中文主字体生成器（按站内实际用字从官方字体重切；`--check` 查漂移）
-│   ├── style-probe.py          文案风格探针（标点/语气特征对作者原笔基线；`--check` 超阈值退 1）
+│   ├── style-probe.py          文案风格量尺（「——」等特征与基线语料对照；`--check` 超阈值退 1）
 │   ├── server.py               本地 HTTP/HTTPS 服务器（支持 Range 请求）
 │   ├── start-https.sh          启动脚本（默认 HTTP 8888，--https 启用 4443）
 │   ├── push.sh                 GitHub 推送助手脚本
