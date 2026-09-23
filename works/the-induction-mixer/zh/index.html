@@ -13,7 +13,7 @@
    预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。改 base.css 的字体版本号时这里要一起改。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -39,7 +39,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=5">
+<link rel="stylesheet" href="css/base.css?v=6">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -86,7 +86,6 @@
 <span class="work-meta-k">分工</span><span class="work-meta-v">概念设计与整体方案、拾取器方案、天线方案：我；外壳设计：Ciiyte（蔡易通）；外壳加工：嘉立创；前级放大电路：基于现有方案，由Ciiyte设计</span>
 <span class="work-meta-k">公开记录</span><span class="work-meta-v">上海音乐学院音乐工程系期末考试汇报，2026.07.01</span>
 <span class="work-meta-k">状态</span><span class="work-meta-v">完成</span>
-<span class="work-meta-k">本页文字</span><span class="work-meta-v">2026.06.24</span>
 <span class="work-meta-k">资料</span><span class="work-meta-v">桌面演示视频、3张照片</span>
 </span>
 

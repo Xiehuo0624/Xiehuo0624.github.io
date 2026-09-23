@@ -380,9 +380,11 @@ for (const lang of ['zh', 'en']) {
     script: [...document.querySelectorAll('script[src^="js/changelog.js"]')].map(s=>s.getAttribute('src'))[0]
   })`);
   checkTrue(`changelog(${lang}) 有日志条目`, info.entries > 10);
+  /* 这条断言必须随每次改动更新成「最新那条条目的特征词」—— 它检查的是
+     changelog.js 确实被改过、且页面渲染的是新内容，而不是某条固定的旧条目。 */
   checkTrue(`changelog(${lang}) 首条是本次改动`,
-    /参展记录|exhibition record/i.test(info.firstTitle));
-  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=17');
+    /本页文字|Page text/i.test(info.firstTitle));
+  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=18');
   checkTrue(`changelog(${lang}) 无报错`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
   if (v.net.bad.length) failures.push(`changelog(${lang}) 4xx：${JSON.stringify(v.net.bad)}`);
   if (v.consoleErrors.length) failures.push(`changelog(${lang}) 控制台：${JSON.stringify(v.consoleErrors)}`);

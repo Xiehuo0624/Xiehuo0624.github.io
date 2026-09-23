@@ -240,7 +240,7 @@ const HEAD_SCRIPT =
   '   预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：\n' +
   '   HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，\n' +
   '   同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。改 base.css 的字体版本号时这里要一起改。 */\n' +
-  "(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3';document.head.appendChild(f);}catch(e){}})();\n" +
+  "(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4';document.head.appendChild(f);}catch(e){}})();\n" +
   '</script>';
 
 function applyLegacyRegions(html, where) {

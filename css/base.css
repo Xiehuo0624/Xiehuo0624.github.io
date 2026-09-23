@@ -28,18 +28,21 @@
 }
 
 /* ===== WEBFONT: 思源黑体 SC（Source Han Sans SC，自托管子集化；中文）=====
-   子集由 scripts/gen-cjk-main.py 从官方 Noto Sans SC 按**站内实际用字**切出（当前 1446 字），
+   子集由 scripts/gen-cjk-main.py 从官方 Noto Sans SC 按**站内实际用字**切出（当前 1456 字），
    覆盖全部会渲染的中日韩字符；2026-09 之前那份只含 1023 字，导致 234 个字静默落到系统字体
    （同一句里两种字体混排）。字形与旧子集逐字节相同，故这次替换不改变任何原本正常的字。
-   带 ?v=2：字形文件换了内容，URL 必须跟着换，否则访问者会吃满 4 小时的旧缓存。 */
+   带 ?v=4：字形文件换了内容，URL 必须跟着换，否则访问者会吃满 4 小时的旧缓存。
+   2026-09-22 因新增文案（changelog 条目）重切过一次（1446→1456 字），故 v3→v4；
+   本站内页预载 URL（scripts/gen-pages.mjs）与作品页预载 URL（scripts/gen-projects.mjs）
+   必须与本行逐字相同，改这里就要一起改那两处。 */
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Regular.woff2?v=3') format('woff2');
+  src:url('fonts/SourceHanSansSC-Regular.woff2?v=4') format('woff2');
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Bold.woff2?v=3') format('woff2');
+  src:url('fonts/SourceHanSansSC-Bold.woff2?v=4') format('woff2');
   font-weight:700;font-style:normal;font-display:swap
 }
 

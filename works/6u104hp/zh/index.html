@@ -13,7 +13,7 @@
    预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。改 base.css 的字体版本号时这里要一起改。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -39,7 +39,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=5">
+<link rel="stylesheet" href="css/base.css?v=6">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -86,7 +86,6 @@
 <span class="work-meta-k">分工</span><span class="work-meta-v">设计主导Ciiyte（蔡易通）；工程图纸FunnyCoco（邓健波）；Asian Rail轨道Xuanning；我参与八项（见下）</span>
 <span class="work-meta-k">公开记录</span><span class="work-meta-v">上海国际乐器展（Music China）<span class="nb">2024.10.10–13</span>、<span class="nb">2025.10.22–25</span><br>交流方式（Modular Commune）<span class="nb">2024.11.08–10</span>、<span class="nb">2025.11.14–16</span><br>2024 年展出第二版，2025 年展出第三版</span>
 <span class="work-meta-k">状态</span><span class="work-meta-v">2025定型，在售</span>
-<span class="work-meta-k">本页文字</span><span class="work-meta-v">2026.08.13</span>
 <span class="work-meta-k">资料</span><span class="work-meta-v">演示视频、11张产品图、10张参展照片</span>
 </span>
 
