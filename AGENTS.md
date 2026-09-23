@@ -87,6 +87,8 @@ spawn(CHROME, [
    直接 `git push` 即可，**不要**再走 `scripts/push.sh` 的 Personal Access Token 流程（那个脚本留着备用）。
 1. **缓存版本号**：按 `STYLEGUIDE.md` 的「缓存版本号规则」决定提不提号；改了带号的文件必须提号，原本无号的文件**不要凭空加号**。
 2. **changelog**：在 `js/changelog.js` 的 `entries` 数组**最前面**加一条，中英各一份，写清「问题 → 成因 → 做法 → 实测验证 → 否决了什么」。中文条目按既有惯例压到 800 字以内。
+   **文本审计类条目**（文案逐句改稿、措辞与术语统一）**正文不超过 50 字**（2026-09-23 作者定）：
+   正文只留「改了哪几页 + 关键实测数字」，逐句依据留在 `docs/` 的工作文档里，不搬进公开日志。
 3. **文档同步**：改动了布局、流程或规范，同步更新 `STYLEGUIDE.md` 与 `程序编写说明.md` 对应章节。
 4. **生成物**：仓库里有三类由脚本产出的文件，改了它们的输入就要重新生成，并用 `--check` 确认无漂移：
    - 作品页：`node scripts/gen-projects.mjs`（输入 `project-template.html`／`js/project-data.js`／`data/*/*.html`）

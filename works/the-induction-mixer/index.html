@@ -14,7 +14,7 @@
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4cd7d65b';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=ac6d3730';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,7 +40,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=18">
+<link rel="stylesheet" href="css/base.css?v=20">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -118,7 +118,7 @@ The first time I played it I spent a very long time simply finding where the ant
 
 <br><br>
 
-When I play it I do not often lift the electromagnetic pickup. To stop it sliding across the panel on its own we tried several things and settled on a body 3D-printed in stainless steel; to keep it silent as it slides I lined the bottom with velvet, so sliding it became second nature. When you are hunting for a source with one electromagnetic pickup you usually have to take the others away first, or it is hard to tell what you are doing; and the ones you take away often cannot be put back where they were, and the information in those channels is lost in the meantime.
+When I play it I do not often lift the electromagnetic pickup. To stop it sliding across the panel on its own we tried several things and settled on an electromagnetic pickup housing 3D-printed in stainless steel; to keep it silent as it slides I lined the top of the case with velvet, so sliding it became second nature. When you are hunting for a source with one electromagnetic pickup you usually have to take the others away first, or it is hard to tell what you are doing; and the ones you take away often cannot be put back where they were, and the information in those channels is lost in the meantime.
 
 <br><br>
 
@@ -136,17 +136,13 @@ Cathy Van Eck's <span style="font-style:italic">Between Air and Electricity: Mic
 
 <br><br>
 
-So the electromagnetic side comes from Kubisch, and the idea of designing it as an instrument comes from the work and writing of Cathy Van Eck and others. That is also where this work differs: in theirs, a person walks through a space wearing headphones; what I wanted was an instrument you can sit down and play, played by moving the hand.
-
-<br><br>
-
 <span class="work-sec">How it works</span>
 
-First, the cascade logic. The 12 inputs use Switched Tip 3.5mm jacks: signal is cascaded down from one channel's normally-closed contact to the next (1→2→3→4 and so on). When you plug external audio into any channel, the cascade arriving from the channel above is physically broken. So if you only patch into In 1, 4, 7 and 10, the instrument reorganises itself into four independent electromagnetic-acoustic blocks — with no settings and no switches. This is also where the 12-in 4-out configuration comes from.
+Signal is cascaded down from one channel's normally-closed contact to the next (1→2→3→4 and so on). When you plug external audio into any channel, the cascade arriving from the channel above is physically broken. So if you only patch into In 1, 4, 7 and 10, the instrument reorganises itself into four independent zones.
 
 <br><br>
 
-The antennas were not designed but bought: I ordered a batch of different types and tested them one by one — at what distance, at what angle, what each of them would pick up — and settled on the type now in use. The work was mostly in testing, not in calculating.
+During development I bought a batch of different antennas and inductors and tested them one by one, at different distances and orientations, for how they worked as electromagnetic speakers and pickups, before settling on the combination in use now. The work was mostly in testing, not in calculating.
 
 <br><br>
 
@@ -168,7 +164,7 @@ Antenna design: bought a range of antennas and tested them one by one before cho
 
 <span class="work-sec">Postlude</span>
 
-The instrument itself left no problems that needed fixing — it worked as soon as it was built. It was quickly put to use in riverrun: the 12 tracks of <span style="font-style:italic">Finnegans Wake</span> are played through its 12 antennas. It thus turned from a work in its own right into an instrument for making something else.
+Once finished, this work was used as an instrument to make riverrun.
 
 <br><br>
 
@@ -178,7 +174,7 @@ But as an instrument, its own performing possibilities are still largely unexplo
 
 <span class="work-sec">Where it has been shown</span>
 
-2026.07.01, final presentation for the Department of Music Engineering, Shanghai Conservatory of Music (second semester, 2025–2026). The only documentation is a few desk demo videos recorded in my tutor's office — crudely shot, and not a record of a live performance.
+2026.07.01, final presentation for the Department of Music Engineering, Shanghai Conservatory of Music (second semester, 2025–2026).
 </p>
   </div>
   <div class="gallery-sections" id="gallery-sections">

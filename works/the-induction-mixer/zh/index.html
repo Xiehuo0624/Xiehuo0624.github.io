@@ -14,7 +14,7 @@
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4cd7d65b';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=ac6d3730';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,7 +40,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=18">
+<link rel="stylesheet" href="css/base.css?v=20">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -118,7 +118,7 @@ The Induction Mixer是一台12路输入、4路输出的空间混音器，也是�
 
 <br><br>
 
-弹的时候我并不常把电磁拾音器抬起来。为了让它在面板上不会自己滑动，试过多次之后我选了金属 3D 打印的不锈钢机身；为了滑动时不发出噪音，我在底部贴了天鹅绒布，滑动它就成了一种自然而然的直觉。用一只电磁拾音器找声源的时候，往往得把其他的先拿开，否则很难判断自己在做什么；而被拿开的那几只，事后往往放不回原位，那期间它们通道的信息也就丢了。
+弹的时候我并不常把电磁拾音器抬起来。为了让它在面板上不会自己滑动，试过多次之后我选了金属 3D 打印的不锈钢电磁拾音器外壳；为了滑动时不发出噪音，我在机箱顶部贴了天鹅绒布，滑动它就成了一种自然而然的直觉。用一只电磁拾音器找声源的时候，往往得把其他的先拿开，否则很难判断自己在做什么；而被拿开的那几只，事后往往放不回原位，那期间它们通道的信息也就丢了。
 
 <br><br>
 
@@ -136,17 +136,13 @@ Cathy Van Eck 的 <span style="font-style:italic">Between Air and Electricity: M
 
 <br><br>
 
-所以：电磁这条路来自 Kubisch；“把它做成一件乐器”来自 Cathy Van Eck 等人的作品与著作。跟她们不一样的地方也在这里：她们的作品里人是戴着耳机在空间里行走，我想做的是一件坐下来就能弹的乐器，演奏方式是手的移动。
-
-<br><br>
-
 <span class="work-sec">技术介绍</span>
 
-先说级联逻辑：12个输入端用的是Switched Tip（开关型）3.5mm接口，信号从上一级的常闭触点依次向下串连级联（1→2→3→4……）。当你在任意一个通道插入外接音频时，上一级传来的级联线路会在物理上被自适应切断。所以如果只接入In 1、4、7、10，整台机器会自动重组、裂变成四个独立的电磁声学功能块——不需要任何设置，也没有开关。这也是“12进4出”的由来。
+12 个输入端信号从上一级的常闭触点依次向下串连级联（1→2→3→4……）。当你在任意一个通道插入外接音频时，上一级传来的级联线路会在物理上被自适应切断。所以如果只接入 In 1、4、7、10，整台机器会自动重组、裂变成四个独立的区域。
 
 <br><br>
 
-天线不是设计出来的，是买来的：我买了一批不同类型的天线，逐一测试它们在什么距离、什么朝向下能拾取到什么，最后选定了现在用的这一种。工作量主要在试，不在算。
+开发期间，我买了一批不同类型的天线和电感，逐一测试它们在不同距离、指向下作为电磁扬声器与拾音器的效果后选定了现在用的这一组合。工作量主要在试，不在算。
 
 <br><br>
 
@@ -168,7 +164,7 @@ Cathy Van Eck 的 <span style="font-style:italic">Between Air and Electricity: M
 
 <span class="work-sec">后完成</span>
 
-这台乐器本身没有留下什么需要修的问题——它做出来就能用。它很快被用进了riverrun：12条《芬尼根的守灵夜》的音轨经由它的12张天线演奏。它于是从一件独立的作品，变成了一件用来做别的东西的乐器。
+这件作品在完成后作为乐器创作了riverrun。
 
 <br><br>
 
@@ -178,7 +174,7 @@ Cathy Van Eck 的 <span style="font-style:italic">Between Air and Electricity: M
 
 <span class="work-sec">公开记录</span>
 
-2026.07.01，上海音乐学院音乐工程系期末考试汇报（2025-2026学年第2学期）。目前只有几段在导师办公室录的桌面演示视频，拍得很粗糙，不是现场演出记录。
+2026.07.01，上海音乐学院音乐工程系期末考试汇报（2025-2026学年第2学期）。
 </p>
   </div>
   <div class="gallery-sections" id="gallery-sections">
