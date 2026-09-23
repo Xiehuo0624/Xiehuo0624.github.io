@@ -14,7 +14,7 @@
      ?lang= > localStorage > 默认 en，与 js/i18n.js 的优先级一致。
      必须是同步内联脚本：改成 src 或 defer 都会让这一闪回来。 -->
 <script>
-(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=e69d69e6';document.head.appendChild(f);}}catch(e){}})();
+(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;if(l==='zh'){var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4cd7d65b';document.head.appendChild(f);}}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 本页由 GitHub Pages 对**任何**不存在的路径返回，因此它可能出现在任意深度
@@ -25,7 +25,7 @@
 <link rel="icon" href="/favicon.ico?v=1" sizes="any">
 <link rel="icon" href="/img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="/css/base.css?v=17">
+<link rel="stylesheet" href="/css/base.css?v=18">
 <link rel="stylesheet" href="/css/nav.css?v=3">
 <link rel="stylesheet" href="/css/404.css">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，

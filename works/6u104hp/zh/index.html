@@ -14,7 +14,7 @@
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=e69d69e6';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4cd7d65b';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,7 +40,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=17">
+<link rel="stylesheet" href="css/base.css?v=18">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -100,15 +100,15 @@
 
 <br><br>
 
-“额头”和“下巴”是结构件，这里不可能没有。既然本来就要有 I/O 与 Mult，那就放在不占用 HP 的地方：模块区的上方和下方各一条多功能区，十组1/8''与1/4''的TRS接口（内置转换器，现在是无源的，可以改成有源）；五组2-6 Mult（可以改成有源Mult、Mixer、S&H、Logic等）；两组鹅颈灯用的卡农接口（可以改成USB等）；以及可以串联输出的电源接口。
+我们在模块区的上方和下方设计了各一条多功能区：十组1/8''与1/4''的TRS接口（内置转换器，现在是无源的，可以改成有源）；五组2-6 Mult（可以改成有源Mult、Mixer、S&H、Logic等）；两组鹅颈灯用的卡农接口（可以改成USB等）；以及可以串联输出的电源接口。
 
 <br><br>
 
-电源是12–36V宽幅输入；机身和盖子为铝合金；碳纤维侧板可配单机位或双机位支架。单机位与双机位支架是碳纤维的，几乎没有重量。
+电源是我们自己设计的12–36V宽幅输入的高功率低纹波电源；机身和盖子为铝合金；碳纤维侧板可配单机位或双机位支架。单机位与双机位支架是碳纤维的，几乎没有重量。
 
 <br><br>
 
-背面的75×75 VESA孔位让它不再只能放在桌上：便携屏支架和机械臂我都装过，都很好用。“巴别塔”（四个机箱堆叠起来的形态）侧面挂一支机械臂，五个箱子的模块可以一起用。
+背面的75×75 VESA孔位让它不再只能放在桌上：配合便携屏支架或机械臂，无论是在外演出还是在工作室创作都十分自由。我自己喜欢在“巴别塔”（四个机箱堆叠起来的形态）侧面挂一支机械臂，五箱3120HP的模块可以一起用。
 
 <br><br>
 
@@ -130,11 +130,11 @@
 
 <br><br>
 
-我们的减重是1克1克扣下来的——那时候连机箱内部电路板的重量和连接器的重量都要斟酌。我自己也为了减重放弃了7U；另一个原因是我购买的六箱7U104有6条104HP的1U，我用满它们根本不现实。
+我们的减重是1克1克扣下来的——那时候连机箱内部电路板的重量和连接器的重量都要斟酌。我自己也为了减重放弃了7U；另一个原因是我购买了六箱，如果选择7U104会有6条104HP的1U，我用满它们根本不现实。
 
 <br><br>
 
-结果是：第一版<span style="font-weight:700">空箱</span>3.5kg，现在大部分情况<span style="font-weight:700">满载、带盖子</span>3.5kg。
+减重的结果是：第一版<span style="font-weight:700">空箱</span>3.5kg，第三版大部分情况下<span style="font-weight:700">满载、带盖子</span>3.5kg。
 
 <br><br>
 
@@ -165,7 +165,7 @@ VESA孔位的设计：尺寸与螺丝标准由我查证，第三版的VESA测试
 
 <br><br>
 
-2024 年上海国际乐器展是我成为模块开发者的起点。我朋友来和我一起做了一段 jam；我还尝试把现场所有振荡器接到一起发声，那天有 70 多个振荡器在同时发声，时至今日我依然很喜欢这么做。有人问我这和软件有什么区别，我当时还不知道要怎么回答。Tamix 也是在这里邀请我们参加 2024 交流方式的。
+2024 年上海国际乐器展可以说是我成为模块开发者的起点。我朋友来和我一起做了一段 jam；我还尝试把现场所有振荡器接到一起发声，那天有 70 多个振荡器在同时发声，时至今日我依然很喜欢这么做。有人问我这和软件有什么区别，我当时还不知道要怎么回答。Tamix 也是在这里邀请我们参加 2024 交流方式的。
 
 <br><br>
 
@@ -184,7 +184,7 @@ VESA孔位的设计：尺寸与螺丝标准由我查证，第三版的VESA测试
 
 <br><br>
 
-这款机箱目前已经作为产品在销售，累计售出约 10 箱。在中国这个市场并不非常乐观；倒是有很多外国人问过能不能在海外市场发售，但到现在也没有搞定，卡在成本、手续和距离带来的售后困难上。
+这款机箱目前已经作为产品在销售，累计售出约 10 箱。在中国这个市场推销这样的产品有一定的难度，它过于小众，专业化和庞大。倒是有很多外国人问过能不能在海外市场发售，但到现在也没有搞定，卡在成本、手续和距离带来的售后困难上。
 
 <br><br>
 

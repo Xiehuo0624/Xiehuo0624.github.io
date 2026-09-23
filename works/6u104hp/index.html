@@ -14,7 +14,7 @@
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=e69d69e6';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4cd7d65b';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,7 +40,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=17">
+<link rel="stylesheet" href="css/base.css?v=18">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -100,15 +100,15 @@ A work co-designed with Ciiyte (Cai Yitong). Cover image photographed by Deng Xi
 
 <br><br>
 
-The "forehead" and "chin" strips above and below the module rows are structural: a case of this height cannot avoid them. Since the I/O and mults had to go somewhere, they went where they would not take up HP: a multifunction strip above and below the module rows, with ten 1/8'' and 1/4'' TRS jacks with built-in converters (currently passive, convertible to active); five 2-6 mults (convertible to active mults, mixers, S&H, logic and so on); two XLR sockets for gooseneck lamps (convertible to USB and other uses); and a cascadable power output.
+We designed one multifunction strip above the module rows and one below: ten 1/8'' and 1/4'' TRS jacks with built-in converters (currently passive, convertible to active); five 2-6 mults (convertible to active mults, mixers, S&H, logic and so on); two XLR sockets for gooseneck lamps (convertible to USB and other uses); and a cascadable power output.
 
 <br><br>
 
-The supply takes a 12–36V wide input; the body and lid are aluminium; the carbon-fibre side panels take single- or dual-case stands. The single- and dual-case stands are carbon fibre too, so they weigh almost nothing.
+The supply is our own design: high-power, low-ripple, with a 12–36V wide input; the body and lid are aluminium; the carbon-fibre side panels take single- or dual-case stands. The single- and dual-case stands are carbon fibre too, so they weigh almost nothing.
 
 <br><br>
 
-The 75×75 VESA holes on the back mean the case does not have to sit on a desk: I have mounted it on both portable-monitor stands and a robot arm, and both work well. With a robot arm on the side of the "Babel" (four cases stacked), five cases of modules can be used together.
+The 75×75 VESA holes on the back mean the case does not have to sit on a desk: with a portable-monitor stand or a robot arm it is equally at home playing out or working in the studio. I like to mount a robot arm on the side of the "Babel" (four cases stacked), so that five cases, 3120HP of modules, can be used together.
 
 <br><br>
 
@@ -130,11 +130,11 @@ Around this time Xuanning designed Asian Rail, a very light aluminium weight-sav
 
 <br><br>
 
-We took the weight off one gram at a time — at that point we were weighing even the internal circuit boards and the connectors. I myself gave up 7U to save weight; another reason was that the six 7U104 cases I had bought would give me six 104HP 1U rows, and there was no realistic way I would fill them.
+We took the weight off one gram at a time — at that point we were weighing even the internal circuit boards and the connectors. I myself gave up 7U to save weight; another reason was that I bought six cases, and choosing 7U104 would have given me six 104HP 1U rows, which there was no realistic way I would fill.
 
 <br><br>
 
-The result: the first version's <span style="font-weight:700">empty</span> case weighed 3.5kg; in most configurations the cases now weigh 3.5kg <span style="font-weight:700">fully loaded, with the lid on</span>.
+The weight reduction ends here: the first version's <span style="font-weight:700">empty</span> case weighed 3.5kg; the third version weighs 3.5kg <span style="font-weight:700">fully loaded, with the lid on</span>, in most configurations.
 
 <br><br>
 
@@ -165,7 +165,7 @@ The case was exhibited twice in 2024 and twice in 2025, and I was at the booth a
 
 <br><br>
 
-Music China 2024 is where I became a modular developer. A friend came and jammed with me, and I tried patching every oscillator at the show into one sound: more than seventy oscillators were sounding at once that day, and I still like doing that. Someone asked me how this differs from software, and I did not know how to answer. Tamix was there too, and invited us to Modular Commune 2024.
+Music China 2024 is, you could say, where I became a modular developer. A friend came and jammed with me, and I tried patching every oscillator at the show into one sound: more than seventy oscillators were sounding at once that day, and I still like doing that. Someone asked me how this differs from software, and I did not know how to answer. Tamix was there too, and invited us to Modular Commune 2024.
 
 <br><br>
 
@@ -184,7 +184,7 @@ Modular Commune / Beijing Modular Festival 2025.11.14–16 (third version)
 
 <br><br>
 
-The case is now on sale as a product, with about ten sold so far. The market in China is not very encouraging. Many people from abroad have asked whether it can be sold overseas, and that has not worked out yet, held up by cost, paperwork and the difficulty of after-sales service at a distance.
+The case is now on sale as a product, with about ten sold so far. Selling a product like this in China has a certain difficulty: it is too niche, too specialised and too large. Many people from abroad have asked whether it can be sold overseas, and that has not worked out yet, held up by cost, paperwork and the difficulty of after-sales service at a distance.
 
 <br><br>
 
