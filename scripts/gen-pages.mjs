@@ -134,9 +134,21 @@ function replaceOnce(html, needle, replacement, what) {
 
 /* ---------- 页面骨架 ---------- */
 
+/** 主字体 URL（含 ?v=），**从 css/base.css 现读**，不在这里硬编码。
+ *  理由见 scripts/gen-projects.mjs 里同名函数的注释：版本号原有四份副本，
+ *  漏同步一处就白下 274KB 字体。剩下三处（base.css 自身与五个手写模板）
+ *  由 scripts/verify/verify.mjs 第十二节逐字比对兜住。 */
+function mainFontHref(){
+  const css = readFileSync(join(ROOT, 'css', 'base.css'), 'utf8');
+  const m = css.match(/url\('fonts\/(SourceHanSansSC-Regular\.woff2\?v=\d+)'\)/);
+  if (!m) fail('css/base.css 里找不到带版本号的主字体 URL —— 预载 URL 无从生成');
+  return '/css/fonts/' + (m ? m[1] : '');
+}
+
 const FONT_PRELOAD = `<script>
-/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4';document.head.appendChild(f);}catch(e){}})();
+/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
+   预载 URL 由 mainFontHref() 从 css/base.css 现读，不在这里硬编码版本号。 */
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='${mainFontHref()}';document.head.appendChild(f);}catch(e){}})();
 </script>`;
 
 function applyLegacyRegions(html, where) {

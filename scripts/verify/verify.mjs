@@ -6,11 +6,12 @@
  */
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, '..', '..');                                  // 仓库根：字体一致性一节要直接读源文件
 const ROOT_TMP = join(HERE, '..', '..', 'tmp', 'verify-artifacts');   // 运行产物（profile／假 HOME）落在 gitignore 的 tmp/ 下
 mkdirSync(ROOT_TMP, { recursive: true });
 const BASE = process.env.BASE || 'http://127.0.0.1:8765';
@@ -372,23 +373,34 @@ console.log('=== 五、/works/ 转发与 404 页 ===');
 }
 
 console.log('=== 六、changelog 页（本次新增了条目并提了版本号）===');
-for (const lang of ['zh', 'en']) {
-  const v = await visit(`/changelog.html?lang=${lang}`);
-  const info = await v.evaluate(`({
-    entries: document.querySelectorAll('.log-entry').length,
-    firstTitle: (document.querySelector('.log-entry')||{}).textContent?.slice(0, 40) || '',
-    script: [...document.querySelectorAll('script[src^="js/changelog.js"]')].map(s=>s.getAttribute('src'))[0]
-  })`);
-  checkTrue(`changelog(${lang}) 有日志条目`, info.entries > 10);
-  /* 这条断言必须随每次改动更新成「最新那条条目的特征词」—— 它检查的是
-     changelog.js 确实被改过、且页面渲染的是新内容，而不是某条固定的旧条目。 */
-  checkTrue(`changelog(${lang}) 首条是本次改动`,
-    /本页文字|Page text/i.test(info.firstTitle));
-  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=18');
-  checkTrue(`changelog(${lang}) 无报错`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
-  if (v.net.bad.length) failures.push(`changelog(${lang}) 4xx：${JSON.stringify(v.net.bad)}`);
-  if (v.consoleErrors.length) failures.push(`changelog(${lang}) 控制台：${JSON.stringify(v.consoleErrors)}`);
-  await v.close();
+{
+  /* 期望值改为**从 js/changelog.js 现读**，不再每次手改正则。
+     原先写死「最新那条的特征词」，改一次代码就要跟着改一次断言，忘改就误报 ——
+     与第十二节的字体版本号是同一类问题：重复的真相迟早会漂。 */
+  const src = readFileSync(join(ROOT, 'js', 'changelog.js'), 'utf8');
+  const newest = {
+    zh: (src.match(/const entries = \[\s*\{\s*date: '[^']*',\s*title: \{\s*zh: '([^']+)'/) || [])[1] || '',
+    en: (src.match(/const entries = \[\s*\{\s*date: '[^']*',\s*title: \{\s*zh: '[^']+',\s*en: '([^']+)'/) || [])[1] || ''
+  };
+  checkTrue('js/changelog.js 最新一条的标题可解析', !!(newest.zh && newest.en));
+
+  for (const lang of ['zh', 'en']) {
+    const v = await visit(`/changelog.html?lang=${lang}`);
+    const info = await v.evaluate(`({
+      entries: document.querySelectorAll('.log-entry').length,
+      firstTitle: (document.querySelector('.log-entry')||{}).textContent?.slice(0, 40) || '',
+      script: [...document.querySelectorAll('script[src^="js/changelog.js"]')].map(s=>s.getAttribute('src'))[0]
+    })`);
+    checkTrue(`changelog(${lang}) 有日志条目`, info.entries > 10);
+    /* 页面渲染的第一条必须是 changelog.js 里的最新一条（前 16 字足以定位） */
+    checkTrue(`changelog(${lang}) 首条 = changelog.js 最新一条`,
+      !!newest[lang] && info.firstTitle.startsWith(newest[lang].slice(0, 16)));
+    check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=19');
+    checkTrue(`changelog(${lang}) 无报错`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
+    if (v.net.bad.length) failures.push(`changelog(${lang}) 4xx：${JSON.stringify(v.net.bad)}`);
+    if (v.consoleErrors.length) failures.push(`changelog(${lang}) 控制台：${JSON.stringify(v.consoleErrors)}`);
+    await v.close();
+  }
 }
 
 console.log('=== 七、导航文案 i18n 与 CJK 字体下载（2026-09-22 四项收尾改动）===');
@@ -590,6 +602,62 @@ console.log('=== 十一、Gallery Lightbox 位置指示 ===');
   check('关闭后恢复页面滚动', closed.overflow, '');
   checkTrue(`Lightbox 无控制台报错`, v.consoleErrors.length === 0 && v.exceptions.length === 0);
   await v.close();
+}
+
+/* ---------- 十二、字体 URL 一致性（防「版本号漏同步」复发） ---------- */
+console.log('=== 十二、字体 URL 一致性（必须与 css/base.css 逐字相同）===');
+{
+  /* 为什么单独立一节：主字体 URL 的 ?v= 被硬编码在**四处** ——
+     ① css/base.css 的 @font-face（权威来源）、② scripts/gen-pages.mjs 的预载常量、
+     ③ scripts/gen-projects.mjs 的预载常量、④ 五个手写模板的预载（它们由浏览器直接服务，
+     没有构建步骤能替它们生成，只能手改）。四处只要有一处漏改，预载与 @font-face 就成了
+     两个缓存键，同一份字体白下两遍（274KB）。
+     2026-09-22 一天之内发生了两次：作品页预载漏 ?v=（白下 267.7KB）、五个旧地址模板漏 ?v=。
+     人记不住，所以让脚本记住：任何一处与 base.css 不同就直接失败。 */
+  const baseCss = readFileSync(join(ROOT, 'css', 'base.css'), 'utf8');
+  const canonical = (baseCss.match(/url\('(fonts\/SourceHanSansSC-Regular\.woff2\?v=\d+)'\)/) || [])[1] || null;
+  checkTrue('css/base.css 的主字体 URL 带版本号（权威来源可解析）', !!canonical);
+
+  /* 会写死字体 URL 的文本文件：6 个根模板 + 2 个生成器源码 + 全部生成页 */
+  const files = ['index.html', 'works.html', 'about.html', 'changelog.html', '404.html',
+                 'project-template.html', 'scripts/gen-pages.mjs', 'scripts/gen-projects.mjs'];
+  const walkHtml = d => readdirSync(d, { withFileTypes: true }).flatMap(e =>
+    e.isDirectory() ? walkHtml(join(d, e.name)) : (e.name.endsWith('.html') ? [join(d, e.name)] : []));
+  for (const sub of ['works', 'zh', 'about', 'changelog']) {
+    const abs = join(ROOT, sub);
+    if (existsSync(abs)) files.push(...walkHtml(abs).map(f => relative(ROOT, f)));
+  }
+
+  /* 比较的是「文件名 + 查询串」这一段：各处的目录前缀本来就不该相同
+     （base.css 里是 fonts/、模板里是 css/fonts/ 或 /css/fonts/），
+     真正必须一致的是**版本号**，所以剥掉 fonts/ 前缀再比。
+     ——首版这里忘了剥，29 处全被误报，实测抓出来的。 */
+  const wantTail = canonical.replace(/^fonts\//, '');
+  const mismatched = [];
+  let refs = 0;
+  for (const rel of files) {
+    const text = readFileSync(join(ROOT, rel), 'utf8');
+    for (const m of text.matchAll(/SourceHanSansSC-Regular\.woff2(\?v=\d+)?/g)) {
+      refs++;
+      const found = 'SourceHanSansSC-Regular.woff2' + (m[1] || '（无 ?v=）');
+      if (found !== wantTail) mismatched.push(`${rel} → ${found}`);
+    }
+  }
+  checkTrue(`扫到主字体 URL 引用（当前 ${refs} 处）`, refs > 0);
+  check(`与 css/base.css 不一致的引用（须为空）`, mismatched, []);
+
+  /* 静态比对之外，再按**实际请求**确认一遍：漏同步的症状就是同一份字体被请求两次。
+     覆盖三种页面：手写模板的旧地址、生成的作品页、生成的站内页。 */
+  const expectUrl = `${BASE}/css/fonts/${canonical.replace(/^fonts\//, '')}`;
+  for (const path of ['/works.html?lang=zh', '/about.html?lang=zh', '/works/6u104hp/zh/', '/zh/']) {
+    const v = await visit(path, { waitMs: 2500 });
+    const urls = v.net.all
+      .filter(x => /SourceHanSansSC-Regular\.woff2/.test(x))
+      .map(x => x.replace(/^\d+\s+/, ''));
+    check(`${path} 主字体请求次数（一次=预载与 @font-face 同一个缓存键）`, urls.length, 1);
+    check(`${path} 主字体请求 URL`, urls[0] || null, expectUrl);
+    await v.close();
+  }
 }
 
 /* ---------- 汇总 ---------- */

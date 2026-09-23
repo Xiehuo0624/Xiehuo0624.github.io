@@ -909,6 +909,33 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
 兜底写在 `js/nav.js` 顶部，退化为**旧的 `?project=` 链接** —— 旧地址保留可用（§7h），
 所以混用至多表现为「地址不漂亮」，不会出现死链，也不会整块导航不渲染。
 
+#### 主字体 URL 的一致性（2026-09-22 立规）
+
+**不变量：全站任何一处 `SourceHanSansSC-*.woff2` 的 URL，都必须与 `css/base.css` 里
+`@font-face` 的 `src` 逐字相同（同路径、同 `?v=`）。**
+
+为什么它值得单列一条：字体 URL 的 `?v=` 原本有**四份副本**，而且分布在不同类型的文件里。
+
+| # | 位置 | 现状 |
+|---|------|------|
+| ① | `css/base.css` 的 `@font-face`（**权威来源**） | 手改 |
+| ② | `scripts/gen-projects.mjs` 的作品页预载 | **已改为从 ① 现读**（`mainFontHref()`） |
+| ③ | `scripts/gen-pages.mjs` 的站内页预载 | **已改为从 ① 现读**（`mainFontHref()`） |
+| ④ | 五个手写模板 `works` / `about` / `changelog` / `404` / `project-template`.html | 只能手改（浏览器直接服务这些文件，没有构建步骤能替它们生成） |
+
+漏同步任意一处的后果是具体的：预载与 `@font-face` 成了**两个缓存键**，同一份字体白下两遍
+（274KB）。**2026-09-22 一天之内发生了两次**：作品页预载漏 `?v=`（白下 267.7KB，见当日 commit）、
+五个旧地址模板漏 `?v=`。
+
+防遗忘靠脚本，不靠记性：
+
+- `scripts/verify/verify.mjs` **第十二节**把全站每一处字体 URL（6 个根模板 + 2 个生成器源码 +
+  全部生成页）与 `css/base.css` 逐字比对，不一致直接失败；并额外按**实际请求**断言
+  `/works.html?lang=zh`、`/about.html?lang=zh`、`/works/6u104hp/zh/`、`/zh/` 四页的主字体
+  **只被请求一次** —— 请求两次就是漏同步的症状。
+- 因此：**改字体版本号时只需改 `css/base.css`，再手改上面 ④ 那五个模板，然后跑
+  `node scripts/verify/verify.mjs`**。②③ 会自动跟上；忘了改 ④，第十二节会当场报出来。
+
 ### 性能与加载策略
 
 详见 `PERFORMANCE.md`。要点：
@@ -918,6 +945,7 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
 - **音频 / 视频**：单文件音频（`audio/ecce-homo.m4a` 12MB、JustType 录音）与 Changelog `<details>` 内视频 `preload="none"`，用户点播放前不拉取；riverrun 12 条音轨由 `js/mixer-riverrun.js` 设为 `preload="metadata"`（弱网不预缓冲 17MB，播放时才拉流）。
 - **字体**：`@font-face` 全部 `font-display:swap`（不阻塞首屏文字）；文字为主的页（about/works/changelog/project）
   在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。
+  **预载 URL 必须与 `css/base.css` 逐字相同（含 `?v=`）—— 见上方「主字体 URL 的一致性」，改动后务必跑 verify 第十二节。**
 - **别让整份 CJK 字体被几个字拖下来**：`SiteCJK`（3.4KB，16 字）与 `LocalIPA`（0 字节）都排在主字体之前，
   且带 `unicode-range` —— 页面里没有这些字时连它们都不会被请求。实测英文页因此都不下载主字体（273KB）；
   changelog 英文页在折叠态只有 7 个可见汉字，**展开含中文的条目时才按需拉主字体**。见 `scripts/gen-cjk-extras.py`。

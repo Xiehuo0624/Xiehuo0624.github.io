@@ -232,6 +232,20 @@ const LEGACY_REGIONS = {
           '     首帧即成品，不依赖任何脚本。未使用的布局面板同时被剪掉。 -->'
 };
 
+/** 主字体 URL（含 ?v=），**从 css/base.css 现读**，不在这里硬编码。
+ *
+ *  为什么：这个版本号原本有四份副本 —— css/base.css 的 @font-face（权威）、本文件的预载常量、
+ *  scripts/gen-pages.mjs 的预载常量、以及五个手写模板里的预载。漏同步任意一处，预载与
+ *  @font-face 就成了两个缓存键，同一份字体白下两遍（274KB）。2026-09-22 一天内就发生了两次。
+ *  本函数消掉其中两份（两个生成器）；剩下三个位置由 scripts/verify/verify.mjs 第十二节兜住：
+ *  它把全站每一处字体 URL 与 base.css 逐字比对，不一致就失败。 */
+function mainFontHref(){
+  const css = readFileSync(join(ROOT, 'css', 'base.css'), 'utf8');
+  const m = css.match(/url\('fonts\/(SourceHanSansSC-Regular\.woff2\?v=\d+)'\)/);
+  if (!m) fail('css/base.css 里找不到带版本号的主字体 URL —— 预载 URL 无从生成');
+  return '/css/fonts/' + (m ? m[1] : '');
+}
+
 const HEAD_SCRIPT =
   '<script>\n' +
   '/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。\n' +
@@ -239,8 +253,9 @@ const HEAD_SCRIPT =
   '   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。\n' +
   '   预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：\n' +
   '   HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，\n' +
-  '   同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。改 base.css 的字体版本号时这里要一起改。 */\n' +
-  "(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=4';document.head.appendChild(f);}catch(e){}})();\n" +
+  '   同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。\n' +
+  '   版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */\n' +
+  `(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='${mainFontHref()}';document.head.appendChild(f);}catch(e){}})();\n` +
   '</script>';
 
 function applyLegacyRegions(html, where) {

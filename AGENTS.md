@@ -97,3 +97,10 @@ spawn(CHROME, [
      `changelog.html`；改了这四个页面的结构或 `*-i18n.js` 的文案就要重跑）
    字体改完后另跑一次覆盖率探针 `node scripts/verify/coverage.mjs`：它检查 27 个页面**渲染出来的**
    每个中日韩字符都有自托管字形，差集必须为空。
+
+   **字体改了就必须走完版本号链条**（这条被忘过两次，所以写死在这里）：字形文件换内容 →
+   `css/base.css` 的 `@font-face` URL 提号 → 手改五个模板 `works` / `about` / `changelog` /
+   `404` / `project-template`.html 里的预载 URL 使之一致（两个生成器已改为从 `base.css` 现读，
+   不必手改）→ `css/base.css` 自身也提号（它被 6 个 HTML 以 `?v=` 引用）→ 重跑两个生成器。
+   改完**必须**跑 `node scripts/verify/verify.mjs`：第十二节会把全站每一处字体 URL 与
+   `base.css` 逐字比对，并断言四个页面只请求一次主字体。不跑就等于没改完。
