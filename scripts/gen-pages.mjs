@@ -135,12 +135,12 @@ function replaceOnce(html, needle, replacement, what) {
 /* ---------- 页面骨架 ---------- */
 
 /** 主字体 URL（含 ?v=），**从 css/base.css 现读**，不在这里硬编码。
- *  理由见 scripts/gen-projects.mjs 里同名函数的注释：版本号原有四份副本，
- *  漏同步一处就白下 274KB 字体。剩下三处（base.css 自身与五个手写模板）
- *  由 scripts/verify/verify.mjs 第十二节逐字比对兜住。 */
+ *  版本号是字形内容的哈希（8 位十六进制），由 scripts/gen-cjk-main.py 写入 base.css 与
+ *  五个手写模板 —— 那个脚本是这条链的唯一入口，见它的文件头。
+ *  这里现读，是为了让本文件永远不需要「记得同步版本号」。 */
 function mainFontHref(){
   const css = readFileSync(join(ROOT, 'css', 'base.css'), 'utf8');
-  const m = css.match(/url\('fonts\/(SourceHanSansSC-Regular\.woff2\?v=\d+)'\)/);
+  const m = css.match(/url\('fonts\/(SourceHanSansSC-Regular\.woff2\?v=[0-9a-f]+)'\)/);
   if (!m) fail('css/base.css 里找不到带版本号的主字体 URL —— 预载 URL 无从生成');
   return '/css/fonts/' + (m ? m[1] : '');
 }

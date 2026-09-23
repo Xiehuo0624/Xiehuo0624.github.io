@@ -384,6 +384,17 @@ console.log('=== 六、changelog 页（本次新增了条目并提了版本号�
   };
   checkTrue('js/changelog.js 最新一条的标题可解析', !!(newest.zh && newest.en));
 
+  /* 版本号也改为**一致性检查**，不再写死某个数字：模板与两份生成页必须同号。
+     写死数字的写法每改一次代码就要改一次断言，忘改就误报 —— 与第十二节的字体版本号同类。
+     （「有没有记得提号」这件事只有 git 知道，不在本脚本的判据内。） */
+  const clVersions = ['changelog.html', 'changelog/index.html', 'changelog/zh/index.html'].map(f => {
+    const m = readFileSync(join(ROOT, f), 'utf8').match(/js\/changelog\.js\?v=(\d+)/);
+    return [f, m ? m[1] : null];
+  });
+  check(`changelog 模板与生成页版本号一致`, clVersions.map(([, v]) => v),
+    Array(3).fill(clVersions[0][1]));
+  const clVersion = clVersions[0][1];
+
   for (const lang of ['zh', 'en']) {
     const v = await visit(`/changelog.html?lang=${lang}`);
     const info = await v.evaluate(`({
@@ -395,7 +406,7 @@ console.log('=== 六、changelog 页（本次新增了条目并提了版本号�
     /* 页面渲染的第一条必须是 changelog.js 里的最新一条（前 16 字足以定位） */
     checkTrue(`changelog(${lang}) 首条 = changelog.js 最新一条`,
       !!newest[lang] && info.firstTitle.startsWith(newest[lang].slice(0, 16)));
-    check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=19');
+    check(`changelog(${lang}) 脚本版本号 = 模板里的号`, info.script, `js/changelog.js?v=${clVersion}`);
     checkTrue(`changelog(${lang}) 无报错`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
     if (v.net.bad.length) failures.push(`changelog(${lang}) 4xx：${JSON.stringify(v.net.bad)}`);
     if (v.consoleErrors.length) failures.push(`changelog(${lang}) 控制台：${JSON.stringify(v.consoleErrors)}`);
@@ -607,15 +618,15 @@ console.log('=== 十一、Gallery Lightbox 位置指示 ===');
 /* ---------- 十二、字体 URL 一致性（防「版本号漏同步」复发） ---------- */
 console.log('=== 十二、字体 URL 一致性（必须与 css/base.css 逐字相同）===');
 {
-  /* 为什么单独立一节：主字体 URL 的 ?v= 被硬编码在**四处** ——
-     ① css/base.css 的 @font-face（权威来源）、② scripts/gen-pages.mjs 的预载常量、
-     ③ scripts/gen-projects.mjs 的预载常量、④ 五个手写模板的预载（它们由浏览器直接服务，
-     没有构建步骤能替它们生成，只能手改）。四处只要有一处漏改，预载与 @font-face 就成了
-     两个缓存键，同一份字体白下两遍（274KB）。
-     2026-09-22 一天之内发生了两次：作品页预载漏 ?v=（白下 267.7KB）、五个旧地址模板漏 ?v=。
-     人记不住，所以让脚本记住：任何一处与 base.css 不同就直接失败。 */
+  /* 为什么单独立一节：主字体 URL 的版本号（= 字形内容的哈希）出现在多处 ——
+     css/base.css 的 @font-face、五个手写模板的预载、以及全部生成页。
+     漏同步任意一处，预载与 @font-face 就成了两个缓存键，同一份字体白下两遍（274KB）。
+     2026-09-22 一天内漏了三次：作品页预载漏 ?v=（白下 267.7KB）、五个旧地址模板漏 ?v=、
+     changelog 文案改了字体却忘提号。
+     现在书写由 scripts/gen-cjk-main.py 自动完成（它是唯一入口），但**检查仍然必要**：
+     手改、回滚、或脚本本身出 bug 都可能让它们重新分叉。 */
   const baseCss = readFileSync(join(ROOT, 'css', 'base.css'), 'utf8');
-  const canonical = (baseCss.match(/url\('(fonts\/SourceHanSansSC-Regular\.woff2\?v=\d+)'\)/) || [])[1] || null;
+  const canonical = (baseCss.match(/url\('(fonts\/SourceHanSansSC-Regular\.woff2\?v=[0-9a-f]+)'\)/) || [])[1] || null;
   checkTrue('css/base.css 的主字体 URL 带版本号（权威来源可解析）', !!canonical);
 
   /* 会写死字体 URL 的文本文件：6 个根模板 + 2 个生成器源码 + 全部生成页 */
@@ -637,7 +648,7 @@ console.log('=== 十二、字体 URL 一致性（必须与 css/base.css 逐字�
   let refs = 0;
   for (const rel of files) {
     const text = readFileSync(join(ROOT, rel), 'utf8');
-    for (const m of text.matchAll(/SourceHanSansSC-Regular\.woff2(\?v=\d+)?/g)) {
+    for (const m of text.matchAll(/SourceHanSansSC-Regular\.woff2(\?v=[0-9a-f]+)?/g)) {
       refs++;
       const found = 'SourceHanSansSC-Regular.woff2' + (m[1] || '（无 ?v=）');
       if (found !== wantTail) mismatched.push(`${rel} → ${found}`);

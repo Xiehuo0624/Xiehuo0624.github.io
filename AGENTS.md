@@ -98,9 +98,14 @@ spawn(CHROME, [
    字体改完后另跑一次覆盖率探针 `node scripts/verify/coverage.mjs`：它检查 27 个页面**渲染出来的**
    每个中日韩字符都有自托管字形，差集必须为空。
 
-   **字体改了就必须走完版本号链条**（这条被忘过两次，所以写死在这里）：字形文件换内容 →
-   `css/base.css` 的 `@font-face` URL 提号 → 手改五个模板 `works` / `about` / `changelog` /
-   `404` / `project-template`.html 里的预载 URL 使之一致（两个生成器已改为从 `base.css` 现读，
-   不必手改）→ `css/base.css` 自身也提号（它被 6 个 HTML 以 `?v=` 引用）→ 重跑两个生成器。
-   改完**必须**跑 `node scripts/verify/verify.mjs`：第十二节会把全站每一处字体 URL 与
-   `base.css` 逐字比对，并断言四个页面只请求一次主字体。不跑就等于没改完。
+   **改了中文文案只需要跑一条命令**：`python3 scripts/gen-cjk-main.py`。它自己走完整条版本号链条
+   —— 重切子集 → 版本号取字形内容的 sha256 前 8 位（幂等）→ 写进 `css/base.css` 的 `@font-face`
+   → 写进五个手写模板（`works` / `about` / `changelog` / `404` / `project-template`.html）的预载
+   → base.css 内容变了就提它自身的号（6 个 HTML）→ 重跑两个页面生成器。两个生成器用
+   `mainFontHref()` 从 base.css 现读，不必手改。**不要再手改那些版本号**：手改会与哈希不一致，
+   `--check` 与 verify 第十二节都会报错。
+
+   这条链曾一天之内漏过三次（作品页预载、五个旧地址模板、changelog 文案改了字体却忘提号），
+   所以书写交给脚本、检查独立留在 verify：改完**必须**跑
+   `node scripts/verify/verify.mjs`（第十二节逐字比对全站字体 URL，并断言四个页面只请求一次主字体）
+   与 `node scripts/verify/coverage.mjs`。不跑就等于没改完。

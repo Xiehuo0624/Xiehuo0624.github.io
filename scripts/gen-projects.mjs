@@ -234,14 +234,16 @@ const LEGACY_REGIONS = {
 
 /** 主字体 URL（含 ?v=），**从 css/base.css 现读**，不在这里硬编码。
  *
- *  为什么：这个版本号原本有四份副本 —— css/base.css 的 @font-face（权威）、本文件的预载常量、
- *  scripts/gen-pages.mjs 的预载常量、以及五个手写模板里的预载。漏同步任意一处，预载与
- *  @font-face 就成了两个缓存键，同一份字体白下两遍（274KB）。2026-09-22 一天内就发生了两次。
- *  本函数消掉其中两份（两个生成器）；剩下三个位置由 scripts/verify/verify.mjs 第十二节兜住：
- *  它把全站每一处字体 URL 与 base.css 逐字比对，不一致就失败。 */
+ *  版本号 = 字形内容的哈希（8 位十六进制），由 scripts/gen-cjk-main.py 统一写入
+ *  css/base.css 与五个手写模板，并顺手提 base.css 自身的号、重跑本脚本 ——
+ *  那个脚本是这条链的唯一入口，见它的文件头。
+ *
+ *  这里现读而不是硬编码，是因为「记得同步版本号」这件事被忘过三次（2026-09-22 一天内：
+ *  作品页预载漏 ?v= 白下 267.7KB、五个旧地址模板漏 ?v=、changelog 文案改了字体却忘提号）。
+ *  本函数让两个生成器永远不必记得；剩下拿不掉的重复由 verify.mjs 第十二节逐字比对兜底。 */
 function mainFontHref(){
   const css = readFileSync(join(ROOT, 'css', 'base.css'), 'utf8');
-  const m = css.match(/url\('fonts\/(SourceHanSansSC-Regular\.woff2\?v=\d+)'\)/);
+  const m = css.match(/url\('fonts\/(SourceHanSansSC-Regular\.woff2\?v=[0-9a-f]+)'\)/);
   if (!m) fail('css/base.css 里找不到带版本号的主字体 URL —— 预载 URL 无从生成');
   return '/css/fonts/' + (m ? m[1] : '');
 }
