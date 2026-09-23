@@ -5,7 +5,34 @@ App.projects = {
     title: { zh:'6U104HP', en:'6U104HP' },
     brief: { zh:'与Ciiyte共同设计的6/7U 104HP Eurorack电源箱', en:'A 6/7U 104HP Eurorack power case co-designed with Ciiyte' },
     desc: { file: true },
-    media: { type: 'gallery', images: ['img/6u104hp.webp','img/6u104hp-11.webp','img/6u104hp-2.webp','img/6u104hp-3.webp','img/6u104hp-4.webp','img/6u104hp-5.webp','img/6u104hp-6.webp','img/6u104hp-7.webp','img/6u104hp-8.webp','img/6u104hp-9.webp','img/6u104hp-10.webp'] }
+    /* 图片按「段 → 组 → 图」组织：段给出大类，组把参展照按活动分开。
+       21 张（11 产品 + 10 参展）走原来的等高横滑胶片条要拖约 15000px，
+       且看不出还剩多少张，故改为纵向网格；点开仍是同一个 Lightbox。
+       老式的扁平 media.images（the-induction-mixer 仍在用）由 js/project.js
+       归一成同一形状，两件画廊作品共用一套渲染与样式。
+       参展照的出处由「组标题」承担，所以不逐张写题注。 */
+    media: {
+      type: 'gallery',
+      sections: [
+        {
+          label: { zh:'产品图', en:'Product' },
+          images: ['img/6u104hp.webp','img/6u104hp-11.webp','img/6u104hp-2.webp','img/6u104hp-3.webp','img/6u104hp-4.webp','img/6u104hp-5.webp','img/6u104hp-6.webp','img/6u104hp-7.webp','img/6u104hp-8.webp','img/6u104hp-9.webp','img/6u104hp-10.webp']
+        },
+        {
+          label: { zh:'参展记录', en:'Exhibition record' },
+          groups: [
+            { label: { zh:'上海国际乐器展 2024 · 第二版', en:'Music China 2024 · second version' },
+              images: ['img/6u104hp-expo-1.webp','img/6u104hp-expo-2.webp','img/6u104hp-expo-3.webp'] },
+            { label: { zh:'交流方式 2024 · 第二版', en:'Modular Commune 2024 · second version' },
+              images: ['img/6u104hp-expo-4.webp','img/6u104hp-expo-5.webp','img/6u104hp-expo-6.webp'] },
+            { label: { zh:'上海国际乐器展 2025 · 第三版', en:'Music China 2025 · third version' },
+              images: ['img/6u104hp-expo-7.webp','img/6u104hp-expo-8.webp'] },
+            { label: { zh:'交流方式 2025 · 第三版', en:'Modular Commune 2025 · third version' },
+              images: ['img/6u104hp-expo-9.webp','img/6u104hp-expo-10.webp'] }
+          ]
+        }
+      ]
+    }
   },
 
   'the-just-type-study': {

@@ -24,6 +24,39 @@
     return !!(el && el.dataset.baked === '1');
   }
 
+  /* ---- Gallery 分组渲染 ---- */
+  let galleryImages = [];   // 扁平图集：Lightbox 在全部图上前后切换，索引与点击处一致
+  let galleryLabels = [];   // [{el, label}]：切语言时只改文字，不重建网格
+
+  /** 分组标题。文字是可见内容，故登记下来，切语言时原地更新。 */
+  function addGalleryLabel(parent, label, className){
+    if (!label) return;
+    const el = document.createElement('h3');
+    el.className = className;
+    el.textContent = label[App.I18n.currentLang];
+    galleryLabels.push({ el, label });
+    parent.appendChild(el);
+  }
+
+  /** 一组等宽网格。每张图在扁平图集里登记自己的下标，点击即从该张打开。 */
+  function buildGalleryGrid(images, alt){
+    const grid = document.createElement('div');
+    grid.className = 'gallery-grid';
+    images.forEach(src => {
+      const idx = galleryImages.push(src) - 1;
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt;
+      /* 网格里只有首屏可见，其余懒加载 */
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.dataset.index = String(idx);
+      img.addEventListener('click', () => openLightbox(galleryImages, idx, alt));
+      grid.appendChild(img);
+    });
+    return grid;
+  }
+
   App.renderBackNav();
 
   /* ---- 404 fallback ---- */
@@ -140,26 +173,38 @@
       }
     } else if (layout === 'gallery') {
       setTitle('gallery-title');
-      /* render gallery slider */
-      if (!mediaRendered && project.media && project.media.type === 'gallery' && !isBaked('gallery-slider')) {
-        const slider = document.getElementById('gallery-slider');
-        if (slider) {
-          slider.innerHTML = '';
-          project.media.images.forEach((src, idx) => {
-            const slide = document.createElement('div');
-            slide.className = 'gallery-slide';
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = t;
-            /* 水平 slider 内只有首屏可见，其余懒加载 */
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            img.dataset.index = String(idx);
-            img.addEventListener('click', () => openLightbox(project.media.images, idx, t));
-            slide.appendChild(img);
-            slider.appendChild(slide);
+      /* render gallery sections → groups → grids */
+      if (!mediaRendered && project.media && project.media.type === 'gallery' && !isBaked('gallery-sections')) {
+        const rootEl = document.getElementById('gallery-sections');
+        if (rootEl) {
+          rootEl.innerHTML = '';
+          galleryImages = [];
+          galleryLabels = [];
+          /* 老数据只有扁平 images（the-induction-mixer）；归一成同一形状后共用下面这套渲染 */
+          const sections = project.media.sections || [{ images: project.media.images }];
+          sections.forEach(sec => {
+            const secEl = document.createElement('div');
+            secEl.className = 'gallery-section';
+            addGalleryLabel(secEl, sec.label, 'gallery-section-title');
+            if (sec.images) secEl.appendChild(buildGalleryGrid(sec.images, t));
+            (sec.groups || []).forEach(grp => {
+              const grpEl = document.createElement('div');
+              grpEl.className = 'gallery-group';
+              addGalleryLabel(grpEl, grp.label, 'gallery-group-title');
+              grpEl.appendChild(buildGalleryGrid(grp.images, t));
+              secEl.appendChild(grpEl);
+            });
+            rootEl.appendChild(secEl);
           });
         }
+      }
+      /* 分组标题与 alt 是文字，切语言必须跟着换；网格不重建 —— 重建会丢滚动位置、
+         也会让已经解码的图片重新入队下载（媒体只渲染一次的原因见文件头变量注释）。 */
+      const galleryLang = App.I18n.currentLang;
+      galleryLabels.forEach(item => { item.el.textContent = item.label[galleryLang]; });
+      if (galleryImages.length) {
+        const gridRoot = document.getElementById('gallery-sections');
+        if (gridRoot) gridRoot.querySelectorAll('img').forEach(im => { im.alt = t; });
       }
     } else if (layout === 'wwhbh') {
       setTitle('wwhbh-title');
@@ -281,6 +326,7 @@
   let lbImages = [];
   let lbIndex = 0;
   let lbImg = null;
+  let lbCount = null;
   let lbAlt = '';
 
   function openLightbox(images, index, alt) {
@@ -301,6 +347,11 @@
       const close = document.createElement('button');
       close.className = 'lightbox-close';
       close.textContent = '×';
+      /* 位置指示：网格化之后一次可以从 21 张里的任意一张进入，没有「第几张」会迷路。
+         纯装饰性文字，不进 aria（读屏靠左右按钮的 aria-label 就够）。 */
+      lbCount = document.createElement('div');
+      lbCount.className = 'lightbox-count';
+      lbCount.setAttribute('aria-hidden', 'true');
       prev.type = 'button'; prev.setAttribute('aria-label', App.I18n.t('lightboxPrev'));
       next.type = 'button'; next.setAttribute('aria-label', App.I18n.t('lightboxNext'));
       close.type = 'button'; close.setAttribute('aria-label', App.I18n.t('lightboxClose'));
@@ -309,6 +360,7 @@
       lbOverlay.appendChild(prev);
       lbOverlay.appendChild(next);
       lbOverlay.appendChild(close);
+      lbOverlay.appendChild(lbCount);
       document.body.appendChild(lbOverlay);
 
       lbOverlay.addEventListener('click', e => {
@@ -327,6 +379,7 @@
   function lbShow() {
     lbImg.src = lbImages[lbIndex];
     lbImg.alt = lbAlt;
+    lbCount.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
     const prev = lbOverlay.querySelector('.lightbox-prev');
     const next = lbOverlay.querySelector('.lightbox-next');
     const close = lbOverlay.querySelector('.lightbox-close');

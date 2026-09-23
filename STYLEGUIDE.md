@@ -105,9 +105,47 @@
 
 - 部署图片统一使用 **WebP** 格式（`cwebp -q 80`）
 - 卡片封面（首页，显示≤460px）缩到 **1200px 宽**
-- Gallery/剧照（显示≤800px）缩到 **1600px 宽**
+- Gallery/剧照（显示≤800px）缩到 **1600px 宽**（竖构图按**长边** 1600px：`cwebp -resize 0 1600`）
 - 原图留档于 `img/originals/`，不部署（`.gitignore` 排除）
 - 生成命令示例：`cwebp -resize 1200 0 -q 80 img/originals/xx.jpg -o img/xx.webp`
+
+**⚠️ EXIF 旋转必须先烘进像素再转 —— `cwebp` 不读 EXIF orientation。**
+手机与微信出图常带 `orientation=8`（存储是横构图、显示应为竖构图）。`cwebp` 只取存储像素、
+不应用旋转，直接转会得到一张**横躺的** webp；而 `sips -g orientation` 在这类文件上返回
+`<nil>`，`sips -g pixelWidth/pixelHeight` 报的也是**存储**尺寸而非显示尺寸，两处都会骗过检查。
+**判据是肉眼看渲染结果，不是看命令行输出。**
+
+可靠流程（2026-09-22 实测）：
+
+```bash
+# 1) 先用 sips 解成 PNG（无损中间件，避免二次 JPEG 压缩），它会把 EXIF 一并带到副本上
+sips -s format png "$src" --out "$tmp.png"
+# 2) 仅对非 1 的 orientation 显式旋转（orientation=8 → 逆时针 90°）
+sips -r -90 "$tmp.png" --out "$tmp.png"
+# 3) 再转 WebP，长边 1600
+cwebp -resize 1600 0 -q 80 "$tmp.png" -o "$out.webp"
+```
+
+orientation 值可用下面这段标准库脚本直接读 JPEG 的 APP1 段（不依赖 exiftool / PIL）：
+
+```python
+import struct
+d = open(path,'rb').read(); i = 2; ori = None
+while i < len(d)-4:
+    if d[i] != 0xFF: break
+    m = d[i+1]
+    if m in (0xD8,0xD9): i += 2; continue
+    ln = struct.unpack('>H', d[i+2:i+4])[0]; seg = d[i+4:i+2+ln]
+    if m == 0xE1 and seg[:6] == b'Exif\x00\x00':
+        t = seg[6:]; bo = '>' if t[:2] == b'MM' else '<'
+        off = struct.unpack(bo+'I', t[4:8])[0]
+        for k in range(struct.unpack(bo+'H', t[off:off+2])[0]):
+            e = off+2+k*12
+            if struct.unpack(bo+'HHI', t[e:e+8])[0] == 0x0112:
+                ori = struct.unpack(bo+'H', t[e+8:e+10])[0]
+    i += 2+ln
+    if m == 0xDA: break
+```
 
 ### 卡片顺序
 
@@ -477,7 +515,12 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
 | 正文行高 | `2.4` | 同左 |
 
-### 7e. Gallery 布局（文字在上，图片横向滑动切换）
+### 7e. Gallery 布局（文字在上，分组图片网格在下）
+
+> **2026-09-22 改版**：原为一条等高横滑胶片条（`.gallery-slider` / `.gallery-slide`）。
+> 6U104HP 的图片从 11 张涨到 21 张（11 产品 + 10 参展）后，横滑长度约 **15000px（≈18 屏）**，
+> 且滚动条只有 3px、没有计数与跳转，看不出还剩多少张；横滑还会与触控板的页面滚动抢手势。
+> 故改为「段 → 组 → 网格」的纵向排列。**代价是图片显示尺寸变小**，由 Lightbox 兜底。
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
@@ -485,10 +528,39 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 文字区 `.gallery-body` | `max-width:800px` | 同左 |
 | 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
 | 正文行高 | `2.4` | 同左 |
-| 滑动区 `.gallery-slider` | `max-width:800px; height:56vh; max-height:520px; min-height:300px; scroll-snap-type:x proximity` | 移动端 `height:46vh; max-height:380px; min-height:240px` |
-| 滑动条样式 | `::-webkit-scrollbar 3px; thumb:#000; track:#f0f0f0` | 同左 |
-| 单张 `.gallery-slide` | `flex:0 0 auto; scroll-snap-align:start` | 同左 |
-| 图片 | `height:100%; width:auto; object-fit:contain`（等高胶片条） | 同左 |
+| 图片区 `.gallery-sections` | `max-width:800px; margin-top:24px; border-top:3px solid #000; padding-top:24px` | 同左 |
+| 段间距 `.gallery-section + .gallery-section` | `margin-top:44px` | 同左 |
+| 段标题 `.gallery-section-title` | `12px/700; letter-spacing:2px; uppercase; margin-bottom:14px` | 同左 |
+| 组间距 `.gallery-group + .gallery-group` | `margin-top:26px` | 同左 |
+| 组标题 `.gallery-group-title` | `11px/400; letter-spacing:1px; margin-bottom:8px` | 同左 |
+| 网格 `.gallery-grid` | `display:grid; grid-template-columns:repeat(3,1fr); gap:4px` | `repeat(2,1fr)` |
+| 单元格图片 | `width:100%; aspect-ratio:4/3; object-fit:contain; background:#f0f0f0; cursor:zoom-in` | 同左 |
+
+**为什么是 `contain` 而不是 `cover`**：`contain` 不裁切、不变形，留白沿用旧胶片条的 `#f0f0f0`；
+代价是竖构图（3:4）两侧有灰边、宽幅（16:9）上下有灰边。改成 `cover` 会让网格更密，
+但 6U104HP 的 4 张竖构图与 7 张宽幅产品图会被切掉边角 —— **一行 CSS 的事，要改先问作者**。
+
+**数据结构**（`js/project-data.js`）：
+
+```js
+media: {
+  type: 'gallery',
+  sections: [                       // 段：可选，给出大类
+    { label: {zh:'产品图', en:'Product'}, images: ['img/a.webp', …] },
+    { label: {zh:'参展记录', en:'Exhibition record'},
+      groups: [                     // 组：段内再分，参展照按活动分组
+        { label: {zh:'上海国际乐器展 2024 · 第二版', en:'Music China 2024 · second version'},
+          images: ['img/x.webp', …] }
+      ] }
+  ]
+}
+```
+
+- 图注由**组标题**承担，因此不逐张写题注。
+- **向后兼容**：老式的扁平 `media.images`（The Induction Mixer 仍在用）由 `js/project.js` 归一成
+  `[{ images }]`，两件画廊作品共用同一套渲染与样式。
+- 分组标题是可见文字，**切换语言时必须原地更新文字、不得重建网格** —— 重建会丢滚动位置，
+  也会让已解码的图片重新入队下载（`galleryLabels` 即为此刻意留的引用表）。
 
 ### 7e-补. Gallery Lightbox（点击放大）
 
@@ -500,8 +572,10 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 图片 | `max-width:92vw; max-height:88vh; object-fit:contain` |
 | 左右切换 `.lightbox-nav` | 绝对垂直居中，`48×64px`，透明背景白字 |
 | 关闭 `.lightbox-close` | 右上角，`44×44px` |
+| 位置指示 `.lightbox-count` | 底部居中 `16px`，白字 `12px`，`aria-hidden`；移动端 `bottom:10px; 11px` |
 | 交互 | 点击空白/ESC 关闭；←/→ 切换；多图才显示导航钮 |
-| 逻辑位置 | `js/project.js` 的 `openLightbox()`，gallery 渲染时绑定 click |
+| 翻页范围 | **全部图**（不分段分组）：从任意一张进入都能一路翻到底，索引与点击处一致 |
+| 逻辑位置 | `js/project.js` 的 `openLightbox()`，网格渲染时绑定 click |
 
 ### 7f. Mixer 布局（riverrun 交互式空间混音）
 
@@ -521,7 +595,7 @@ riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的�
 | 交互 | 鼠标常驻一只麦克风（滚轮调增益）；触控每指一只（手机固定增益 100%） | 同左 |
 | 逻辑位置 | `js/mixer-riverrun.js` 的 `App.initRiverrunMixer()`，`js/project.js` 的 mixer 分支初始化 | |
 
-> Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.images` 数组渲染，不在描述 HTML 中内嵌。
+> Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.sections`（段 → 组 → 图；老的扁平 `media.images` 仍受支持）渲染，不在描述 HTML 中内嵌。
 
 > **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
 
@@ -838,7 +912,7 @@ GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 是
 详见 `PERFORMANCE.md`。要点：
 
 - **首屏图片（卡片封面 / 项目页 hero 图）**：`decoding="async"` + `fetchpriority="high"`，保持默认 eager。
-- **非首屏图片（Gallery 其余帧、Changelog 媒体）**：`loading="lazy"` + `decoding="async"`，进入视口才下载。
+- **非首屏图片（Gallery 网格、Changelog 媒体）**：`loading="lazy"` + `decoding="async"`，进入视口才下载。
 - **音频 / 视频**：单文件音频（`audio/ecce-homo.m4a` 12MB、JustType 录音）与 Changelog `<details>` 内视频 `preload="none"`，用户点播放前不拉取；riverrun 12 条音轨由 `js/mixer-riverrun.js` 设为 `preload="metadata"`（弱网不预缓冲 17MB，播放时才拉流）。
 - **字体**：`@font-face` 全部 `font-display:swap`（不阻塞首屏文字）；文字为主的页（about/works/changelog/project）
   在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。

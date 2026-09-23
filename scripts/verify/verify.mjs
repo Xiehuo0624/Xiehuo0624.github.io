@@ -162,7 +162,7 @@ function checkTrue(name, got) { check(name, !!got, true); }
 
 /* ---------- 期望表（与 js/project-data.js 同源，人工核对一遍） ---------- */
 const P = [
-  { id: '6u104hp',            layout: 'gallery', zh: '6U104HP',            en: '6U104HP',            media: 'gallery', n: 11 },
+  { id: '6u104hp',            layout: 'gallery', zh: '6U104HP',            en: '6U104HP',            media: 'gallery', n: 21 },
   { id: 'the-just-type-study', layout: 'ecce',    zh: 'The JustType Study', en: 'The JustType Study', media: 'img+audio', n: 1 },
   { id: 'the-induction-mixer', layout: 'gallery', zh: 'THE INDUCTION MIXER', en: 'THE INDUCTION MIXER', media: 'gallery', n: 3 },
   { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'none', n: 0 },
@@ -198,7 +198,7 @@ for (const p of P) {
       descText: (document.querySelector('[data-desc-lang]')||{}).textContent?.length || 0,
       descLang: (document.querySelector('[data-desc-lang]')||{}).dataset?.descLang,
       panelVisible: getComputedStyle(document.querySelector('[id^="layout-"]')).display,
-      imgs: document.querySelectorAll('[id$="-media"] img, .gallery-slide img').length,
+      imgs: document.querySelectorAll('[id$="-media"] img, .gallery-grid img').length,
       iframes: document.querySelectorAll('[id$="-media"] iframe').length,
       audios: document.querySelectorAll('.ecce-audio').length,
       related: [...document.querySelectorAll('.project-related a')].map(a=>a.getAttribute('href')),
@@ -381,8 +381,8 @@ for (const lang of ['zh', 'en']) {
   })`);
   checkTrue(`changelog(${lang}) 有日志条目`, info.entries > 10);
   checkTrue(`changelog(${lang}) 首条是本次改动`,
-    /字体预载|font preload/.test(info.firstTitle));
-  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=16');
+    /参展记录|exhibition record/i.test(info.firstTitle));
+  check(`changelog(${lang}) 脚本已提号`, info.script, 'js/changelog.js?v=17');
   checkTrue(`changelog(${lang}) 无报错`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
   if (v.net.bad.length) failures.push(`changelog(${lang}) 4xx：${JSON.stringify(v.net.bad)}`);
   if (v.consoleErrors.length) failures.push(`changelog(${lang}) 控制台：${JSON.stringify(v.consoleErrors)}`);
@@ -532,6 +532,62 @@ console.log('=== 十、爬取路径与旧地址声明 ===');
     checkTrue(`${path} 页面照常可用`, (info.h1 || '').length > 0);
     await v.close();
   }
+}
+
+/* ---------- 十一、Gallery Lightbox：从网格任意一张进入，位置指示正确 ---------- */
+console.log('=== 十一、Gallery Lightbox 位置指示 ===');
+{
+  /* 6U104HP 有 21 张（11 产品 + 10 参展），分四段五组；扁平图集跨组翻页，
+     所以「点第 5 组的第一张、计数应是 18 / 21」是最能说明索引没错的一测。 */
+  const v = await visit('/works/6u104hp/zh/', { waitMs: 1200 });
+  const before = await v.evaluate(`({
+    grids: document.querySelectorAll('.gallery-grid').length,
+    sections: document.querySelectorAll('.gallery-section').length,
+    groups: document.querySelectorAll('.gallery-group').length,
+    titles: [...document.querySelectorAll('.gallery-section-title,.gallery-group-title')].map(e=>e.textContent),
+    open: !!document.querySelector('.lightbox.open')
+  })`);
+  check('6u104hp 网格数（产品 1 + 参展 4）', before.grids, 5);
+  check('6u104hp 段数', before.sections, 2);
+  check('6u104hp 组数（四个活动）', before.groups, 4);
+  check('6u104hp 分组标题（中）', before.titles,
+    ['产品图', '参展记录', '上海国际乐器展 2024 · 第二版', '交流方式 2024 · 第二版',
+     '上海国际乐器展 2025 · 第三版', '交流方式 2025 · 第三版']);
+  checkTrue('打开前 Lightbox 不存在', before.open === false);
+
+  // 点第三个网格（交流方式 2024）的第一张。它是扁平图集的第 15 张：
+  // 产品图 11 张 + 乐器展 2024 三张 = 前 14 张，故本组为 15/16/17。
+  await v.evaluate(`document.querySelectorAll('.gallery-grid')[2].querySelector('img').click()`);
+  await sleep(500);
+  const opened = await v.evaluate(`({
+    open: !!document.querySelector('.lightbox.open'),
+    count: (document.querySelector('.lightbox-count')||{}).textContent,
+    src: (document.querySelector('.lightbox img')||{}).getAttribute('src')
+  })`);
+  checkTrue('点网格第 15 张后 Lightbox 打开', opened.open === true);
+  check('位置指示 15 / 21', opened.count, '15 / 21');
+  check('打开的是被点的那一张', opened.src, 'img/6u104hp-expo-4.webp');
+
+  await v.evaluate(`document.querySelector('.lightbox-next').click()`);
+  await sleep(400);
+  const stepped = await v.evaluate(`({
+    count: (document.querySelector('.lightbox-count')||{}).textContent,
+    src: (document.querySelector('.lightbox img')||{}).getAttribute('src')
+  })`);
+  check('→ 之后计数 16 / 21', stepped.count, '16 / 21');
+  check('→ 之后换到下一张', stepped.src, 'img/6u104hp-expo-5.webp');
+
+  // ESC 关闭
+  await v.evaluate(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))`);
+  await sleep(300);
+  const closed = await v.evaluate(`({
+    open: !!document.querySelector('.lightbox.open'),
+    overflow: document.body.style.overflow
+  })`);
+  checkTrue('ESC 关闭 Lightbox', closed.open === false);
+  check('关闭后恢复页面滚动', closed.overflow, '');
+  checkTrue(`Lightbox 无控制台报错`, v.consoleErrors.length === 0 && v.exceptions.length === 0);
+  await v.close();
 }
 
 /* ---------- 汇总 ---------- */

@@ -41,7 +41,7 @@
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
 <link rel="stylesheet" href="css/base.css?v=5">
 <link rel="stylesheet" href="css/nav.css?v=3">
-<link rel="stylesheet" href="css/project.css?v=5">
+<link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
@@ -50,7 +50,7 @@
      生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
      保持同步只为避免两份加载策略各自漂移。 -->
 <script src="js/app.js"></script>
-<script src="js/project-data.js?v=3"></script>
+<script src="js/project-data.js?v=4"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/i18n.js?v=6"></script>
 <script defer src="js/autospace.js"></script>
@@ -59,7 +59,7 @@
 <!-- page data + logic（js/ink-wwhbh.js、js/audio-wwhbh.js、js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
      生成器剪掉，见 scripts/gen-projects.mjs） -->
 <script defer src="js/project-i18n.js?v=4"></script>
-<script defer src="js/project.js?v=6"></script>
+<script defer src="js/project.js?v=7"></script>
 </head>
 <body>
 
@@ -73,7 +73,9 @@
 
 
 
-<!-- gallery: text on top, horizontal image slider below -->
+<!-- gallery: text on top, grouped image grids below（原先是一条横滑胶片条，
+     改为「段 → 组 → 网格」后 21 张一屏看得到全貌；结构与样式见 css/project.css
+     的 GALLERY layout 一节，渲染见 js/project.js 的 gallery 分支） -->
 <div class="gallery-panel" id="layout-gallery">
   <div class="gallery-body">
     <h2 id="gallery-title">THE INDUCTION MIXER<span class="work-sub">基于近场电磁感应的交互式矩阵电子混音器的乐器设计</span></h2>
@@ -175,8 +177,8 @@ Cathy Van Eck的<span style="font-style:italic">Between Air and Electricity: Mic
 2026.07.01，上海音乐学院音乐工程系期末考试汇报（2025-2026学年第2学期）。目前只有几段在导师办公室录的桌面演示视频，拍得很粗糙，不是现场演出记录。
 </p>
   </div>
-  <div class="gallery-slider" id="gallery-slider">
-    <!-- images inserted dynamically -->
+  <div class="gallery-sections" id="gallery-sections">
+    <!-- sections / groups / images inserted dynamically -->
   </div>
 </div>
 

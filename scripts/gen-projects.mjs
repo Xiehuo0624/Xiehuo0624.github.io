@@ -390,7 +390,8 @@ function renderPage({ template, app, origin, id, lang }) {
   }
 
   /* ⑦ 主图 / bilibili 内嵌页：只在生成时能静态写出的媒体才烤。
-        gallery 布局不烤 —— 它的 11 张图要配灯箱点击绑定，交给 js/project.js 渲染。 */
+        gallery 布局不烤 —— 它的全部图（6U104HP 21 张、The Induction Mixer 3 张）
+        要配灯箱点击绑定，交给 js/project.js 渲染。 */
   const media = p.media || null;
   if (p.layout === 'grid' && media && media.type === 'image') {
     html = replaceOnce(html,
