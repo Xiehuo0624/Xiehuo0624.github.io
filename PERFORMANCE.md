@@ -16,7 +16,7 @@
 | 首页 8 张卡片封面（WebP） | 约 1.5 MB（以实际构建为准） | 全部首屏可见 |
 | `audio/ecce-homo.m4a` | **12 MB** | 仅 ecce-homo 项目页用 |
 | `audio/riverrun/1..12.m4a` | 约 **17 MB** | 仅 riverrun 页启动混音后按需拉流（`preload="metadata"`） |
-| `js/changelog.js`（内联数据） | 33 KB | 仅 changelog 页 |
+| `js/changelog.js`（内联数据） | 64 KB | 仅 changelog 页 |
 | 单页 JS 总量 | 12–43 KB | 多个小文件，HTTP/2 下非瓶颈 |
 
 ### 2. 加载链路上的问题（优化前）
@@ -182,7 +182,7 @@
 ### Tier 3 —— 高收益但引入运行时/构建
 
 1. **Service Worker 缓存**：注册 SW 预缓存字体、CSS、JS、图片，二次访问全部走缓存、可离线。GitHub Pages 无法自定义头，SW 是唯一能控制缓存策略的方式。注意部署更新时的缓存失效（版本号 + 清单）。
-2. **`changelog.js` 数据外置 + 按需**：33 KB 内联数据每次进 changelog 页都全量下载。可拆为 JSON 按年/按需 fetch，或保留现状（33 KB 在 HTTP/2+Brotli 下 ~10 KB，影响有限）。
+2. **`changelog.js` 数据外置 + 按需**：内联数据每次进 changelog 页都全量下载。**2026-09-24 起全文已移出部署文件**（全文存本地 `docs/工程决策记录.md`，不部署；公开文件只留 title + brief），该文件从 272,843 字节降到 65,469 字节（实测 Brotli 19.1 KB / gzip 23.4 KB）。余下的 title + brief 仍可拆为 JSON 按需 fetch，或保留现状（影响有限）。
 3. **图片响应式 `srcset`**：项目页 hero 图可提供多分辨率，按 DPR/视口选最合适的一档，移动端省流量。需生成多档图。
 
 ---
