@@ -14,7 +14,7 @@
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=7b742e47';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3c1ea7ae';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,7 +40,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=21">
+<link rel="stylesheet" href="css/base.css?v=28">
 <link rel="stylesheet" href="css/nav.css?v=3">
 <link rel="stylesheet" href="css/project.css?v=6">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -114,15 +114,15 @@ The Induction Mixer是一台12路输入、4路输出的空间混音器，也是�
 
 <br><br>
 
-第一次弹它的时候，我找了非常久才找到天线在哪里，还有几条音轨完全找不到。我的第一反应是：这台设备没有按照我的设计意愿行为。
+第一次演奏它的时候，我找了非常久才找到天线在哪里，还有几条音轨完全找不到。我的第一反应是：这台设备没有按照我的设计意愿行为。
 
 <br><br>
 
-弹的时候我并不常把电磁拾音器抬起来。为了让它在面板上不会自己滑动，试过多次之后我选了金属 3D 打印的不锈钢电磁拾音器外壳；为了滑动时不发出噪音，我在机箱顶部贴了天鹅绒布，滑动它就成了一种自然而然的直觉。用一只电磁拾音器找声源的时候，往往得把其他的先拿开，否则很难判断自己在做什么；而被拿开的那几只，事后往往放不回原位，那期间它们通道的信息也就丢了。
+演奏时我并不常把电磁拾音器抬起来。为了让它在面板上不会自己滑动，试过多次之后我选了金属 3D 打印的不锈钢电磁拾音器外壳；为了滑动时不发出噪音，我在机箱顶部贴了天鹅绒布，滑动它就成了一种自然而然的直觉。用一只电磁拾音器找声源的时候，往往得把其他的先拿开，否则很难判断自己在做什么；而被拿开的那几只，事后往往放不回原位，那期间它们通道的信息也就丢了。
 
 <br><br>
 
-这台乐器因此有两种状态。一个人弹的时候，手上只有一只电磁拾音器，手移到哪里就听见哪里。至于装置态，我设想过：把面板交给观众，不需要任何技术门槛，每个人都可以伸手进来一起解密和重构这片电磁场，听的人也就不再只是听；但我还没有在展厅里做过。
+这台乐器因此有两种状态。一个人演奏的时候，手上只有一只电磁拾音器，手移到哪里就听见哪里。至于装置态，我设想过：把面板交给观众，不需要任何技术门槛，每个人都可以伸手进来一起解密和重构这片电磁场，听的人也就不再只是听；但我还没有在展厅里做过。
 
 <br><br>
 
@@ -142,7 +142,7 @@ Cathy Van Eck 的 <span style="font-style:italic">Between Air and Electricity: M
 
 <br><br>
 
-开发期间，我买了一批不同类型的天线和电感，逐一测试它们在不同距离、指向下作为电磁扬声器与拾音器的效果后选定了现在用的这一组合。工作量主要在试，不在算。
+开发期间，我买了一批不同类型的天线和电感，逐一测试它们在不同距离、指向下作为电磁扬声器与拾音器的效果后选定了现在用的这一组合。
 
 <br><br>
 
@@ -165,9 +165,6 @@ Cathy Van Eck 的 <span style="font-style:italic">Between Air and Electricity: M
 <span class="work-sec">后完成</span>
 
 这件作品在完成后作为乐器创作了riverrun。
-
-<br><br>
-
 但作为一件乐器，它自己的演奏可能性我还没有充分展开：目前只用它做过这一件作品。
 
 <br><br>

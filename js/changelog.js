@@ -15,6 +15,66 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-09-25',
+      title: {
+        zh: 'riverrun 两处破折号改标点，「——」密度 4.06‰ → 2.70‰，全站不再有超阈页面',
+        en: 'Two dashes in the riverrun text become other punctuation, taking its dash rate from 4.06 to 2.70 per thousand'
+      },
+      brief: {
+        zh: 'riverrun 两处破折号改标点（引同位语换「：」、引转折换「，」，L59 保留），「——」密度 4.06‰ → 2.70‰，全站不再有超阈页面',
+        en: 'Two dashes in the riverrun text take a colon and a comma instead, dropping its dash rate from 4.06 to 2.70 and clearing the site\'s only over-threshold page.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-25',
+      title: {
+        zh: 'riverrun 正文重写七处：译本的「极限」改为「极繁」、删自录声明、造句改为与圣状对话',
+        en: 'Seven rewrites across the riverrun text, from a translation described as maximalist to mixing as dialogue with the sinthome'
+      },
+      brief: {
+        zh: 'riverrun 正文七处改稿：译本从「极限」改为「极繁」、删自录声明、五个版本改五到六个、造句改为与圣状对话；版本数确认为 (5+1)×2=12',
+        en: 'Seven rewrites in the riverrun text, including a maximally-explicit translation, five or six versions per word, and mixing as dialogue with the sinthome.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-25',
+      title: {
+        zh: 'THE INDUCTION MIXER 正文四处定稿；中文覆盖率探针的不确定性修掉',
+        en: 'Four wording changes to THE INDUCTION MIXER, and the Chinese coverage probe stops lying'
+      },
+      brief: {
+        zh: 'THE INDUCTION MIXER 正文四处改稿：弹→演奏×3；修掉 coverage.mjs 的 8／20／36／0 四种结果与挂死，并隔离多会话并发',
+        en: 'Four wording fixes on THE INDUCTION MIXER; the Chinese coverage probe goes from four different answers and a hang to clean runs, and concurrent sessions no longer collide.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-25',
+      title: {
+        zh: 'riverrun 删「两个版本共同的东西是」一句、三个小标题去掉冒号后缀；两种极端的措辞改为中性；「没有硬件的限制」歧义改由作者定稿',
+        en: 'riverrun drops one sentence and the explanatory halves of three headings, its two extremes go neutral, and an ambiguous clause is settled'
+      },
+      brief: {
+        zh: 'riverrun 删「两个版本共同的东西是」一句，三个小标题去掉冒号后缀（保留主标题）；两种极端的措辞两端都曾用贬义词，改为中性描述；「没有硬件的限制」歧义按作者定稿改为「受限于没有原始设计的硬件」',
+        en: 'riverrun loses one sentence and the tails of three headings, its two extremes go neutral, and the ambiguous clause becomes limited by not having the hardware of the original design.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-24',
+      title: {
+        zh: 'riverrun 信息栏与「作品简介」之间删掉一段多余的 <br><br>，间距 80px → 32px',
+        en: 'A stray <br><br> between the riverrun info block and Overview goes, taking the gap from 80px to 32px'
+      },
+      brief: {
+        zh: 'riverrun 信息栏与「作品简介」之间实测 80.09px，源于 .work-meta 的 32px 外边距与一段多余的 <br><br> 叠加；删除后为 32px，verify 653 项全过',
+        en: 'The riverrun info block sat 80.09px above Overview, a 32px margin stacked with a stray <br><br>; removing it brings the gap to 32px, with all 653 checks passing.'
+      },
+      media: ''
+    },
+    {
       date: '2026-09-24',
       title: {
         zh: 'riverrun 动机首句改写、删掉「关系」一节；存档两处数字定案',
