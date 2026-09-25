@@ -86,9 +86,12 @@ spawn(CHROME, [
 0. **推送一律用 SSH**（2026-09-22 定）：远端已是 `git@github.com:Xiehuo0624/Xiehuo0624.github.io.git`，
    直接 `git push` 即可，**不要**再走 `scripts/push.sh` 的 Personal Access Token 流程（那个脚本留着备用）。
 1. **缓存版本号**：按 `STYLEGUIDE.md` 的「缓存版本号规则」决定提不提号；改了带号的文件必须提号，原本无号的文件**不要凭空加号**。
-2. **changelog**：在 `js/changelog.js` 的 `entries` 数组**最前面**加一条，中英各一份，写清「问题 → 成因 → 做法 → 实测验证 → 否决了什么」。中文条目按既有惯例压到 800 字以内。
-   **文本审计类条目**（文案逐句改稿、措辞与术语统一）**正文不超过 50 字**（2026-09-23 作者定）：
-   正文只留「改了哪几页 + 关键实测数字」，逐句依据留在 `docs/` 的工作文档里，不搬进公开日志。
+2. **changelog**：在 `js/changelog.js` 的 `entries` 数组**最前面**加一条，中英各一份。
+   **公开的 `js/changelog.js` 每条只保留 `title` + `brief`**（中文 ≤50 字、英文 ≤30 词，2026-09-23 作者定），
+   `brief` 就是公开页渲染的全部文字；**全文写进本地 `docs/工程决策记录.md`**（`docs/` 已 gitignore，不部署），
+   由 `scripts/changelog-split.mjs` 从 `js/changelog.js` 生成（新条目从 `body` 抽取；已压成 `brief` 的段落原样沿用，重跑不会清空存档）。
+   以后新条目**先写全文、再写 brief**，流程是：**加条目**（带 `body` 全文，写清「问题 → 成因 → 做法 → 实测验证 → 否决了什么」，
+   中文按既有惯例压到 800 字以内）→ **跑 `node scripts/changelog-split.mjs`** → **确认存档更新** → 把 `body` 压成 `brief` 留在公开文件里。
 3. **文档同步**：改动了布局、流程或规范，同步更新 `STYLEGUIDE.md` 与 `程序编写说明.md` 对应章节。
 4. **生成物**：仓库里有三类由脚本产出的文件，改了它们的输入就要重新生成，并用 `--check` 确认无漂移：
    - 作品页：`node scripts/gen-projects.mjs`（输入 `project-template.html`／`js/project-data.js`／`data/*/*.html`）

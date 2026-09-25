@@ -38,12 +38,12 @@
    仍需手改，一致性由 scripts/verify/verify.mjs 第十二节逐字比对兜住。 */
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Regular.woff2?v=ac6d3730') format('woff2');
+  src:url('fonts/SourceHanSansSC-Regular.woff2?v=7b742e47') format('woff2');
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Bold.woff2?v=ac6d3730') format('woff2');
+  src:url('fonts/SourceHanSansSC-Bold.woff2?v=7b742e47') format('woff2');
   font-weight:700;font-style:normal;font-display:swap
 }
 
@@ -74,18 +74,18 @@
    整份思源（295KB）就太贵了 —— 它们一共十几个，单独切一份只有几 KB，字形完全一致。
    src 先列 local()：装了思源黑体／Noto Sans CJK 的机器（Adobe、多数 Linux、Android）
    0 字节用本机同款字体，其余机器才下载这份子集。
-   覆盖 16 个字符：中人南即回大文曹此泻浩火美虾轩返
+   覆盖 13 个字符：中南回大文曹泻浩火美虾轩返
    unicode-range 由脚本按实际字符算出：页面里没有这些字时，连这份子集都不会被请求。 */
 @font-face{
   font-family:'SiteCJK';
   src:local('Source Han Sans SC'),local('Source Han Sans CN'),local('Noto Sans CJK SC'),local('Noto Sans SC'),local('思源黑体'),url('fonts/SiteCJK-Regular.woff2') format('woff2');
-  unicode-range:U+4E2D,U+4EBA,U+5357,U+5373,U+56DE,U+5927,U+6587,U+66F9,U+6B64,U+6CFB,U+6D69,U+706B,U+7F8E,U+867E,U+8F69,U+8FD4;
+  unicode-range:U+4E2D,U+5357,U+56DE,U+5927,U+6587,U+66F9,U+6CFB,U+6D69,U+706B,U+7F8E,U+867E,U+8F69,U+8FD4;
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'SiteCJK';
   src:local('Source Han Sans SC'),local('Source Han Sans CN'),local('Noto Sans CJK SC'),local('Noto Sans SC'),local('思源黑体'),url('fonts/SiteCJK-Bold.woff2') format('woff2');
-  unicode-range:U+4E2D,U+4EBA,U+5357,U+5373,U+56DE,U+5927,U+6587,U+66F9,U+6B64,U+6CFB,U+6D69,U+706B,U+7F8E,U+867E,U+8F69,U+8FD4;
+  unicode-range:U+4E2D,U+5357,U+56DE,U+5927,U+6587,U+66F9,U+6CFB,U+6D69,U+706B,U+7F8E,U+867E,U+8F69,U+8FD4;
   font-weight:700;font-style:normal;font-display:swap
 }
 /* gen:site-cjk:end */

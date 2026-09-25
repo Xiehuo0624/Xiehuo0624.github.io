@@ -9,17 +9,44 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
 
   /* ========================================================
    *  📝 录入区 — 只需编辑这个数组，新条目加在最前面
+   *  每条只有 title + brief（中文 ≤50 字、英文 ≤30 词），brief 是公开页渲染的全部文字。
+   *  全文不在这里：写完全文 → 跑 `node scripts/changelog-split.mjs` 存进本地
+   *  docs/工程决策记录.md（docs/ 已 gitignore，不部署）→ 再压成 brief 留在本文件。
    * ======================================================== */
   const entries = [
+    {
+      date: '2026-09-24',
+      title: {
+        zh: 'riverrun 动机首句改写、删掉「关系」一节；存档两处数字定案',
+        en: 'The riverrun motivation gets a new opening line, the relation section goes, and two archive figures are settled'
+      },
+      brief: {
+        zh: 'riverrun 动机首句改写、删掉「关系」一节；存档 376→384 断言、1447／1450 注明是两次快照',
+        en: 'A new opening line for the riverrun motivation and the removal of the relation section; two archive figures settled at 384 assertions and 1447 to 1450 characters.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-09-24',
+      title: {
+        zh: '公开 changelog 每条只留 title + brief：全文移入本地存档，中文字体子集随之缩小',
+        en: 'The public changelog renders title and brief only, full texts move into a local archive, and the Chinese font subset shrinks with them'
+      },
+      brief: {
+        zh: '公开日志每条只留 title + brief，全文移入本地存档；js/changelog.js 272,843 → 64,816 字节，中文主字体 Regular 279,588 → 239,608 字节',
+        en: 'The public log keeps only title and brief, with full texts archived locally; js/changelog.js fell from 272,843 to 64,816 bytes and the Chinese font from 279,588 to 239,608.'
+      },
+      media: ''
+    },
     {
       date: '2026-09-23',
       title: {
         zh: '三件作品页的简介与动机改由具体经历承担；6U104HP 公开记录补入展会现场',
         en: 'Overviews and motivations on three project pages now carried by concrete experience, and the 6U104HP exhibition record gains what happened on the floor'
       },
-      body: {
-        zh: '6U104HP、THE INDUCTION MIXER、riverrun 三页按作者口述与改稿逐句调整；「——」密度 2.31／2.12／4.51‰；字体、生成器、verify、coverage 均已复核。',
-        en: 'The three project pages were revised sentence by sentence from the author own account; the dash rates now stand at 2.31, 2.12 and 4.51 per thousand, and the fonts, generators, verify and coverage were all rechecked.'
+      brief: {
+        zh: '三件作品页简介与动机按作者口述逐句改稿；「——」密度 2.31／2.12／4.51‰；字体、生成器与 verify、coverage 均复核',
+        en: 'Three project pages were rewritten sentence by sentence from the author\'s account; dash rates are 2.31, 2.12 and 4.51 per thousand, with the fonts, generators and all checks rerun.'
       },
       media: ''
     },
@@ -29,9 +56,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'THE INDUCTION MIXER 的「装置态」改为设想口径（作者确认从未展出过）',
         en: 'The installed state of THE INDUCTION MIXER becomes a stated intention rather than a fact'
       },
-      body: {
-        zh: '① 事实更正：作者确认 THE INDUCTION MIXER 的**装置态从未发生过**（唯一公开记录是 2026.07.01 期末汇报，且只有桌面演示视频），而正文用现在时写「装置态则拆掉了传统音乐界面的技术门槛，让观众用身体直接介入……」——把从未发生的事写成了已实现。与 riverrun 那次更正（未实现的方案写成已实现的作品，会被面试第一个问题击穿）同类。\n② 改法（最小）：只动那半句 ——「装置态则拆掉了…」→「至于装置态，我设想过：拆掉…」，段末补「但我还没有在展厅里做过。」；英文 `it removes` → `it would remove` ＋ `I have not yet shown it in a gallery.`。同段其余措辞本次未动，留待下一批。\n③ 实测：两个生成器重跑后 `--check` 无漂移；`verify.mjs` 653 项全过（含本节新增的 2 项）；`coverage.mjs` 差集为空；中文字体子集与版本号链条由脚本自动更新。\n④ 发现并当场修：`base.css?v=N` 在六份 HTML 之间会静默不一致 —— 脚本提号时取六份里的**最大值**再统一写回（这次起点即 v10 与 v11 混用，被顺手抹平），而检查原先只比对**字体 URL**，不比这个号，它能一直漂到下次重切。按仓库既有分工（书写交脚本、检查独立留 verify）**只加在 verify 第十二节**、不动 `--check`：两条断言 —— 六份的号必须相同、六份都必须有这个号。**实测它会抓到**：故意把 `works.html` 改成 v11，verify 报「✗ 六份 HTML 的 base.css 号（当前 v12 / v11）」，652 通过 / 1 失败、退出码 1；还原后 653 项全过（原 651 ＋ 新增 2）。\n⑤ 否决：整段删掉（演奏态还要用）；「有两种状态」改成「可以有两种状态」（末句已说清时态）；顺手改同段其余措辞（会改两次）。',
-        en: '① Factual correction. The author confirmed that the installed state of The Induction Mixer has never happened: the only public record of the work is the final presentation of 2026.07.01, documented by desk demo videos recorded in a tutor office. The page nevertheless described that state in the present tense, as one that removes the technical threshold of a conventional musical interface and lets an audience step in bodily, which presented something that never took place as something already realised. This is the same class of risk as the earlier riverrun correction, where an unbuilt proposal had been written up as a finished work and would have been punctured by the first interview question.\n② The fix is deliberately minimal: only that half-sentence changed, from the installed state removes to what I have imagined for it, with a closing sentence stating that it has not yet been shown in a gallery; in English, it removes becomes it would remove and the same closing sentence is added. The rest of that paragraph was left alone and awaits a later pass.\n③ Measured: both generators report no drift after rerunning; verify.mjs passes all 653 assertions, including the two added in this entry; coverage.mjs reports an empty difference set; and the Chinese font subset and its version chain were updated by the script.\n④ Found and fixed on the spot: the base.css version number can drift silently between the six HTML files, because the script takes the maximum of the six and writes it back to all of them, as happened here where the starting state mixed v10 and v11. The checks compared only the font URL, never that number, so the drift survived until the next subset rebuild happened to flatten it. Following the established division of labour, in which writing belongs to the script and checking to the verifier, the assertion was added only to section twelve of verify.mjs and not to the script check mode: two assertions, that the six numbers are equal and that all six carry one. Measured that it bites: setting works.html to v11 by hand makes the verifier report the mismatch, with 652 passing and 1 failing and a non-zero exit code; restoring it brings all 653 assertions through, two more than the previous 651.\n⑤ Rejected: deleting the whole paragraph, because the played state still needs it; changing the instrument has two states to it can have two states, since the closing sentence already settles the tense; and touching the rest of that paragraph now, which would mean changing the same sentences twice.'
+      brief: {
+        zh: '装置态从未展出，正文与英文改为设想口径；verify 补 2 项断言后 653 项全过，并抓住六份 HTML 的 base.css 号漂移',
+        en: 'The installed state was never exhibited, so the page was rewritten as imagined; verify added 2 assertions and all 653 pass, catching base.css version drift across six pages.'
       },
       media: ''
     },
@@ -41,9 +68,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '旧地址与 404 的返回按钮指向自己：pageHref 的空串改成 ./，404 页补上 base',
         en: 'The back button on the legacy addresses and the 404 page pointed at the page itself: pageHref stops returning an empty string and the 404 page declares a base'
       },
-      body: {
-        zh: '上一条留档的缺陷，作者看完解释后选了「一并修」。\n**毛病**：`works.html`／`about.html`／`changelog.html`／`project-template.html`／`404.html` 五个页面上，英文界面的「返回」按钮指向**自己**（点了只是重载）；404 页更糟 —— 它由 GH Pages 服务在**任意深度**的不存在路径上，实测 `/works/bogus/` 上返回链接 = 自身、`ALL WORKS` = `/works/bogus/works/`，英文读者被困在 404 页里出不去（页面里静态写的两个出口本来是对的，是脚本一跑把它们改坏的）。\n**成因**：地址写一半时浏览器按「当前这一页的位置」补全，而**空串补出来就是本页**。`App.pageHref(\'index\')` 英文返回空串，只有带 `<base href="/">` 的生成页侥幸没露馅；生成器 `gen-pages.mjs` 里那份同名函数一直写 `./` —— **两份写法不一致**才是根子。中文的 `zh/` 从最外层数恰好正确，所以一直没被发现。\n**做法（两处）**：① `js/app.js` 的首页基准由空串改为 `./`，与生成器那份逐字一致（`./`、`./zh/`）；② 只在 `404.html` 页头补 `<base href="/">`（它可能出现在任意深度，必须从最外层算；本页资源引用本来就全以 `/` 开头，故零影响）。**没有**给五个文件都加 base：实测代价是双击打开会坏 —— 同一句 `../css/base.css`，无 base 时补成 `file:///Users/…/Website/css/base.css`（读出 13 条规则，真的加载了），加 base 后补成 `file:///css/base.css`（`cssRules` 抛 `SecurityError`）。改后 `works`／`about`／`changelog`.html 双击仍可用；返回链接在 `file://` 下落到文件夹目录（文件方式没有「网站」这个概念）。\n**实测**：`verify.mjs` 第十三节扩到旧地址五页与 404 的写死落点 + base 断言，第五节的 404 出口改为比**解析后的路径**（字面写法会随实现变；这一条在修之前真的会失败），**651 项全过**；`coverage.mjs` 差集为空；`mixed-gen.mjs` 33 项全过（旧 `app.js` 配新 `nav.js` 至多退回「返回 = 重载」，不崩）。版本号：`js/app.js` 无号，按规则不凭空加；`changelog.js` v21→v22。\n**否决**：五个文件都加 base（毁掉双击预览）；把返回链接写成 `index.html`（地址栏会留下非规范地址）；只修 404（旧地址的英文返回仍是坏的）。',
-        en: 'The defect recorded in the previous entry was fixed after the author read the explanation and chose to repair it.\nThe symptom: on five pages, works.html, about.html, changelog.html, project-template.html and 404.html, the back button in the English interface pointed at the page itself, so clicking it only reloaded. The 404 page was worse, because GitHub Pages serves it at whatever depth the missing path had; measured at /works/bogus/, its back link resolved to the page itself and its all-works link to /works/bogus/works/, trapping an English reader with no way back into the site. The two exits written statically in that page were correct, and the script broke them by rewriting them.\nThe cause: when an address is written only in part, the browser completes it from the location of the current page, and an empty string completes to the page itself. App.pageHref returned an empty string for the home page in English, and only the generated pages escaped notice because they carry a base element; the helper of the same name inside the page generator had always written a dot-slash. Two spellings of one fact were the root of it. The Chinese form happened to resolve correctly because a relative zh/ counted from the site root is the same as counting from a page that sits at the root, which is why this went unseen for so long.\nThe repair is two small changes. App.pageHref now writes a dot-slash for the home page, matching the generator byte for byte, and 404.html alone gains a base element, since it can appear at any depth and must count from the site root; its own resource references already start with a slash, so the declaration changes nothing else about it. A base element was deliberately not added to all five files: measured, it breaks opening them straight from disk, because the same ../css/base.css completes to a real file under the page directory without it, thirteen rules and all, and to the filesystem root with it, where the stylesheet fails and reading its rules raises a security error. After the change the three content pages still work when double-clicked, though the back link lands on the folder listing there, since opening a file directly has no notion of a site.\nMeasured: the thirteenth section of the verifier grew assertions for the five legacy addresses and for the 404 page, and the older assertion about the 404 exits now compares resolved paths rather than spelling, an assertion that genuinely failed before this change; all 651 assertions pass, the coverage probe reports an empty difference set, and the 33 mixed-generation checks pass, an old app.js paired with a new nav.js degrading at worst to the old reload behaviour. Cache versions: app.js carries none and gains none by the rule, changelog.js moves from twenty-one to twenty-two.\nRejected: a base element in all five files, which would destroy the double-click preview; writing the back link as index.html, which would leave a non-canonical address in the bar; and repairing only the 404 page, which would leave the English back button broken on the legacy addresses.'
+      brief: {
+        zh: '旧地址五页英文返回按钮指向自身，pageHref 空串改 ./，404 页补 base；verify 651 项全过',
+        en: 'Back buttons on five legacy pages pointed at themselves; pageHref now writes ./ and 404 gains a base tag, with all 651 verify assertions passing.'
       },
       media: ''
     },
@@ -53,9 +80,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '子页面按 Esc 返回：目标读返回按钮自己的 href，Lightbox 打开时先让路',
         en: 'Escape returns from any sub-page by following the back button own href, and yields to an open lightbox'
       },
-      body: {
-        zh: '作者要求「增加按 esc 返回的功能」。按约束先问清四件事，作者定为：① 范围 = **所有带返回栏的子页面**（16 个作品页、作品列表、简介、进程日志、404），首页不响应；② 目标**与页面上那个「返回」按钮完全一致**（首页，中文界面 /zh/），不是 `history.back()`；③ Lightbox 打开时**先关它、本次按键不跳页**；④ **不加任何提示**（纯隐藏快捷键）。\n做法：处理器加在 `js/nav.js`（唯一每页都加载、且返回栏就是它渲染的脚本），`nav.js` v5→**v6**，六个手写模板同步提号、两个生成器重跑。三处判断各有理由：**目标直接读 DOM 里那个链接的 `href`，不重算地址** —— 返回栏的去向有三种写法（生成页带 `<base href="/">` 且语言写在路径里，`App.pageHref(\'index\')` 返回空串或 `zh/`；手写模板是相对地址；旧地址还挂 `?lang=`），重算就是第二份真相，迟早与可见按钮漂移，而「按 Esc 等于点它」正是本功能对用户的承诺 —— 读 DOM 则按钮修好、快捷键跟着好；**没有返回栏就不响应**；**Lightbox 打开时让路**（判断 `.lightbox.open`）—— nav.js 的监听器注册在 project.js 之前，不让路就会一次 Esc 既关放大图又离开整页，同时也认 `e.defaultPrevented`，给将来的浮层留出「自己处理」的口子。\n实测（headless Chrome + CDP）：`verify.mjs` 新增**第十三节**（八页中英的落点、首页不响应、Lightbox 两段式 —— 第一次只关图且页面不跳、第二次才回首页、以及「落点 = 按钮 href」这条不变量），断言总数 572 → **638 项全过**；`coverage.mjs` 中日韩差集为空、`mixed-gen.mjs` 全过。\n**发现但本次不改（留档）**：`App.pageHref(\'index\')` 在英文下返回**空串**，而这只有在带 `<base href="/">` 的生成页上才解析成首页 —— `404.html` 与四个手写根模板（`index`／`works`／`about`／`changelog`.html）都没有 `<base>`，于是它们的返回按钮在英文下解析回**自身**（中文的 `zh/` 恰好相对正确，所以一直没被发现）。实测：`/works.html` 的返回链接 = `/works.html?lang=en`（自身，按 Esc 也只是重载）；另用探针（`tmp/ghpages-404-server.py` 模拟 GH Pages 的 404 回退 + `tmp/esc-probe.mjs`）在 `/works/bogus/` 上测得 404 页返回链接 = `/works/bogus/?lang=en`、出口链接 = `/works/bogus/works/`。这是**按钮本身**的缺陷，Esc 只是忠实复现按钮的去向，故只记不改；修法是在这五个文件的 `<head>` 各补一行 `<base href="/">`。\n否决：`history.back()`（会退回站外或毫无反应，且与可见按钮不一致）；首页也让 Esc 响应（与已有的 ← 键重合）；在返回栏写「Esc」提示（作者要纯隐藏）；把处理器放进无版本号的 `app.js`（Esc 是导航行为，归 nav.js）。',
-        en: 'The author asked for Escape to return from a page. Following the repository constraint, four open points were put to the author first, who decided: the shortcut applies to every sub-page that carries the back bar, namely the sixteen project pages, the works list, about, the changelog and the 404 page, while the home page does not respond; its destination is exactly that of the visible back button, the home page, rather than history.back(); when the lightbox is open Escape closes it and does not navigate on that press; and no visible hint is added, so it stays an undocumented shortcut.\nThe handler lives in js/nav.js, the only script loaded on every page and the one that renders the back bar itself, whose version moves from five to six across the six hand-written templates, with both generators rerun. Each of its three guards has a reason. The destination is read from the href of the link already in the DOM rather than recomputed, because the back bar expresses its target in three different ways: generated pages carry a base element and put the language in the path, so App.pageHref returns an empty string or zh/, the hand-written templates use root-relative addresses, and legacy addresses still carry a language parameter. Recomputing it would create a second source of truth that must eventually drift from the visible button, and pressing Escape equalling a click on that button is the whole promise of the feature; reading the DOM means the shortcut is fixed whenever the button is. Pages without a back bar do nothing, since the home page has no such action. An open lightbox takes precedence: nav.js registers its listener before project.js does, so without that check a single press would close the zoomed image and leave the page at the same time, and the handler also honours defaultPrevented so a future overlay can claim the key for itself.\nMeasured with headless Chrome and CDP: a new thirteenth section of verify.mjs covers the destination on eight pages in both languages, the silence of the home page, the two-stage lightbox behaviour in which the first press only closes the image without navigating and the second returns home, and the invariant that the destination equals the button href, taking the assertion count from 572 to 638 with no failures; the coverage probe reports an empty difference set and the mixed-generation drill passes.\nFound but deliberately not changed: App.pageHref returns an empty string for the home page in English, and an empty string only resolves to the home page on pages that carry a base element, which is true of the generated pages but not of 404.html nor the four hand-written root templates. Their back button therefore resolves to the page itself in English, while the Chinese zh/ happens to resolve correctly, which is why this went unnoticed. Measured: the back link on /works.html resolves to /works.html?lang=en, the page itself, so pressing Escape there only reloads it; and a probe that reproduces the GitHub Pages fallback locally measured the 404 page at /works/bogus/ with a back link of /works/bogus/?lang=en and an exit link of /works/bogus/works/. The visible button carries the same defect, so Escape merely reproduces it faithfully, and it is recorded rather than fixed here; the repair is one base element in the head of each of those five files.\nRejected: history.back(), which would leave the site or do nothing when a link is opened directly and would disagree with the visible button; making the home page respond as well, which would duplicate the existing left-arrow key; printing an Escape hint in the back bar, which the author asked to omit; and placing the handler in app.js, which carries no version and is the wrong owner for a navigation behaviour.'
+      brief: {
+        zh: 'Esc 在带返回栏的子页面回首页，目标读按钮自己的 href，Lightbox 打开时先让路；verify 572→638 项全过',
+        en: 'Escape returns from any sub-page with a back bar, reading the button\'s own href and yielding to an open lightbox; verify grew from 572 to 638 assertions.'
       },
       media: ''
     },
@@ -65,9 +92,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '字体版本号链条改成自动：gen-cjk-main.py 用内容哈希一次写全，改中文只需跑一条命令',
         en: 'The font version chain becomes automatic: gen-cjk-main.py writes every reference from a content hash, so changing Chinese copy takes one command'
       },
-      body: {
-        zh: '上一条把字体 URL 的副本从四处降到三处、并加了检查。作者问「怎么办」，选了继续往前一步：**让 `gen-cjk-main.py` 自己走完整条链**。\n现在这条链全自动：重切子集 → 版本号取 **Regular 字形内容的 sha256 前 8 位**（不是递增数字，故内容没变就一个字节都不改，**幂等**，不会白洗缓存）→ 写进 `css/base.css` 的 `@font-face`（Regular + Bold 两处）→ 写进五个手写模板的预载 URL → base.css 内容变了就提它自身的号（6 个 HTML 同步）→ 重跑 `gen-projects.mjs` 与 `gen-pages.mjs`。两个页面生成器仍从 base.css 现读，不需要手改。**以后改了中文文案只需要跑这一条命令。**\n`--check` 也一并升级：除原有的「字形是否覆盖内容」，现在还检查**版本号链条**是否同步，两类原因分开报。实测：改之前 `--check` 报出 7 处待同步（base.css 两处 + 五个模板）并退出 1；正式跑一次即全部写对（`?v=5` → `?v=40c2b5fd`，base.css v7→v8，6 个 HTML 同步）；紧接着再跑一次报「各处版本号已是 `?v=40c2b5fd`，无需改动」，幂等成立；全站清点只剩**一种**字体 URL 与**一种** base.css 号；两个页面生成器 `--check` 无漂移。\n**为什么值得把职责交给脚本**：这条链在一天之内漏了三次 —— 作品页预载漏 `?v=`、五个旧地址模板漏 `?v=`、changelog 文案改了字体却忘提号。第三次是我在修前两次的过程中**自己撞上的**。三次都不是手滑，而是「同一个真相有多份副本、且靠人记」的必然结果。检查能让错误不上线，但只有让脚本成为唯一入口，才能不再产生错误。\n`SiteCJK` 的 URL 仍不带版本号：它字符集很少变，且一变就会改写 base.css 的 `gen:site-cjk` 区块、进而由本脚本提出新的 base.css 号；已写进脚本文件头，若将来频繁变动按同一套哈希办法处理。\n验证：`verify.mjs` 全过、`coverage.mjs` 中日韩差集为空、`gen-cjk-main.py --check` 通过。',
-        en: 'The previous entry reduced the font URL copies from four to three and added a check. Asked what to do about the pattern, the author chose to go one step further: let gen-cjk-main.py walk the whole chain itself.\nThe chain is now automatic. The subset is rebuilt, the version becomes the first eight hex digits of a sha256 over the regular glyph file rather than an incrementing integer, so unchanged content changes nothing at all and reruns are idempotent, and that value is written into both at-rules in css/base.css, into the preload URLs of the five hand-written templates, and, when base.css itself changes, into its own version across six HTML files, after which both page generators run. The generators still read the value from base.css and never need editing, so changing Chinese copy now takes a single command.\nThe check mode was extended alongside: besides asking whether the glyphs still cover the content, it now verifies that the version chain is in sync and reports the two classes of failure separately. Measured before the change, it listed seven references awaiting sync, two in base.css and five templates, and exited non-zero; one real run then wrote them all correctly, moving the font from version five to the hash 40c2b5fd and base.css from seven to eight across six files; an immediately following run reported that every reference already carried that hash, confirming idempotence. A sweep of the repository finds a single font URL form and a single base.css version. Neither page generator reports drift.\nWhy this was worth handing to a script: the chain was missed three times in one day, on the generated project pages, on five legacy templates, and when a changelog entry changed the font without the version following. The third happened while fixing the first two. None was a slip of the hand; all three follow necessarily from one fact living in several copies and being kept in step by memory. A check stops the error from shipping, but only making the script the single entry point stops the error from being created.\nThe SiteCJK URL still carries no version, because its character set rarely changes and when it does the script rewrites the site-cjk region of base.css and the base.css version is raised with it. That reasoning is recorded in the script header, along with the plan to hash it the same way should it start changing often.\nVerified: the full verifier passes, the coverage probe reports an empty difference set, and the font script check mode is clean.'
+      brief: {
+        zh: '字体版本号改由脚本按字形 sha256 前 8 位哈希自动写全；改中文只需跑一条命令，该链一天漏过三次',
+        en: 'Font versions now come from the first 8 hex digits of a glyph sha256, written by one command; the chain had been missed three times in a day.'
       },
       media: ''
     },
@@ -77,9 +104,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '主字体 URL 版本号不再靠记性：两份副本改为现读 base.css，并加 verify 第十二节逐字比对',
         en: 'The main font URL version no longer relies on memory: two copies now read base.css, and a new verifier section compares every reference'
       },
-      body: {
-        zh: '作者指出「这些字体问题自从优化字体后就老跳出来和被遗忘」，要求修掉五个旧地址模板漏掉的 `?v=`，并问怎么办。\n**先修**：`works.html` / `about.html` / `changelog.html` / `404.html` / `project-template.html` 的预载 URL 补上 `?v=4`，全站 31 处字体 URL 归一为同一种（更正上一条说明里的一处口径：`index.html` 本就不预载字体，不在其中）。\n**再治本**。根因是同一个版本号有**四份副本**、且没有任何检查保证一致：① `css/base.css` 的 `@font-face`（权威）、② `scripts/gen-projects.mjs` 的预载常量、③ `scripts/gen-pages.mjs` 的预载常量、④ 五个手写模板的预载（浏览器直接服务这些文件，没有构建步骤能替它们生成）。分两层：**能消的重复就消** —— ②③ 改为 `mainFontHref()` 从 `base.css` 现读、读不到即硬失败，副本降到「一份权威 + 五个只能手改的模板」；**消不掉的重复让脚本记住** —— `verify.mjs` 新增**第十二节**，把 6 个根模板、2 个生成器源码与全部生成页里的每一处字体 URL 与 `base.css` 逐字比对，不一致即失败，并额外按**实际请求**断言 `/works.html?lang=zh`、`/about.html?lang=zh`、`/works/6u104hp/zh/`、`/zh/` 四页的主字体只被请求**一次** —— 请求两次正是前两次事故的症状，这条检查对那两次都会报错。\n**顺带拆掉同一类隐患**：`verify.mjs` 第六节原先写死「最新 changelog 条目的特征词」，改一次代码就要改一次断言、忘改就误报；现改为从 `js/changelog.js` 现读最新一条的标题再与页面比对，零维护。\n实测：两个生成器的重构是纯的 —— `--check` 先报漂移（仅因注入脚本里的注释改了字），重新生成后与旧产物在字体 URL 上逐字一致；全站清点只剩 `?v=4` 一种；`verify.mjs` 与 `coverage.mjs` 全过。\n文档：`STYLEGUIDE.md` 缓存版本号规则下新增「主字体 URL 的一致性」小节（四份副本对照表 + 改动步骤），性能一节的字体条目加了指回该小节的警告；`AGENTS.md` §4 把版本号链条与「改完必须跑 verify 第十二节」写死。\n**提号**：本条目自己的中文就让字体子集再涨 3 字（1456→1459）、字形文件随之改变，而线上已经是 `?v=4`，故字体 URL 提到 **`?v=5`**；`base.css` 内容变了（@font-face 的 URL 与注释），其自身 `?v=6`→**`?v=7`**（6 个 HTML 引用处同步）。**这正是本条要根治的那类连锁：中文文案一改就可能改字体，字体一改就要提两级号。**',
-        en: 'The author observed that font problems keep surfacing and being forgotten since the font optimisation, asked for the version parameter missing from five legacy templates to be fixed, and asked what should be done about the pattern.\nFirst the fix: the preload URLs in works.html, about.html, changelog.html, 404.html and project-template.html gain the missing parameter, bringing all thirty-one font references in the repository to one identical URL. A correction to the previous entry: index.html never preloaded the font and was not among them.\nThen the cause. The same version number existed in four copies with nothing checking that they agreed: the authoritative at-rule in css/base.css, a hardcoded preload constant in each of the two page generators, and the preloads in five hand-written templates that the browser serves directly and no build step can generate for. Two layers of remedy. Duplication that can be removed is removed: both generators now read the URL from base.css through a shared mainFontHref helper that fails loudly if it cannot find it, reducing the copies to one authority plus five templates that can only be edited by hand. Duplication that cannot be removed is instead checked: a new twelfth section of verify.mjs compares every font URL in the six root templates, both generator sources and every generated page against base.css, failing on any difference, and additionally asserts from actual network traffic that the Chinese address works.html, about.html, the generated 6U104HP page and the generated works page each request the main font exactly once. Two requests is precisely the symptom both earlier incidents produced, and this check would have caught both.\nA second instance of the same hazard was removed at the same time: the sixth section of the verifier hardcoded a keyword identifying the newest changelog entry, so every change required editing the assertion and forgetting to do so produced a false alarm. It now reads the newest title out of js/changelog.js and compares it with what the page renders, needing no maintenance.\nMeasured: the generator refactor is behaviour-preserving. The check mode first reported drift caused only by comment text inside the injected script, and after regeneration the font URLs are byte-identical to the previous output. A sweep of the repository finds a single URL form remaining. Both the verifier and the coverage probe pass.\nDocumentation: the cache versioning rules in STYLEGUIDE.md gain a subsection on main font URL consistency, with a table of the four copies and the steps to change the version, and the font bullet under performance points back to it; AGENTS.md section 4 now records the version chain and the requirement to run the new verifier section after any font change.\nCache versions were raised after all: this entry own Chinese text grew the subset from 1456 to 1459 characters and changed the glyph files while version four was already live, so the font URL moves to version five, and base.css, whose contents changed with it, moves from six to seven across its six references. That is precisely the chain this entry set out to tame: changing Chinese copy can change the font, and changing the font costs two version bumps.'
+      brief: {
+        zh: '生成器改为现读 base.css，31 处字体 URL 归一为 ?v=4；verify 第十二节逐字比对，子集提到 1459 字',
+        en: 'Both generators now read the font URL from base.css, all 31 references became ?v=4, and verify section twelve checks every reference; the subset grew to 1459 characters.'
       },
       media: ''
     },
@@ -89,9 +116,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '删除作品信息栏的「本页文字」一行（三件作品），并补回上一次漏掉的字体子集重切',
         en: 'The Page text metadata row is removed from three works, and the CJK subset missed by the previous commit is rebuilt'
       },
-      body: {
-        zh: '作者要求删除作品页信息栏里的「本页文字 / Page text」。这一行不是随手加的：`STYLEGUIDE.md` 把它定义为信息栏**固定八行**之一（记录文案撰写日期），6U104HP、riverrun、The Induction Mixer 三件各有一行。按 AGENTS.md 的约束先问范围，作者定为**三件一并删除、文档改成固定七行**，故 `data/{6u104hp,riverrun,the-induction-mixer}/{zh,en}.html` 共删 6 行；`STYLEGUIDE.md` 的字段顺序由八行改为七行、中英标签表去掉该词，原先「`本页文字` 已记录撰写日期，故正文末尾不再重复标日期」这条改写成「正文不标日期」（沿用既有体例，不再依赖那个字段），并注明「不要再加回来」。\n**顺带查出上一次提交留下的真实缺口**：上一次把 changelog 条目写进 `js/changelog.js` 之后**没有重跑 `gen-cjk-main.py`** —— 而 AGENTS.md §4 明写「改了中文文案就要重跑，否则新字会静默落到系统字体」。这次重跑，子集 **1453 → 1456 字**、Regular **273964 → 274280 字节**，即线上那 3 个新字一直靠系统字体兜着。字形文件既然变了，就按 STYLEGUIDE「缓存版本号规则」把链条走完：字体 URL `?v=3`→`?v=4`（`css/base.css` 两处，以及 `scripts/gen-pages.mjs` 与 `scripts/gen-projects.mjs` 里硬编码的预载 URL —— **三处必须逐字相同**，这正是前一次提交踩过的坑），`base.css` 自身内容变了故 `?v=5`→`?v=6`（六个 HTML 引用处同步：index / works / about / changelog / 404 / project-template）。`base.css` 里那句已经陈旧的注释（写着「当前 1446 字」「带 ?v=2」）一并改准。\n验证：`gen-projects` 与 `gen-pages` 的 `--check` 均无漂移；`verify.mjs` 585 项全过；`coverage.mjs` 中日韩差集为空。\n**发现但本次不改（留档）**：四个旧地址模板（`index` / `works` / `about` / `changelog`.html）与 `404.html` 的字体预载 URL **不带 `?v=`**，与 `base.css` 的 `?v=4` 不是同一个缓存键，这些地址上仍会白下一份 274KB 字体 —— 与前一次提交修掉的作品页问题是同一类，但不在本次范围内，故只记不改。',
-        en: 'The author asked for the Page text row to be removed from the work metadata block. That row was not incidental: STYLEGUIDE.md defined it as one of eight fixed rows recording when the page text was written, and 6U104HP, riverrun and The Induction Mixer each carried one. Following the repository constraint the scope was put to the author first, who chose to remove it from all three works and reduce the documented block to seven rows. Six lines were deleted across data/{6u104hp,riverrun,the-induction-mixer}/{zh,en}.html; STYLEGUIDE.md now lists seven rows in its fixed order, drops the label from the Chinese and English label sets, and rewrites the old rule that justified omitting a date at the end of the body text, which no longer has a field to refer to, adding a note not to reintroduce it.\nThe change also uncovered a real gap left by the previous commit: after writing a changelog entry into js/changelog.js it did not rerun gen-cjk-main.py, although AGENTS.md section 4 states that changing Chinese copy requires it, since otherwise new characters silently fall back to system fonts. Rerunning it grew the subset from 1453 to 1456 characters and the regular face from 273,964 to 274,280 bytes, meaning three characters were being served by system fonts in production. Because the glyph files changed, the version chain in the STYLEGUIDE cache rule had to be followed through: the font URL moves from v3 to v4 in both css/base.css declarations and in the hardcoded preload URLs in gen-pages.mjs and gen-projects.mjs, all three of which must match byte for byte, the trap the previous commit had already hit once; and base.css itself, its contents changed, moves from v5 to v6 across its six HTML references. A stale comment in base.css that still claimed 1,446 characters and version 2 was corrected at the same time.\nVerification: the check mode of both page generators reports no drift, all 585 assertions in verify.mjs pass, and coverage.mjs reports an empty difference set.\nFound but deliberately not changed: the preload URLs in the four legacy templates and 404.html carry no version parameter at all, so they do not share a cache key with base.css and those addresses still download a second 274KB copy of the font. This is the same class of problem fixed for the generated pages in the previous commit, but it lies outside this change, so it is recorded rather than fixed.'
+      brief: {
+        zh: '作品页信息栏删掉「本页文字」一行，三件作品共删 6 行；补跑漏掉的字体子集重切，1453→1456 字，verify 585 项全过',
+        en: 'The Page text row was dropped from three works, six lines in all; the font subset rerun took it from 1453 to 1456 characters, with all 585 assertions passing.'
       },
       media: ''
     },
@@ -101,9 +128,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '6U104HP 参展记录入册：画廊从横滑胶片条改为分组网格，21 张一屏可见',
         en: 'The 6U104HP exhibition record joins the gallery, which moves from a horizontal film strip to grouped grids'
       },
-      body: {
-        zh: '作者要求把「6U104HP机箱参展记录」的照片加进作品画廊，并问「画廊内图像是不是有点太多了，是否建议更改呈现方式」。答案偏多了：原画廊是一条等高横滑胶片条，加到 21 张后横滑约 **15000px（≈18 屏）**，滚动条只有 3px、没有计数与跳转，也看不出还剩多少张。\n① **改法「分两段 + 联系表网格 + 按活动分组」**：`js/project-data.js` 的 6u104hp 把扁平 `media.images` 改成 `sections → groups → images`（产品图 11 张一段；参展记录按四个活动分四组共 10 张）；`js/project.js` 的 gallery 分支改渲染三级网格，**老式的扁平 `media.images`（The Induction Mixer 仍在用）归一成 `[{images}]` 后与它共用同一套代码**，Lightbox 仍在扁平图集上翻页并新增「n / 21」位置指示；`css/project.css` 用 `.gallery-sections/.gallery-group/.gallery-grid` 取代 `.gallery-slider/.gallery-slide`（3 列、移动端 2 列、4px 间距、`aspect-ratio:4/3` + `object-fit:contain`，不裁切不变形）；容器改为 `#gallery-sections`。分组标题是可见文字而媒体只渲染一次，故切语言时**只原地更新文字、不重建网格** —— 重建会丢滚动位置，也会让已解码的图片重新入队下载。\n② **图片**：11 张里作者删掉 1 张，其余 10 张按长边 ≤1600px、q80 转为 WebP（136–288KB/张，合计 2.2MB），原图留档 `img/originals/6u104hp-case/expo/`。**EXIF 旋转是这次踩到的坑**：`2025乐器展1.jpg` 带 `orientation=8`（存横显竖），而 `cwebp` 不读 EXIF、`sips -g orientation` 返回 `<nil>`、`sips -g pixelWidth/Height` 报的也是**存储**尺寸 —— 三处都会骗过检查，直接转会得到横躺的图。实测确认后流程改为「sips 解 PNG → `-r -90` 把旋转烘进像素 → 再 cwebp」，判据改成肉眼看渲染结果，并写进 `STYLEGUIDE.md` §14。\n③ **年份冲突**：照片 09 的背景板写着「2024 全球业界新品首发活动」，而站内文字写的是 Music China 2025.10.22–25。按约束先问作者，确认是**四次**展出（2024／2025 × 乐器展／交流方式），2024 年展第二版、2025 年展第三版；正文与信息栏的「公开记录」据此补全，并注明版次。\n缓存版本：`css/project.css` v5→v6、`js/project.js` v6→v7、`js/project-data.js` v3→v4（`project-template.html` 与 `works.html` 两处引用同步）、`js/changelog.js` v16→v17。`scripts/verify/verify.mjs` 的期望值由 11 图改为 21 图、选择器由 `.gallery-slide img` 改为 `.gallery-grid img`。生成物已按 AGENTS.md §4 重跑：gen-projects（18 个）、gen-pages（7 个）、gen-cjk-main、gen-cjk-extras（字形集合未变，故字体版本号未动）。验证：`verify.mjs` 572 项全过、`coverage.mjs` 中日韩差集为空。\n**否决**：① 只分组、保留胶片条 —— 仍要横拖 18 屏；② 大图舞台 + 缩略图导航条 —— 浏览体验最好，但要新写控件，改动量比本方案大一个量级；③ 网格单元格用 `object-fit:cover` —— 会切掉 4 张竖构图与 7 张宽幅产品图的边角（改成 cover 是一行 CSS，但要改先问作者）。',
-        en: 'The author asked for the 6U104HP exhibition photographs to be added to the work gallery, and asked whether the gallery now held too many images and whether the presentation should change. It did hold too many: the gallery was a single horizontal film strip of equal-height slides, and at 21 images the strip ran to roughly 15,000 pixels, about eighteen screens, behind a three-pixel scrollbar with no counter and no way to jump, so a visitor could not tell how many images remained.\nFirst, the presentation. In js/project-data.js the 6u104hp media moves from a flat media.images array to sections, groups and images: one section of eleven product photographs, and an exhibition record of ten photographs in four groups, one per event. The gallery branch of js/project.js renders the three levels, and the older flat media.images form, still used by The Induction Mixer, is normalised to a single unnamed section so both works share one renderer and one set of styles. The lightbox still pages through the flattened set, and gains an n of 21 position indicator. In css/project.css the film strip classes give way to gallery-sections, gallery-group and gallery-grid: three columns on the desktop, two on mobile, four-pixel gaps, cells at aspect-ratio 4/3 with object-fit contain, so nothing is cropped or distorted. The container becomes gallery-sections. Group labels are visible text while the media is rendered only once, so a language switch updates the label text in place rather than rebuilding the grid, which would lose the scroll position and re-queue images that had already decoded.\nSecond, the images. The author deleted one of the eleven, and the remaining ten were converted to WebP at a long edge of 1600 pixels and quality 80, between 136 and 288 kilobytes each, 2.2 megabytes in total, with originals archived under img/originals/6u104hp-case/expo/. EXIF rotation was the trap here: one photograph carried orientation 8, stored landscape but meant to display portrait, and cwebp ignores EXIF while sips reports both the orientation and the pixel dimensions as nil and stored values respectively, so all three checks are fooled and a direct conversion yields a sideways image. After confirming this by eye the pipeline became: decode to PNG with sips, bake the rotation into the pixels with a minus-90 degree rotate, then convert with cwebp; the criterion is now a visual check of the rendered result rather than command-line output, and STYLEGUIDE section 14 records it.\nThird, a factual conflict. The backdrop in photograph 09 reads 2024 New Product Global Launch while the site text said Music China 2025.10.22 to 25. Following the repository constraint, this was put to the author rather than guessed: there were four exhibitions, in 2024 and 2025 at both Music China and Modular Commune, the second version being shown in 2024 and the third in 2025. The public record in the body text and the metadata block now reflects all four and names the version shown at each.\nCache versions: project.css from five to six, project.js from six to seven, project-data.js from three to four, raised at both referencing sites, and changelog.js from sixteen to seventeen. In the verifier, the expected image count for 6U104HP moves from eleven to twenty-one and the selector from gallery-slide img to gallery-grid img. The generated artifacts were rebuilt per AGENTS.md section 4: eighteen project pages, seven site pages, and both CJK font subsets, the main font being unchanged in coverage and therefore not re-versioned. Verification: all 572 assertions in verify.mjs pass and coverage.mjs reports an empty difference set.\nRejected: keeping the film strip and only grouping the images, which would still require dragging through eighteen screens; a large stage with a thumbnail rail, which browses best but needs a new control and an order of magnitude more work; and object-fit cover in the grid cells, which would crop the corners of four portrait and seven wide product photographs. Switching to cover is a one-line CSS change, but per the repository constraint it should be asked about first.'
+      brief: {
+        zh: '画廊由横滑胶片条改为分组网格，21 张分两段、参展 10 张按四个活动分组，Lightbox 加 n / 21 指示',
+        en: 'Gallery switched from a horizontal film strip to a grouped grid: 21 images in two sections, the 10 exhibition shots in four event groups, plus an n-of-21 lightbox counter.'
       },
       media: ''
     },
@@ -113,9 +140,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品页字体预载 URL 补上 `?v=`：中文作品页冷缓存少下 267.7KB',
         en: 'The work-page font preload gets its ?v=, saving 267.7KB on a Chinese work page'
       },
-      body: {
-        zh: '① 问题：中文作品页冷缓存下把同一份主字体下了两遍。实测（headless Chrome、每页独立无痕上下文）：站内页 `/zh/` 1 次 267.7KB，中文作品页 3 次 809.5KB —— 多出来的那次是同一份 Regular，白下 267.7KB，占该页字体流量的三分之一。\n② 成因：取字体有两条互不相干的路径，而 **HTTP 缓存键是完整 URL（含查询串）**：作品页内联预载写 `…Regular.woff2`，`base.css` 的 `@font-face` 写 `…Regular.woff2?v=2` —— 两个条目，预载下的那份用不上，`@font-face` 按自己的 URL 再下一次。2026-09-22 加 `?v=` 时 `base.css` 与 `gen-pages.mjs` 都加了号，`gen-projects.mjs` 的 `HEAD_SCRIPT` 是硬编码字符串、漏了；此前两边 URL 相同、预载有效。\n③ 做法：把作品页预载 URL 补成与 `base.css` 逐字相同的 `?v=3`，重生成 16 个作品页；注释里写明「改 base.css 字体版本号时这里要一起改」。\n④ 实测：同一探针复测，中文作品页 3 次/809.5KB → **2 次/541.8KB（省 267.7KB）**；站内页与英文页不变（英文页 0 次）；verify 572 项全过、覆盖率 0 缺字、四个生成器 `--check` 无漂移。\n⑤ 否决：去掉预载（首屏中文会先以兜底字体出现再替换）；版本号单一来源（要动两个生成器与文档，与本次诉求不成比例）。\n探针 `tmp/check-font-preload.mjs`（gitignore）留着，改字体版本号后可直接复测。版本号：`changelog` v15→v16；作品页 HTML 无号，不提号。',
-        en: '① The problem. On a cold cache a Chinese work page downloaded the same main font twice. Measured in headless Chrome, each page in its own incognito context: the site page /zh/ made one request of 267.7KB, while a Chinese work page made three totalling 809.5KB — the extra one being the same Regular file, 267.7KB wasted, a third of that page font traffic.\n② The cause. A page fetches its fonts down two independent paths, and **the HTTP cache key is the whole URL including the query string**: the inline preload on work pages asked for …Regular.woff2 while the @font-face rule in css/base.css asked for …Regular.woff2?v=2. Two entries, so the preloaded copy was never used and @font-face fetched its own. The ?v= was added to the main font on 2026-09-22 in base.css and gen-pages.mjs, but the preload in gen-projects.mjs is a hardcoded string in HEAD_SCRIPT and was missed. Before that both sides used the same URL and the preload worked, so this was not a preload that never worked but one that the version bump quietly broke, with nothing in the checks to report it.\n③ The fix. The work-page preload URL now carries the same ?v=3 as base.css, character for character, and the sixteen work pages were regenerated; the comment above it now says that changing the font version in base.css means changing it here too.\n④ Verified with the same probe: a Chinese work page went from three requests and 809.5KB to **two and 541.8KB, 267.7KB less**; the site pages and the English pages are unchanged, the English pages still requesting no main font at all. The 572 assertions pass, the coverage probe finds no missing glyph, and all four generators report no drift under --check.\n⑤ Rejected: dropping the preload, which would stop the duplicate download but leave the font undiscovered until the CSS is parsed, so Chinese text would paint in a fallback face first; and making the version single-sourced from base.css, which is the durable answer but would touch two generators and the docs for a benefit out of proportion to this fix.\nThe probe tmp/check-font-preload.mjs is kept in the gitignored tmp/ so the next font version bump can be re-measured with it. Cache versions: changelog fifteen to sixteen; the work-page HTML carries no version number and none was invented for it.'
+      brief: {
+        zh: '作品页预载 URL 漏了 ?v= 导致主字体重复下载，补成 ?v=3 后中文作品页冷缓存 809.5KB→541.8KB',
+        en: 'Work-page preload URL was missing ?v=, so the main font downloaded twice; adding ?v=3 cut a cold Chinese work page from 809.5KB to 541.8KB.'
       },
       media: ''
     },
@@ -125,9 +152,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'THE INDUCTION MIXER 规格栏补上尺寸：面板322×188mm、箱体厚43.5mm',
         en: 'The Induction Mixer spec line filled in: panel 322×188mm, case 43.5mm thick'
       },
-      body: {
-        zh: '① 缺口：THE INDUCTION MIXER 的「规格」行自 2026-09-20 改名起挂着「面板【尺寸待补】」（英文 `panel [size to come]`）；一件写全了12进4出与全模拟链路的乐器却说不出它多大。`docs/英文文本审计.md` 把它列为**致命**级未完成标记，该文档已同步标为已修。\n② 为什么补不上：只有作者知道，站内推不出 —— `docs/induction-mixer-工程图/` 四张「外壳与传感器设计图」都是效果图（水底合成与桌面渲染），无一处尺寸标注。\n③ 先问清三件会写错的事，作者口径：**宽322 × 深188 × 厚43.5mm**，322 与 188 是演奏面（顶面）的两条边，43.5mm 是**净箱体**厚，不含旋钮与接插件凸出。中文写「面板322×188mm（宽×深）；箱体厚43.5mm」，英文 `panel 322×188mm (W×D); case thickness 43.5mm`；数字不加空格，沿站内写法（`75×75 VESA孔位`）。\n④ 挂在「面板」而非「整机」：面板是这件乐器的核心（12张天线在其内侧、手在其上方移动），中英正文各出现5次，「整机」全站从未出现，与正文同词才对得上号。\n实测：`gen-projects.mjs` 重生成16个作品页后 `--check` 无漂移；headless Chrome 取回中英作品页规格行文本一致（中文侧含 autospace 间距）；「凸」在子集之外，重跑 `gen-cjk-main.py` 补入（1452→1453 字），主字体 `?v=2→3`、`base.css` `?v=4→5`；覆盖率0缺字、572项断言全过。\n否决：写「整机322×188×43.5mm」（与正文用词脱节）；尺寸写进正文（那节讲级联与天线选型）；顺手补旋钮／接插件外形（无实测）。',
-        en: '① The gap. The Specs row of The Induction Mixer carried a placeholder since the rename on 2026-09-20: panel 【尺寸待补】 in Chinese, panel [size to come] in English. A physical instrument that lists twelve inputs and four outputs, twelve PCB antennas and a fully analogue signal path could not say how big it is. The English text audit had flagged this as a fatal unfinished marker and put it in its do-first step, and that document has now been marked up accordingly.\n② Why it stayed empty. Only the author had the number, and nothing on the site yielded it. The four case-and-sensor drawings under docs/induction-mixer-工程图 were examined one by one: all four are renders, wireframe composites over an underwater photograph and a product shot on a desk, with no dimension annotation anywhere, and no work description, riverrun page or course document carries a size either.\n③ Three things that could be got wrong were settled with the author before writing: the order is width 322 by depth 188 by thickness 43.5mm, so 322 and 188 are the two edges of the playing surface and 43.5mm is the bare case thickness, excluding knobs and connectors. The Chinese row therefore reads panel 322×188mm (width by depth), case 43.5mm thick, and the English one panel 322×188mm (W×D); case thickness 43.5mm.\n④ The dimension hangs on the panel rather than the whole instrument because the panel is the heart of the piece: the twelve antennas sit inside it, the hand moves above it, the invisible sources live on it, five mentions in the body of each language, while the word for the complete unit never appears on the site. Using the same word as the body text is what lets a reader connect the two.\n⑤ The numbers follow the site existing typography, as in 75×75 VESA holes and 3.5mm jacks, with no inserted spaces; CJK-Latin spacing is left to autospace.js.\nVerified: regenerating the sixteen static work pages with scripts/gen-projects.mjs leaves no drift under --check; headless Chrome returns the spec row text from both the Chinese and the English page and it matches the source, the Chinese side carrying the usual autospace thin spaces; the character 凸 in the new wording fell outside the subset, so gen-cjk-main.py was rerun (1452 to 1453 characters, one extra glyph) and the main font moved from ?v=2 to ?v=3 with base.css from ?v=4 to ?v=5; the coverage probe reports no missing glyph and the 572 structural assertions pass.\nRejected: writing the whole instrument at 322×188×43.5mm, which would have parted company with the body text; putting the size into the technical section, which covers cascade logic and antenna selection and would only have repeated the field; and adding the maximum envelope over knobs and connectors in the same pass, for which there is no measurement and no estimate pretending to be one.'
+      brief: {
+        zh: '规格栏的【尺寸待补】填成面板322×188mm、箱体厚43.5mm，中英同步，字体补入「凸」字1452→1453',
+        en: 'The Specs placeholder became panel 322×188mm and case thickness 43.5mm; the subset grew 1452 to 1453 glyphs for the character 凸.'
       },
       media: ''
     },
@@ -137,9 +164,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '站内四页也改目录式地址：/zh/、/works/、/about/、/changelog/，并把正文烤进 HTML（含首页的爬取路径）',
         en: 'The four site pages move to directory addresses and bake their content into the HTML, giving crawlers a path from the homepage'
       },
-      body: {
-        zh: '① 地址：这四页原先用 `works.html`、`?lang=zh` 表达页面与语言，与作品页是两套机制。现统一为 `/`、`/zh/`、`/works/`、`/works/zh/`、`/about/`、`/about/zh/`、`/changelog/`、`/changelog/zh/`；旧地址全部保留可用（静态 noindex + canonical 指向新地址）。首页英文规范地址就是 `/`，`/?lang=zh` 由兼容脚本跳到 `/zh/`；规范页的语言只由目录决定，`?lang=` 一律忽略。\n② 内容：这四页正文原先全由 JS 注入，不跑 JS 只看到空容器，硬编码占位还是中文（英文读者看到「关于」「作品列表」「进程日志」）。生成时把该语言内容写进 HTML：简介 8 段正文、作品列表 8 条静态链接、四角导航与返回栏。日志正文刻意不烤（98 条约 200KB × 2 语言，且该页靠点进来读）。\n③ 爬取路径：首页卡片是 `<div>` + JS 点击，爬虫看不到任何站内链接；现在四角导航静态写死，从 `/` 能走到 `/works/` 与各作品页。\n④ 生成器：新增 `scripts/gen-pages.mjs`（模板是根目录那四个 HTML，同时仍是可用的旧地址；`--check` 查漂移）；链接走新的 `App.pageHref()`，混用时退化为 `.html` 地址。\n⑤ 实测：572 项断言、33 项混用演练全过，含「关掉 JS 后每页仍有标题／8 段正文／8 条作品链接」「首页→作品列表→作品页的爬取路径」「旧地址 noindex + canonical」；覆盖率探针 0 缺字。\n⑥ 否决：首页卡片改成 `<a>`（动到拖拽与翻牌，风险不对等）；日志正文全烤（体积不值）。\n版本号：`nav.js` v5、`changelog` v14。',
-        en: '① Addresses. The homepage, works list, about page and changelog used works.html and ?lang=zh to express both the page and the language, a second mechanism alongside the directory addresses of the work pages. They now share one scheme: /, /zh/, /works/, /works/zh/, /about/, /about/zh/, /changelog/ and /changelog/zh/. Every old address still works, carrying a static noindex and a canonical pointing at the new one. The English canonical address of the homepage is / itself, and /?lang=zh is sent on to /zh/ by a small compatibility script; on canonical pages the language is decided by the directory alone and ?lang= is ignored.\n② Content. The body of these four pages was injected entirely by JavaScript, so a crawler that does not run scripts saw empty containers, and the hardcoded placeholders were Chinese, meaning an English reader was shown 关于, 作品列表 and 进程日志. Generation now writes the content of the target language into the HTML: the eight paragraphs of the about page, eight static links on the works list, and the four-corner navigation and the back bar. The changelog body is deliberately left to JavaScript, since its 98 entries would add about 200KB twice over and the page is read by clicking into it.\n③ Crawl path. The homepage cards are div elements driven by click handlers, so a crawler found no internal links there at all; the four-corner navigation is now written statically, which gives a path from / through /works/ to every work page.\n④ Generator. scripts/gen-pages.mjs is new; its templates are the four HTML files in the root, which remain usable as the old addresses, and --check reports drift. Links go through the new App.pageHref(), with a fallback to the .html addresses when a cached old app.js is in play.\n⑤ Verified: 572 assertions pass, including that every page still shows its heading, eight paragraphs and eight work links with JavaScript disabled, that the crawl path from the homepage through the works list to a work page holds, and that the old addresses carry noindex and the right canonical; the coverage probe reports no missing glyphs and the 33 mixed-generation checks pass.\n⑥ Rejected: turning the homepage cards into anchors, which would disturb the drag and flip event handling for a benefit the static navigation already provides, and baking the changelog body, which is not worth its size.\nCache versions: nav.js four to five, changelog thirteen to fourteen.'
+      brief: {
+        zh: '站内四页改目录式地址并保留旧地址，正文烤进 HTML：8 段简介、8 条作品链接，日志 98 条仍走 JS',
+        en: 'Four site pages moved to directory URLs with old addresses kept, and their text is baked into HTML: eight paragraphs, eight work links; the 98-entry changelog stays in JavaScript.'
       },
       media: ''
     },
@@ -149,9 +176,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '中文全量自托管：主字体按站内用字重做（1447 字、更小），导航标签与正文统一字形',
         en: 'All Chinese glyphs are self-hosted again: the main font rebuilt from the site own character set, and the navigation labels unified with the body typeface'
       },
-      body: {
-        zh: '① 中文排版不一致：2026-06 切的中文子集只含 1023 个码位，内容长过它之后 **234 个字静默落到系统字体**（macOS 苹方／Windows 雅黑），同一句话里两种字体混排 —— changelog 缺 82、6u104hp 78、the-induction-mixer 50。\n② 重做主字体：新增 `scripts/gen-cjk-main.py`，从官方 Noto Sans SC 按**站内实际用字**（作品片段、i18n 数据、`project-data.js`、changelog 与页面可见文本）推导后切出 —— 覆盖 1450 字，Regular 274KB／Bold 280KB，**比原来那份 1023 字／302KB 更全也更小**。实测共有字形与官方字体**轮廓逐字节相同**（sha1 全等），故不改变任何原本正常的字；字形文件换了内容，`base.css` 里补了 `?v=2` 缓存键。\n③ 导航标签统一：先前为省 295KB 让语言按钮与返回栏走系统字体；`SiteCJK` 扩到 16 字（3.4KB）后撤掉那条规则，导航与正文同款字形，跨平台不再混排。\n④ 一致性变成可复跑的检查：新增覆盖率探针（26 个页面**渲染出来的**每个中日韩字符 vs 四份自托管字体的 cmap），现为**差集为空**；它当场揪出「阵」字漏在推导范围外（只出现在 `project-data.js` 副标题里）。\n⑤ 意外收获：changelog 英文页折叠态只有 7 个可见汉字，加载只下 3.4KB，**展开含中文的条目才按需拉主字体**（实测）。\n实测：520 项断言 + 33 项混用演练全过；覆盖率 0 缺字。\n版本号：`base.css` v3→v4、`nav.css` v2→v3、主字体 `?v=2`、`changelog` v12→v13。',
-        en: '① Chinese typography was inconsistent, and had been for a while: the subset cut in June 2026 held 1023 codepoints, and once the content outgrew it **234 characters silently fell back to the system font**, PingFang on macOS and Microsoft YaHei on Windows, so a single sentence could mix two typefaces; the changelog was missing 82 characters, 6U104hp 78 and the induction mixer 50.\n② The main font was rebuilt. scripts/gen-cjk-main.py derives the character set from the site own content, the work fragments, the i18n data, project-data.js, the changelog entries and the visible text of the pages, and cuts it from the official Noto Sans SC: 1450 characters, 274KB Regular and 280KB Bold, which covers more than the old 1023-character, 302KB file while being smaller. The 1023 shared glyphs measure byte-identical outlines to the official font, sha1 for sha1, so the replacement changes nothing that already rendered correctly; since the file changed without its URL changing, base.css now carries a ?v=2 cache key.\n③ The navigation labels were unified. They had been moved to the system font to save the 295KB download; with SiteCJK grown to 16 characters and 3.4KB that rule was removed, so the navigation now uses the same typeface as the body and no longer mixes fonts across platforms.\n④ Consistency became a check that can be rerun: a coverage probe compares every CJK character actually rendered on 26 pages against the character maps of the four self-hosted fonts, and the difference is now empty. It immediately caught the character 阵, which only ever appeared in a subtitle inside project-data.js and had been left out of the derivation.\n⑤ An unexpected gain: the English changelog shows only seven CJK characters while its entries are collapsed, so it now loads just 3.4KB, and the full font is fetched on demand when a reader expands an entry containing Chinese; the assumption that this page had to carry the whole file turned out to be wrong.\nVerified: 520 assertions and 33 mixed-generation checks pass, and the coverage probe reports zero missing glyphs.\nCache versions: base.css three to four, nav.css two to three, the main font to ?v=2, changelog twelve to thirteen.'
+      brief: {
+        zh: '旧子集只 1023 码位、234 字落到系统字体；重切主字体 1447→1450 字／274KB，覆盖率差集为空',
+        en: 'The old 1023-codepoint subset left 234 characters in the system font; the rebuilt main font went from 1447 to 1450 characters at 274KB and the coverage difference is now empty.'
       },
       media: ''
     },
@@ -161,9 +188,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '英文页不再为几个汉字下载 295KB 思源：新增 SiteCJK 微型子集与音标 local() 面',
         en: 'English pages stop downloading the 295KB Source Han file for a few characters, via a tiny SiteCJK subset and a local IPA face'
       },
-      body: {
-        zh: '英文侧为几个汉字下载整份 295KB 思源的问题解决了：字体栈的语义是「前者缺字形才轮到后者」，DejaVu 子集没有字形的字符会让浏览器先选中思源，而英文侧这类字符有十几处。\n① 新增 `SiteCJK` 子集（12 字，Regular/Bold 各 4.0KB；`scripts/gen-cjk-extras.py` 从 nav.js 署名与 `data/*/en.html` 推导后切出），排在思源之前、用 `unicode-range` 只声明它真正拥有的字 —— 页面里没有这些字时连它都不会被请求；`src` 先列 `local(\'Source Han Sans SC\')` 等，装了思源／Noto CJK 的机器（Adobe、多数 Linux、Android）0 字节。\n② 音标 ɔ（the-just-type-study 正文里的昵称 `qoɔ`）两个子集都没有字形，改用 `LocalIPA`（只盖 U+0250-02AF 等区段、src 全 `local()`）：0 字节，渲染与改动前逐像素一致。\n③ the-induction-mixer 英文正文的 `【size to come】` 改成英文方括号。\n实测（CDP）：英文页全部不再请求整份思源 —— 首页／riverrun／wwhbh 下 4.1KB 子集，the-just-type-study 与 the-induction-mixer 连子集都不下；changelog 英文页按设计引用约 85 个中文，继续用整份。署名改动前后**截图 sha256 相同**、盒子 96.44×23px 不变。\n否决：改用系统字体（苹方／雅黑）—— 跨平台字形不一致、Windows 上尤其难看；思源并非 macOS／Windows 预装。\n版本号：`base.css` v1→v3、`changelog` v11→v12。',
-        en: 'English pages no longer download the full 295KB Source Han file for a handful of characters. The stack means that a family is only reached when the one before it lacks the glyph, so any character missing from the DejaVu subset sends the browser to Source Han; about fifteen such characters existed on the English side.\n① A SiteCJK subset was added, twelve characters, 4.0KB for each of Regular and Bold, cut by scripts/gen-cjk-extras.py from the signature in nav.js and data/*/en.html, and placed before Source Han with a unicode-range that declares only the glyphs it actually contains, so pages without those characters never request it at all. Its src lists local(\'Source Han Sans SC\') and friends first, which means machines that have Source Han or Noto CJK installed, Adobe users and most Linux and Android systems, render from the local copy at zero bytes.\n② The phonetic character in the JustType Study text, a friend nickname written qoɔ, turns out to exist in neither subset, so it is served by LocalIPA, a face covering only the IPA ranges whose sources are all local(), which costs nothing and renders pixel-identically to before.\n③ The CJK brackets in the English text of the induction mixer page became plain square brackets.\nVerified over CDP: no English page requests the full Source Han file any more, the homepage, riverrun and wwhbh taking the 4.1KB subset and the JustType Study and induction mixer pages not even that; the English changelog still uses the full file, which is correct since it quotes about 85 Chinese characters by design. Screenshots of the signature before and after have identical sha256 hashes and the box stays 96.44 by 23 pixels.\nRejected: substituting a system font such as PingFang or Microsoft YaHei, because the glyphs then differ across platforms and look poor on Windows, and measurement confirms Source Han is not shipped with macOS or Windows.\nCache versions: base.css one to three, changelog eleven to twelve.'
+      brief: {
+        zh: '新增 SiteCJK 12 字子集（Regular/Bold 各 4.0KB）与音标 local() 面，英文页不再为几个汉字拉整份 295KB 思源',
+        en: 'A 12-character SiteCJK subset at 4.0KB each plus a local() IPA face stop English pages from pulling the 295KB Source Han file.'
       },
       media: ''
     },
@@ -173,9 +200,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '英文界面导航文案修复；英文页不再为两个汉字下载 295KB 字体；生成页按布局只挂需要的脚本',
         en: 'English navigation labels fixed, English pages no longer pull a 295KB font for two characters, and generated pages load only the scripts their layout needs'
       },
-      body: {
-        zh: '① 导航文案：英文界面的 works／about／changelog，返回栏与语言按钮显示的是中文那一版。成因是加载顺序 —— 这三页的 `<页面>-i18n.js` 是同步 `<head>` 脚本（为绘制前定 h1 文案），执行时 defer 的 `js/i18n.js` 还没跑，`...App.COMMON_I18N` 展开到 `undefined` 而**静默少掉两个键**，`apply()` 找不到条目就留下硬编码中文。改法：公共字符串只在 i18n.js 定义一处，由 `init()` 合并。\n② 字体：字体栈里思源（子集，295KB）紧跟 DejaVu（子集）之后，**凡是 DejaVu 子集缺字形的字符都会拉下整份思源**，英文界面上首选就是语言按钮的「中文」二字。把语言按钮与返回栏移出思源栈后，正文无此类字符的英文页 **295KB → 0KB**（按钮宽度 82.15px 不变，截图无差异）。余下的下载全由**正文内容**决定（riverrun「此即人人」、wwhbh「南美大虾」、the-induction-mixer 的【】、首页署名、the-just-type-study 的音标 ɔ），属正确行为。\n③ 按布局剪脚本：只被 wwhbh／mixer 用到的三个脚本（未压缩 81KB）不再挂在其余六个作品页；旧地址全挂。\n④ defer 不划算：生成页那两个同步脚本改 defer 后，7 次中位数 FCP 568 vs 588ms，保持同步。\n实测（headless Chrome + CDP）：489 项断言全过（中英九页文案、按请求判定的字体下载、各页脚本集合）。\n版本号：`i18n` v6、`nav.css` v2、`index-i18n` v2、`about-i18n` v4、`project-i18n` v4、`changelog` v11。',
-        en: '① Navigation labels: on the English interface, works, about and changelog showed the Chinese labels for the back link and the language toggle. The cause is load order: those pages load their page-i18n data file as a synchronous head script so the h1 can be written before first paint, which means it runs before the deferred js/i18n.js has defined App.COMMON_I18N, so the spread of that object expanded to undefined and silently dropped the back and langToggle keys, leaving apply() with nothing to write and the hardcoded Chinese defaults on screen. The shared strings are now defined only in js/i18n.js and merged in by init(), and the six data files no longer spread them.\n② The CJK font: the stack runs PlainZero, then the subsetted DejaVu Sans Mono, then the subsetted Source Han Sans SC at 295KB, then Menlo, so any character missing from the DejaVu subset pulls the whole 295KB file; on the English interface the first such characters were the two in the language toggle. Moving the toggle and the back link out of the Source Han stack took the English pages whose text contains no such characters, among them works, about, 404 and most work pages, from 295KB to zero; the toggle measures 82.15px before and after, so nothing shifts, and 3x screenshots are indistinguishable. Every remaining download is now decided by the page content itself, for instance the Chinese names inside the English text of riverrun and wwhbh, the CJK brackets on the induction mixer page, the Chinese signature on the homepage and the phonetic character in the JustType Study text, which is correct behaviour: a single IPA character is enough to trigger the whole file, as measured.\n③ Layout-scoped scripts: the three files only the wwhbh and mixer layouts use, 81KB uncompressed together, are no longer loaded by the other six work pages; the old address still loads everything.\n④ Deferring those two scripts is not worth it: seven-run medians put first contentful paint at 588ms deferred against 568ms as they are, so they stay synchronous, and the measurement is recorded in PERFORMANCE.md.\nVerified in headless Chrome over CDP with 489 assertions passing, covering the labels on nine pages in both languages, per-page font downloads judged at the request level, and the exact script set of every work page.\nCache versions: i18n.js six, nav.css two, index-i18n two, about-i18n four, project-i18n four, changelog eleven.'
+      brief: {
+        zh: '英文导航中文文案因脚本加载顺序少两个键，改由 i18n.js 合并修复；英文页字体 295KB→0KB，三个脚本 81KB 按布局摘除',
+        en: 'English nav labels fell back to Chinese when load order dropped two keys; English pages went from 295KB to 0KB of CJK font, and three scripts (81KB) are layout-scoped.'
       },
       media: ''
     },
@@ -185,9 +212,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品页地址改为目录式 works/<id>/：静态生成 16 页、补全 meta 与预览信息，旧地址保持可用',
         en: 'Work pages move to directory addresses under /works/<id>/: sixteen generated pages with real metadata, old links still work'
       },
-      body: {
-        zh: '作品页地址是 `project-template.html?project=x&lang=zh`。代价在别处：服务器返回的 HTML 里没有作品内容（线上 title 只是 PROJECT），全由 JS 组装 —— 不跑 JS 的抓取者（微信／X 预览、搜索引擎）看到空模板，八个作品共用一个标题，全站无 `og:*`。\n做法：以 `project-template.html` 为唯一模板，新增 `scripts/gen-projects.mjs` 生成 `works/<id>/` 与 `works/<id>/zh/` 共 16 页：`<html>` 写死语言／作品／布局，烤好标题、副标题、正文与主图，剪掉其余五个面板，补齐 description／canonical／hreflang／og。语言改走路径：生成页带 `data-lang-fixed`，不吃 localStorage、不写回 `?lang=`，切换即跳另一语言页。旧地址不删（已发链接不能断）：静态 noindex + `project.js` 补 canonical；另加 sitemap、robots、404 与 `/works/` 转发。\n实测（headless Chrome + CDP）：384 项断言全过（16 页结构与元信息、中英互切、旧地址与 404 分支、零 4xx）；生成器幂等、遇错即停；首屏 LCP 1760→592ms（主图进 HTML，预扫描器提前发现）。\n否决：只改名、删旧地址、副标题拼进标题、meta refresh。\n版本号：`i18n` v4→v5、`nav` v3→v4、`index` v4→v5、`project` v5→v6、`changelog` v9→v10；无号文件不加号，由 `nav.js` 兜底 projectHref。\n文档：`STYLEGUIDE` §7h 等。',
-        en: 'Work pages lived at project-template.html?project=spectral-dissector&lang=zh. The ugly address was the smaller half of it: the HTML the server returns contains no work content at all — fetched from production the title reads PROJECT and the body is the placeholder copy — because every part of the page is assembled by JavaScript after load. Any crawler that does not run JavaScript, which is every link preview in WeChat, X and Slack and every search engine fetch, therefore saw an empty template, with all eight works sharing one title and no og tags anywhere on the site.\\nThe fix keeps project-template.html as the single template and adds scripts/gen-projects.mjs, which generates directory-based static pages, works/<id>/ for English and works/<id>/zh/ for Chinese, sixteen in all. Generation writes into the HTML what JavaScript used to fill in: the language, the project and the layout on the html element, the title, the subtitle, the description body and the hero image baked in place, the five unused layout panels pruned away, and description, canonical, hreflang and Open Graph metadata added. Language now lives in the path: generated pages carry data-lang-fixed, so they neither read localStorage nor write ?lang= back into the address bar, and switching language navigates to the page in the other language. The old address is deliberately kept working, because links already sent must not break: it carries a static noindex and project.js adds a canonical pointing at the directory form. Also new: sitemap.xml, robots.txt, a custom 404.html whose asset paths are absolute because it can be served at any depth, and a /works/ forwarding page.\\nVerified in headless Chrome over CDP, 376 assertions passing: per-page structure and metadata across all sixteen pages, language switching in both directions, the old address with its canonical and its not-found branch, and zero console errors or failing requests; the generator is idempotent and aborts without writing anything when anything is inconsistent.\\nRejected: renaming the file to work.html, deleting the old address, concatenating the subtitle into the title, and redirecting with meta refresh.\\nCache versions: i18n.js four to five, nav.js three to four, index.js four to five, project.js five to six, changelog.js nine to ten; the files that carried no version number were deliberately left without one, and nav.js defines a fallback for projectHref instead.\\nDocs updated: STYLEGUIDE sections 7h, 8, 9 and 10.'
+      brief: {
+        zh: '作品页改由脚本生成 works/<id>/ 静态页 16 个，meta 与主图烤进 HTML，旧地址保留；首屏 LCP 1760→592ms',
+        en: 'Work pages became 16 generated static works/<id>/ pages with baked metadata and hero images; the old address still works and LCP fell from 1760ms to 592ms.'
       },
       media: ''
     },
@@ -197,9 +224,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '首屏文案闪烁：4 个 HTML 的绘制前定文案落地；导航静态化、图片淡入、封面降级经审计否决',
         en: 'First-paint text flashes fixed by deciding text before paint on four pages; static navigation, image fade and cover demotion rejected by audit'
       },
-      body: {
-        zh: '用户反馈「新加载页面时会看到预设样板／中文文案一闪而过」。这次没有凭直觉改，而是先派 4 个独立子 agent 分四个角度审计（双语文案机制、收益代价质疑、首页闪烁、内页导航），每项都在 headless Chrome、150ms RTT / 1.6Mbps 冷缓存下逐帧实测，再按「效果最好、代价最小」落地。\n落地：**只改 4 个 HTML，JS/CSS 一个字节未动，因而 0 个缓存版本号**。① `works.html`／`changelog.html`／`about.html` 把 `js/app.js` 与该页 i18n 数据改为同步 `<head>` 脚本，并在页面末尾加一段同步内联脚本，在**首次绘制前**写入 h1 文案（文案读自 i18n 数据，HTML 不重复一份；元素保留 `data-i18n`，切换语言仍由 `apply()` 接管）。② `index.html` 的 `<title>` 静态写英文（默认语言），紧跟 `<title>` **之后**一段内联脚本在 `lang===\'zh\'` 时改写中文——放在之前会先造出一个 `<title>`，页面就有两个标题元素（实测）。\n实测消除量：changelog 中文「进程日志」**1838ms → 0**（defer 链最后一环是 188KB 的 `changelog.js`）、首页标签页中文标题 **2.7–2.9s → 0**、about「关于」190ms → 0、works「作品列表」150ms → 0。内页刻意不写 `document.title`：静态标题本就是英文，写了反而会把 `i18n.js` 的 `ORIGINAL_TITLE` 改成初始语言，让切换后的标题卡住。\n审计否决、本次**不做**（留档备查）：①「双语文案 span + `html[data-lang]` CSS」——规则若进共享 `base.css`／`nav.css`（4h 缓存），「新 HTML + 旧 CSS」会退化成**中英并排** 132–269ms，还要连累 5 个页面提号；② 首页「图片解码后淡入」——审计实测混用态下 8/8 封面 `opacity:0`、页面变成一叠白卡，我方另测得它把关键 JS 链从 0.6s 拖回 3.8s；③ 首页封面 8×`fetchpriority="high"` 降级——本质是「可见封面晚 0.4s 换扇形展开与交互早 2.5s」的取舍，且依赖真实 CDN 的优先级行为，不在本次诉求内；④ 内页导航静态化——代价 6–7 个文件、10 处提号、3 处硬化脚本与 16–23 行重复标记，漏提 `nav.css` 会让首帧摆出两种语言 0.17–2.1s，比它要修的「导航晚 1.9s」更难看。三个重型脚本（ink/audio/mixer，82.9KB）按需加载同样留档未做。\n审计顺带纠正两个误解：首页「顶层卡」不是 DOM 最后一个子节点——`.card` 没有 z-index/isolation，8 层卡片按 DOM 顺序叠画，可见的是**最靠后且图片已解码的那张**；「卡片兜底文案语言不对」不成立（中英首屏截图 sha256 相同）。',
-        en: 'A reader reported that a freshly loaded page could flash a placeholder template or Chinese text before the real content appeared. Rather than change anything on instinct, four independent audits were commissioned, each taking a different angle: the dual-language CSS mechanism, a challenge to the cost and benefit figures, the homepage, and the inner-page navigation. Every claim was measured frame by frame in headless Chrome at 150ms round trip and 1.6Mbps with a cold cache, and only what gave the best effect for the least cost was kept.\nWhat shipped touches four HTML files and not one byte of JavaScript or CSS, so no cache version needed raising. First, works.html, changelog.html and about.html load js/app.js and their own i18n data synchronously in the head, and a synchronous inline script at the end of each page writes the heading before first paint, reading the text from the i18n data rather than duplicating it in the markup, and leaving data-i18n in place so switching language is still handled by apply. Second, the homepage title is written in English, the default language, with an inline script immediately after the title element rewriting it in Chinese when the language is Chinese; placing that script before the title element would create a second title element, as measurement confirmed.\nMeasured effect: the Chinese heading on the changelog page fell from 1838 milliseconds to nothing, the deferred chain there ending in a 188KB script; the Chinese tab title on the homepage fell from 2.7 to 2.9 seconds to nothing; the about heading from 190 milliseconds, the works heading from 150. The inner pages deliberately leave document.title alone, since their static titles are already English and writing it would change the original title that i18n.js falls back to, leaving the title stuck after a language switch.\nFour audited proposals were rejected and recorded rather than shipped. Bilingual spans with a data-lang CSS rule would degrade to both languages side by side for 132 to 269 milliseconds whenever new HTML met a cached stylesheet, and would have forced version bumps across five pages. The homepage image fade left all eight covers at zero opacity, turning the page into a stack of white cards, when generations were mixed, and separately pushed the critical script chain from 0.6 seconds back to 3.8. Demoting the eight high-priority cover images is a trade of a visible cover 0.4 seconds later against the fan and its interaction 2.5 seconds earlier, and depends on how the real CDN honours priority, so it stays out of scope. Making the inner-page navigation static would cost six or seven files, ten version bumps, three hardening scripts and sixteen to twenty-three lines of duplicated markup, and a missed stylesheet bump would show two languages on the first frame for up to 2.1 seconds, uglier than the 1.9 second delay it set out to fix. Loading the three heavy scripts on demand, 82.9KB between them, is recorded but not done.\nThe audits also corrected two long-standing assumptions: the top card on the homepage is not the last child in the DOM, since the cards carry no z-index or isolation and paint in document order, so the visible one is the last whose image has decoded; and the claim that the card fallback text showed the wrong language was simply untrue, as the Chinese and English first frames hash identically.'
+      brief: {
+        zh: '4 个 HTML 在首次绘制前写入 h1 文案，JS 与 CSS 零改动；changelog 中文标题闪烁 1838ms 归零',
+        en: 'Four HTML files write their headings before first paint with no JS or CSS change, cutting the changelog heading flash from 1838ms to zero.'
       },
       media: ''
     },
@@ -209,9 +236,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品页首屏不再闪出「预设样板」：布局改在首次绘制前定下',
         en: 'The project page no longer flashes its placeholder template: the layout is decided before first paint'
       },
-      body: {
-        zh: '作品页冷加载时会先闪出一屏「预设样板」：灰底 + `[ 演示视频 / 硬件照片 ]` + 空信息栏，几百毫秒后才变成真正的作品页。\n成因不在渲染，而在**布局决定的时机**。六个布局面板全都写在 `project-template.html` 里，而 CSS 只给其中五个设了 `display:none`（`.project-grid` 默认可见），「到底显示哪一个」原先只由 defer 的 `js/project.js` 决定；defer 要等 11 个脚本全部下载完、文档解析结束后才执行，那之前浏览器已经把 grid 样板画在屏幕上了。实测（headless Chrome，冷缓存，150ms RTT / 1.6Mbps）该样板**停留 719ms**；本机 localhost 无延迟时只闪 1 帧，所以只在真机与首次访问显形。\n修复把布局决定提到首次绘制之前：① `js/app.js` + `js/project-data.js`（合计 4.8KB）在项目页改为**同步** `<head>` 脚本，使 `App.projects` 在绘制前可用；② `project-template.html` 末尾加一段**同步内联脚本**，读 `?project=` 写 `<html data-layout>` 并填好标题、副标题、标签页标题（语言直接读前置脚本写好的 `<html data-lang>`，不依赖 i18n.js）；③ `css/project.css` 末尾让六个面板**默认全部隐藏**，只有 `html[data-layout="…"]` 命中的那个显示。\n失败方向是安全的：属性没写上时所有面板保持隐藏（最坏空白一帧），绝不会再闪出样板；`js/project.js` 随后照旧覆盖一遍，行为与改动前一致，404 分支仍是 grid。\n验证：第一帧即 `layout-gallery` + 「6U104HP / A 6/7U 104HP Eurorack power case…」，样板从未出现；首屏时刻 479ms、改动前 494ms（无回归）；8 个作品 + 未知 id 逐一核对面板、标题、标签页标题全部正确；中英切换后副标题不重复、描述随之换语言；riverrun 混音器画布 640×660、wwhbh 麦克风与晕染层、画廊 11 图、返回栏与语言按钮、404 文案均照常；全过程零 JS 异常、零 4xx。缓存版本号：`css/project.css` v4→v5（HTML 内引用处同步提号）。',
-        en: 'A cold load of a project page used to flash a screen of placeholder template first: a grey panel reading [ 演示视频 / 硬件照片 ], an empty info column, and only hundreds of milliseconds later the real work page.\nThe cause was not rendering but the timing of the layout decision. All six layout panels are written into project-template.html, while the stylesheet hides only five of them and leaves .project-grid visible; which one to show was decided solely by the deferred js/project.js, and a deferred script waits for all eleven files to download and the document to be parsed, so the browser had already painted the grid template by then. Measured in headless Chrome with a cold cache at 150ms round trip and 1.6Mbps, the template stayed on screen for 719 milliseconds, and for a single frame on localhost, which is why it only shows on real hardware and first visits.\nThe fix moves the decision ahead of first paint in three parts. First, js/app.js and js/project-data.js, 4.8KB together, became synchronous head scripts on this page so that App.projects is available before painting. Second, a synchronous inline script at the end of project-template.html reads ?project, writes the layout into an html data-layout attribute, and fills in the title, the subtitle and the tab title, taking the language from the data-lang attribute the earlier inline script already set rather than from i18n.js. Third, the end of css/project.css hides all six panels by default and shows only the one matching html[data-layout].\nThe failure direction is safe: with the attribute absent every panel stays hidden, so the worst case is a single blank frame rather than the template flashing again, and js/project.js still overwrites the same values afterwards, leaving behaviour unchanged, including the grid-based not-found branch.\nVerified: the first frame is layout-gallery with 6U104HP and its subtitle, the template never appears, and first paint lands at 479ms against 494ms before, so there is no regression. All eight works plus an unknown id were checked panel by panel, with correct headings and tab titles; switching language leaves exactly one subtitle and swaps the description; the riverrun mixer canvas measures 640 by 660, the wwhbh microphone button and ink layer initialise, the gallery renders eleven images, and the back bar, language button and not-found copy all behave as before, with no JavaScript exceptions and no failing requests. Cache version: css/project.css from four to five, raised in the referencing HTML as well.'
+      brief: {
+        zh: '作品页布局决定提到首次绘制前，6 个面板默认全隐藏，停留 719ms 的样板不再出现；首屏 479ms',
+        en: 'The layout decision moved before first paint: all six panels start hidden, killing the 719ms placeholder flash, with first paint at 479ms against 494ms.'
       },
       media: ''
     },
@@ -221,9 +248,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '事故：新旧 JS 混用导致导航整块不渲染；语言参数传播加兜底，公共字符串并入 i18n.js',
         en: 'Incident: mixed old and new JavaScript left the navigation unrendered; the language helper gained a fallback and the shared strings moved into i18n.js'
       },
-      body: {
-        zh: '上一条提交推送后，**首页四角导航连同右下角语言切换整块消失**。\n成因不是逻辑写错，而是**新旧文件混用**。GitHub Pages 给 `.js` 的响应带 `max-age=14400`（**4 小时**），HTML 只有 `max-age=600`，于是同一节点上同时存在两批 JS：新的 `nav.js` 调用了只在新的 `app.js` 里才有的 `App.langHref`，而访问者拿到的是仍被缓存的**旧 `app.js`**（实测线上 63 字节，本地 768 字节）。调用抛 `TypeError`，`renderIndexNav()` 当场中断，导航与语言切换都没能插入 DOM。\n三层修复：\n① `js/nav.js` 顶部为 `App.langHref` 加兜底定义 —— 允许陈旧 `app.js` 自愈，不再连锁。\n② nav / index / prefetch / project / works 五处调用点改用 `typeof App.langHref === \'function\'` 判空，最坏情况退化为「链接不带语言参数」，绝不连累导航渲染。\n③ `js/i18n-common.js` **并入 `js/i18n.js` 并删除** —— 它只有「返回」「语言切换」四行数据却被五个页面各自引用，一旦留在缓存里，全站按钮文案会是旧的而页面是新的。并入后这段数据与引擎同 URL、同版本号，不再各自漂移。\n教训（已写进 STYLEGUIDE「缓存版本号规则」）：改动了带版本号的 JS 必须同时提号；而**原本无版本号的文件不要凭空加号** —— 加了等于把它从「每次校验」降级为「缓存 4 小时」，反而更易陈旧。本次最终只提了两个真正改动的文件：`i18n.js` v3→v4、`nav.js` v2→v3。',
-        en: 'After the previous commit was pushed, the four-corner navigation on the homepage disappeared entirely, along with the language switch in the bottom right.\nThe cause was not faulty logic but mixed file generations. GitHub Pages serves JavaScript with max-age=14400, four hours, against six hundred seconds for HTML, so two generations of script coexisted: the new nav.js called App.langHref, which only the new app.js defines, while the visitor was served the still-cached old app.js, sixty-three bytes against seven hundred and sixty-eight locally. The call threw a TypeError, renderIndexNav stopped where it stood, and neither the navigation nor the language switch reached the DOM.\nThe fix has three layers.\nFirst, nav.js defines App.langHref as a fallback at the top of the file, letting a stale app.js heal itself instead of propagating the failure.\nSecond, the five call sites in nav, index, prefetch, project and works now test the helper with a typeof check, so the worst case is a link without a language parameter rather than an unrendered navigation.\nThird, js/i18n-common.js was folded into js/i18n.js and deleted. It held four lines of button text, for the back link and the language switch, yet was referenced by all five pages; left in cache it would have shown old labels over new pages. Folded in, the data shares one URL and one version with the engine and can no longer drift.\nThe lesson, now recorded in the style guide under cache versioning: a versioned script that changes must have its version raised, while an unversioned one should not be given a version at all, since that demotes it from revalidation to a four-hour cache and makes staleness likelier. Only the two scripts that actually changed were raised, i18n.js from three to four and nav.js from two to three.'
+      brief: {
+        zh: '线上旧 app.js 只有 63 字节、缺 App.langHref，导航整块不渲染；加兜底并把 i18n-common.js 并入 i18n.js，只提 2 个号',
+        en: 'A cached old app.js of 63 bytes lacked App.langHref and killed the whole navigation; a fallback was added, i18n-common.js folded into i18n.js, and only two versions bumped.'
       },
       media: ''
     },
@@ -233,9 +260,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '语言优先级改为 URL 参数 > localStorage > 默认英文；链接带语言传播，标签页标题随语言切换',
         en: 'Language priority is now URL parameter, then localStorage, then English by default; links carry the language and the tab title follows it'
       },
-      body: {
-        zh: '本站在申请语境下的主版本是英文，但默认语言一直是中文，且语言只存在 localStorage 里 —— 把链接发给别人时，对方永远看到中文版，发链接的人无法控制。这一条修掉这个结构问题。\n① 优先级：**URL `?lang=` > localStorage > 默认 `en`**。默认由 `zh` 改为 `en`；中文仍是一等公民，经 `?lang=zh` 或右下角按钮选择。\n② `_syncUrl()` 用 `history.replaceState` 把当前语言写回地址栏，**保留 `project` 等其它查询参数**（作品页是 `?project=x&lang=zh`）；用 replaceState 以免污染后退历史，`file://` 下会抛错、已忽略。\n③ 新增 `App.langHref()`（`js/app.js`），作为站内链接语言参数传播的**唯一出口**：默认语言不加参数（URL 保持干净的 `works.html`），其它语言以 `?`／`&` 追加。nav / works / project / index / prefetch 五处链接全部改走它 —— 否则中文界面点进作品页会被打回默认英文。\n④ 五个页面的 `<head>` 各加一段**同步内联脚本**，在首次绘制前把语言写进 `<html data-lang>`。必须是同步内联脚本：defer 脚本在首次绘制之后才跑，中文文案会一闪而过。\n⑤ `apply()` 在存在 `siteTitle` 条目时更新 `document.title`。`siteTitle` **只放首页**（`index-i18n.js`），不放进 `COMMON_I18N` —— 放进去会连带覆盖内页各自的标题（ABOUT / WORKS / 作品名）。',
-        en: 'The English version is the primary one for application purposes, yet the default language was Chinese and the choice lived only in localStorage, so anyone sent a link saw Chinese with no way for the sender to control it. This entry fixes that structure.\n① Priority is now the URL parameter, then localStorage, then English by default, English having replaced Chinese as the fallback; Chinese remains a first-class version, reached via ?lang=zh or the corner button.\n② _syncUrl writes the current language back into the address bar with history.replaceState, preserving other query parameters, since a work page reads ?project=x&lang=zh. replaceState keeps the back history clean, and the error thrown under the file protocol is ignored.\n③ App.langHref in js/app.js becomes the single exit for propagating the language through internal links: the default language adds no parameter, so URLs stay clean, while others append one with ? or &. All five link sites, in nav, works, project, index and prefetch, now go through it, without which entering a work page from the Chinese interface would drop back to English.\n④ Each of the five pages gains a synchronous inline script in the head that sets the language on the html element before first paint. It has to be synchronous and inline: a deferred script runs after first paint and the Chinese text would flash.\n⑤ apply updates the document title when a siteTitle entry exists, and that entry is defined only on the homepage rather than in the shared strings, where it would override the individual titles of the inner pages.'
+      brief: {
+        zh: '语言优先级改为 ?lang= 优先、其次 localStorage、默认 en；新增 App.langHref，5 处链接带上语言参数',
+        en: 'Language priority is now the ?lang= parameter, then localStorage, then English by default, with a new App.langHref carrying it through links on five pages.'
       },
       media: ''
     },
@@ -245,9 +272,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '英文界面不再预加载中日韩字体：首屏少下载 599KB',
         en: 'The CJK font is no longer preloaded on the English interface, saving 599KB on first paint'
       },
-      body: {
-        zh: '`SourceHanSansSC` 的 Regular 与 Bold 合计 **599KB**，此前在四个页面被无条件 `preload`。而英文界面的每个字都走 `PlainZero` / `DejaVu Sans Mono`（合计 46KB），思源黑体一个字都用不到 —— 等于让每个英文读者白等半兆字节。\n改为由 `<head>` 的内联脚本按语言条件注入：只在中文界面注入 preload，英文界面完全不发这个请求。CSS 的 `font-family` 栈保持不变，字体仍可经 `unicode-range` 按需补取。\n注入时不带 `fetchpriority=high`：相当于排队等下载，不与 CSS、首屏图片抢带宽。',
-        en: 'The regular and bold weights of SourceHanSansSC total 599KB and used to be preloaded unconditionally on four pages. Every glyph of the English interface comes from PlainZero or DejaVu Sans Mono, 46KB between them, so the CJK face went entirely unused and every English reader waited for half a megabyte to no purpose.\nThe preload is now injected by the inline script in the head according to the language: it appears on the Chinese interface only, and the English interface never issues the request. The CSS font stack is unchanged and the font can still be fetched on demand through unicode-range.\nThe injected link carries no fetchpriority of high, so it queues like any other request rather than competing with the stylesheet and the first images.'
+      brief: {
+        zh: '思源黑体 Regular 与 Bold 合计 599KB 此前在 4 个页面无条件预载，改为仅中文界面注入 preload',
+        en: 'The 599KB SourceHanSansSC preload on four pages is now injected only for Chinese, whose Latin faces total just 46KB.'
       },
       media: ''
     },
@@ -257,9 +284,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '首页四角署名保持汉字；标签页标题用罗马字',
         en: 'The corner signature stays in Chinese characters; the tab title is romanised'
       },
-      body: {
-        zh: '曾把首页四角署名（`.nav-top-right`）也改成随语言切换的罗马字 `Xiehuo · Cao Haoxuan`，现已还原为固定的「泻火 曹浩轩」。\n理由是这两件事性质不同。署名是**作者标识**，与「水火」汉字 logo 同属签名，不是待翻译的正文；审计文档 §3 所指的「英文版残留汉字」是 `photographed by 等香鱼` 那类嵌在**英文句子**里的他人署名，读者会在句中撞上读不懂的字，不适用于作者签自己的名字。名字用哪种形式写，由作者决定。\n标签页标题是另一回事：浏览器历史与地址栏自动补全只认罗马字，纯汉字标题在补全里等于不存在，将来有人想搜作者就找不到入口。故英文界面显示 `Xiehuo — Cao Haoxuan`、中文界面显示「泻火 曹浩轩」。它不参与页面排版，与页面内的汉字署名互不冲突。\n`COMMON_I18N` 中原为署名加的 `siteName` 条目已删除，避免留下无人引用的死键。',
-        en: 'The corner signature on the homepage was briefly changed to a romanised form that followed the language, and has been restored to the fixed Chinese characters.\nThe two are different in kind. A signature is an author mark, belonging with the Chinese-character logo as a signature rather than as text awaiting translation. What section 3 of the audit calls leftover Chinese in the English version means names like "photographed by" followed by Chinese characters inside an English sentence, where a reader runs into glyphs they cannot read, and it does not apply to an author signing their own name. Which form the name takes is the author\'s decision.\nThe tab title is another matter: browser history and address-bar completion recognise roman letters only, so a title in pure Chinese is effectively absent from them and anyone looking for the author later has no way in. The English interface therefore shows Xiehuo — Cao Haoxuan and the Chinese one shows the characters. The title takes no part in the page layout and does not conflict with the signature on the page.\nThe siteName entry added to the shared strings for the signature has been removed, leaving no key without a reference.'
+      brief: {
+        zh: '首页四角署名还原为固定的「泻火 曹浩轩」，仅标签页标题按语言给罗马字；审计文档 §3 的说法不适用于署名',
+        en: 'The homepage corner signature stays the fixed characters, only the tab title goes roman, and the audit\'s section 3 does not cover an author\'s own signature.'
       },
       media: ''
     },
@@ -269,9 +296,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '公开记录更正：两件作品的汇报日期均为 2026.07.01；《声音设计》期末考核不再计入公开记录',
         en: 'Public records corrected: both works were presented on 2026.07.01, and the Sound Design assessment is no longer a public showing'
       },
-      body: {
-        zh: '作者指出两件事。\n① 公开汇报的日期是 **7 月 1 日**，此前两件作品都误作 06.30 —— THE INDUCTION MIXER 与 riverrun 各两处（信息栏「公开记录」行与正文「公开记录」一节），中英文合计八处。\n② **《声音设计》期末考核（方向A，2026.06.26）不算公开记录** —— 那是课程作业，不是公开展示。riverrun 原写作「《声音设计》期末考核（方向A）2026.06.26；音乐工程系期末考试汇报 2026.06.30」，现只保留汇报。\n注意：「声音设计」在 riverrun 页上只出现在公开记录里，所以这次改动之后整页不再提及该课程。它仍是作品的由来，也是另一条 changelog 记述的那次重写所依据的材料；若要保留这个背景，需要另找位置。\n另：记述 riverrun 重写依据的那一条也用了 06.30，已同步改为 07.01 —— 那一条讲的是重写所依据的课程材料，与实际公开记录是两回事。',
-        en: 'Two corrections from the author.\nFirst, the presentation date is 1 July; both works had it as 06.30. THE INDUCTION MIXER and riverrun each carried it in two places, the meta bar row and the body section, eight occurrences in all across the two languages.\nSecond, the Sound Design final assessment of 2026.06.26 does not count as a public showing, being coursework rather than a public presentation. The riverrun record listed both and now keeps only the presentation.\nNote that Sound Design appeared nowhere else on the riverrun page, so after this change the course is no longer mentioned there at all. It remains the origin of the work and the material behind the rewrite recorded in another entry, so preserving that context would need a place found for it.\nThe entry describing the rewrite sources also used 06.30 and has been brought into line; that entry is about the course materials used, which is a different matter from the public record.'
+      brief: {
+        zh: '两件作品的公开汇报日期由 06.30 改为 2026.07.01，中英共 8 处；riverrun 删去 2026.06.26 的课程考核',
+        en: 'Both works\' presentation date changed from 06.30 to 2026.07.01 in eight places across two languages, and riverrun dropped the 2026.06.26 course assessment.'
       },
       media: ''
     },
@@ -281,9 +308,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '导航栏白底改为竖向渐隐并加磨砂：从文字底边开始淡出，底部不再有硬线',
         en: 'Nav bar background changed to a vertical fade with a matching backdrop blur, fading from the text baseline down'
       },
-      body: {
-        zh: '㉞ 导航栏（内页返回栏与首页四角导航）的白底由纯色改为竖向渐隐，并加磨砂。原先是一块 `rgba(255,255,255,.75)` 的纯色板，下沿是一条硬线。\n① 渐隐起点 `--fade-top: 33px` = `8px` 容器 padding-top + `25px` 链接外框高。链接是 **inline 盒**，上下各 `2px` padding 都会撑开容器，`align-items:center` 下弹性行盒就是这个外框，所以按 `2+21+2=25px` 算、而不是只算 21px 的行盒 —— 否则文字下方会多出一段纯色板，与「从文字底边开始渐隐」不符。过渡带 `--fade-blur: 44px`，终点 77px 落在内页 `padding-top:80px` 的标题上沿之前。\n② 纯过渡带不参与排版：padding 改为 `8px 24px calc(8px + var(--fade-blur))`。\n③ 磨砂跟着一起淡出：`::before{backdrop-filter:blur(4px)}` 与白底共用同一组 `mask-image`，否则模糊会在渐隐结束处留下一条硬边。\n④ 移动端起点改为 `calc(max(8px, env(safe-area-inset-top)) + 25px)`，刘海屏下才不会从文字中间开始渐隐。\n⑤ STYLEGUIDE 导航表新增六行；五个页面的 `css/nav.css` 统一加 `?v=1`。',
-        en: '㉞ The nav bar background, on the inner-page back bar and the four corners of the homepage alike, changed from flat colour to a vertical fade with a matching backdrop blur. It used to be a solid plate with a hard line along its bottom.\n① The fade origin is 33px, made of the 8px container padding-top plus a 25px link box height. The link is an inline box, so its 2px top and bottom padding both expand the container, and under align-items:center the flex line box is exactly that outer box; counting 2+21+2 rather than the 21px line box alone matters, because otherwise a strip of flat colour appears below the text. The transition band is 44px, ending at 77px, above the top of the 80px padding-top used by inner-page headings.\n② The transition band takes no part in layout, so the padding became 8px 24px calc(8px + var(--fade-blur)).\n③ The blur fades with it, a before pseudo-element with backdrop blur sharing the same mask gradient, because otherwise the blur leaves a hard edge where the fade ends.\n④ On mobile the origin follows the safe area inset, or the fade would begin in the middle of the text on a notched device.\n⑤ The STYLEGUIDE nav table gains six rows and css/nav.css is versioned across all five pages.'
+      brief: {
+        zh: '导航栏白底改为 33px 起渐隐、44px 过渡带的竖向遮罩，磨砂共用同一遮罩；5 个页面 nav.css 加 ?v=1',
+        en: 'The nav bar background now fades vertically from 33px across a 44px band with the blur sharing one mask, and nav.css is versioned on five pages.'
       },
       media: ''
     },
@@ -293,9 +320,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '接入个人印记 favicon（小篆「水 × 火」白文方印）：站点首次有图标，favicon.ico 的 404 随之消失',
         en: 'Personal mark favicon added, a seal-script water-and-fire white-on-black seal; the site has an icon for the first time and the favicon.ico 404 is gone'
       },
-      body: {
-        zh: '㉟ 站点接入个人印记 favicon —— 一枚小篆「水 × 火」的白文方印。此前站点**没有 favicon**（㉕ 里记过那个 404 无害），本次补上，它随之消失。\n① 字形由**作者手绘草图**定稿：一条长笔从顶上下来，上段是**水的中轴**、到底向右下扫出成火的**捺**；一条左下斜笔是火的**撇**；左上、右上两条短笔是水的两侧笔，正好落在**火的两点**位置。撇捺不在顶点相交，而是各自从中间分头出去。\n② 此前否掉三版：「中轴＋两侧上扬焰笔」读成**三叉戟／船锚**；用「直线＋正弦」强行加波纹，中段鼓成**酒杯／烛台**；S 挤在起笔处，笔画像被**掰了个折角**。结论：水篆的 S 不能靠数学叠加正弦，得按控制点直接画，而且要摊到笔画全长才顺。\n③ 定稿参数：横拉 1.25、笔宽 5.2、**圆头**、两点左移 2、方印白文、等粗。草图本身宽:高 ≈ 0.44，直译进正方印只剩 34/100 宽、四周一大片黑，故横向拉伸 —— 这是对原图比例的主动改动。\n④ 接入：根目录 `favicon.ico`（16/32/48、内嵌 PNG）；`img/logo/` 放 `shuihuo.svg`（内嵌 `prefers-color-scheme`，深色标签栏下自动反相、不会消失）、亮/暗两版与 180/512 PNG；五个页面 `<head>` 在 `<title>` 之后插三条引用。\n⑤ 一个真 bug：`favicon.ico` 目录项里**高度写成了 0**，而 ICO 规范里 0 表示 256，等于声明成 `16×256` 等，与内嵌 PNG 不符；多数浏览器只看宽度能蒙过去。已重打并逐项回读。\n⑥ 设计文件与生成器留在 `docs/水火-logo/`（`docs/` 已 gitignore，不参与部署）。',
-        en: '㉟ The site gains a personal mark as its favicon, a seal-script water-and-fire character cut white out of a black square. The site had no favicon before this, its 404 having been recorded as harmless in ㉕, and that 404 is now gone.\n① The form was settled by a hand sketch from the author. A single long stroke comes down from the top, its upper part the central current of water, sweeping out to the lower right as the right leg of fire; a stroke slanting to the lower left is the left leg; and two short strokes, upper left and upper right, are the side strokes of water sitting exactly where the two dots of fire belong. The legs do not meet at an apex but leave separately from the middle.\n② Three earlier versions were rejected: an upright stem with flame strokes rising to either side read as a trident or an anchor; forcing a wave on with a straight line plus a sine curve bulged the middle into a goblet; and crowding the S into the opening made the stroke look snapped. The S of seal-script water has to be drawn through control points and spread over the whole length of the stroke.\n③ Final parameters: horizontal stretch 1.25, stroke width 5.2, round caps, both dots shifted left by 2, white-on-black seal, uniform width. The sketch is about 0.44 wide to tall and would occupy only 34 of 100 units in a square seal, hence the stretch, which is a deliberate change to the proportions of the original drawing.\n④ Integration: favicon.ico at the root with three embedded PNGs; img/logo holds the SVG with an embedded prefers-color-scheme rule so it inverts on a dark tab bar, light and dark variants, and 180 and 512 PNGs; and all five pages carry three link elements after the title.\n⑤ One genuine bug: the height field of each directory entry was written as 0, and in the ICO format 0 means 256, so the file disagreed with its embedded PNGs; most browsers look only at the width and get away with it. The file was rebuilt and read back entry by entry.\n⑥ The design files and generator stay in docs, which is gitignored and does not deploy.'
+      brief: {
+        zh: '新增小篆「水 × 火」白文方印 favicon：横拉 1.25、笔宽 5.2，根目录 ico 含 16/32/48 三种尺寸，404 消失',
+        en: 'A seal-script water-and-fire mark became the favicon, stretched 1.25 with a 5.2 stroke width and 16/32/48 sizes in the root ico, ending the 404.'
       },
       media: ''
     },
@@ -305,9 +332,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '补齐改名那批漏掉的缓存版本号：回访者曾会拿到旧的 project-data.js，作品列表仍显示旧名且描述为空',
         en: 'Missing cache versions from the rename batch filled in; returning visitors would have received the old project-data.js with the old name and an empty description'
       },
-      body: {
-        zh: '㊱ 改名那批漏掉的缓存版本号补齐。改名让 `js/project-data.js`、`css/project.css`、`js/about-i18n.js`、`js/mixer-riverrun.js` 都变了内容，但它们在 HTML 里的 `?v=` 没跟着动。\n风险是具体的：回访者在缓存过期前会拿到**旧的 `js/project-data.js`**，作品列表里那件作品还叫 THE FET MIXER，点进去因为 `data/the-fet-mixer/` 已经不存在，描述是空的。\n已补：`css/project.css` v2→v3、`js/project-data.js` v2→v3（两处）、`js/about-i18n.js` v2→v3、`js/mixer-riverrun.js` v4→v5；另有 `js/changelog.js` 与 `js/index-i18n.js` 原本**完全没有版本号**，一并补 `?v=1`。',
-        en: '㊱ The cache versions missed by the rename batch were filled in. The rename changed the contents of four assets, but the ?v= values referencing them in the HTML did not move with them.\nThe risk was concrete: until the cache expired a returning visitor would receive the old project-data.js, in which the work is still called THE FET MIXER, and following it would show an empty description because the old data directory no longer exists.\nFilled in: project.css from v2 to v3, project-data.js from v2 to v3 in both places, about-i18n.js from v2 to v3, and mixer-riverrun.js from v4 to v5. The changelog and index-i18n scripts had no version parameter at all and gained one.'
+      brief: {
+        zh: '改名后四个资源的缓存号没跟着动，回访者会拿到旧的 project-data.js；现补齐 v3 与 v5，两个脚本补 v1',
+        en: 'Four renamed assets kept stale cache versions, so returning visitors got the old project-data.js; they now read v3 and v5, and two scripts gained v1.'
       },
       media: ''
     },
@@ -317,9 +344,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品信息栏上下两条分割线改为等距：描述以信息栏开头时，标题下边距由 24px 收窄为 14px（移动 12px）',
         en: 'Equalised the two rules around the work-metadata block: when a description opens with the block, the heading margin-bottom drops from 24px to 14px (12px on mobile)'
       },
-      body: {
-        zh: '① 问题（作者指出「这些内容上侧的分割线距离太远，与下方的分割线距离不均匀」）：信息栏夹在两条 3px 横线之间——上面是标题（h2）的 `border-bottom`，下面是信息栏自己的 `border-bottom`。上距由标题的 `margin-bottom:24px` 决定，下距由信息栏的 `padding-bottom:14px` 决定，两者本来就差 10px；再叠加行盒半行距与汉字／拉丁字母字形高度的差，1440px 下渲染实测为中文 28 / 19px、英文 29 / 17px，肉眼可见。\n② 改法：用 CSS 的 `:has()` 判断描述片段是否以信息栏开头，是则把该情形下标题的下边距收到与信息栏 `padding-bottom` 相同的值（桌面 14px、移动 12px），使上下都约 19px。选择器写在 `css/project.css` 信息栏一节，覆盖三种带标题下边框的布局：`.info-area h2`、`.gallery-body h2`、`.edge-body h2`，各自带 `+ #…-desc > .work-meta`。不用「给信息栏加负上边距」的写法：负边距要靠 `<p>` 的边距合并才生效，而 `.work-meta` 是 grid 容器，是否参与合并取决于浏览器实现；直接改标题自身的 `margin-bottom` 没有这层不确定性。`:has()` 不匹配时（描述不是以信息栏开头，或浏览器不支持该选择器）维持标题原有的 24px，即退回改动前的样子，不会更糟。mixer 布局（riverrun）没有标题下边框，上线框是 `.mixer-desc` 自己的边框、间距由该容器 `padding-top:14px` 给出，本来就与信息栏下内距相等，故不在覆盖范围内。\n③ 验证：无头 Chrome 截图后逐像素量线（脚本直接解 PNG，取长横线行与墨迹行，不靠目测）。改前中文 28 / 19px、英文 29 / 17px；改后中文 18 / 19px、英文 19 / 17px。剩下的 1–2px 是字形本身造成的（中文首行顶端是汉字、英文是大写字母顶；英文末行有 p／g 这类降部），无法用边距消掉。\n④ 缓存版本：`css/project.css` v3 → v4（`project-template.html`）。\n⑤ 文档同步：`STYLEGUIDE.md`「作品信息栏」一节改正了一处早已失效的记录（原文写「上下 `3px solid #000`；`padding:14px 0`」，实际只有下边框、只有下侧 14px 内距——上边框在首版实现时就去掉了，这行没跟着改），并补入等距规则、`:has()` 的写法、以及「该间距值必须与信息栏 `padding-bottom` 成对修改」这一条。',
-        en: '① The problem (reported by the author: "the rule above this content is too far away, and unevenly spaced from the rule below"). The metadata block sits between two 3px rules: the heading (h2) `border-bottom` above it and the block own `border-bottom` below it. The upper distance comes from the heading `margin-bottom:24px`, the lower from the block `padding-bottom:14px`, so the two already differ by 10px; adding the half-leading of the line box and the difference between hanzi and Latin glyph heights, the rendered distances at 1440px measure 28 / 19px in Chinese and 29 / 17px in English — plainly visible.\n② The fix: CSS `:has()` tests whether the description fragment opens with the metadata block, and in that case the heading margin-bottom becomes the same value as the block padding-bottom (14px desktop, 12px mobile), leaving roughly 19px above and below. The selectors live in the metadata section of `css/project.css` and cover the three layouts whose heading carries a bottom border: `.info-area h2`, `.gallery-body h2` and `.edge-body h2`, each with `+ #…-desc > .work-meta`. A negative top margin on the block was rejected: it only takes effect through margin collapsing with the `<p>`, and `.work-meta` is a grid container, so whether it collapses at all is implementation-dependent; changing the heading own `margin-bottom` carries no such uncertainty. When `:has()` does not match — a description that does not open with the block, or a browser without support — the original 24px stands, so the fallback is the previous appearance rather than something worse. The mixer layout (riverrun) has no heading bottom border: its upper rule is the `.mixer-desc` border, with the gap given by that container `padding-top:14px`, already equal to the block padding-bottom, so it is deliberately outside this rule.\n③ Verification: headless Chrome screenshots, then the rules and ink rows measured pixel by pixel by decoding the PNG directly rather than by eye. Before: 28 / 19px Chinese, 29 / 17px English. After: 18 / 19px and 19 / 17px. The remaining 1-2px is glyph geometry (the Chinese first line is topped by hanzi and the English by capitals; the English last line carries p and g descenders) and cannot be removed with margins.\n④ Cache version: `css/project.css` v3 to v4 (`project-template.html`).\n⑤ Docs in step: the work-metadata section of `STYLEGUIDE.md` corrected a long-stale row (it still read "3px solid #000 top and bottom; padding:14px 0" when there is only a bottom border and only a 14px bottom padding — the top border was removed in the first implementation and that row was never updated), and now records the equal-distance rule, the `:has()` form, and the requirement that this gap value and the block `padding-bottom` be changed as a pair.'
+      brief: {
+        zh: '信息栏上下分割线不等距，标题下边距由 24px 收到 14px（移动 12px）；实测中文 28/19px 变 18/19px',
+        en: 'The rules above and below the metadata bar were uneven; the heading margin drops from 24px to 14px (12px mobile), taking Chinese from 28/19px to 18/19px.'
       },
       media: ''
     },
@@ -329,9 +356,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '首页支持鼠标拖拽翻牌（与触摸同一套判定），含五层防误触',
         en: 'Homepage card stack now supports mouse-drag flipping (same logic as touch) with five anti-mistouch safeguards'
       },
-      body: {
-        zh: '此前首页只有触摸滑动能翻牌，鼠标按住拖动毫无反应（桌面端要翻牌只能用滚轮、键盘或点击非顶层卡片）。现在鼠标拖拽与触摸完全同权：按下记起点、松手算位移，两者交给同一个 `swipeBy(dx, dy)` 判定，方向规则不可能出现分叉——主导轴为水平时向左＝下一张、向右＝上一张，主导轴为垂直时向上＝下一张、向下＝上一张，阈值同为 50px。\n鼠标有点击语义冲突（触摸没有），因此配了五层防误触：\n① 只在卡片堆上起手，且只认左键 —— 页面别处的鼠标拖动是选字、拖链接，不该翻牌；右键/中键直接忽略。\n② 位移不足 8px（DRAG_ARM_PX）视为手抖，不进入拖拽状态：人手点击天然有几像素抖动，这种抖动必须仍是点击，click 照常派发、正常打开作品页（实测 5px 抖动 → 打开顶层作品）。\n③ 一旦进入拖拽状态，松手位移不足 50px 不翻牌，且紧随其后的一次 click 一律丢弃 —— 这是鼠标端最容易出现的误触：「按住拖了一下但没到阈值」若按点击处理，就会顺手把顶层作品打开。丢弃用 suppressClick 标志实现，每次 mousedown 重新计一次点击资格，不依赖计时窗口，也不会误伤下一次真实点击。\n④ 拖出去再拖回原位＝取消：判定只看松手时的位移，不看过程中的最大位移，中途反悔可以拖回来。\n⑤ 窗口失焦复位：鼠标在窗口外松开时收不到 mouseup，window 的 blur 兜底清掉拖拽状态，避免光标卡在 grabbing。\n反馈：手势成立后给 #stack 加 .dragging，css/index.css 据此把卡片光标由 pointer 换成 grabbing；静止时仍是 pointer，因为卡片的主操作是「点开」而非「拖动」，不该在常态下就给出可拖拽的错觉。\n实现位置：js/index.js 新增「SWIPE：触摸与鼠标共用的翻牌判定」与「MOUSE DRAG」两节，原触摸分支的方向判定改调 swipeBy()（行为等价，仅去重）；css/index.css 新增 .stack-wrap.dragging .card{cursor:grabbing}；index.html 缓存版本 js/index.js v2→v3、css/index.css v3→v4。\n验证：headless Chrome（153）经 CDP 合成鼠标/触摸事件，逐项隔离测试（每项新开页面）。拖拽 80px：左→下一张、右→上一张、上→下一张、下→上一张（各方向前后顶层作品名均已核对）；2px/5px 抖动仍是点击并成功进入作品页；20px 拖拽（已过 arm 阈值但不足 50px）不翻牌、不跳转；拖出去再拖回原位不翻牌；右键拖动与在卡片堆外（页面右下角空白）拖动均完全无反应；拖拽成立时光标 grabbing、松手后 pointer、blur 后状态复位；触摸滑动、滚轮、方向键翻牌均不受影响；全程零 JS 异常。文档同步：STYLEGUIDE §3 卡片堆叠表新增「鼠标拖拽翻牌」「拖拽光标」两行；程序编写说明 §6.5 改为「五种交互方式」并补共用判定与防误触说明、总结第 4 条同步。',
-        en: 'Previously only touch swipes could flip the homepage cards — pressing and dragging with a mouse did nothing (desktop flipping was limited to the wheel, the keyboard, or clicking a non-top card). Mouse drag now has full parity with touch: both record a start point, measure the release offset, and hand it to the same `swipeBy(dx, dy)`, so the direction rules cannot diverge — on the dominant horizontal axis left = next and right = previous; on the dominant vertical axis up = next and down = previous; the threshold is 50px for both.\nBecause a mouse also carries click semantics (touch does not), five anti-mistouch safeguards were added:\n① The gesture only starts on the card stack and only with the left button — mouse drags elsewhere on the page are text selection or link dragging and must not flip cards; right/middle button drags are ignored outright.\n② Movement under 8px (DRAG_ARM_PX) counts as hand tremor and never enters the drag state: a hand click naturally wobbles a few pixels, and that wobble must remain a click, so the click still fires and opens the work (verified: a 5px tremor opens the top work).\n③ Once the drag state is entered, a release under 50px does not flip, and the click that immediately follows is discarded — the most likely mouse-side mistake is "pressed and dragged a little, but not far enough", which, if treated as a click, would open the top work by accident. Discarding uses a suppressClick flag that is re-armed on every mousedown; it relies on no timing window and cannot swallow a later genuine click.\n④ Dragging out and back to the origin cancels: only the release offset counts, not the maximum offset along the way, so the gesture can be aborted mid-flight.\n⑤ Blur resets the drag state: a mouse released outside the window never delivers mouseup, so a window blur listener clears the state and keeps the cursor from sticking in grabbing.\nFeedback: once the gesture is established, #stack gets a .dragging class and css/index.css switches the card cursor from pointer to grabbing; at rest it stays pointer, because a card\'s primary action is opening, not dragging, and it should not advertise draggability by default.\nImplementation: js/index.js gains a "SWIPE: shared flip decision for touch and mouse" section and a "MOUSE DRAG" section, and the touch branch now calls swipeBy() (behavior-equivalent, merely de-duplicated); css/index.css gains .stack-wrap.dragging .card{cursor:grabbing}; index.html cache versions move js/index.js v2→v3 and css/index.css v3→v4.\nVerification: headless Chrome (153) driven over CDP with synthesized mouse and touch events, each case isolated in a fresh page. 80px drags: left → next, right → previous, up → next, down → previous (top-work identity checked before and after in every direction); 2px and 5px tremors still click and successfully open the work page; a 20px drag (past the arm threshold but under 50px) neither flips nor navigates; dragging out and back does not flip; right-button drags and drags outside the stack (empty page corner) do nothing at all; the cursor is grabbing while armed and pointer after release, and blur resets the state; touch swipe, wheel and arrow keys all still flip; zero JS exceptions throughout. Docs updated: STYLEGUIDE §3 card-stack table gains "mouse drag to flip" and "drag cursor" rows; 程序编写说明 §6.5 is now "five interaction methods" with the shared decision logic and anti-mistouch notes, and summary item 4 was synchronized.'
+      brief: {
+        zh: '鼠标拖拽与触摸共用 swipeBy 判定，阈值 50px，另有 8px 手抖门槛等 5 层防误触',
+        en: 'Mouse drag now shares swipeBy with touch at a 50px threshold and an 8px tremor guard, in five anti-mistouch layers.'
       },
       media: ''
     },
@@ -341,9 +368,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '修复语言切换「点到中文/English 字样切不了，只是在拖」与首页卡片图片可被鼠标拖拽',
         en: 'Fixed the language toggle ("clicking 中文/English drags instead of switching") and draggable homepage card images'
       },
-      body: {
-        zh: '两个现象同一个根因：浏览器原生拖拽（drag-and-drop）。原生拖拽一旦启动，mouseup 就不再派发 click，挂在 document 上的 i18n click 委托因此收不到事件。\n① 内页语言切换：#lang-toggle 是 <a href="#">，而链接在浏览器里默认可拖拽。在 [en] English / [zh] 中文 的字样上按下鼠标，只要移动几像素（人手点击时的自然抖动）就进入链接拖拽手势，实测派发序列为 mousedown → dragstart → dragend 而独缺 click，语言停着不动；该按钮又只有 0 6px 的水平点击区，字与字之间没有余量，故实际使用时极易命中。\n② 首页卡片图片：卡片封面 <img> 同样是默认拖拽源，按住拖动会拖出半透明幽灵图，并且同样吞掉 click——卡片既打不开、也不翻页。\n修复分三层。css/nav.css：五个导航容器（.back a、.nav-top-left a、.nav-top-right、.nav-bottom-left a、.nav-bottom-right a）统一 user-select:none + -webkit-user-drag:none，导航文字是 UI 标签而非可复制正文，禁用选择同时消除拖选高亮。css/base.css：全站 <img> 加 -webkit-user-drag:none 与 user-select:none。js/nav.js 末尾：document 上加捕获阶段的 dragstart 监听，对图片与五个导航容器内的元素 preventDefault，兜底 Firefox（不支持 -webkit-user-drag）以及项目页运行时插入的图片（js/project.js 的 gallery/ecce/edge 渲染，不带 draggable 属性）。只拦图片与导航 UI，正文里的下载链接、相关作品链接保持默认可拖，把链接拖到桌面存文件仍是有效操作。\n验证：headless Chrome（Chrome 153）经 CDP 合成鼠标事件实测。修复前在 #lang-toggle 上 mousedown + 移动 5px 只派发 mousedown/dragstart/dragend（语言 zh 不变），修复后为 mousedown/mouseup/click（zh → en 切换成功，再拖动 20px 仍能切回）；首页卡片图上拖动 40px 修复前派发 dragstart/dragend，修复后无 dragstart，且带 3px 抖动的点击能正常跳到该卡片的 data-href。守卫范围实测：导航 UI 的合成 dragstart 被 preventDefault，正文 .works-item 链接与页面文字不受影响。缓存版本号：css/base.css、css/nav.css、js/nav.js 在五个页面统一加 ?v=1，changelog.js v1→v2。文档同步：STYLEGUIDE §1 全局基础、§2 导航、§3 卡片图片、§8 i18n、§9 文件结构；程序编写说明 §5.4 事件委托、§12.2 全局基础、§16 关键代码索引。',
-        en: 'Both symptoms share one root cause: native browser drag-and-drop, which suppresses the click event on mouseup — so the i18n engine\'s document-level click delegation never fires.\n① Subpage language toggle: #lang-toggle is an <a href="#">, and links are draggable by default. Pressing the mouse on the [en] English / [zh] 中文 glyphs and moving a few pixels (the natural tremor of a hand click) starts a link drag; the observed sequence is mousedown → dragstart → dragend with no click, and the language does not change. The button also has only 0 6px of horizontal hit area, so there is no slack around the glyphs.\n② Homepage card images: the cover <img> is likewise a default drag source — dragging it produces the translucent drag ghost and also swallows the click, so a card neither opens nor flips.\nThree layers of fix. css/nav.css: all five nav containers (.back a, .nav-top-left a, .nav-top-right, .nav-bottom-left a, .nav-bottom-right a) get user-select:none + -webkit-user-drag:none — nav labels are UI chrome, not copyable body text, and disabling selection also removes the drag-select highlight. css/base.css: every <img> gets -webkit-user-drag:none and user-select:none. js/nav.js: a capture-phase document dragstart listener preventDefaults drags on images and on elements inside the five nav containers, covering Firefox (which does not support -webkit-user-drag) and the images project pages insert at runtime (the gallery/ecce/edge rendering in js/project.js, which carry no draggable attribute). Only images and nav UI are blocked: download links and related-work links in the body stay draggable, so dragging a link to the desktop to save a file still works.\nVerification: headless Chrome (Chrome 153) driven over CDP with synthesized mouse events. Before the fix, mousedown plus a 5px move on #lang-toggle dispatched only mousedown/dragstart/dragend (language unchanged at zh); after the fix it dispatches mousedown/mouseup/click (zh → en, and a further 20px drag switches it back). Dragging 40px across a homepage card image dispatched dragstart/dragend before and none after, and a click with 3px of tremor now navigates to the card\'s data-href. Guard scope verified: synthetic dragstart on nav UI is prevented, while a body .works-item link and plain page text are unaffected. Cache versions: css/base.css, css/nav.css and js/nav.js now carry ?v=1 on all five pages, changelog.js v1→v2. Docs updated: STYLEGUIDE §1 global basics, §2 nav, §3 card image, §8 i18n, §9 file structure; 程序编写说明 §5.4 event delegation, §12.2 global basics, §16 key-code index.'
+      brief: {
+        zh: '原生拖拽吞掉 click，语言按钮移 5px 就切不动；禁掉导航与全站图片拖拽后 zh→en 恢复',
+        en: 'Native drag-and-drop swallowed the click, so a 5px move on the language toggle did nothing; blocking drags on nav UI and all images restores zh to en.'
       },
       media: ''
     },
@@ -353,9 +380,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品改名 THE FET MIXER → THE INDUCTION MIXER',
         en: 'The work is renamed THE FET MIXER → THE INDUCTION MIXER'
       },
-      body: {
-        zh: '① 作品改名 THE FET MIXER → THE INDUCTION MIXER。依据是该作品自己的技术文档：信号流图标写的是「近场电磁场域 Near-field EMF Layer」，而 FET 在音频电子领域的通用含义是 Field Effect Transistor（场效应管），与作者本意不符，会让懂电子的读者（正是该作品的目标读者）产生系统性误读。显示名改四处，项目标识符与图片文件名一并改（用 git mv 保留历史），旧路径现为 404 —— 作品集尚未对外分发，不做重定向。既有 changelog 条目不改写：日志记录的是当时的事实。\n',
-        en: '① The work is renamed THE FET MIXER → THE INDUCTION MIXER. The basis is the work own technical documentation: its signal-flow diagram labels the field Near-field EMF Layer, whereas FET in audio electronics universally means Field Effect Transistor, which does not match the author intent and would systematically mislead exactly the readers the work targets. Four display names changed, and the project slug and image filenames changed with them, using git mv to keep history; the old paths are now 404, with no redirect, since the portfolio has not been distributed yet. Existing changelog entries are not rewritten: the log records what was true at the time.\n'
+      brief: {
+        zh: 'FET 会被读成场效应管，作品改名 THE INDUCTION MIXER，显示名与图片名共 4 处同步改',
+        en: 'FET reads as field effect transistor, so the work became THE INDUCTION MIXER, with four display names plus image filenames changed.'
       },
       media: ''
     },
@@ -365,9 +392,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '新增作品信息栏与副标题组件',
         en: 'Work-meta bar and subtitle components added'
       },
-      body: {
-        zh: '② 新增两个作品页组件。**作品信息栏 .work-meta**：每件作品描述顶部的八行字段块（创作年份/形态/规格/分工/公开记录/状态/本页文字/资料），CSS Grid 两列，标签 88px（移动 72px）。刻意不加下边框 —— grid/edge/gallery 三种布局的 h2 本身已有 3px 下边框，再加一条会形成相隔 24px 的双平行线。**实现约束**：描述被注入的容器在四种布局里是 `<p>`，因此信息栏与副标题只能用 `<span>` 构造（`display:grid/block` 属 CSS，不影响 HTML 解析），不得用 `<div>`/`<ul>`，否则浏览器会提前闭合 `<p>` 破坏页面结构。另加 `.work-sub` 副标题与 `.nb` 不换行工具类（用于 12–36V、2025.10.22–25 这类记号）。\n',
-        en: '② Two work-page components added. The work-meta bar is an eight-row block of fields at the top of each work description (year, type, specs, roles, where shown, status, page text, media), a two-column CSS grid with an 88px label column, 72px on mobile. It deliberately has no bottom border, because the h2 of the grid, edge and gallery layouts already carries a 3px bottom border and a second one would sit 24px below it as a double rule. Implementation constraint: the container the description is injected into is a p element in all four layouts, so the meta bar and the subtitle can only be built from span elements, since display:grid and display:block are CSS and do not affect HTML parsing; div or ul would make the browser close the p early and break the page. A work-sub subtitle and an nb no-break utility class were added alongside.\n'
+      brief: {
+        zh: '新增八行信息栏，两列 grid、标签 88px（移动 72px），因容器是 p 只能用 span 构造',
+        en: 'Added an eight-row metadata bar in a two-column grid with an 88px label column (72px on mobile), built from spans because the container is a p.'
       },
       media: ''
     },
@@ -377,9 +404,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '6U104HP 与 THE INDUCTION MIXER 介绍重写；关于页专业名修正',
         en: 'The 6U104HP and THE INDUCTION MIXER introductions rewritten; the About page degree corrected'
       },
-      body: {
-        zh: '③ 6U104HP 介绍重写：补入此前完全缺失的八项个人参与内容（支架固定方案、VESA 孔位设计与第三版测试、额头下巴功能区设计、鹅颈灯接口、机箱间电源串联、保护盖、减重方案、把手选型）；补入 2023–2025 三个版本的开发史，并保留「减重是 1 克 1 克减下来的」「第一版空箱 3.5kg → 现在满载带盖 3.5kg」这一对比；补入鹅颈灯接口的由来（2023 年全黑演出、模块合成器无光无法操作）；补入公开记录与协作署名。\n④ THE INDUCTION MIXER 介绍重写：以「去身体化／具身认知」替换原先含糊的「混音作为音乐创作的唯一方式」作为创作动机，补入「演奏态／装置态」双态结构与 normalled 级联断开触点逻辑（「12 进 4 出」的由来）、全模拟链路与零延迟；灵感溯源补入 Kubisch 的 Electrical Walks（原页面只写了 Cloud）并说明与其区别 —— 保留其哲学与美学，但更接近乐器而非装置。\n⑤ 关于页专业名修正：「音乐与科技」→「艺术与科技」（Music and Technology → Art and Technology）。申请材料必须与学校官方专业名一致。\n',
-        en: '③ The 6U104HP introduction was rewritten, adding eight items of personal contribution that had been missing entirely (bracket mounting design, VESA hole layout and the third revision test, the forehead and chin I/O and multi-function panels, the gooseneck lamp connector, inter-case power chaining, the protective cover, weight reduction, handle selection), the development history across the 2023 to 2025 revisions, the line about weight being taken off one gram at a time and the contrast between the 3.5kg empty first case and the 3.5kg fully loaded current one, and the origin of the gooseneck connector in a pitch-dark 2023 performance where an unlit modular case could not be operated. Public showings and collaborator credits were added as well.\n④ The THE INDUCTION MIXER introduction was rewritten: disembodiment and embodied cognition replace the vaguer mixing as the only way to compose as the stated motivation, a two-state structure of performance and installation was added along with the normalled cascade-break contact logic that explains the twelve-in four-out design, and the all-analogue zero-latency path. The inspiration section now includes the Electrical Walks of Christina Kubisch alongside Cloud, with a note on how the work differs from both.\n⑤ The About page degree was corrected from Music and Technology to Art and Technology, because application material has to match the official name of the programme.\n'
+      brief: {
+        zh: '6U104HP 补回 8 项个人参与与 2023–2025 三版开发史（空箱与满载同为 3.5kg）；关于页专业名改为艺术与科技',
+        en: '6U104HP gained eight missing contribution items and its 2023-2025 revision history (3.5kg empty, 3.5kg fully loaded); the About degree became Art and Technology.'
       },
       media: ''
     },
@@ -389,9 +416,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'riverrun 介绍重写、事实性更正，并新增「引子」一节',
         en: 'riverrun rewritten, factually corrected, and given a new introduction section'
       },
-      body: {
-        zh: '⑥ riverrun 介绍重写，依据两份课程材料（《声音设计》期末提案 2026.06.26 方向A，授课教师方小龙；音乐工程系期末汇报 2026.07.01），新增信息栏与四节此前完全缺失的内容：「核心命题：错失感」（多轨声音同时存在，而听觉与身体位置都有限，捕捉一个意象必然丢失其他 —— 此前只有描述性说法，缺的正是这个主张）、「声音怎么分层」、「它和 The Induction Mixer 的关系」、「网页版」的定位。三条轨道文本对照由正文移入新增的 `.work-details` 折叠块，使 380px 窄栏里的主叙述保持可扫读。\n⑦ riverrun 事实性更正。作者指出：《声音设计》的项目计划书只是计划 —— 方案里的四组外围扬声器、中央控制平台、5×5m 空间从未真正搭建，「四组扬声器」只是想象中的一种实现形式，数字版本才是它实际存在的证据。据此删除全部仅存在于方案中的内容，形态词由「交互式声音装置」改为「交互式声音作品」，正文改按两个真实存在的形态（演奏版与数字版）组织。**这是一次事实性更正 —— 作品集把未实现的方案写成已实现的作品，会被面试的第一个问题击穿。**\n⑧ riverrun 新增一节「引子：为什么是这本书」，填补此作品此前缺少的外部思想参照。作者说明关注它并非出于文学，从中拿走的也不是一个写法而是一个问题。',
-        en: '⑥ The riverrun introduction was rewritten from two course documents, adding the meta bar and four sections that had been missing entirely: the central proposition of the sense of missing out, how the sound is layered, how it relates to The Induction Mixer, and what the web version is. Three track-text comparisons moved out of the body into a new collapsible block so that the main narrative stays scannable in a 380px column.\n⑦ Factual correction to riverrun. The author pointed out that the project proposal for the Sound Design course was only a proposal: the four surrounding speaker groups, the central control platform and the 5 by 5 metre space were never built, the four speaker groups being one imagined implementation rather than the work, and the digital version being the evidence that it exists at all. Everything that existed only in the proposal was therefore deleted, the type was changed from interactive sound installation to interactive sound work, and the body was reorganised around the two forms that actually exist. This is a factual correction: a portfolio that presents an unbuilt proposal as a finished work will be punctured by the first question in an interview.\n⑧ A new section was added to riverrun explaining why that book, filling a gap in the external references for that work. The author notes that the interest was not literary and that what was taken from it is a question rather than a technique. '
+      brief: {
+        zh: 'riverrun 删掉方案里从未搭建的四组扬声器与 5×5m 空间，形态改为声音作品，另补四节与引子',
+        en: 'riverrun dropped the never-built four speaker groups and 5 by 5 metre space, its type became sound work, and four missing sections plus a preface were added.'
       },
       media: ''
     },
@@ -401,9 +428,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '重写内容完整性复核与补正',
         en: 'Completeness review of the rewrites'
       },
-      body: {
-        zh: '⑨ 重写内容完整性复核与补正。以 git 原始版本为基准逐项比对（邮箱／URL／规格数字／专名），查出并补回六处遗漏：6U104HP 的订购联系方式整段丢失；`SnH`/`S&H` 写法不一致（后于 ⑪ 统一）；「Logic 等」的「等」被省去，使非穷尽列举变成穷尽；riverrun 中文版丢失术语 portmanteau 与英文原名；THE INDUCTION MIXER 丢失了原始页面两个核心命题之一「混音作为音乐创作的唯一方式」（重写时被「去身体化」替换，但二者是并列的两个命题而非同一件事）。另把范围记法统一为 en dash。\n',
-        en: '⑨ A completeness review of the rewritten content. Comparing against the original versions in git, item by item, six omissions were found and restored: the 6U104HP ordering contact details had been lost entirely; SnH and S&H were inconsistent, later unified in ⑪; the word for and others had been dropped from a non-exhaustive list, turning it into an exhaustive one; the Chinese riverrun text had lost the term portmanteau and the English original of the book title; and THE INDUCTION MIXER had lost one of the two core propositions of the original page, mixing as the only way to compose, which the rewrite had replaced with disembodiment even though the two are parallel propositions rather than the same one. Range notation was unified to the en dash.\n'
+      brief: {
+        zh: '对着 git 原始版本逐项比对，补回 6 处遗漏：6U104HP 订购联系方式、portmanteau 术语与一个核心命题',
+        en: 'Comparing against the git originals item by item turned up six omissions, restored: the 6U104HP ordering contact, the term portmanteau, and one core proposition.'
       },
       media: ''
     },
@@ -413,9 +440,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品副标题改为嵌在标题内',
         en: 'The work subtitle moves inside the title'
       },
-      body: {
-        zh: '⑩ 作品副标题改为嵌在标题内，并为全部 8 件作品启用。原先把副标题写在描述片段首行，因此位于 h2 的 `border-bottom` **之下** —— 标题与副标题被一条线隔开，读不成一个整体。现新增可选字段 `project.subtitle`，`setTitle()` 在填充标题时把 `<span class="work-sub">` 追加进 h2 内部；未声明则退回 `brief`。另需显式 `text-transform:none` 覆盖 h2 的 uppercase，否则英文副标题会全大写。\n',
-        en: '⑩ The work subtitle moved inside the title and was enabled for all eight works. It had been written on the first line of the description fragment and therefore sat below the bottom border of the h2, so a rule separated the title from its own subtitle and the two could not read as one unit. An optional project.subtitle field was added, and setTitle appends a work-sub span inside the h2, falling back to the brief when the field is absent. An explicit text-transform:none is required to override the uppercase inherited from the h2.\n'
+      brief: {
+        zh: '副标题原本落在 h2 下边框之下，现新增 project.subtitle 字段，由 setTitle() 嵌进标题内，8 件作品启用',
+        en: 'The subtitle used to fall below the h2 bottom border; a new project.subtitle field has setTitle embed it inside the heading, enabled for all eight works.'
       },
       media: ''
     },
@@ -425,9 +452,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'SnH → S&H 记法统一；作品形态词修正',
         en: 'SnH unified to S&H; work type words corrected'
       },
-      body: {
-        zh: '⑪ 记法统一 SnH → S&H（全站，共 6 处）。此前本就不一致：同一件作品的中文版写 SnH、英文版写 S&H。⑨ 中「恢复为 SnH」的处理被本次决定取代 —— 该条保留不改写，因为它记录的是当时的判断过程。\n⑫ 作品形态词修正：EDGEDGEDGE「回授声音装置」→「回授声音演出」，WE WILL HAVE BEEN HERE「声音装置」→「声音概念」。两处正文原本都没出现「装置」二字，这是让 brief 与正文一致。至此 8 件作品的形态词各不相同：电源箱／系统设计／混音器／声音作品／回授声音演出／插件／声音剧场作品／声音概念。\n',
-        en: '⑪ SnH was unified to S&H site-wide, six occurrences. The site had been inconsistent before, with the Chinese and English versions of the same work disagreeing. The earlier instruction to restore SnH is superseded by this decision; that entry stands unrewritten because it records the judgement of the time.\n⑫ Work type words corrected: EDGEDGEDGE from feedback sound installation to feedback sound performance, and WE WILL HAVE BEEN HERE from sound installation to sound concept, so that the briefs match bodies that never used the word installation. The eight works now each carry a distinct and specific type word.\n'
+      brief: {
+        zh: 'SnH 全站 6 处统一为 S&H；EDGEDGEDGE 与 WE WILL HAVE BEEN HERE 的形态词改为与正文一致',
+        en: 'SnH became S&H in all six places site-wide, and the type words for EDGEDGEDGE and WE WILL HAVE BEEN HERE were corrected to match their bodies.'
       },
       media: ''
     },
@@ -437,9 +464,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'WE WILL HAVE BEEN HERE 改为自动申请麦克风权限',
         en: 'WE WILL HAVE BEEN HERE switched to automatic microphone permission'
       },
-      body: {
-        zh: '⑬ WE WILL HAVE BEEN HERE 改为自动申请麦克风权限，并新增与延时等长的开篇介绍。① 页面加载即调 `getUserMedia`；按钮不再是「启动」，而是运行中的「关闭」与失败后的「重试」。② `getUserMedia` 无需用户手势，但 `AudioContext` 受自动播放策略约束、无用户激活时可能 suspended —— 启动流程为「自动申请 → 建图 → 立即 resume → 失败则等首次手势（pointerdown／keydown／touchend）」。③ 新增状态行五态（申请中／待点击／聆听中／被拒／需要 localhost 或 HTTPS）。④ 状态行原在页面末尾的 `.wwhbh-footer`，而描述长达数千字，挂起状态下「点击开始聆听」是必需入口、埋在末尾会被完全错过；现移入 `.wwhbh-body` 紧贴标题。⑤ 新增开篇「正在发生的事」，其功能是**计时**：作品延时 90 秒，介绍中文 329 字（≈79 秒）／英文 238 词（≈71 秒），读者读完时第一次回音正好抵达。⑥ 接口更名 `App.initMicButton` → `App.initWwhbh`。\n',
-        en: '⑬ WE WILL HAVE BEEN HERE now requests microphone permission automatically and gained an opening section timed to the delay. The page calls getUserMedia on load, and the button is no longer Start but Stop while running and Retry after a failure. getUserMedia needs no gesture, but AudioContext is subject to autoplay policy and may be suspended without user activation, so the sequence is automatic request, build the graph, resume immediately, and otherwise wait for the first gesture. The status line now has five states. It had been placed at the end of the page while the description runs to several thousand characters, so the tap-to-start prompt would have been missed entirely; it now sits directly under the title. The new opening section functions as a timer: the work delay is ninety seconds and the text is 329 Chinese characters or 238 English words, so the first echo arrives as the reader finishes. The API was renamed from initMicButton to initWwhbh.\n'
+      brief: {
+        zh: '页面加载即调 getUserMedia，状态行五态并移到标题下；开篇 329 字对应作品 90 秒延时',
+        en: 'The page now calls getUserMedia on load, with a five-state status line moved under the title; the 329-character opening matches the work\'s 90-second delay.'
       },
       media: ''
     },
@@ -449,9 +476,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '作品正文的分节小标题统一为七段固定槽位',
         en: 'Body section headings unified into seven fixed slots'
       },
-      body: {
-        zh: '⑭ 作品正文的分节小标题统一为固定七个槽位：作品简介／作品动机／灵感溯源／技术介绍／我的工作／**后完成**／公开记录（Overview／Motivation／Where it comes from／How it works／My contribution／Postlude／Where it has been shown）。**「后完成」是生造词**：作者要的是「后摇滚」「后现代」那种把「后」硬按在一个普通词前、语法上就别扭的效果。第一轮提的后事／后话／后日谈／后记／后遗症全部被否，理由正是它们都是词典里查得到的现成词，没有那个诡异感；改提生造词后作者选定「后完成」。英文在 Postlude 与 Postmortem 之间选了 Postlude。STYLEGUIDE 写明不得改回「后记」「尾声」「反思」「Afterwards」。**尚未达标**：6U104HP 缺 作品动机、灵感溯源、技术介绍、后完成 四节；riverrun 缺 我的工作、后完成；其余四件（The JustType Study、EDGEDGEDGE、SPECTRAL DISSECTOR、ECCE HOMO）尚未重写，目前没有任何小标题。\n',
-        en: '⑭ Section headings in work bodies were unified into seven fixed slots, the same set site-wide. The Chinese postlude slot is a coinage rather than an existing word: what the author wanted was the effect of post-rock and post-modern, a prefix bolted onto an ordinary word so that the combination is grammatically off. The first round of candidates was rejected precisely because every one of them is a dictionary word, and the coinage was accepted. English took Postlude over Postmortem. The STYLEGUIDE records that it must not be replaced by afterwards or reflection. Not yet compliant: 6U104HP is missing four slots, riverrun is missing two, and the remaining four works carry no section headings at all.\n'
+      brief: {
+        zh: '分节小标题统一为七个固定槽位（含生造词后完成）；6U104HP 仍缺 4 节、riverrun 缺 2 节',
+        en: 'Section headings are now seven fixed slots, including the coined Postlude; 6U104HP still lacks four, riverrun two, and four works have none.'
       },
       media: ''
     },
@@ -461,9 +488,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'WWHBH 新增实时晕染层（第一版）',
         en: 'WWHBH gains a live ink-bleed layer, first version'
       },
-      body: {
-        zh: '⑮ WWHBH 新增实时晕染层（`js/ink-wwhbh.js`）：页面背后一层像墨在纸上毛细扩散的图，与聆听状态同步。作者要求：从屏幕外左下开始、90 秒铺满；按关闭立刻冻住；第二次开始时整层晕开并淡去；**每次渲染都实时生成、结果不能相同**（种子取自 `crypto.getRandomValues`）。内部画布约为视口的 1/4.5，生成一次 25–40ms，生长锁约 15fps。层叠：`position:fixed; inset:0`、`pointer-events:none`、`prefers-reduced-motion` 时整层不启动。**与音频无关地安全**：90 秒延时与反馈全部由 Web Audio 原生节点构成，音频路径里一行 JS 都没有。\n调试中修掉三个问题：**关不掉也开不回来**（`idle` 落进了「不显示按钮」的兜底分支，页面再也回不到聆听态 —— 「第二次开始」这个需求当时根本做不到）；**开头 9–15 秒什么都没有**（起点探出屏幕外 16% 太远，改为 5%）；**铺满时间不对**（`GROW_TO` 原为 `1 + 2×SOFT`，79 秒就铺满、剩下 11 秒空转，改为 `1 + SOFT`）。文档同步：程序编写说明 §8 整节重写并新增 §8.5。\n',
-        en: '⑮ WWHBH gained a live ink-bleed layer, a grey field behind the page that spreads like ink through paper by capillary action and stays synchronised with the listening state. The author asked for growth from off-screen bottom-left, fully spread in ninety seconds, an immediate freeze on stop, a dissolve of the whole layer on the next start, and every render generated live so that no two results are alike, the seed coming from crypto.getRandomValues. The internal canvas is about one 4.5th of the viewport, generation costs 25 to 40ms and growth is locked to about 15fps. The layer is fixed, inset from zero, pointer-events none, and never starts under prefers-reduced-motion. It is safe for the audio because the ninety-second delay and feedback are built entirely from native Web Audio nodes, with no JavaScript at all in the audio path.\nThree problems were found and fixed while testing. It could not be turned off and on again, because the idle state fell into the fallback branch that hides the button, so the page could never return to listening and the requirement for a second start was not actually achievable at that point. Nothing was visible for the first 9 to 15 seconds, because the origin sat 16 per cent off-canvas. And the fill time was wrong, because the growth target was one plus twice the softness, which filled at about 79 seconds and then idled for 11.\n'
+      brief: {
+        zh: '新增实时晕染层：90 秒铺满、单次生成 25–40ms、生长锁 15fps；起点由屏外 16% 收到 5%',
+        en: 'A live ink-bleed layer fills in 90 seconds at 25–40ms per render and 15fps; the origin moved from 16% off-canvas to 5%.'
       },
       media: ''
     },
@@ -473,9 +500,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '晕染层重做：从「像一杯水泼上去」改为真正的毛细渗流',
         en: 'Ink layer rebuilt from a splash of water into real capillary flow'
       },
-      body: {
-        zh: '⑯ 晕染层重做：从「像一杯水泼上去」改为真正的毛细渗流。作者评语：「我希望它更像毛细现象晕染开来，要有那种毛细感，类似分形和雪花，但是边缘依然像现在这样模糊。」病因是第一版把前缘写成「到起点的距离 × 噪声场」，而**普通值噪声只能让前缘变毛糙，不能让手指分叉**。修法是**真的解一次输运问题**：用脊状多重分形造渗透率场、极坐标采样让特征沿半径拉长、再解程函方程 `|∇T| = 1/v` 得到「前缘第几刻到达该像素」。前缘于是自动沿快通道窜出、通道在哪里分叉手指就在哪里分叉；与起点不连通的快通道变成漂在主前缘前面的孤岛 —— 这正是毛细渗流的标志。\n每个参数各有一条反面教训：`ANG_JITTER` 调到 1.2 以上会把径向通道彻底打散成云雾；`SOFT` 取 0.20 时过渡带宽过手指间距，放射结构被糊成一片均匀渐变、手指完全看不见。\n三个 bug：**种子半径写死导致整屏崩掉**（起点探出 5%，画布 320px 时距离 18px 在写死的 26 以内正常，480px 时 27px 就一颗种子都种不下去，整场求解全 INF、表现为第一帧整屏同时上墨然后彻底不动）；**开头几秒没反应**（归一化没减最小值）；**过渡带宽度被错误放大**（把 `SOFT` 从 0.07 提到 0.20，方向搞反了）。\n**方法教训**：判断「到底好不好看」时连续三次被缩放骗。最终改成按真实页面的放大倍率显示、再 1:1 裁切前缘区域来看 —— 结论必须从像素数据或同尺度图像得出。\n',
-        en: '⑯ The ink layer was rebuilt from a glass of water splashed on the page into real capillary flow. The author asked for something more like capillary action spreading, with a capillary feel, like fractals and snowflakes, but with the edges still as blurry as they were. The fault was in the front: version one wrote it as distance from the origin times a noise field, and ordinary value noise can only make a front ragged, it cannot make fingers branch. The fix was to actually solve a transport problem, building a permeability field from a ridged multifractal, sampling it in polar coordinates so features stretch along the radius, and solving the eikonal equation so that the front races along fast channels and branches wherever they branch, with unconnected channels becoming islands drifting ahead of the main front, which is the signature of capillary fingering.\nEach parameter carries a reverse lesson: jitter above about 1.2 scrambles the radial channels into fog, and a transition band widened to a fifth of the whole traverse smears the entire radial structure into one even gradient with the fingers measurably invisible.\nThree bugs: a hardcoded seed radius crashed the whole screen on larger canvases, leaving every value infinite and the entire canvas inking at once on the first frame and then never moving; nothing happened for the first few seconds because normalisation did not subtract the minimum; and the transition width had been widened in the wrong direction.\nMethodology lesson: judging whether it looked right was misled by scale three times over. The working method, finally, is to render at the real page magnification and then clip the front region 1:1. Conclusions have to come from pixel data or from same-scale images.\n'
+      brief: {
+        zh: '晕染层改用程函方程解输运，前缘沿快通道分叉；种子半径写死 26，480px 画布下 27px 一颗都种不下',
+        en: 'The ink layer now solves an eikonal transport problem so the front branches along fast channels; a hardcoded seed radius of 26 failed at 480px canvases.'
       },
       media: ''
     },
@@ -485,9 +512,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '取消浓度上限；墨改为分层累积',
         en: 'Density cap removed; ink becomes layered accumulation'
       },
-      body: {
-        zh: '⑰ 两处改动：**取消浓度上限**（作者在被告知「满铺后整页会是黑的、正文一个字也看不见」之后明确回复「不需要还能读」）；**重新开始时不再把旧图放大到全屏**。\n取消上限之后才暴露出来的真问题：**墨深不能复用渗透率场**。渗透率场为了做放射状手指必须极坐标采样，5 个倍频叠上去之后最高倍频沿圆周要走约两万个周期，远超像素能分辨的极限 —— 在低浓度下看不出来，一旦按全对比度显影整页就变成一圈圈木纹。修法是纹理归纹理、流动归流动：`arrival` 继续用极坐标通道场，`density` 改用笛卡尔采样的场。\n重新开始那处，作者指出「如果之前只录了一点点，会有一大片一瞬间晕染整个屏幕」，原因是旧版让淡出层前缘在 0.66 秒内冲到「铺满再冲出屏幕」。改为淡出层以原速 ×2 推进、1.5 秒里前缘只多走约 30px；同时**新的一张立刻在底下开始长**。状态机因此简化回 off / grow / hold 三态。\n⑱ 墨改为分层累积：**单轮有上限、累积没有上限**。作者反馈「第一遍就有纯黑色不是我想要的，我是想要在一次次晕染后变成了纯黑」—— 这与 ⑰ 的「取消浓度上限」并不矛盾，而是把上限的落点讲清楚了。做法：墨分**累积层 base**（跨轮次保留）与**当前层**，并入用 alpha 合成而非相加，因此渐近逼近 1、永不溢出。实测连续 5 轮（每轮只录 15 秒），峰值 25% → 43% → 45% → 49% → 56%；第 1 轮生长满时 33% 且 `blackPx = 0` —— **第一遍确实没有纯黑**，这是本次改动的核心验收点。边界：累积只在当前页面会话内，刷新即清零；「减少动态效果」触发时是重置而不是暂停。\n',
-        en: '⑰ Two more changes: the density cap was removed, and restarting no longer blows the old image up to the full screen. On being told that at full spread the whole page would be black with not one word of the body text visible, the author replied explicitly that it does not need to remain readable.\nRemoving the cap exposed a real problem: ink depth must not reuse the permeability field. That field has to be sampled in polar coordinates to produce radial fingers, and with five octaves stacked the finest one traverses roughly twenty thousand cycles around the circle, far beyond what the pixels can resolve. At low density it was invisible; once the cap came off and it developed at full contrast the whole page turned into concentric wood grain. The fix separates texture from flow: arrival keeps the polar channel field, density uses a Cartesian field.\nOn restarting, the author reported that when only a little had been recorded a large area was blown across the whole screen in an instant, because the fading front raced to full spread and then off-screen within 0.66 seconds. It now advances at twice normal speed, moving only about 30px in 1.5 seconds, and the new image starts growing underneath at once, which simplified the state machine back to three modes.\n⑱ Ink became layered accumulation: a cap within a single cycle, no cap on the accumulation. The author reported that pure black on the first pass was not wanted and that black should arrive after repeated spreads, which does not contradict the uncapping but pins down where the cap belongs. Ink is split into an accumulation layer that survives across cycles and the current cycle, merged by alpha compositing rather than addition, so it approaches one asymptotically and can never overflow. Over five consecutive short cycles the peak ran 25, 43, 45, 49 and 56 per cent, and at full growth in the first cycle it was 33 per cent with no black pixels at all, which is the acceptance criterion. Accumulation lives only within the page session and is cleared on reload and on resize.\n'
+      brief: {
+        zh: '取消浓度上限，墨分累积层与当前层 alpha 合并；连续 5 轮峰值 25%→43%→56%',
+        en: 'The density cap was dropped and ink became a base layer plus the current cycle merged by alpha; five cycles peaked at 25%→43%→56%.'
       },
       media: ''
     },
@@ -497,9 +524,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '墨深换成域扭曲 fBm，再改为纯 fBm 的颗粒质感',
         en: 'Ink depth moved to a domain-warped fBm, then to a granular plain fBm'
       },
-      body: {
-        zh: '⑲ 两处再改：墨深换成域扭曲 fBm；覆盖改由 90 秒周期驱动；并加回重启褪色。作者反馈「深色的晕染太有规律、太连续了」「我要的不是停止重启一遍遍覆盖，我要的是每 90 秒一遍遍覆盖」，随后又要求把重启褪色加回来。\n规律性的来源是脊状场的天性 —— 它**把脊连成一张网**，无论怎么调参都是贯穿全图的连续深色脉络。改用域扭曲 fBm 后得到的是大小不一、互不连通的斑块。\n周期：跑满 90 秒即 `bake()` 并入累积层、换新图从零再铺；自动换轮处**不会闪**（先 bake 再重置，`base ⊕ 当前层` 与 `base` 在那一刻是同一个值）。**重启刻意不 bake**：留痕迹是「跑满 90 秒」的奖励，由周期负责；停在 89 秒等于白铺，这是有意的。\n⑳ 墨深第三版：纯 fBm 的颗粒／纤维质感。作者反馈「圆形太多了，边缘像触手一样，也没有深色的部分了」—— 三条各对应一个常量：「圆形太多」是 fBm 的 persistence 只有 0.5、高频不足，**等值线本来就是圆的**，与扭曲无关；「像触手」是**域扭曲太强**（`D_WARP = 0.35`）；「没有深色」是上一轮把单轮最深压到了 0.34。定稿 `D_PERS` 0.50 → 0.60、`D_WARP` 0.35 → 0.08、单轮最深 0.34 → 0.68。也试过「fBm + 脊状」混合补深色细脉，结果**脊状成分会把触手一起带回来**，弃用。\n**过程教训**：这一轮的模块改动第一次是**静默失败**的 —— 脚本里 `assert` 因搜索串多了一个逗号而没匹配上、抛异常退出、文件根本没写入，但验证照样跑完，于是我看到的仍是旧参数的画面，差点误判成「改了没用」。此后所有文件改动改成逐条打印匹配数、全部为 1 才写入。\n',
-        en: '⑲ Two further changes: ink depth moved to a domain-warped fBm, layering is now driven by the ninety-second cycle rather than by stop and restart, and the restart fade came back at the author request. The regularity came from the ridged field, whose nature is to connect its ridges into a network, so no amount of tuning produced anything but continuous dark veins. A domain-warped fBm gives patches and wisps that are not connected to one another. At the handover there is no flicker, because the bake runs before the reset and the accumulation composited with the current layer equals the accumulation at that instant. Restarting deliberately does not bake: leaving a trace is the reward for completing ninety seconds, so stopping at 89 leaves nothing, which is intended rather than a defect.\n⑳ Third version of ink depth, a granular and fibrous plain fBm. The author objected that there were too many circles, that the edges looked like tentacles and that the dark parts had gone. Each objection maps to a constant: circles because the persistence was only 0.5 and the contours were genuinely round, tentacles because the domain warp was far too strong, and no darks because the single-cycle depth had been squeezed to 0.34. The fixed values are persistence 0.60, warp 0.08 and single-cycle depth 0.68. A blend of fBm with the ridged field was tried to recover dark veins and rejected, because the ridged component brings the tentacles back with it.\nProcess lesson: the module change in this round failed silently the first time. An assert in the script did not match because the search string had one extra comma; the script threw and exited without writing, but the verification still ran, so what was on screen was the old parameters and it nearly read as the change having no effect. Every file change since then prints the match count for each replacement and only writes when all of them pass.\n'
+      brief: {
+        zh: '墨深换成域扭曲 fBm，覆盖由 90 秒周期驱动；D_WARP 0.35→0.08、单轮最深 0.34→0.68，重启不 bake',
+        en: 'Ink depth moved to a domain-warped fBm driven by the 90-second cycle, with warp 0.35→0.08 and single-cycle depth 0.34→0.68; restart deliberately does not bake.'
       },
       media: ''
     },
@@ -509,9 +536,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '墨深第四版改为面积指标；查明长时间后的饱和',
         en: 'Ink depth becomes area targets; the long-run saturation explained'
       },
-      body: {
-        zh: '㉑ 墨深第四版：作者改给**面积指标**（「百分之 70 面积浅、百分之 10 留白、百分之 20 深」），于是从「调参数碰运气」变成「可验证的指标」。关键是**不再靠调噪声阈值去碰面积** —— 先算出一张分档用的场，用直方图求 p10 与 p80 再按位置切三档，面积比例因此精确成立、与噪声本身的分布无关。两条带交给两个场：浅色带用柔和场（平缓水渍），深色带用颗粒场（毛糙墨块）。作者随后澄清「我的留白要求不是数学意义上留白，而是比较淡」，故第三档是 1%–3% 的淡底而不是空白。常量相应更名拆分为 `PALE_*` / `LIGHT_*` / `DARK_*` 三组。\n㉒ 重启褪色加快一倍，并查明「长时间后似乎没有新的晕染」的原因（后者只作解释、未改代码）。**不是故障，是数学上的饱和**：累积用 alpha 合成，每轮能加进去的量正比于「还剩多少白」，所以可见增量几何式递减 —— 实测最深每轮 +38 → +23 → +5 → +1，约 4 轮后看不出变化，「最淡」那一档约 2.7 轮就被抹平。两条附带结论：**最先看不见的其实是「扩散」本身**（前缘处的「层」本来就小，压在已经变黑的底子上更小）；代码仍在正常换轮，没有停。作者要求先解释、不改代码，三个候选（给累积层设上限／改成滑动窗口／接受它）一并记录 —— 其中「接受它」要注意作品正文写的是「每一次循环，都把上一次的痕迹擦掉一点」，而当时的实现是**反过来**（不断叠加），两者矛盾。\n',
-        en: '㉑ Fourth version of ink depth: the author switched to area targets, of seventy per cent light, ten per cent palest and twenty per cent dark, which turned the problem from tuning by luck into a verifiable target. The key change is that area is no longer chased by adjusting noise thresholds: a field is computed for grading, its tenth and eightieth percentiles are taken from a histogram, and the three bands are cut by position, so the area proportions hold exactly and independently of the noise distribution. Two different fields feed the two bands, a soft one for the light band and a granular one for the dark. The author then clarified that the palest band was not meant as mathematically blank but as simply pale, so the third band is a one to three per cent wash rather than nothing. The constants were renamed and split accordingly.\n㉒ The restart fade was doubled in speed, and the reason nothing seemed to bleed any more after a long time was identified, the latter explained rather than changed at the author request. It is not a fault but mathematical saturation: accumulation is alpha compositing, so the visible increment is proportional to how much white is left and decays geometrically, measured at plus 38, plus 23, plus 5 and plus 1 per cycle, with no visible change after about four cycles and the palest band gone by about 2.7. Two side conclusions: the diffusion itself becomes invisible earlier than the overall saturation, and the code was still cycling normally. Three options were recorded for the author, one of which is to accept it, with the caveat that the work text says each cycle erases a little of the previous trace while the implementation was doing the opposite.\n'
+      brief: {
+        zh: '墨深按面积指标切档：70% 浅、10% 留白、20% 深，用直方图 p10/p80 定位；实测每轮增量 +38→+23→+5→+1 后饱和',
+        en: 'Ink depth now cuts three bands by area — 70% light, 10% palest, 20% dark — via histogram percentiles; the per-cycle gain measured +38, +23, +5, +1 before saturating.'
       },
       media: ''
     },
@@ -521,9 +548,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '就墨效提十二个问题逐条落定',
         en: 'Twelve questions on the ink settled one by one'
       },
-      body: {
-        zh: '㉓ 作者要求「事无巨细地问」，于是提了十二个问题逐条落定；同时**修掉一个真 bug：重启只洗掉了最新一轮**。原因是 `resume()` 只把**当前这一轮**交给褪色层，而之前跑满 90 秒累积进 `base` 的那些轮完全没有参与褪色 —— 墨大部分在 base 里，所以看起来洗不掉。改法：褪色期间让**累积层也乘以褪色层的 alpha**，褪完连同 base 一起清零。\n十二问要点：单轮最深由 68% 减到 **50%**；深浅交界改成**柔和浸开**（三档连成一条单调曲线，端点相接、没有跳变）；深色块更碎更多小点（`D_PERS` 0.62 → 0.68）；**后台也计时**（去掉 `document.hidden` 的暂停）；手机端**减弱**（`MOBILE_SCALE = 0.72`）。\n',
-        en: '㉓ The author asked to be questioned exhaustively, so twelve questions were put and settled, and a real bug was fixed at the same time: restarting washed away only the newest cycle. The resume path handed only the current cycle to the fade while everything already accumulated in the base took no part, and since most of the ink is in the base it looked as though nothing was being washed. The fade now multiplies the accumulation layer as well and clears it at the end. Of the twelve answers: single-cycle depth down from 68 to 50 per cent, the boundary between bands changed to a soft soak, the dark blocks made more fragmented, timing continues in a hidden tab, and the mobile version is toned down.\n'
+      brief: {
+        zh: '修掉重启只洗掉最新一轮的 bug，褪色时累积层也乘 alpha；单轮最深 68%→50%，手机端 MOBILE_SCALE 0.72',
+        en: 'Restart now fades the accumulation layer too, not just the newest cycle; single-cycle depth dropped from 68% to 50% and mobile scales to 0.72.'
       },
       media: ''
     },
@@ -533,9 +560,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '墨改为盖在整个页面之上',
         en: 'The ink now covers the whole page'
       },
-      body: {
-        zh: '㉔ 墨改为**盖在整个页面之上**（`z-index` 由 0 提到 200，导航是 100），并在关闭按钮处把墨压淡。作者的要求是「关闭按钮应当被晕染遮盖住」，追问后选了「全部盖住，包括标题」与「盖住，但在按钮处自动减淡」。因为墨层是 `pointer-events:none`，底下一切仍可点击（实测 `elementFromPoint` 在按钮处返回 `btn-mic`）—— 「作品把界面埋掉」与「界面仍然可用」同时成立。\n这里踩到一个**时序陷阱**：`setState(\'running\')` 是先调 `resume()`、后把按钮设成可见的，所以算矩形那一刻按钮还是 `display:none`，压淡**永久失效**；现在 tick 里每 500ms 兜底刷新一次。\n**事故**：这一轮把 `js/ink-wwhbh.js` **清空成了 0 字节** —— 脚本末尾一句 `io.open(p,\'w\').write(io.open(p).read())`，Python 先算 `open(p,\'w\')` 就已经把文件截断，再去读已是空的。文件当时尚未纳入 git，靠脚本开头的备份恢复。**教训：就地重写同一个文件必须先读进变量再写，绝不能让 open(w) 出现在 read() 之前求值。**\n',
-        en: '㉔ Ink now covers the entire page, its z-index raised from zero to 200 above the navigation at 100, with the ink dimmed over the close button. The author asked for the close button to be covered, and on being asked chose to cover everything including the title while dimming the ink over the button. Because the layer is pointer-events none everything underneath remains clickable, so the work can bury the interface while the interface still works.\nA timing trap was hit here: the running state calls resume before making the button visible, so the rectangle could never be measured and the dimming failed permanently; the tick now refreshes it as a backstop every 500 milliseconds.\nAccident: this round truncated the ink layer file to zero bytes. A line meant as a harmless in-place rewrite opened the file for writing before reading it, and the write-open truncated it first, so the read returned nothing and nothing was written back. The file was not yet in git and was recovered from a backup taken at the top of the script. Any in-place rewrite of a file must read into a variable first and must never let open-for-writing be evaluated before the read.\n'
+      brief: {
+        zh: '墨层 z-index 由 0 提到 200 盖住全页，按钮处仍可点击；矩形测量曾因按钮 display:none 失效，改为每 500ms 兜底',
+        en: 'Ink now sits at z-index 200 over the whole page, still clickable through; a display:none button broke the dimming rect, so the tick refreshes it every 500ms.'
       },
       media: ''
     },
@@ -545,9 +572,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '录音设备排查，与「失败状态不晕染」的设计定案',
         en: 'Audio device troubleshooting, and the decision that failure states do not bleed'
       },
-      body: {
-        zh: '㉕ 录音设备排查 + 一条设计定案（本次未改动任何行为）。作者报告网页没有音频输出，排查结论：这条链路**没有直通**（`source` 只接到 `delay`，只有 `delay` 接到 `destination`），所以说话后前 90 秒输出端必然静音，这就是作品本身；作者最终确认是麦克风与输出选择的问题。另发现控制台的 `favicon.ico` 404 与 devtools 的 404 都无害。\n**设计定案**：作者问「如果麦克风权限没有给，墨水依然会晕染吗」。三种失败状态用桩件实测（等 25 秒）：权限被拒／非安全上下文／音频挂起，非零像素都是 0，canvas 连初始化都没发生。曾提出「权限被拒时进演示模式，让评审至少看到画面」，作者**否掉**，理由是「这是一个观念作品，它应该自洽」—— 代价（拒绝权限的访问者只看到一张纯文字的页面）被明确接受。此定案已写入文档，注明**不要为了让观众看到东西而在失败状态下也让它晕染**。\n',
-        en: '㉕ Audio device troubleshooting, and one design decision settled, with no behaviour changed. The author reported no audio output. The finding is that the chain has no direct path, since the source connects only to the delay and only the delay connects to the destination, so the first ninety seconds after speaking are necessarily silent and that is the work itself; the author confirmed it was a microphone and output selection problem. Two console 404s were also found to be harmless.\nThe design decision: asked whether the ink still spreads when microphone permission has not been granted, three failure states were tested with stubs and all showed zero non-zero pixels, with the canvas not even initialised. A proposal to enter a demo mode when permission is denied was rejected on the grounds that this is a conceptual work and it should be self-consistent, the cost being explicitly accepted. This is recorded in the guides with a note not to make it spread in failure states merely so that an audience sees something.\n'
+      brief: {
+        zh: '排查音频链路：source 只接 delay、delay 才接 destination，前 90 秒必然静音；三种失败状态实测非零像素均为 0',
+        en: 'The audio chain has no direct path — source feeds only the delay — so the first 90 seconds are silent; three failure states all measured zero non-zero pixels.'
       },
       media: ''
     },
@@ -557,9 +584,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '消除像素感；旧墨随时间晕染的动态平衡',
         en: 'Pixelation removed, and a dynamic equilibrium for ageing ink'
       },
-      body: {
-        zh: '㉖ 两处改动：**消除像素感**（提高内部画布分辨率）+ **旧墨随时间晕染开来并变浅**。像素感的根因是按真实尺度诊断出来的：`SCALE = 3.0` 时墨深噪声最高到 grid 128，**3.6 像素一个周期、已经到奈奎斯特**，放大 3.13 倍就变成 11 像素一块的疙瘩。修法：`SCALE` 3.0 → 2.0。**通用教训：噪声最高频必须远离奈奎斯特，否则一放大就是块。**\n**一处必须指出的矛盾**：作者同时选了「永远不到纯黑」和「只靠扩散自然变浅」，这在数学上不能同时成立 —— 扩散是**保量**的，而每 90 秒又叠一层新的进来，只增不减必然到纯黑。就此单独追问，作者选了「极缓慢的衰减」，于是有了每轮一次的 `DECAY_PER_CYCLE`。实测 8 轮：峰值稳定在 76–84% 之间摆动、**始终到不了纯黑**，动态平衡成立。\n两个副作用：生成阻塞由约 106ms 涨到 **205ms**（每 90 秒一次，尚未做分片生成）；**三档结构在平衡态会消失**（终态是一片相当均匀的中灰）—— 三档是**单层**的性质，不是终态的性质。此点已提请作者定夺。\n',
-        en: '㉖ Two changes: removing the pixelated look by raising the internal canvas resolution, and letting old ink bleed and lighten over time. The root cause was diagnosed at real scale rather than guessed: at one third resolution the finest ink-depth octave sat 3.6 pixels to a cycle, right at Nyquist, and magnified 3.13 times became eleven-pixel clumps. The resolution was raised to one half. The general lesson is that the highest frequency in the noise must stay well away from Nyquist.\nA contradiction had to be raised: the author chose both never reaching pure black and lightening by diffusion alone, and these cannot both hold, because diffusion conserves mass while another layer arrives every ninety seconds. Asked separately, the author chose a very slow decay, which is why there is a once-per-cycle loss channel. Measured over eight cycles the peak settles into oscillation between 76 and 84 per cent and never reaches pure black, so the dynamic equilibrium holds.\nTwo side effects: generation cost rose from about 106 to about 205 milliseconds, and the three-band structure disappears at equilibrium, since the tiers are a property of a single layer and not of the end state. Both were raised with the author.\n'
+      brief: {
+        zh: '内部画布 SCALE 3.0→2.0 消除 11 像素疙瘩；每轮加一次衰减，8 轮峰值稳定在 76–84%、不到纯黑',
+        en: 'Internal canvas scale went 3.0→2.0 to kill 11-pixel clumps; a per-cycle decay holds the peak at 76–84% over eight cycles, never pure black.'
       },
       media: ''
     },
@@ -569,9 +596,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '关闭按钮失去视觉豁免；时间晕染减到四分之一',
         en: 'The close button loses its exemption; bleeding cut to a quarter'
       },
-      body: {
-        zh: '㉗ 关闭按钮不再有视觉豁免。作者由「盖住，但在按钮处自动减淡」改为「不要给关闭加遮罩了，直接彻底遮住吧」，整套机制（两个常量、三个变量、两个函数、每 500ms 兜底重算、scroll 监听）**全部删除**，`paint()` 回到一维循环。按钮仍**可以点击**（墨层 `pointer-events:none`），只是会随轮次被埋掉，和标题、正文一样 —— 验证：穿过按钮的水平线数值平滑过渡、**没有凹口**。并注明**不要为了「让用户找得到关闭按钮」再把透亮区加回来**。\n㉘ 两处调整：旧墨的时间晕染减到四分之一；打破第一轮早期的「针刺感」。前者 `AGE_STEPS_MAX` 60 → 15。**这里有个比例问题必须说清楚**：扩散的方差 ∝ 步数，所以两个量不是同一个比例 —— 每轮**变浅的量** ∝ 步数（60→15 正好 ÷4），而**摊开的距离** ∝ √步数（只能 ÷2）。两者不可能同时是四分之一；本次按「变浅程度 ÷4」处理，若要「距离 ÷4」需把 `DIFFUSE_K` 降到 0.055，代价是半径只剩约 2.6 屏幕像素、几乎看不出来。\n后者按真实倍率在约第 16 秒渲染对比，看到的是一排从起点放射出去的细针，长度宽度均匀、等角分布，像海胆。**关键发现：打破均匀靠的是角度调制，不是 `ANG_K` / `RAD_K`** —— 只改后两者，针变宽了但依然是一整排扇形；真正的开关是给渗透率再乘一个低频角度包络。调制太疏会把整排手指抹成一两道大瓣，太密则等于没有调制。\n',
-        en: '㉗ The close button no longer gets any exemption. Changed from covering it with the ink dimmed over it to simply covering it completely, the whole mechanism was deleted and the paint loop returned to one dimension. The button is still clickable, because the ink layer is pointer-events none, and is simply buried as the cycles accumulate like the title and the body text; a horizontal scan across it shows a smooth transition with no notch. A note was added not to reintroduce a cut-through in order to make the close button findable.\n㉘ Two adjustments: the over-time bleeding of old ink cut to a quarter, and the needle-like quality in the early first cycle removed. For the first, the step budget dropped from 60 to 15. A proportionality point has to be stated clearly: diffusion variance is proportional to the number of steps, so the two quantities do not scale together, the ink moved per cycle being proportional to the steps while the spreading distance is proportional to their square root. This was implemented as a quarter of the lightening; a quarter of the distance would require dropping the diffusion coefficient to 0.055 and would leave a radius of about 2.6 screen pixels, nearly invisible.\nFor the second, candidates were rendered at the real magnification at about the sixteenth second and showed a fan of thin needles radiating from the origin, uniform in length and width and evenly spaced in angle. The key finding is that breaking the uniformity depends on angular modulation, not on the angular or radial frequency: lowering the angular frequency and raising the radial one only made the needles slightly wider and left the same fan intact, while multiplying the permeability by a low-frequency angular envelope is the real switch. Too sparse a modulation wipes the row of fingers into one or two large lobes and too dense a one amounts to no modulation at all.\n'
+      brief: {
+        zh: '关闭按钮遮罩机制整套删除，扫描线无凹口；旧墨时间晕染 AGE_STEPS_MAX 60→15，摊开距离只能 ÷2',
+        en: 'The close-button dimming mechanism was deleted and a scan line shows no notch; ageing steps fell 60→15, quartering the lightening but only halving the spread.'
       },
       media: ''
     },
@@ -581,9 +608,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '扩散节奏铺满整轮；重启溶解减半速度',
         en: 'Diffusion paced across a whole cycle; the restart dissolve halved'
       },
-      body: {
-        zh: '㉙ 扩散的节奏改为铺满整轮，另修掉一个会在页面加载时直接抛错的 TDZ bug。作者要求「在下一轮铺满屏幕的时候完成上一轮晕染，这样上一轮和下一轮在时间上是没有间隙的」，于是 `AGE_STEP_MS` 由写死的 1500ms 改为**由一轮时长除以步数推出**（90000 / 15 = 6000ms）—— 原来的 1500ms 意味着 15 步在 22.5 秒内走完、剩下 67.5 秒什么都不发生，时间上有个大空档。\n**TDZ bug**：第一次改时把 `AGE_STEP_MS` 写在 `AGE_STEPS_MAX` 前面而它引用后者，`const` 的暂时性死区会让脚本在加载时直接抛错、整个晕染层起不来。**`node --check` 只查语法、查不出这个**，是改用浏览器实跑才发现的 —— 语法检查通过 ≠ 能跑。\n**一次假汇报**：这一轮还发现前面某次的编辑脚本根本没有写文件的语句，却无条件打印了「已写入」，两行 STYLEGUIDE 其实一直没被改到。现在的做法是写入后一定重新读回文件、逐条确认新值出现、旧值消失。\n㉚ 重启溶解减半速度（作者：「重开新录制，旧墨水消失速度太快，减半」）。改动两处、而且必须一起改：`FADE_MS` 1500 → **3000**，`FADE_DIFFUSE_STEPS` 2 → **1**。因为溶解期间每帧都画，总扩散步数 = 帧数 × 每帧步数，而帧数 ∝ `FADE_MS`；只把时长翻倍的话褪色确实慢了一半，但墨在消失过程中会多摊一倍 —— 那不是「同一段动画放慢」，而是「换了一段更糊的动画」。这个时长至此动过三次：1500 → 750 → 撤回 1500 → 本次 3000。\n',
-        en: '㉙ The diffusion pace now spans a whole cycle, and a bug that would have thrown on page load was fixed. The author asked for the spreading to finish exactly as the next cycle finishes filling, leaving no gap in time, so the step interval became a derived value, the cycle length divided by the step count, rather than a hardcoded 1500 milliseconds which had the fifteen steps finishing in 22.5 seconds and then nothing happening for the remaining 67.5.\nThe temporal dead zone bug: on the first attempt the interval was declared before the step count it references, and since const declarations have a temporal dead zone the script would have thrown on load and the whole ink layer would never have started. A syntax check does not catch this and passed; it was found only by running the page in a browser. Passing a syntax check is not the same as running.\nA false report: an earlier edit script turned out to have had no write statement at all while unconditionally printing that the file had been written, and two lines had in fact never been changed. The practice now is to re-read the file after writing and confirm item by item that the new values are present and the old ones gone.\n㉚ The restart dissolve runs at half speed, at the author request that the old ink disappears too fast. Two constants changed and they had to change together: the fade duration from 1500 to 3000 milliseconds and the per-frame diffusion steps from two to one. During the dissolve every frame is drawn, so the total diffusion is the frame count times the per-frame steps, and the frame count is proportional to the duration; doubling the duration alone would have halved the fade but doubled the smearing on the way out, which is not the same animation slowed down but a different, blurrier one. This duration has now moved three times: 1500, then 750, then retracted back to 1500, and now 3000.\n'
+      brief: {
+        zh: '扩散步间隔由写死 1500ms 改为 90000÷15=6000ms 铺满整轮；重启溶解 FADE_MS 1500→3000、每帧步数 2→1',
+        en: 'The diffusion step interval is derived as 90000÷15=6000ms instead of a hardcoded 1500ms, and the restart dissolve went 1500→3000ms with one diffusion step per frame.'
       },
       media: ''
     },
@@ -593,9 +620,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '换轮那一帧的「瞬间全屏阶梯式变浅」已消除',
         en: 'The instantaneous full-screen step at the cycle handover removed'
       },
-      body: {
-        zh: '㉛ 换轮那一帧的「瞬间全屏阶梯式变浅」已消除。作者报告一轮铺满、刚进入晕染阶段时整屏会阶梯式浅一下。定位：换轮分支是 `bake()` 紧接 `decayBase()`，两者在同一帧执行，于是上一帧的「旧墨 ⊕ 刚跑满的这一轮」在这一帧被整体乘 0.92 —— **全画面在一帧里掉 8%**（实测均值 41.169 → 37.500、最深 127 → 116，分毫不差）。这不是动画而是一次乘法，锁多少帧率都盖不住。改法：把每轮那 0.92 摊进本轮的 15 次扩散步（每步约 ×0.99446），每轮总量不变、平衡点分毫不动；A/B 对照（同一次运行、同一时序、每次只开一个页面并置前）两组各 22 轮，平衡点完全一致。实施中另修一个真问题：改用逐步衰减后，预算若按「距上次多少毫秒」触发，每一步会被帧量化拖后几毫秒，15 步累计超过 90000ms，**第 15 步永远被换轮截掉**（实测每轮只有 14 步、损失通道变成 0.92513 而非 0.92）；改为按 `acc` 算之后恰好 15 步。\n**方法论教训**：这一轮先按「少一步 → 少减 0.6% → 平衡点偏深」解释了一个实测到的平衡点偏移并据此改了调度 —— 调度本身改对了，但**那个偏移是我的测量错误**（两组数取自不同采样相位、且同时开着多个标签页，后台标签的 rAF 被浏览器降频），不可比。另：测试一度用带假麦克风的 Chrome 直接连系统声卡放音，作者听到了周期性脉冲声；**涉及音频的测试必须加 `--mute-audio`**。\n',
-        en: '㉛ The instantaneous full-screen step at the cycle handover is gone. The author reported that at the moment a cycle finishes filling the whole screen lightens in a step. The cause was that the handover ran the bake immediately followed by the decay in the same frame, so a frame showing old ink composited with the cycle that had just filled was multiplied by 0.92 as a whole, dropping the entire screen by eight per cent in one frame, measured from 41.169 to 37.500 in the mean and from 127 to 116 at the deepest pixel. That is a single multiplication, not an animation, and no frame-rate cap can hide it. The fix spreads each cycle share of the decay across that cycle fifteen diffusion steps, leaving the total per cycle and therefore the equilibrium unchanged; an A/B under identical conditions over 22 cycles each showed the equilibrium matching. A second, genuine problem was found while implementing it: with a per-step decay, scheduling the steps by elapsed milliseconds lets frame quantisation push each one late, so fifteen steps exceed the cycle and the fifteenth is always cut off, measured at 14 steps per cycle and a loss of 0.92513 instead of 0.92; scheduling from the same clock the handover uses gives exactly fifteen.\nMethodology lessons: this round first explained a measured equilibrium shift by the missing step and changed the scheduling on that basis, and while the scheduling change was right the shift itself was a measurement error, since the two sets of numbers came from different sampling phases with several background tabs open whose animation frames the browser throttles. And the testing at one point used Chrome with a fake microphone wired to the system sound card, so the author heard a periodic pulse; audio tests must always be muted.\n'
+      brief: {
+        zh: '换轮时 bake 与衰减同帧，整屏一帧掉 8%（均值 41.169→37.500）；0.92 摊进 15 步，实测每轮恰好 15 步',
+        en: 'Bake and decay ran in one frame at handover, dropping the screen 8% (mean 41.169→37.500); the 0.92 now spreads over 15 diffusion steps per cycle.'
       },
       media: ''
     },
@@ -605,9 +632,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '两项设计定案：终态不是三档结构、隐藏标签页照常计时',
         en: 'Two decisions: the end state has no tiers, and a hidden tab keeps counting'
       },
-      body: {
-        zh: '㉜ 两项定案，均无代码改动。① **终态不是三档结构**：「最淡 10% / 浅 70% / 深 20%」在动态平衡的终点并不存在，画面收敛成一片中间灰（实测均值约 66%、峰值 200–225 摆动）。作者看过之后定案保留（原话「合理，就这样」）。已记入文档，并注明若要保住三档可减小扩散或把 `base` 分层，但**不得在未询问作者的情况下自行改掉**。② **隐藏标签页照常计时**：作者定案「音频不应该停，墨水也应该在后台不停」，代码里没有任何 `visibilitychange` / `document.hidden` 分支，也**不加**「后台挂起」逻辑 —— 切后台时声音仍在跑，计时停下来反而与音频不一致。原先文档里写的是「页面不可见时计时整体挂起」，与代码相反，已改正。\n',
-        en: '㉜ Two decisions recorded, neither with any code change. The end state is not the three-tier structure: the ten, seventy and twenty per cent bands do not exist at the equilibrium, which converges to a sheet of middle grey. The author saw this and decided to keep it. It is recorded in the guides with a note that holding the tiers would mean reducing diffusion or splitting the accumulation into bands, and that it must not be changed without asking. And a hidden tab keeps counting: the author decided that the audio should not stop and the ink should not stop in the background either, so there is no visibility branch anywhere in the code and no suspend-on-hidden logic is to be added, because the sound keeps running while the tab is in the background. The passage in the guide that said the timer was suspended has been corrected.\n'
+      brief: {
+        zh: '两项定案：终态收敛为中间灰（实测约 66%），三档结构不保留；隐藏标签页照常计时，文档相反说法已改正',
+        en: 'Two decisions: the end state converges to middle grey (measured mean about 66%), so the three-tier structure is dropped, and a hidden tab keeps counting.'
       },
       media: ''
     },
@@ -617,9 +644,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '两份文档与两个代码注释一次性对齐到代码',
         en: 'Both guides and two code comments brought into line with the code'
       },
-      body: {
-        zh: '㉝ 两份文档 + 两个代码注释一次性对齐到代码（只改说明文字与注释，未动任何逻辑）。清掉的是历次改动漏改的残留：**引用已经不存在的常量**（`CYCLE_MAX`、`BLOOM_TO`、`FADE_RATE` 在正文里被当作现行常量讲解，甚至在教「想更慢就调小 `CYCLE_MAX`」）；**数字过时**（`V_GAIN` 10 → 8、`ANG_JITTER` 0.5 → 0.6、画布钳位 220–460 → 300–800、canvas「视口 / 3」→「/ 2」、深色带 persistence 0.62 → 0.68、旧墨扩散「每 1.5 秒一步 / 60 步 / 半径 5.1 内部像素」→「每 6 秒 / 15 步 / 2.6」）；**说的行为与代码相反**（状态表说重启时「并入累积层（永久）」，实际是整场洗掉；STYLEGUIDE 说「长时间后画面会饱和」，已被动态平衡取代）。**生成耗时那个数是错的** —— 文档反复引用的「约 106ms」经实测为**约 52ms**（1/3 分辨率），1/2 分辨率实测约 108ms，像素数之比 2.25、耗时之比 2.08，基本线性。第一轮的实测值也全部换成本次实测（旧写 max = 173/255，当前 `DARK_MAX = 0.50` 下实测 127/255）。做法：所有替换写在同一个脚本里逐条打印匹配数、不为 1 就整体中止，写完逐项回读。',
-        en: '㉝ Both guides and two code comments were brought into line with the code, changing explanatory text and comments only and touching no logic. What was removed is the residue of earlier changes that were only partly propagated: constants that no longer exist and were still being explained as current, one passage even advising that the single-cycle cap be lowered to slow the work down; stale numbers, including the channel contrast, the jitter, the canvas clamp, the failure-state canvas resolution, the dark band persistence and the ageing diffusion figures; and statements that contradicted the code, among them a restart described as merging into the accumulation layer permanently when it in fact washes the whole session away. The generation cost repeatedly quoted in the documentation was simply wrong: the figure of about 106 milliseconds measures about 52 at one third resolution and about 108 at one half, essentially linear with pixel count. The measured values for the first cycle were replaced with this round measurements as well. Method: every replacement was made by a single script that printed the match count for each item and aborted without writing if any count was not exactly one, and the file was then read back item by item'
+      brief: {
+        zh: '文档与代码注释对齐：生成耗时实测 52ms（原写 106ms），V_GAIN 10→8、画布钳位 220–460→300–800，并清掉三个已不存在的常量',
+        en: 'Docs and code comments realigned to the code: generation cost measures 52ms, not the documented 106ms, and V_GAIN goes 10 to 8 with the canvas clamp now 300–800.'
       },
       media: ''
     },
@@ -629,9 +656,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: 'SPECTRAL DISSECTOR 更新 26.09.12：新增 Dry 开关，修复 Perc Band 在 Band 1-9 中的信号复制',
         en: 'SPECTRAL DISSECTOR update 26.09.12: Dry switch added; Perc Band duplication in Bands 1-9 fixed'
       },
-      body: {
-        zh: 'SPECTRAL DISSECTOR 发布 26.09.12。作品页在 2026.08.13 条目之后追加 2026.09.12 条目，并把新的下载链接（`data/spectral-dissector/Spectral Dissector 26.09.12.zip`，约 62KB，内含 Spectral Separator.amxd）置于正文最顶端、第一张图之前；同时移除 2026.08.13 的下载链接与旧包，站点只保留最新版本。\n本次插件更新两项：新增 Dry 开关（干路改走与十个频带相同的 pfft~，消除此前 84ms 的时差）；修复 Perc Band 未真正从 Band 1-9 中分离、信号在其中另有一份复制的问题。技术细节写在作品页的那条条目里，此处不重复。\n另统一了介绍正文的标点与措辞（并列结构与顿号、省略号、Max for Live 写法等）。',
-        en: 'Spectral Dissector release 26.09.12. The project page gains a 2026.09.12 entry after the 2026.08.13 one, with the new download link placed at the very top of the body above the first image, and the 2026.08.13 link and archive removed so that only the latest version is offered.\nTwo changes in the plugin itself: a new Dry switch, the dry path rerouted through the same FFT stage as the ten bands to remove an 84ms offset; and a fix for the Perc Band not having been separated out of Bands 1 to 9 as intended, its signal having been duplicated there. The technical detail is written up in the page entry itself and is not repeated here.\nThe introduction text was also copy-edited for punctuation and wording.'
+      brief: {
+        zh: '作品页追加 26.09.12 条目并只留最新包（约 62KB）；插件新增 Dry 开关消除 84ms 时差，并修掉 Perc Band 在 Band 1-9 里的信号复制',
+        en: 'Page gains a 26.09.12 entry with only the ~62KB latest archive; the plugin adds a Dry switch removing an 84ms offset and fixes Perc Band duplication in Bands 1–9.'
       },
       media: ''
     },
@@ -641,9 +668,9 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '首页 The JustType Study 卡片封面裁切上移：机箱上下留白对齐',
         en: 'Homepage card cover for The JustType Study cropped upward: equal margins above and below the case'
       },
-      body: {
-        zh: '将 The JustType Study 首页卡片封面的垂直裁切位置上移，使模块合成器机箱上、下边缘到卡片上、下边缘的距离相等。依据封面图（1200×901）中机箱边界位置（上边缘 y≈162、下边缘 y≈795，垂直中心 y≈478.5，比图片中心低约 28px）计算 object-position：桌面卡片（460×300）取 50% 72.5%；移动端（80vw×46vw，最大 380×240）精确值随屏宽在 62.9%～68.9% 间变化，取 65% 后全移动端误差不超过约 1.8px。实现：index.html 为该卡片 img 增加 card-image--justtype 类，css/index.css 增加对应规则（桌面与 @media(max-width:768px) 两档），index.css 缓存版本号升至 v=3。仅影响首页该卡片；项目页顶部图与其他卡片封面不变。STYLEGUIDE 卡片封面表同步说明。',
-        en: 'Moved the vertical crop of The JustType Study homepage card cover upward so the distances from the modular case top and bottom edges to the card top and bottom edges are equal. Based on the case boundaries measured in the cover image (1200×901; top edge y≈162, bottom edge y≈795, vertical center y≈478.5, about 28px below the image center), the object-position values are: desktop card (460×300) 50% 72.5%; mobile (80vw×46vw, max 380×240) exact values range 62.9%–68.9% with viewport width, and 65% keeps the worst mobile error under ~1.8px. Implementation: index.html adds the card-image--justtype class to that card image, and css/index.css adds the matching rule (desktop plus a @media(max-width:768px) override), with the index.css cache version bumped to v=3. Only the homepage card is affected; the project-page top image and other card covers are unchanged. The STYLEGUIDE card cover table was updated accordingly.'
+      brief: {
+        zh: '首页卡片封面裁切上移，按封面 1200×901 中机箱中心 y≈478.5 取 object-position 72.5%，移动端 65% 时误差不超 1.8px',
+        en: 'Homepage card cover crop moved up: object-position 72.5% from the case centre at y≈478.5 in the 1200×901 image; mobile 65% holds error under 1.8px.'
       },
       media: ''
     },
@@ -653,340 +680,505 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
         zh: '安全与稳定性修复：本地服务器路径绕过、WWHBH 双击竞态、项目页空白回归、清除历史中的本地私钥',
         en: 'Security & stability fixes: local server path bypass, WWHBH double-click race, project page blank regression, and removal of localhost private key from Git history'
       },
-      body: {
-        zh: '修复本地服务器的黑名单大小写绕过（macOS 大小写不敏感文件系统上 /scripts/LOCALHOST-KEY.PEM 可绕过）并收紧 --host 空值行为；新增 HTTPS 缺证书时按 localhost-san.cnf 自动生成。WWHBH 增加 starting 锁与 isSecureContext 短路，避免双击创建两套麦克风回授图。riverrun 调整触摸屏笔记本鼠标混音判定。首页 resize/orientationchange 在动画后补跑 reindex，reduced-motion 下动画计时归零。补齐 lightbox 双语文案与缓存版本号，并同步更新 STYLEGUIDE / PERFORMANCE / 程序编写说明。修复 project.js 误删 fillContent 导致的项目页空白回归。使用 git-filter-repo 将 scripts/localhost-key.pem 与 scripts/localhost-cert.pem 从全部历史中移除并强推远程，本地 key/cert 已轮换。',
-        en: 'Fixed case-insensitive forbidden-path bypass in the local server (macOS case-insensitive filesystem could serve /scripts/LOCALHOST-KEY.PEM), tightened empty --host handling, and added automatic HTTPS cert generation from localhost-san.cnf when key/cert are missing. WWHBH now has a starting lock and isSecureContext short-circuit to prevent double-activation feedback loops. riverrun mouse-mixing detection improved for touchscreen laptops. Homepage reindexes after animation if resize/orientationchange arrived mid-animation, and reduced-motion now zeroes animation timers. Lightbox labels localized, cache-bust versions completed, and STYLEGUIDE / PERFORMANCE / 程序编写说明 updated. Fixed the project.js fillContent deletion regression that blanked project pages. Used git-filter-repo to remove scripts/localhost-key.pem and scripts/localhost-cert.pem from all history, force-pushed the clean branch, and rotated the local key/cert.'
+      brief: {
+        zh: '本地服务器黑名单大小写绕过已堵，WWHBH 加 starting 锁避免双击建两套回授图；project.js 误删 fillContent 的空白回归修好，历史里的 key/cert 用 git-filter-repo 清除',
+        en: 'Closed the local server\'s case-insensitive blacklist bypass, gave WWHBH a starting lock against double feedback graphs, fixed the fillContent regression that blanked project pages, and purged key/cert from history.'
       },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'SPECTRAL DISSECTOR 更新 26.08.13：附下载链接与 Bug 修复声明', en: 'SPECTRAL DISSECTOR update 26.08.13: download link & bug-fix note' },
-      body:  { zh: '在 SPECTRAL DISSECTOR 作品页末尾（2026.07.04 条目之后）追加 2026.08.13 新条目：声明「所有已知功能性Bug已经修复，行为符合预期。」（en: All known functional bugs have been fixed; the plugin now behaves as expected.），并提供插件压缩包下载链接——Spectral Dissector 26.08.13.7z（约 42KB，7-zip 格式，存放于 data/spectral-dissector/），链接样式沿用 the-just-type-study 的 tt-download 下载样式（project.css 的 .tt-download）。', en: 'Appended a new 2026.08.13 entry at the end of the SPECTRAL DISSECTOR page (after the 2026.07.04 entry), stating that all known functional bugs have been fixed and the plugin now behaves as expected (zh: 所有已知功能性Bug已经修复，行为符合预期。), and adding a download link for the plugin archive — Spectral Dissector 26.08.13.7z (~42KB, 7-zip format, stored under data/spectral-dissector/) — reusing the tt-download link style from the-just-type-study (.tt-download in project.css).' },
+      brief: {
+        zh: '作品页末尾追加 26.08.13 条目，声明已知功能性 Bug 已修复，并附 42KB 的 7z 包下载链接，样式沿用 tt-download',
+        en: 'Appended a 26.08.13 entry stating all known functional bugs are fixed, with a download link to the ~42KB 7z archive using the existing tt-download style.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: '统一合作作品的开头署名格式（中英文）', en: 'Unified the opening credit format of collaborative works (zh & en)' },
-      body:  { zh: '将四件合作作品——ECCE HOMO（与Allen）、EDGEDGEDGE（与钢铁大腿）、SPECTRAL DISSECTOR（与闫开）、6U104HP（与Ciiyte）——作品页开头的中英文署名统一为「与[名字]共同创作/设计的作品。」（en: A work co-created/co-designed with [name].），封面致谢统一为「封面图由[名字]拍摄/设计。」（en: Cover image photographed/designed by [name].）。具体：ECCE HOMO 删去「这是」；EDGEDGEDGE 删去「这是」，英文 Cover photo 改为 Cover image photographed；SPECTRAL DISSECTOR 由「本作品与闫开共同创作。」/ "Co-created with Yan Kai." 改为「与闫开共同创作的作品。」/ "A work co-created with Yan Kai."；6U104HP 开头改为「与Ciiyte共同设计的作品。封面图由等香鱼拍摄。」/ "A work co-designed with Ciiyte. Cover image photographed by 等香鱼."，原「这是我参与设计的模块合成器电源箱，由Ciiyte主导。」中的「由Ciiyte主导」信息并入正文首段（zh: 由Ciiyte主导设计的…；en: whose design was led by Ciiyte）。', en: 'Unified the opening credit format (zh & en) on the project pages of the four collaborative works — ECCE HOMO (with Allen), EDGEDGEDGE (with Gangtie Datui), SPECTRAL DISSECTOR (with Yan Kai), and 6U104HP (with Ciiyte) — to "A work co-created/co-designed with [name]." (zh: 与[名字]共同创作/设计的作品。), with cover credits standardized as "Cover image photographed/designed by [name]." (zh: 封面图由[名字]拍摄/设计。). Specifically: ECCE HOMO and EDGEDGEDGE dropped the leading "This is / 这是"; EDGEDGEDGE "Cover photo" became "Cover image photographed"; SPECTRAL DISSECTOR changed from "Co-created with Yan Kai." / 本作品与闫开共同创作。 to "A work co-created with Yan Kai." / 与闫开共同创作的作品。; 6U104HP now opens "A work co-designed with Ciiyte. Cover image photographed by 等香鱼." / 与Ciiyte共同设计的作品。封面图由等香鱼拍摄。, and the "led by Ciiyte" nuance moved into the first body paragraph.' },
+      brief: {
+        zh: 'ECCE HOMO、EDGEDGEDGE、SPECTRAL DISSECTOR、6U104HP 开头署名统一为「与[名字]共同创作/设计的作品。」，封面致谢同为「封面图由[名字]拍摄/设计」',
+        en: 'Standardised the opening credit on four collaborative works as a work co-created or co-designed with the partner, and the cover credit as photographed or designed by them.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：延迟拆为双平行（短 + 长），各自带反馈与微抖', en: 'riverrun mixer: delay split into two parallel lines (short + long), each with its own feedback & detune' },
-      body:  { zh: '将 FX 链中的单延迟拆为两条平行延迟：fxDelay（现有，共振点 0.15–0.8s / 基础 0.42s）与 fxDelay2（长延迟，取 0.9–1.4s 即约 2.2×短延迟、钳位上下限）。两者并联自 fxDrive，输出都经 swellGain → fxReturn，各自独立反馈回混响前（fxFb 由共振点控制 0.08–0.19；fxFb2 恒为其 0.6，更小），并各配一个独立 LFO 微抖（±12ms 与 ±15ms、速率随机 0.08–0.2Hz）。效果：drone 更厚实，短延迟提供节奏感、长延迟提供空间尾巴，双反馈环叠加使背景更丰富且互不锁相（两个随机速率的微抖避免对齐成单音）。frame 循环的三处（共振点混合 / 中性基础 / 无麦克风）均同步设置两条延迟与反馈。', en: 'Split the single delay in the FX chain into two parallel lines: fxDelay (existing; resonance zones 0.15–0.8s / baseline 0.42s) and fxDelay2 (long delay, 0.9–1.4s i.e. ~2.2× the short one, clamped). Both fan out from fxDrive, both feed swellGain → fxReturn, each has its own independent feedback back before the reverb (fxFb zone-controlled 0.08–0.19; fxFb2 always 0.6× of it, smaller), and each gets its own LFO detune (±12ms and ±15ms, rate randomized 0.08–0.2Hz). Result: a thicker drone — the short delay gives rhythmic pulse, the long delay gives a spatial tail, and the two feedback loops stack without locking into a single tone (two randomized detune rates avoid alignment). All three frame states (zone blend / neutral baseline / no mic) set both delays and both feedbacks.' },
+      brief: {
+        zh: 'FX 链单延迟拆成两条平行延迟：长延迟 0.9–1.4s 约 2.2× 短延迟，各自反馈 0.08–0.19 与 0.6 倍，并配 ±12ms/±15ms 独立微抖',
+        en: 'Split the single FX delay into two parallel lines, the long one at 0.9–1.4s (about 2.2x the short), each with its own feedback and a ±12ms or ±15ms detune.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：反馈降低并去单音化 + drone 音量下限抬高', en: 'riverrun mixer: feedback lowered & de-tonalized + drone volume floor raised' },
-      body:  { zh: '四项调整回应反馈。① 反馈整体调小：共振点反馈从 0.24–0.36 降到 0.11–0.19，中性基础 0.18→0.10，无麦克风下限 0.12→0.08。② 去单音化：延迟时间加 LFO 微抖（sine ±12ms、速率每次启动随机 0.08–0.2Hz）打破反馈环固定梳状共振，消除「总是一个类正弦波」的单音感。③ drone 输出音量下限抬高：`fxReturn = 0.2 + 0.3×包络`（最小 0.2、最大 0.5——最大保持之前的合适值，最小从 ~0 提升到 0.2，drone 背景不再过小）。④ 去除随干声的相对钳制（旧闭路 fx ≤ 干声×0.5 在干声弱时把输出压得过低，且造成到顶后难以下降），改为绝对防爆兜底（FX 输出 RMS > 0.35 才按比例压下）。attack 50ms / decay 150ms 呼吸感不变。', en: 'Four adjustments responding to feedback. ① Feedback lowered overall: resonance-zone feedback drops from 0.24–0.36 to 0.11–0.19, the neutral baseline 0.18→0.10, and the no-mic floor 0.12→0.08. ② De-tonalization: a sine LFO (±12ms, rate randomized 0.08–0.2Hz each start) wobbles the delay time, breaking the feedback loop\'s fixed comb resonance and removing the monotonous sine-like tone. ③ Drone output floor raised: fxReturn = 0.2 + 0.3×envelope (min 0.2, max 0.5 — the max keeps the previous comfortable level, the min rises from ~0 to 0.2 so the drone never gets too quiet). ④ Removed the dry-relative clamping (the old closed-loop fx ≤ dry×0.5 pushed the output too low when the dry was weak and made the level hard to come down after peaking); replaced by an absolute anti-blowup guard (only pulls down proportionally when the FX output RMS exceeds 0.35). The 50ms-attack / 150ms-decay breathing is unchanged.' },
+      brief: {
+        zh: '共振反馈 0.24–0.36 降到 0.11–0.19，drone 下限从约 0 提到 0.2，并去掉干声相对钳制、改为 RMS 超 0.35 才压',
+        en: 'Resonance feedback dropped from 0.24–0.36 to 0.11–0.19, the drone floor rose from about 0 to 0.2, and the dry-relative clamp became an absolute guard above 0.35 RMS.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：FX 输出电平提升（-12dB → -6dB，包络满度参考降低）', en: 'riverrun mixer: FX output level raised (-12dB → -6dB, lower envelope reference)' },
-      body:  { zh: '按反馈「FX 音量太小」提升输出电平：包络跟随器的输出系数从 0.25（约 -12dB）提高到 0.5（约 -6dB），干声 RMS 满度参考从 0.25 降到 0.2（包络更常达到 1），闭路硬顶兜底同步放宽到 fx ≤ 干声×0.5。attack 50ms / decay 150ms 的呼吸感不变；FX 仍是明显低于干声的背景层，但可闻度显著提高。', en: 'Per the feedback that the FX volume was too low, the output level was raised: the envelope follower scale went from 0.25 (~-12dB) to 0.5 (~-6dB), the dry-RMS full-scale reference dropped from 0.25 to 0.2 (so the envelope reaches 1 more often), and the closed-loop hard ceiling was relaxed to fx ≤ dry×0.5. The 50ms-attack / 150ms-decay breathing stays the same; the FX remains a background layer clearly below the dry signal but is now much more audible.' },
+      brief: {
+        zh: 'FX 输出电平从约 -12dB 提到 -6dB：包络系数 0.25→0.5，干声满度参考 0.25→0.2，硬顶放宽到干声×0.5',
+        en: 'FX output raised from about -12dB to -6dB: the envelope scale went 0.25 to 0.5, the dry full-scale reference 0.25 to 0.2, and the hard ceiling to dry×0.5.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：干声包络跟随控制 FX 输出音量（attack 50ms / decay 150ms）', en: 'riverrun mixer: dry-signal envelope follower drives FX output volume (attack 50ms / decay 150ms)' },
-      body:  { zh: '将 FX 输出音量的控制改为干声包络跟随：frame 循环里双 Analyser 测干声与 FX 的 RMS，单极点包络跟随器（满度参考 0.25 RMS，上升 time constant 50ms、下降 150ms）输出 0..1 包络，`fxReturn.gain = 0.25×包络`（保持约 -12dB 上限），原闭路约束（fx ≤ 干声×0.251）保留作硬顶兜底。效果：drone 背景随干声动态呼吸——干声起来 50ms 内 FX 跟上，干声落下时 FX 以 150ms 缓慢衰减，起音快、尾巴长；干声静默时 FX 输出随之归零（与 -12dB 规则一致，反馈环仍持续喂养）。单测：阶跃响应 attack 63%@~50ms、decay 63%@~150ms，满包络输出增益恒 0.25。', en: 'Switched the FX output volume control to a dry-signal envelope follower: each frame the dual analysers measure dry and FX RMS, a one-pole envelope follower (full-scale reference 0.25 RMS; rise time-constant 50ms, fall 150ms) outputs a 0..1 envelope, and fxReturn.gain = 0.25×envelope (keeping the ~-12dB ceiling); the previous closed-loop constraint (fx ≤ dry×0.251) stays as a hard ceiling. Result: the drone background breathes with the dry dynamics — FX catches up within 50ms when the dry swells, and trails off over 150ms when it falls, with a fast attack and a long tail; when the dry is silent the FX output follows to zero (consistent with the -12dB rule, while the feedback loop keeps feeding). Unit-tested: step response attack 63% at ~50ms, decay 63% at ~150ms, full envelope output gain always 0.25.' },
+      brief: {
+        zh: 'FX 音量改由干声包络跟随控制，满度 0.25 RMS、起 50ms 落 150ms，fxReturn 增益 0.25×包络；阶跃实测 63% 分别落在 50ms 与 150ms',
+        en: 'FX volume now follows a dry envelope: full scale 0.25 RMS, 50ms rise and 150ms fall, gain 0.25×envelope; step tests hit 63% at about 50ms and 150ms.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：三个共振效果圈互相重叠（拾取半径动态加大）', en: 'riverrun mixer: the three resonance zones now overlap (pickup radius enlarged dynamically)' },
-      body:  { zh: '将三个共振点的拾取半径加大到互相重叠：位置收拢到面板中部（0.30–0.70），半径按生成时的最大两两间距动态计算——直径 = 最大间距 × 1.25（下限 0.15×min(W,H)），存为相对 min(W,H) 的比例（zones.RzFrac）随窗口缩放同步变化。效果：麦克风几乎始终处于三音色混合场中，光标移动时暗长/亮闪/中雾连续渐变（距离 smoothstep 加权混合），不再有明显的「远离所有点回退中性」的空区。单测：200 轮桌面+手机画布两两重叠全部成立。', en: 'Enlarged the pickup radius of the three resonance zones so they overlap: positions are gathered toward the middle of the panel (0.30–0.70) and the radius is computed dynamically from the largest pairwise distance at generation — diameter = max pairwise distance × 1.25 (floor 0.15×min(W,H)), stored as a ratio of min(W,H) (zones.RzFrac) so it scales with window resizes. Result: the microphone is almost always inside the three-timbre mixing field, moving the cursor crossfades continuously between dark-long / bright-shimmer / mid-mist (smoothstep distance weights), with no more empty area that falls back to neutral. Unit-tested: 200 rounds across desktop and mobile canvases, pairwise overlap always holds.' },
+      brief: {
+        zh: '三点位置收拢到 0.30–0.70，半径按最大两两间距 ×1.25 动态计算（下限 0.15×min(W,H)），200 轮桌面与手机画布重叠全成立',
+        en: 'The three resonance points moved to 0.30–0.70 with radii sized from the largest pairwise distance ×1.25 (floor 0.15×min(W,H)); 200 desktop and mobile rounds all overlap.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：3 个高反馈共振点（音色差异大，每次启动随机）', en: 'riverrun mixer: three high-feedback resonance points (distinct timbres, randomized every start)' },
-      body:  { zh: '将「麦克风位置 → 效果器参数」改为 3 个高反馈共振点驱动（替代此前的随机梯度映射）：makeFxZones() 每次启动在面板随机放置 3 个音色点（黑箱，不绘制任何标记），反馈略高于中性基础（0.24–0.36 vs 0.18，避免过度自激），三个音色原型差异极大——①暗长（长延迟 0.6–0.8s、低频衰减 EQ 300–500Hz/-6~-4dB、慢颤音 0.3–0.5Hz、深 swell、低 drive）、②亮闪（短延迟 0.15–0.28s、高频提升 EQ 1.5–2.5kHz/+3~5dB、快颤音 3.5–5Hz、浅 swell、高 drive 1.5–1.7）、③中雾（中延迟 0.38–0.52s、平 EQ、中速颤音）——每个原型在各自区间内随机取值，并按随机顺序分配到位置。frame 循环按麦克风到各点的距离做 smoothstep 加权混合：靠近某点即该点音色接管，远离所有点回退中性基础（反馈 0.18、延迟 0.42s 等）；无麦克风保持下限。-12dB 约束与 drone 恒有下限不变。单测：200 次生成全部合法，音色分离清晰（延迟 ~0.2/0.45/0.7s、EQ 频率 438/837/2180Hz）。', en: 'Replaced the mic-position to effect mapping with three high-feedback resonance points (superseding the random gradient profile): makeFxZones() places 3 timbre points at random panel positions each start (black box — nothing is drawn on the canvas), with feedback slightly above the neutral baseline (0.24–0.36 vs 0.18, avoiding excessive self-oscillation), and three strongly contrasting timbre archetypes — ① dark-long (long delay 0.6–0.8s, low-cut EQ 300–500Hz / -6~-4dB, slow tremolo 0.3–0.5Hz, deep swell, low drive), ② bright-shimmer (short delay 0.15–0.28s, high-shelf EQ 1.5–2.5kHz / +3~5dB, fast tremolo 3.5–5Hz, shallow swell, drive 1.5–1.7), ③ mid-mist (medium delay 0.38–0.52s, flat EQ, mid tremolo) — each archetype randomizes within its own ranges and is assigned to a random position. The frame loop blends by smoothstep distance weights: near a point its timbre takes over, far from all points it falls back to a neutral baseline (feedback 0.18, delay 0.42s etc.); no mic keeps the floors. The -12dB constraint and drone floors are unchanged. Unit-tested: 200 generations all valid, timbres clearly separated (delay ~0.2/0.45/0.7s, EQ 438/837/2180Hz).' },
+      brief: {
+        zh: 'makeFxZones() 每次启动随机放 3 个高反馈音色点（反馈 0.24–0.36），暗长/亮闪/中雾按距离 smoothstep 混合；200 次实测延迟约 0.2/0.45/0.7s',
+        en: 'makeFxZones() drops 3 high-feedback timbre points (0.24–0.36) at random each start, blending dark-long, bright-shimmer and mid-mist by smoothstep distance; 200 runs separate delays at about 0.2/0.45/0.7s.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：效果器位置映射每次启动随机化', en: 'riverrun mixer: effects-position mapping randomized on every start' },
-      body:  { zh: '将「麦克风位置 → 效果器参数」的映射改为每次启动随机生成（与音轨洗牌同机制）：makeFxMap() 为 send / 反馈 / 延迟 / EQ / 颤音速率与深度 / drive / swell 速率与谷底共 9 个参数各随机选取坐标（ux、uy 或径向 r）与斜率方向（正/负），frame 循环按画像取值映射到既有范围（发送 0.08–0.5、反馈 12–24%、延迟 0.28–0.62s、EQ ±3dB、颤音 0.6–3Hz/4–10%、drive 1.15–1.6、swell 0.18–0.63Hz/谷底 0.5–0.8），drone 恒有下限与 -12dB 约束不变。单测：300 次启动全部生成不同画像，映射值恒在 0..1。', en: 'Randomized the mic-position to effect-parameter mapping on every start (same mechanism as the track shuffle): makeFxMap() picks, for each of 9 parameters (send, feedback, delay, EQ, tremolo rate & depth, drive, swell rate & trough), a random coordinate (ux, uy or radial r) and slope direction (+/-); the frame loop maps each according to the profile into its existing range (send 0.08–0.5, feedback 12–24%, delay 0.28–0.62s, EQ ±3dB, tremolo 0.6–3Hz / 4–10%, drive 1.15–1.6, swell 0.18–0.63Hz / trough 0.5–0.8); the drone floors and the -12dB constraint are unchanged. Unit-tested: 300 starts all produce distinct profiles and mapped values stay within 0..1.' },
+      brief: {
+        zh: 'makeFxMap() 让 9 个参数的坐标与斜率每次启动重新随机，取值仍在既有区间内；300 次启动实测画像全部不同',
+        en: 'makeFxMap() rerandomizes the coordinate and slope of 9 parameters on every start, keeping values inside their existing ranges; 300 starts all produced distinct profiles.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 作品页：交互式空间混音器（复现 The FET Mixer）与手机端自动播放修复', en: 'riverrun work page: interactive spatial mixer (recreating The FET Mixer) + mobile auto-play fix' },
-      body:  { zh: '为 riverrun 作品页实现了交互式空间混音器，在网页上复现 The FET Mixer 的核心交互：12 条《芬尼根的守灵夜》有声书音轨在二维面板上排布为带编号的黑点（4 列 × 3 行），点半径随响度脉动，全部同步循环播放；用户以光标（虚拟麦克风：十字 + 虚线外圈 + 增益弧）移动混音，离某轨越近该轨越响（smoothstep 距离衰减），多点触控每指一麦（饱和求和叠加）。原始素材 12 条 2ch/48kHz/Int16 WAV（各 133 秒）经 afconvert 转 AAC-LC m4a（约 92kbps，共约 17MB）部署 audio/riverrun/1..12.m4a；音频用 12 个 MediaElementAudioSourceNode 流式播放，每轨 source→Analyser→Gain(距离混音)→StereoPanner(按 X 固定声像)→masterGain→limiter→destination，START 手势内 play()+pause() 解锁（iOS 要求）、canplaythrough 后统一 currentTime=0 同步起播。新增 mixer 布局（layoutMap/getDescEl/fillContent 分支）、js/mixer-riverrun.js（App.initRiverrunMixer / App.refreshRiverrunMixer）、project-i18n 双语文案、project.css 样式与 INFO 浮层（载入描述与 related 互链），文档同步（程序编写说明.md 新增第 9 节并重编号、STYLEGUIDE.md 7f）。随后修复手机端严重问题：点击开始后无任何操作即全部音轨自动播放——根因是 iOS/Android 触摸时派发「兼容性鼠标」指针事件（pointerType=mouse），把鼠标麦克风钉在触摸点且不释放；改用 navigator.maxTouchPoints 可靠门控（matchMedia 在 iOS Safari 不可靠，会同时报 coarse 与 fine），pointerdown/move 的 mouse 分支与 activeMics() 双重排除，启动完成瞬间清空 touchMics，lostpointercapture/blur 兜底；另将 scripts/server.py 升级为 ThreadingHTTPServer（单线程曾被一条卡死的客户端连接阻塞导致整站超时）、为 HTML/JS/CSS 增加 Cache-Control no-cache（音频保持可缓存）、mixer 脚本引用加 ?v=3 强制刷新。', en: 'Built an interactive spatial mixer for the riverrun work page that recreates the core interaction of The FET Mixer: 12 audiobook tracks of Finnegans Wake are laid out as numbered black dots (4x3) whose radii pulse with loudness, all looping in sync; the cursor is a virtual microphone (crosshair + dashed ring + gain arc), closer means louder (smoothstep falloff), and multi-touch gives one mic per finger (saturating summation). The 12 source WAVs (2ch/48kHz/Int16, 133s each) were converted with afconvert to AAC-LC m4a (~92kbps, ~17MB total) at audio/riverrun/1..12.m4a; audio streams through 12 MediaElementAudioSourceNodes, each source→Analyser→Gain(distance mix)→StereoPanner(pan by X)→masterGain→limiter→destination, with play()+pause() unlock inside the START gesture (iOS requirement) and currentTime=0 sync start after canplaythrough. Added the mixer layout (layoutMap/getDescEl/fillContent branches), js/mixer-riverrun.js (App.initRiverrunMixer / App.refreshRiverrunMixer), bilingual i18n, CSS and an INFO overlay (description + related links), and updated the docs (section 9 in 程序编写说明.md with renumbering, STYLEGUIDE 7f). Then fixed a severe mobile bug: after tapping START every track auto-played with no interaction — iOS/Android dispatch compatibility-mouse pointer events (pointerType=mouse) during touches, parking the mouse mic at the touch point with no release. The mouse mic is now gated by navigator.maxTouchPoints (matchMedia is unreliable on iOS Safari, which reports both coarse and fine), excluded in both the pointer handlers and activeMics(), touchMics are cleared the moment start completes, with lostpointercapture/blur fallbacks; scripts/server.py was also upgraded to ThreadingHTTPServer (a single stalled client connection had frozen the whole site), Cache-Control no-cache added for HTML/JS/CSS (audio stays cacheable), and ?v=3 on the mixer script tag.' },
+      brief: {
+        zh: 'riverrun 作品页做成交互式空间混音器：12 条音轨按 4×3 排布，素材转成约 17MB 的 m4a；另修掉手机端点击即全部自动播放的问题',
+        en: 'Built the riverrun spatial mixer: 12 tracks laid out 4x3, sources converted to about 17MB of m4a, plus a fix for mobile auto-playing every track on tap.'
+      },
       media: 'img/riverrun.webp'
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：布局与增益 UI 迭代（桌面左右/手机上下，增益控件最终移除）', en: 'riverrun mixer: layout and gain-UI iterations (desktop side-by-side / mobile stacked; gain control eventually removed)' },
-      body:  { zh: '布局与增益 UI 的多轮迭代，最终形态：桌面端标题横跨顶部，下方左交互（舞台）/右说明（380px）等高对齐，面板 max-width:1080px 居中收窄；手机端交互舞台（40dvh）在上、说明无边框随页面自然滚动，标题下无副标题。增益控件演进：先加 HUD −/＋ 分段条（触屏 40px 触控目标）→ 手机端改为固定值 → 固定 100% 并隐藏提示 → 最终桌面与手机全部移除，增益仅由麦克风光标外圈半径与增益弧指示，桌面以滚轮调节。点簇格距调至 min(W,H)*0.26（占交互区约 56%），避免大片空白；每次加载与每次启动均以 Fisher-Yates 洗牌随机化音轨排布。', en: 'Multiple iterations on layout and the gain UI, converging on: desktop has the title spanning the top with the interaction (stage) left and a 380px description right, vertically aligned, panel max-width:1080px centered; mobile stacks the 40dvh stage on top with a borderless description scrolling with the page and no subtitle. The gain control evolved from a HUD −/+ segmented bar (40px touch targets) to a fixed value on mobile, to fixed at 100% with the readout hidden, and finally removed on both desktop and mobile — gain is now indicated only by the mic-cursor ring radius and gain arc, with the desktop scroll wheel as the control. The dot cluster spacing was tuned to min(W,H)*0.26 (~56% of the interaction area) to avoid large blank space; a Fisher-Yates shuffle randomizes track placement on every load and every start.' },
+      brief: {
+        zh: '桌面左交互右 380px 说明、手机 40dvh 舞台；增益控件从 40px 分段条一路减到全部移除，点簇格距 min(W,H)×0.26',
+        en: 'Desktop puts a 380px description beside the stage, mobile stacks a 40dvh stage, and the gain control shrank from a 40px segmented bar to nothing; dot spacing is min(W,H)×0.26.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: 'riverrun 混音器：内置效果器（drone FX 链）与交互/性能优化', en: 'riverrun mixer: built-in effects (drone FX chain) + interaction & performance' },
-      body:  { zh: '内置黑箱 FX 链（全局并行发送）：干声带少量混响（1.5s 合成 IR，固定 0.15 发送），另路 send（0.08–0.5 恒有下限）→ 2.6s 合成 IR 高 wet 混响 → 压缩 → EQ(520Hz ±3dB) → 颤音(深度 4–10%，微弱) → drive(tanh 曲线 + 前置增益 1.15–1.6，微弱) → 延迟(0.28–0.62s) → 恒有反馈(12–24%)回混响前 → 伪 reverse swell（锯齿 LFO + 斜坡整形慢升骤降包络：谷底 0.5–0.8 / 深度 0.2–0.5 / 速率 0.18–0.63Hz）→ 返回 limiter，drone 永不静默；全部参数由麦克风位置黑箱调制，并经 -12dB 动态约束（双 Analyser RMS，fxReturn ≤ 干声×0.251）始终退居前景之下。交互：移除鼠标单击（悬停即混音，按下/松开不介入）。性能优化：RAF 空闲降帧（播放 60fps / 空闲约 10fps 静态预览）、移动端 DPR 限 1.5、低端设备（hardwareConcurrency ≤ 4）analyser 512 并跳过拾音连线、音频 preload=metadata 弱网友好。', en: 'A built-in black-box FX chain (global parallel send): the dry signal carries a little reverb (1.5s synthesized IR, fixed 0.15 send), plus a separate send (0.08–0.5 with a permanent floor) into a 2.6s high-wet synthesized reverb → compressor → EQ (520Hz ±3dB) → subtle tremolo (depth 4–10%) → subtle drive (tanh curve + pre-gain 1.15–1.6) → delay (0.28–0.62s) → always-present feedback (12–24%) back before the reverb → pseudo-reverse swell (sawtooth LFO through ramp shaping: trough 0.5–0.8 / depth 0.2–0.5 / rate 0.18–0.63Hz) → returns to the limiter; the drone never goes silent. Every parameter is black-box modulated by the mic position, and a -12dB dynamic constraint (dual-analyser RMS, fxReturn ≤ dry×0.251) keeps it always beneath the foreground. Interaction: mouse clicks removed (hover-only mixing; press/release are inert). Performance: idle frame throttling (60fps playing / ~10fps idle preview), mobile DPR capped at 1.5, low-end devices (hardwareConcurrency ≤ 4) get 512 analysers and no pickup-line strokes, audio preload=metadata for weak networks.' },
+      brief: {
+        zh: '内置黑箱 drone FX 链（2.6s 混响、0.28–0.62s 延迟、12–24% 反馈）恒不静默；空闲降帧到约 10fps，低端机（≤4 核）用 512 的 analyser',
+        en: 'The built-in black-box drone FX chain (2.6s reverb, 0.28–0.62s delay, 12–24% feedback) never goes silent; idle frames fall to about 10fps and low-end devices (≤4 cores) use 512 analysers.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: '作品页互链：riverrun ↔ The FET Mixer', en: 'Cross-linked work pages: riverrun ↔ The FET Mixer' },
-      body:  { zh: '为 riverrun 与 The FET Mixer 两个作品页添加互相跳转。riverrun 是使用 The FET Mixer 创作的交互式声音装置，因此在 riverrun 页描述末尾追加「本作品使用 THE FET MIXER →」链接跳向 The FET Mixer 页；反之在 The FET Mixer 页描述末尾追加「应用于 riverrun →」链接跳回 riverrun 页。实现上在 js/project-data.js 新增通用 related 字段（{ id, role:{zh,en} }），在 js/project.js 新增 appendRelated() 于描述加载完成后（含 fetch 异步与内联两种情况）渲染为 .project-related 链接块，css/project.css 配套 .project-related 样式（顶部留白、下划线、hover 反白，与 .tt-download 一致）。该机制通用，未来任何作品加 related 字段即可自动渲染互链；riverrun 的小写标题在链接中保持原样不强转大写。', en: 'Added cross-navigation between the riverrun and The FET Mixer work pages. Since riverrun is an interactive sound installation created with The FET Mixer, a "Created with THE FET MIXER →" link is appended at the end of the riverrun description, linking to The FET Mixer page; conversely, a "Used in riverrun →" link is appended at the end of The FET Mixer description, linking back to riverrun. Implemented via a generic related field ({ id, role:{zh,en} }) in js/project-data.js, with an appendRelated() function in js/project.js that renders a .project-related link block after the description loads (covering both async fetch and inline cases), plus matching .project-related styles in css/project.css (top margin, underline, hover invert, consistent with .tt-download). The mechanism is generic — any work can add a related field to auto-render cross-links; riverrun\'s lowercase title is preserved as-is in the link without forcing uppercase.' },
+      brief: {
+        zh: 'riverrun 与 The FET Mixer 两页互加跳转链接，做法是 project-data.js 新增通用 related 字段、project.js 的 appendRelated() 在描述加载后渲染',
+        en: 'The riverrun and The FET Mixer pages now cross-link, via a generic related field in project-data.js and an appendRelated() in project.js that renders the block after the description loads.'
+      },
       media: ''
     },
     {
       date: '2026-08-13',
       title: { zh: '新增作品《6U104HP》并重构 Gallery 为等高胶片条布局', en: 'Added new work "6U104HP" and refactored Gallery into an equal-height film-strip layout' },
-      body:  { zh: '新增作品页「6U104HP」——这是我参与设计、由Ciiyte主导的6/7U 104HP Eurorack电源箱。在 js/project-data.js 注册项目并置于 projectOrder 首位（最新），采用 Gallery 布局，brief 为「与Ciiyte共同设计的6/7U 104HP Eurorack电源箱」。11 张照片（封面 4_mounted_6u104hp_cases.jpg + pic_1~9 + 微信图片）按长边≤1600px、仅缩小不放大、q82 转为 WebP（img/6u104hp.webp ~ img/6u104hp-11.webp，总体积约1.2MB），原图留档 img/originals/6u104hp-case/；封面 img/6u104hp.webp 同时用作首页卡片图。首页 index.html 追加卡片（交由原有 Fisher-Yates 洗牌随机定位，不强制置顶），js/index-i18n.js 增加 card6u104hp 文案。撰写了中英文作品介绍 data/6u104hp/{zh,en}.html，介绍开头附封面致谢（拍摄：等香鱼），末尾日期 2026.08.13；画廊图片顺序将原末尾的微信竖图调整至第二张。同时为 wwhbh 作品介绍开头补一行封面致谢（设计：南美大虾）。并重构了 Gallery 布局的 CSS（css/project.css，该改动同时作用于 the-fet-mixer）：原「一图一屏」（每张 flex:0 0 100%、图片 width:100%;height:auto）在图片比例差异大时（本次从 2.27:1 超宽到 0.75:1 竖图）会导致每屏高度在 352px↔1067px 间剧烈跳动。改为等高胶片条：slider 固定高度（桌面 height:56vh;max-height:520px;min-height:300px，移动端 46vh;max-height:380px），slide 改 flex:0 0 auto（宽度随图片自然展开），图片改 height:100%;width:auto（等高不等宽、不裁切不拉伸、无 letterbox 灰边），scroll-snap 由 mandatory 改为 proximity（拖动超宽全景图时不被强制吸回对齐），slide 间 gap:4px。', en: 'Added a new work page "6U104HP" — a 6/7U 104HP Eurorack power case I co-designed, led by Ciiyte. Registered the project in js/project-data.js and placed it first in projectOrder (newest), using the Gallery layout, with the brief "A 6/7U 104HP Eurorack power case co-designed with Ciiyte". 11 photos (cover 4_mounted_6u104hp_cases.jpg + pic_1~9 + a WeChat image) were converted to WebP at long-edge ≤1600px, downscale-only, q82 (img/6u104hp.webp through img/6u104hp-11.webp, total ~1.2MB), with originals archived under img/originals/6u104hp-case/; the cover img/6u104hp.webp doubles as the homepage card image. A card was appended to index.html (left to the existing Fisher-Yates shuffle for random positioning, not pinned to top) and the card6u104hp string added to js/index-i18n.js. Wrote the Chinese and English description data/6u104hp/{zh,en}.html, with a cover credit at the top (photographed by 等香鱼) and date 2026.08.13 at the end; the gallery order was adjusted to move the WeChat portrait (formerly last) to the second position. Also added a cover credit line at the top of the wwhbh description (designed by 南美大虾). Refactored the Gallery layout CSS in css/project.css (the change also applies to the-fet-mixer): the previous one-image-per-screen approach (each slide flex:0 0 100%, image width:100%;height:auto) caused each screen height to jump between 352px and 1067px when aspect ratios varied widely (here from 2.27:1 ultra-wide to 0.75:1 portrait). Switched to an equal-height film strip: the slider has a fixed height (desktop height:56vh;max-height:520px;min-height:300px, mobile 46vh;max-height:380px), slides use flex:0 0 auto (width follows the image naturally), images use height:100%;width:auto (equal height, variable width, no cropping/stretching, no letterbox gaps), scroll-snap changed from mandatory to proximity (so panning an ultra-wide panorama is not forced back into alignment), with gap:4px between slides.' },
+      brief: {
+        zh: '新增 6U104HP 作品页与 11 张 WebP 图；Gallery 改等高胶片条，消除 352↔1067px 的每屏高度跳动',
+        en: 'Added the 6U104HP work page with 11 WebP photos; the Gallery became an equal-height film strip, ending the 352 to 1067px height jumps.'
+      },
       media: 'img/6u104hp.webp'
     },
     {
       date: '2026-08-10',
       title: { zh: '更新作品简介：The JustType Study 与 SPECTRAL DISSECTOR', en: 'Updated work briefs: The JustType Study and SPECTRAL DISSECTOR' },
-      body:  { zh: '更新了作品列表页（works）的两条一句话简介：① 将 The JustType Study 的简介由「以JustType为核心的模块乐器系统设计」改为「以 JustType 为核心的模块合成器系统设计」（乐器→合成器）；② 为此前仅有标题无简介的 SPECTRAL DISSECTOR 补充简介：「基于频谱噪声门、HPSS 与倒谱的基频、谐波、瞬态与噪音分离插件」。', en: 'Updated two one-line briefs on the works list page: ① changed The JustType Study\'s brief from "a modular instrument system designed around JustType" to "a modular synthesizer system designed around JustType" (instrument → synthesizer); ② added a brief for SPECTRAL DISSECTOR, which previously had only a title: "a fundamental, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum".' },
+      brief: {
+        zh: '作品列表页改 2 条简介：JustType 由乐器改称合成器，SPECTRAL DISSECTOR 补上一句话简介',
+        en: 'Updated two works-page briefs: JustType now reads synthesizer instead of instrument, and SPECTRAL DISSECTOR gained its one-line brief.'
+      },
       media: ''
     },
     {
       date: '2026-08-09',
       title: { zh: '新增作品《The JustType Study》', en: 'Added new work "The JustType Study"' },
-      body:  { zh: '新增作品页「The JustType Study」，采用 Ecce 布局（顶部封面图 + HTML5 音频 + 文字）。封面原图（1930×1448 JPEG）按图片压缩规范转为两档 WebP（q80）：首页卡片封面 img/the-just-type-study.webp（1200px 宽）与项目页顶部图 img/the-just-type-study-still.webp（1600px 宽），原图留档 img/originals/。录音由 08.09.wav（2ch/48kHz/Int16 PCM，约 22 分 51 秒）以与 ecce-homo.m4a 相同的标准压缩为 AAC-LC m4a：双声道、48000 Hz、实际码率约 178 kbps（实测 178217 bps，与 ecce-homo 的 178900 bps 一致），输出 audio/the-just-type-study.m4a（约 30MB，沿用 preload="none" 点播放才拉取）。在 js/project-data.js 注册项目并置于 projectOrder 首位（最新），首页 index.html 增加对应卡片与 js/index-i18n.js 的 cardJustType 文案。同时撰写了中英文作品介绍（data/the-just-type-study/{zh,en}.html）；介绍末尾以代码块（等宽字体、灰底阴影）形式附上 Teletype Scene 脚本（M、I、1-8 各段，段首标注 M:/I:/N:），并附完整场景文件 data/the-just-type-study/tt20s.txt 的下载链接。作品列表页（works）为其配有一句话简介：以JustType为核心的模块乐器系统设计。', en: 'Added a new work page "The JustType Study" using the Ecce layout (top cover image + HTML5 audio + text). The cover original (1930×1448 JPEG) was compressed to two WebP variants per the image spec (q80): a homepage card cover img/the-just-type-study.webp (1200px wide) and a project-page top image img/the-just-type-study-still.webp (1600px wide); the original is archived under img/originals/. The recording was compressed from 08.09.wav (2ch/48kHz/Int16 PCM, ~22:51) to AAC-LC m4a using the same standard as ecce-homo.m4a: stereo, 48000 Hz, actual bitrate ~178 kbps (measured 178217 bps, matching ecce-homo\'s 178900 bps), output as audio/the-just-type-study.m4a (~30MB, reusing preload="none" so it is fetched only on play). Registered the project in js/project-data.js and placed it first in projectOrder (newest); added the matching card to index.html and the cardJustType string to js/index-i18n.js. Also wrote the Chinese and English project description (data/the-just-type-study/{zh,en}.html); the Teletype scene script (sections M, I, 1-8, each headed M:/I:/N:) is appended at the end of the description in a monospace code block with a shaded background, along with a download link for the full scene file data/the-just-type-study/tt20s.txt. The works list page includes a one-line brief for it: a modular instrument system designed around JustType.' },
+      brief: {
+        zh: '新增 The JustType Study 作品页；1930×1448 封面出两档 WebP，录音转 178kbps 的 m4a',
+        en: 'Added the JustType Study page: two WebP covers from the 1930×1448 original and a 22:51 recording encoded to a 178kbps m4a.'
+      },
       media: 'img/the-just-type-study.webp'
     },
     {
       date: '2026-08-05',
       title: { zh: '观看了电影《痴迷》', en: 'Watched the film Obsession' },
-      body:  { zh: '观看了电影《痴迷》（Obsession）。真的好恐怖啊，对这种细节非常丰满的心理恐怖电影完全没有抵抗力……', en: 'Watched the film Obsession. Truly terrifying — I have no resistance whatsoever to this kind of psychological horror film, so richly textured in its details...' },
+      brief: {
+        zh: '看了心理恐怖片《痴迷》（Obsession），对细节丰满的这类片子毫无抵抗力',
+        en: 'Watched the psychological horror film Obsession, whose richly detailed texture is exactly what I cannot resist.'
+      },
       media: ''
     },
     {
       date: '2026-07-22',
       title: { zh: '青海之旅', en: 'Trip to Qinghai' },
-      body:  { zh: '7 月 17 日去青海玩了，7 月 24 日回上海。青海非常美丽。', en: 'I went to Qinghai on July 17 and will return to Shanghai on July 24. Qinghai is very beautiful.' },
+      brief: {
+        zh: '7 月 17 日出发去青海，7 月 24 日回上海，青海非常美丽',
+        en: 'Went to Qinghai on July 17 and returned to Shanghai on July 24; Qinghai is very beautiful.'
+      },
       media: ''
     },
     {
       date: '2026-07-04',
       title: { zh: '修复 SPECTRAL DISSECTOR 工程的 Cepstrum 算法 bug', en: 'Fixed a Cepstrum algorithm bug in the SPECTRAL DISSECTOR project' },
-      body:  { zh: '修复了 SPECTRAL DISSECTOR 工程中 Cepstrum（倒谱）算法的一个 bug。Cepstrum 在该插件中用于基频提取与谐波分离，此前该 bug 会导致谐波分离结果异常，现已修正。同时在项目介绍末尾新增一段（日期 2026.07.04）：「I hate Cepstrum.」（中英文页面均保留英文原文，不作翻译）。', en: 'Fixed a bug in the Cepstrum algorithm of the SPECTRAL DISSECTOR project. Cepstrum is used in the plugin for fundamental-frequency extraction and harmonic separation; the bug previously caused abnormal harmonic-separation results and has now been corrected. Also appended a new paragraph (dated 2026.07.04) to the end of the project introduction: "I hate Cepstrum." (kept in English on both the Chinese and English pages, not translated).' },
+      brief: {
+        zh: '修好 Cepstrum 的谐波分离 bug；介绍末尾加 2026.07.04 一段：I hate Cepstrum.',
+        en: 'Fixed the Cepstrum bug that broke harmonic separation, and appended a 2026.07.04 note reading I hate Cepstrum.'
+      },
       media: ''
     },
     {
       date: '2026-07-02',
       title: { zh: '重写 SPECTRAL DISSECTOR 项目介绍', en: 'Rewrote the SPECTRAL DISSECTOR project introduction' },
-      body:  { zh: '将 SPECTRAL DISSECTOR 的项目介绍由原 GLM-5.2 撰写的概念性描述（按“成分构成”解剖声音、十层结构、各控制参数的听感说明与从零拆解流程）替换为作者亲撰的技术性自述：说明它是基于 Spectral Noise Gate、HPSS 与 Cepstrum 的基频/谐波/瞬态/噪音分离插件，灵感来自模拟 Filterbanks、SPEAR、Bitwig Loud Split/Harmonic Split、Ircam iana~ 等；回顾 2025 年 6 月的初版形态（6 个并联 Spectral Gates、Thresholds 首尾相连）与 2026 年 4 月的架构重构（引入 HPSS 与 Cepstrum、参照 Bitwig Loud Split 加入 Rise/Fall、以 Main Threshold + Spacing + Tilt 重做接口逻辑、新增 Focus 参数、因与 Cepstrum/HPSS 冲突而暂去包络补偿算法），并注明新版 Max for Live 插件的实现与 UI 由闫开完成。保留开头“本作品与闫开共同创作”的署名，移除原 GLM-5.2 撰写署名，修改日期更新为 2026.07.02。正文以「下图」引出并配入初版 M4L 插件截图（原图 1497×252 PNG 留档于 img/originals/，转 WebP q80 约 13KB 部署为 img/spectral-dissector-1.webp），内嵌于第一段之后。', en: 'Replaced SPECTRAL DISSECTOR’s project introduction — originally the conceptual description written by GLM-5.2 (dissecting sound by “composition”, the ten-layer structure, per-parameter listening notes and the from-scratch dissection workflow) — with a technical self-statement by the author: explaining it is a fundamental/harmonic/transient/noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum, inspired by analog filterbanks, SPEAR, Bitwig Loud Split/Harmonic Split, Ircam iana~, etc.; recounting the initial June 2025 form (six parallel Spectral Gates with chained thresholds) and the April 2026 architecture refactor (introducing HPSS and Cepstrum, adding Rise/Fall after Bitwig Loud Split, reworking the interface logic around a Main Threshold + Spacing + Tilt, adding the Focus parameter, and temporarily removing envelope compensation due to conflicts with Cepstrum/HPSS), and noting the new Max for Live device’s implementation and UI were done by Yan Kai. Kept the opening “Co-created with Yan Kai” credit, removed the GLM-5.2 authorship credit, and updated the modification date to 2026.07.02. The initial-version M4L device screenshot, introduced in the text as the image below, was added (original 1497×252 PNG archived under img/originals/, converted to WebP q80 ~13KB deployed as img/spectral-dissector-1.webp), embedded after the first paragraph.' },
+      brief: {
+        zh: 'SPECTRAL DISSECTOR 介绍换成作者技术自述，配 1497×252 截图（WebP 13KB），日期改 2026.07.02',
+        en: 'Replaced the SPECTRAL DISSECTOR intro with the author\'s own technical account, adding a 1497×252 screenshot as a 13KB WebP and the date 2026.07.02.'
+      },
       media: ''
     },
     {
       date: '2026-07-02',
       title: { zh: '配置 Tiliqua macOS 开发环境（PDM + OSS CAD Suite 工具链）', en: 'Set up Tiliqua macOS dev environment (PDM + OSS CAD Suite toolchain)' },
-      body:  { zh: '为 Tiliqua 音频 FPGA 模块在 macOS（Apple Silicon M5）上配置开发环境，完成基础工具链（第 1-3 步）。① 安装 PDM 2.28.0（brew install pdm），与 Tiliqua CI 使用的 Python 包管理器一致，保证本地依赖与云端构建环境一致。② 安装 OSS CAD Suite FPGA 工具链：查阅仓库 CI 配置（gateware/scripts/Dockerfile）确认 CI 使用 2025-11-02 版本，本机为 Apple Silicon 故下载对应的 darwin-arm64 版本，安装至 /opt/oss-cad-suite（与 CI 路径一致）并在 ~/.zshrc 添加 PATH。首次下载文件被截断（81MB / 预期 482MB）导致 tar 解压报错，改用带重试与断点续传的 curl（--retry 5 -C -）重新下载，gzip -t 验证完整性后再解压。③ 验证全部工具版本通过：PDM 2.28.0、Yosys 0.58+98、openFPGALoader v1.0.0、Verilator 5.041、nextpnr-ecp5 0.9-38。后续待 Tiliqua 模块到手再做第 4 步 USB 连接测试（openFPGALoader --scan-usb）、第 5 步克隆代码与 pdm install、第 6 步按需安装 Rust 工具链（仅修改带软核 CPU 的 SoC 固件时需要，纯音频 DSP 开发可跳过）。', en: 'Set up the development environment for the Tiliqua audio FPGA module on macOS (Apple Silicon M5), completing the base toolchain (steps 1-3). ① Installed PDM 2.28.0 (brew install pdm), matching Tiliqua\'s CI Python package manager so local dependencies align with cloud builds. ② Installed the OSS CAD Suite FPGA toolchain: checked the repo\'s CI config (gateware/scripts/Dockerfile) to confirm CI uses the 2025-11-02 release, then downloaded the matching darwin-arm64 build for Apple Silicon, installed to /opt/oss-cad-suite (same path as CI) and added it to PATH in ~/.zshrc. The first download was truncated (81MB / expected 482MB) causing a tar error; re-downloaded with retry + resume curl (--retry 5 -C -), verified integrity with gzip -t before extracting. ③ Verified all tool versions pass: PDM 2.28.0, Yosys 0.58+98, openFPGALoader v1.0.0, Verilator 5.041, nextpnr-ecp5 0.9-38. Remaining steps pending the Tiliqua module arriving: step 4 USB connection test (openFPGALoader --scan-usb), step 5 clone the repo and run pdm install, step 6 optionally install the Rust toolchain (only needed when modifying SoC firmware with a soft-core CPU; pure audio DSP work can skip it).' },
+      brief: {
+        zh: '配好 Tiliqua 工具链：PDM 2.28.0 与 OSS CAD Suite，下载被截断在 81MB 后重下 482MB',
+        en: 'Set up the Tiliqua toolchain with PDM 2.28.0 and OSS CAD Suite after a download truncated at 81MB of 482MB was re-fetched.'
+      },
       media: ''
     },
     {
       date: '2026-06-29',
       title: { zh: '全站性能优化：脚本 defer、媒体懒加载、字体预载、跳转预取', en: 'Site-wide performance: defer scripts, lazy media, font preload, navigation prefetch' },
-      body:  { zh: '在不引入构建步骤的前提下做了六项加载优化（详见新增 PERFORMANCE.md）。① 全站五个 HTML 的 <script> 从 <body> 末尾移至 <head> 并加 defer，与 CSS 并行下载、不阻塞渲染，执行顺序不变（defer 保证按文档顺序、DOMContentLoaded 前执行）。② ecce-homo 的 12MB 音频由默认 preload="auto" 改为 preload="none"，进入页面不再立即下载，点播放才拉取，该页首屏大幅减重。③ 非首屏媒体懒加载：Gallery 水平 slider 的后续帧与 Changelog <details> 折叠区内的图片加 loading="lazy" + decoding="async"，视频加 preload="none"，进入视口/展开播放前不下载。④ 首屏图片提优先级：首页六张卡片封面与项目页 hero 图加 decoding="async" + fetchpriority="high"。⑤ 关键字体预载：about/works/changelog/project 四个文字为主的页在 <head> 加 <link rel="preload" as="font" crossorigin> 预载 SourceHanSansSC-Regular.woff2，使其与 CSS 并行下载、font-display:swap 更早发生；首页图片为主故不预载以免争抢带宽。⑥ 新增 js/prefetch.js：监听 pointerover/focusin/touchstart，对同源 .html 链接在 requestIdleCallback 内注入 <link rel="prefetch" as="document"> 预取目标文档，去重、省流量模式与 2g 自动禁用，点击跳转近乎即时。期间还尝试过给 EDGEDGEDGE 的 B 站视频做 facade（先显示封面 + 播放按钮、点击才加载播放器 iframe）并在 localhost 加 preconnect，但本地加载不出来且不满意该交互逻辑，已回退为原始进入即加载 iframe。', en: 'Six loading optimizations without introducing a build step (see the new PERFORMANCE.md). ① Moved all <script> tags of the five HTML pages from end of <body> into <head> with defer — downloaded in parallel with CSS, non-render-blocking, execution order unchanged (defer guarantees document order, runs before DOMContentLoaded). ② The 12MB audio for ecce-homo switched from the default preload="auto" to preload="none", so entering the page no longer downloads it immediately — it is fetched only on play, greatly reducing that page’s first paint. ③ Lazy-load offscreen media: subsequent frames of the Gallery horizontal slider and images inside collapsed Changelog <details> get loading="lazy" + decoding="async", videos get preload="none", nothing is downloaded until in view / expanded-and-played. ④ Prioritize above-the-fold images: homepage card covers and project-page hero images get decoding="async" + fetchpriority="high". ⑤ Preload the critical font: the four text-heavy pages (about/works/changelog/project) add <link rel="preload" as="font" crossorigin> for SourceHanSansSC-Regular.woff2 in <head> so it downloads in parallel with CSS and font-display:swap happens earlier; the image-led homepage skips it to avoid bandwidth contention. ⑥ New js/prefetch.js: listens for pointerover/focusin/touchstart on same-origin .html links and injects <link rel="prefetch" as="document"> inside requestIdleCallback to prefetch the target document — deduped, auto-disabled under save-data / 2g, making navigations near-instant. Also tried a facade for the EDGEDGEDGE Bilibili video (show a cover + play button, load the player iframe only on click) with a localhost preconnect, but it failed to load locally and the interaction felt wrong, so it was reverted to the original load-iframe-on-entry behavior.' },
+      brief: {
+        zh: '六项加载优化：五个页面脚本加 defer，ecce-homo 的 12MB 音频改 preload=none',
+        en: 'Six loading fixes: scripts on five pages moved to defer, and ecce-homo\'s 12MB audio switched to preload=none.'
+      },
       media: ''
     },
     {
       date: '2026-06-29',
       title: { zh: '根治首页四角导航纵向对齐（统一偏移变量）', en: 'Root-fixed homepage four-corner vertical alignment (unified offset variable)' },
-      body:  { zh: '此前四角纵向对齐靠各角分散凑 padding（容器 padding 与 <a> padding 两套机制混用，top-right 是文本节点靠容器 padding、其余三角是 <a> 列表靠 <a> padding），改任一角即可能破坏对齐，已反复修补两次（2026-06-25 修底部一对、本日修顶部一对）。本次根治：引入 CSS 变量 --nav-y（桌面2px/移动4px），四角容器的竖向 padding 统一引用它（顶部角 padding-top、底部角 padding-bottom），<a> 竖向 padding 归零仅留水平点击区 0 6px，line-height 统一 1.5 补偿 <a> 竖向 padding 归零后的 hover 黑底高度。如此"文字到锚边的偏移"只由容器一层决定，改 --nav-y 四角联动，不再分散凑数。数值上与已对齐状态完全一致（偏移仍为 锚边20+2=22px），仅结构重构 + 变量化 + line-height 统一，回归风险低。', en: 'The four-corner vertical alignment previously relied on scattered padding values across each corner (two mechanisms mixed: top-right is a text node using container padding, the other three are <a> lists using <a> padding), so editing any one corner could break alignment — it had been patched twice (2026-06-25 the bottom pair, today the top pair). This root fix introduces a CSS variable --nav-y (desktop 2px / mobile 4px); all four corner containers reference it for their vertical padding (top corners padding-top, bottom corners padding-bottom), <a> vertical padding is zeroed leaving only the horizontal click area 0 6px, and line-height is unified at 1.5 to compensate the hover background height lost from zeroing <a> vertical padding. Now the “text-to-anchor-edge offset” is decided by the container layer alone; changing --nav-y moves all four corners together, no more scattered padding arithmetic. The values are identical to the already-aligned state (offset still anchor 20 + 2 = 22px) — only a structural refactor + variable binding + unified line-height — so regression risk is low.' },
+      brief: {
+        zh: '四角对齐改由一个 --nav-y 变量决定（桌面 2px、移动 4px），偏移仍是 20+2=22px',
+        en: 'Corner alignment now comes from one --nav-y variable (2px desktop, 4px mobile), keeping the offset at 20+2=22px.'
+      },
       media: ''
     },
     {
       date: '2026-06-29',
       title: { zh: '对齐首页顶部一对导航的纵向位置', en: 'Aligned the top pair of homepage nav vertically' },
-      body:  { zh: '修复首页顶部一对（左上 [+] 简介与联系 / 右上 泻火 曹浩轩）的纵向错位：此前右上的 .nav-top-right 容器 padding-top 为 4px，而左上第一个导航链接 <a> 的 padding-top 为 2px，导致右上名字比左上首条链接低约 2px。将桌面端 .nav-top-right 的 padding 从 4px 6px 0 改为 2px 6px 0；移动端显式补声明 padding:4px 6px 0，与移动端左上链接 padding-top(4px) 对齐。底部一对已于 2026-06-25 对齐，此次补齐顶部一对，四角在盒子层面完全对齐。', en: 'Fixed the vertical misalignment of the homepage top pair (top-left [+] 简介 / top-right 泻火 曹浩轩): the .nav-top-right container had padding-top:4px while the top-left first nav link <a> had padding-top:2px, so the top-right name sat ~2px lower than the top-left first link. Changed the desktop .nav-top-right padding from 4px 6px 0 to 2px 6px 0; explicitly added padding:4px 6px 0 on mobile to match the mobile top-left link padding-top (4px). The bottom pair was already aligned on 2026-06-25; this completes the top pair, so all four corners now align at the box level.' },
+      brief: {
+        zh: '右上容器 padding-top 由 4px 改 2px，顶部一对名字与链接不再差约 2px',
+        en: 'Changed .nav-top-right padding-top from 4px to 2px, removing the roughly 2px offset in the top nav pair.'
+      },
       media: ''
     },
     {
       date: '2026-06-29',
       title: { zh: 'SPECTRAL DISSECTOR 改用 Ecce 布局并添加顶部介绍图', en: 'SPECTRAL DISSECTOR switched to Ecce layout with a top intro image' },
-      body:  { zh: '为 SPECTRAL DISSECTOR 项目页添加一张顶部介绍图（1142×412 横幅，转 WebP 17KB，原图留档 img/originals/），并调整布局：由 Grid 左右分栏改为 Ecce 布局，图片置于最上方、文字在下，类似 ECCE HOMO 的剧照排版。为此将 Ecce 布局通用化：原先 project-template.html 中硬编码的 ecce-homo-still 图片与 ecce-homo 音频改为由 JS 动态渲染——图片从 project.media（type:image）读取、音频从 project.audio 读取（无该字段则不渲染音频）。同步为 ecce-homo 配置补上 media 与 audio 字段以保持向后兼容。更新 STYLEGUIDE 的 Ecce 布局说明、布局选择规则与文件结构树。', en: 'Added a top intro image to the SPECTRAL DISSECTOR project page (1142×412 banner, WebP 17KB, original archived under img/originals/) and changed its layout from the Grid left-right split to the Ecce layout, placing the image at the top with the text below — similar to ECCE HOMO’s still placement. Generalized the Ecce layout to enable this: the previously hard-coded ecce-homo-still image and ecce-homo audio in project-template.html are now rendered dynamically by JS — the image from project.media (type:image), the audio from project.audio (omitted when absent). Added media and audio fields to the ecce-homo config for backward compatibility. Updated the STYLEGUIDE Ecce layout section, layout-selection rule, and file-structure tree accordingly.' },
+      brief: {
+        zh: 'SPECTRAL DISSECTOR 由 Grid 改 Ecce 布局，顶部加 1142×412 横幅（WebP 17KB）',
+        en: 'SPECTRAL DISSECTOR moved from the Grid to the Ecce layout with a 1142×412 top banner as a 17KB WebP.'
+      },
       media: 'img/spectral-dissector-2.webp'
     },
     {
       date: '2026-06-29',
       title: { zh: '为 SPECTRAL DISSECTOR 介绍补充 Max for Live 版使用方法', en: 'Added Max for Live usage guide to the SPECTRAL DISSECTOR introduction' },
-      body:  { zh: '在 SPECTRAL DISSECTOR 项目介绍（概念部分）之后，追加一段 Max for Live 版本的使用说明。逐一说明全部控制参数（Threshold、Spacing、Focus、Band 1–7 Offset、Blur、Perc、Gate、Detail、Slide Rise/Fall、Tilt、Dry、各层开关与路由、循环调制）如何主观地影响听感，并给出从零拆解一个采样的操作顺序：先以 Dry 听原声，依次调 Threshold 校准、Spacing 分层、Focus 定边界、Blur/Perc 处理瞬态、Gate 分离底噪、Slide 调响应、Tilt 偏向频段、Band Offset 逐层微调，最后开关与独奏各层完成拆解。刻意不从信号/DSP 角度分析，全部以经验化听感描述。', en: 'Appended a Max for Live usage section after the SPECTRAL DISSECTOR conceptual introduction. Walks through every control parameter (Threshold, Spacing, Focus, Band 1–7 Offset, Blur, Perc, Gate, Detail, Slide Rise/Fall, Tilt, Dry, per-layer switches & routing, cyclic modulation) in terms of subjective listening effect rather than signal/DSP analysis, and gives a from-scratch sample-dissection workflow: start with Dry to hear the original, then calibrate with Threshold, layer with Spacing, set boundaries with Focus, handle transients with Blur/Perc, separate the noise floor with Gate, set responsiveness with Slide, bias the spectrum with Tilt, fine-tune per layer with Band Offset, and finish by muting/soloing/routing each layer. Deliberately experiential throughout, no signal-path analysis.' },
+      brief: {
+        zh: '介绍后补一段 Max for Live 用法，逐个说明 Band 1–7 Offset 等参数与拆解顺序',
+        en: 'Appended a Max for Live usage section covering parameters such as Band 1–7 Offset and the order for dissecting a sample.'
+      },
       media: 'img/spectral-dissector.webp'
     },
     {
       date: '2026-06-29',
       title: { zh: '撰写 SPECTRAL DISSECTOR 项目介绍', en: 'Wrote the SPECTRAL DISSECTOR project introduction' },
-      body:  { zh: '此前 SPECTRAL DISSECTOR 的项目页描述为空，现为其撰写中英文介绍。基于项目架构文档提炼设计理念，刻意略去全部技术细节（FFT、Max for Live、gen~、HPSS、倒谱、阈值参数、声道数等），只面向普通读者阐明其设计目的与作用：传统声音工具按「音高」切分声音，而 Spectral Dissector 按「成分构成」切分——把任何声音解剖为八层由强到弱的持续音、一层噪声与一层打击，每层可独立开关与路由。以「解剖」为隐喻，强调它把混音的起点从「合并」倒转为「拆开」。介绍末尾注明由 GLM-5.2 撰写。', en: 'The SPECTRAL DISSECTOR project page description was previously empty; wrote its Chinese and English introductions. Distilled the design concept from the project architecture doc while deliberately omitting all technical details (FFT, Max for Live, gen~, HPSS, cepstrum, threshold parameters, channel counts, etc.), aiming only to convey its design purpose and function to a general audience: where conventional sound tools split sound by "pitch," Spectral Dissector splits it by "composition" — dissecting any sound into eight layers of sustained tones graded from strongest to weakest, one layer of noise, and one layer of percussion, each independently switchable and routable. Uses "dissection" as a metaphor, emphasizing how it inverts the starting point of mixing from "combining" to "taking apart." The introduction notes it was written by GLM-5.2.' },
+      brief: {
+        zh: '空描述补上中英文介绍：声音拆成 8 层持续音、1 层噪声与 1 层打击，各层可开关路由',
+        en: 'Wrote the empty Chinese and English intro: any sound splits into eight sustained-tone layers, one noise layer and one percussion layer, each switchable and routable.'
+      },
       media: 'img/spectral-dissector.webp'
     },
     {
       date: '2026-06-29',
       title: { zh: '为 riverrun 添加封面与项目页图片', en: 'Added cover and project-page image for riverrun' },
-      body:  { zh: '为 riverrun 补齐了此前缺失的图片：首页卡片封面（横图，1200px 宽 WebP）与项目页 Grid 布局媒体区的内部图片（竖图，1600px 宽 WebP）。原图留档于 img/originals/。同时扩展了 Grid 布局：此前 Grid 仅渲染标题与文字描述、媒体区恒为占位符，现支持 media.type="image" 渲染单张图片（与 Edge 布局的 image 渲染一致）。给 project-template.html 的 .media-area 加上 id="grid-media" 以供 project.js 定位。', en: 'Filled in the previously missing images for riverrun: a homepage card cover (landscape, 1200px-wide WebP) and an internal image in the project page Grid layout media area (portrait, 1600px-wide WebP). Originals archived under img/originals/. Also extended the Grid layout: previously Grid only rendered the title and description with a permanent placeholder in the media area, it now supports media.type="image" to render a single image (consistent with the Edge layout image rendering). Added id="grid-media" to the .media-area in project-template.html so project.js can target it.' },
+      brief: {
+        zh: 'riverrun 补齐 1200px 卡片封面与 1600px 项目页竖图，Grid 支持 media.type=image',
+        en: 'Filled in riverrun\'s missing 1200px card cover and 1600px portrait, and taught Grid to render media.type=image.'
+      },
       media: 'img/riverrun.webp'
     },
     {
       date: '2026-06-25',
       title: { zh: '为 EDGEDGEDGE 添加作品简介', en: 'Added brief for EDGEDGEDGE' },
-      body:  { zh: '在作品列表页（works）为 EDGEDGEDGE 补充了一句话简介：与钢铁大腿共同创作的回授声音装置，关于模糊的边缘与失控。此前该条目仅有标题无简介，与其它作品不统一。', en: 'Added a one-line brief for EDGEDGEDGE on the works list page: a feedback sound installation co-created with Gangtie Datui, about blurred edges and loss of control. Previously the entry had only a title with no brief, inconsistent with other works.' },
+      brief: {
+        zh: '作品列表页为 EDGEDGEDGE 补 1 条简介：与钢铁大腿共同创作的回授声音装置',
+        en: 'Added the missing one-line brief for EDGEDGEDGE on the works page: a feedback sound installation co-created with Gangtie Datui.'
+      },
       media: ''
     },
     {
       date: '2026-06-25',
       title: { zh: '修复首页 [全部作品 →] 与 [en] English 垂直高度不一致', en: 'Fixed vertical alignment between [ALL WORKS →] and [en] English on homepage' },
-      body:  { zh: '首页右下角语言切换 [en] English 的 <a> 原为 inline，竖向 padding 不影响行盒高度；而左下角 [全部作品 →] 的 <a> 为 display:block，竖向 padding 真实撑高盒子。两者虽同以 bottom:20px 锚定底部，但文字基线与 hover 黑底高度差约 2px（移动端 4px）。将 .nav-bottom-right 改为与 .nav-bottom-left 一致的 flex 列（display:flex; flex-direction:column; align-items:flex-end，移动端去掉多余的 text-align:right），<a> blockify 后 padding 行为两侧一致，底部与文字基线对齐。', en: 'The homepage bottom-right lang toggle [en] English used an inline <a>, whose vertical padding does not affect the line box height; whereas the bottom-left [ALL WORKS →] used display:block, whose vertical padding genuinely enlarges the box. Both were anchored at bottom:20px, but the text baselines and hover backgrounds differed by ~2px (4px on mobile). Changed .nav-bottom-right to match .nav-bottom-left as a flex column (display:flex; flex-direction:column; align-items:flex-end; dropped the redundant text-align:right on mobile) so the <a> is blockified and padding behaves identically on both sides, aligning their bottoms and text baselines.' },
+      brief: {
+        zh: '右下语言切换改成与左下一致的 flex 列，同以 bottom:20px 锚定，消掉 2px 基线差',
+        en: 'Made the bottom-right language toggle a flex column like the left one, both anchored at bottom:20px, removing the 2px baseline gap.'
+      },
       media: ''
     },
     {
       date: '2026-06-25',
       title: { zh: '中文换思源黑体自托管 + 中英自动间距 + 纯净 0', en: 'Self-hosted Source Han Sans SC for CJK + auto CJK↔Latin spacing + plain zero' },
-      body:  { zh: '三处排版升级：① 中文字体由系统 PingFang SC 换为自托管思源黑体 SC（Source Han Sans SC，子集化 woff2，Regular/Bold 各约 300KB），保证跨平台一致。② 新增 js/autospace.js，在中文↔英文/数字边界自动插入 thin space（U+2009，0.2em），覆盖 i18n 切换等动态注入；因等宽字体空格默认 0.6em 过宽，已将 DejaVu 中 U+2009 字宽单独改为 0.2em。③ 新增 PlainZero webfont（unicode-range:U+0030），用同家族 DejaVu Sans 的纯净 0 覆盖 DejaVu Sans Mono 的点 0，同高度同基线仅去点。另将中文行内强调的斜体统一改为加粗，外文原文斜体保留。', en: 'Three typographic upgrades: ① CJK font switched from system PingFang SC to self-hosted Source Han Sans SC (subsetted woff2, ~300KB each Regular/Bold) for cross-platform consistency. ② Added js/autospace.js to auto-insert thin space (U+2009, 0.2em) at CJK↔Latin/numeric boundaries, covering dynamic i18n content; since monospace spaces default to 0.6em (too wide), U+2009 advance in the DejaVu subset was narrowed to 0.2em. ③ Added PlainZero webfont (unicode-range:U+0030) using DejaVu Sans plain zero to override DejaVu Sans Mono dotted zero — same height/baseline, dot removed. Inline CJK emphasis italics changed to bold; foreign-language italics preserved.' },
+      brief: {
+        zh: '中文换自托管思源黑体（Regular/Bold 各约 300KB），加 autospace.js 插 0.2em 空格与纯净 0 字体',
+        en: 'CJK switched to self-hosted Source Han Sans SC (~300KB per weight), plus autospace.js inserting 0.2em thin spaces and a PlainZero webfont.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: '引入 DejaVu Sans Mono webfont 保证跨平台字体一致', en: 'Self-hosted DejaVu Sans Mono webfont for cross-platform font consistency' },
-      body:  { zh: '原 font-family: monospace 依赖各平台系统默认等宽字体（macOS/iOS 为 Menlo、Windows 为 Consolas），导致跨平台显示不一致。改为自托管 DejaVu Sans Mono（与 Menlo 同源于 Bitstream Vera Sans Mono，开源可分发），子集化后仅 ASCII+拉丁扩展+标点，Regular 与 Bold 各约 22KB（woff2）。中文回退系统字体。font-family 改为 \'DejaVu Sans Mono\', Menlo, Consolas, monospace。', en: 'The original font-family: monospace relied on each platform\'s default monospaced font (Menlo on macOS/iOS, Consolas on Windows), causing cross-platform inconsistency. Switched to a self-hosted DejaVu Sans Mono (same lineage as Menlo via Bitstream Vera Sans Mono, open-source and redistributable), subset to ASCII + Latin Extended + punctuation, ~22KB each for Regular and Bold (woff2). CJK falls back to system fonts. font-family changed to \'DejaVu Sans Mono\', Menlo, Consolas, monospace.' },
+      brief: {
+        zh: '等宽字体改自托管 DejaVu Sans Mono，子集化后 Regular/Bold 各约 22KB',
+        en: 'System monospace gave way to self-hosted DejaVu Sans Mono, subsetted to about 22KB each for Regular and Bold.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: '首页卡片顺序每次随机', en: 'Homepage cards shuffled on each load' },
-      body:  { zh: '首页卡片堆叠顺序改为每次打开网页随机打乱，使用 Fisher-Yates 洗牌算法在初始化时执行。刷新页面即得到新的卡片顺序。', en: 'Homepage card stack order is now randomly shuffled on each page load using the Fisher-Yates algorithm at init. Refreshing the page yields a new card order.' },
+      brief: {
+        zh: '首页卡片堆叠顺序改为每次打开随机打乱，初始化时用 Fisher-Yates 洗牌',
+        en: 'Homepage card stack order is now shuffled with Fisher-Yates at init, so every refresh gives a new order.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: 'Gallery 图片点击放大（Lightbox）', en: 'Gallery image lightbox (click to zoom)' },
-      body:  { zh: '为 Gallery 布局增加点击放大功能：点击任一图片打开全屏 Lightbox，支持左右切换、键盘方向键、ESC/点击空白关闭。纯 JS 实现，无依赖。', en: 'Added a click-to-zoom lightbox for the Gallery layout: clicking any image opens a fullscreen overlay with prev/next navigation, keyboard arrows, and ESC/click-outside to close. Pure JS, no dependencies.' },
+      brief: {
+        zh: 'Gallery 加纯 JS 的 Lightbox：点图全屏放大，可左右切换、方向键与 ESC 关闭',
+        en: 'Added a dependency-free lightbox to the Gallery: click an image to zoom, with prev/next, arrow keys and ESC to close.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: '图片压缩为 WebP 并原图留档', en: 'Compressed images to WebP with originals archived' },
-      body:  { zh: '将全部图片转为 WebP 格式（质量 80）并按用途分两档缩放：卡片封面 1200px 宽、Gallery/剧照 1600px 宽。图片总体积从约 31MB 降至约 0.8MB。原图留档于 img/originals/ 并加入 .gitignore 不随部署。合并了重复的 the-fet-mixer.jpg 与 the-fet-mixer-1.jpg（同一张图），卡片封面与 Gallery 首图共用 the-fet-mixer.webp。同步更新所有 HTML/JS 引用与 STYLEGUIDE。', en: 'Converted all images to WebP (quality 80) and resized by use case: card covers to 1200px wide, gallery/still images to 1600px wide. Total image size dropped from ~31MB to ~0.8MB. Originals archived under img/originals/ and git-ignored so they are not deployed. Merged the duplicate the-fet-mixer.jpg and the-fet-mixer-1.jpg (identical image) so the card cover and gallery first slide share the-fet-mixer.webp. Updated all HTML/JS references and STYLEGUIDE accordingly.' },
+      brief: {
+        zh: '全部图片转 WebP q80，按 1200px 与 1600px 两档缩放，总体积由约 31MB 降到约 0.8MB',
+        en: 'All images became WebP at q80 in two widths, 1200px and 1600px, cutting total size from about 31MB to about 0.8MB.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: '首页标签页标题改为「泻火 曹浩轩」', en: 'Homepage tab title changed to "泻火 曹浩轩"' },
-      body:  { zh: '将首页 &lt;title&gt; 从「泻火」改为「泻火 曹浩轩」，使浏览器标签页同时显示笔名与本名。', en: 'Changed the homepage &lt;title&gt; from "泻火" to "泻火 曹浩轩" so the browser tab shows both the pen name and real name.' },
+      brief: {
+        zh: '首页 title 由「泻火」改为「泻火 曹浩轩」，浏览器标签页同时显示笔名与本名',
+        en: 'Changed the homepage title from 泻火 to 泻火 曹浩轩 so the browser tab shows both the pen name and the real name.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: 'SPECTRAL DISSECTOR 封面与频谱图生成', en: 'SPECTRAL DISSECTOR cover & spectrogram generation' },
-      body:  { zh: '为 SPECTRAL DISSECTOR 添加了封面图：将 6 条分轨音频各自生成半透明单色 2D 频谱图（红/青绿/蓝/金黄/紫/橙），叠加成一张黑底合成图作为首页卡片封面（3:2，无坐标轴）。同期编写了本地频谱图生成脚本（2D 频谱图 / 3D 声谱图 / 瀑布图 / 半透明叠加），置于 tmp/ 并加入 .gitignore 不随部署。', en: 'Added a cover image for SPECTRAL DISSECTOR: generated a semi-transparent single-color 2D spectrogram for each of 6 audio tracks (red/teal/blue/gold/purple/orange), composited into a black-background overlay used as the homepage card cover (3:2, no axes). Also wrote local spectrogram-generation scripts (2D spectrogram / 3D surface / waterfall / translucent overlay) kept under tmp/ and git-ignored so they are not deployed.' },
+      brief: {
+        zh: '6 条分轨各生成半透明单色频谱图，叠成黑底 3:2 封面；生成脚本放 tmp/ 不入部署',
+        en: 'Six tracks each got a translucent single-color spectrogram, composited into a black 3:2 cover; the generator script stays in tmp/ and is not deployed.'
+      },
       media: 'img/spectral-dissector.webp'
     },
     {
       date: '2026-06-24',
       title: { zh: 'riverrun 作品介绍', en: 'riverrun description' },
-      body:  { zh: '为 riverrun 添加了完整作品介绍，包含《芬尼根的守灵夜》多轨有声书文本说明、riverrun 的三重解构（river run / reverend / Erinnerung）及三条轨道的原文与翻译对照，使用左边框引用块排版。', en: 'Added full artist statement for riverrun, including multi-track audiobook text explanation, the triple deconstruction of riverrun (river run / reverend / Erinnerung), and three track texts with original and translation, formatted with left-border quote blocks.' },
+      brief: {
+        zh: '为 riverrun 写作品介绍：三重解构加 3 条轨道的原文与译文对照，用左边框引用块排',
+        en: 'Wrote the riverrun statement: the triple deconstruction plus original and translated text for 3 tracks, set in left-border quote blocks.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: 'The FET Mixer 作品介绍与 Gallery 布局', en: 'The FET Mixer description & Gallery layout' },
-      body:  { zh: '为 The FET Mixer 添加了完整作品介绍及简介；添加了封面图与3张作品图（实物照片、建模图、渲染图）；新增 Gallery 布局（文字在上、图片横向滑动切换），替代 Grid 布局用于多图展示；为 EDGEDGEDGE 添加了封面图拍摄者（段立言）致谢。', en: 'Added full artist statement and brief for The FET Mixer; added cover image and 3 project images (photo, 3D model, render); introduced Gallery layout (text above, horizontally scrollable image slider) replacing Grid layout for multi-image projects; added cover photo credit (Duan Liyan) to EDGEDGEDGE.' },
+      brief: {
+        zh: 'The FET Mixer 补作品介绍与 3 张作品图；新增横向滑动的 Gallery 布局取代 Grid；EDGEDGEDGE 加拍摄者署名',
+        en: 'Added the FET Mixer statement and 3 project images; introduced a horizontally scrolling Gallery layout in place of Grid, and credited the EDGEDGEDGE cover photographer.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: '修复了2026-06-10的个人介绍的语法错误', en: 'Fixed grammar errors in 2026-06-10 bio' },
-      body:  { zh: '修复了顿号误用（并列词语应用顿号而非逗号）、重复词语（"可以在我生日的时候可以"）等语法问题。', en: 'Fixed incorrect use of commas instead of enumeration commas (、) for parallel items, and removed redundant word ("可以在我生日的时候可以").' },
+      brief: {
+        zh: '改掉 2026-06-10 个人介绍里并列词语间的逗号，并删去重复的「可以在我生日的时候可以」',
+        en: 'Fixed commas that should be enumeration marks and removed the repeated phrase in the 2026-06-10 bio.'
+      },
       media: ''
     },
     {
       date: '2026-06-24',
       title: { zh: 'EDGEDGEDGE 作品介绍、Edge 布局与关于页更新', en: 'EDGEDGEDGE description, Edge layout & About page updates' },
-      body:  { zh: '为 EDGEDGEDGE 添加了完整作品介绍（2025.10.09 随笔、作品构思、2026.06.24 后续感想）及 Bilibili 视频嵌入；新增 Edge 布局（视频在上文字在下，取代 Grid 布局的左右分栏），移动端视频可见性修复；为关于页段落组添加日期标注；新增「我妈说我标点用错了」。', en: 'Added full artist statement for EDGEDGEDGE (2025.10.09 essay, original concept, 2026.06.24 afterthoughts) with Bilibili video embed; introduced Edge layout (video above, text below, replacing Grid layout side-by-side), fixing mobile video visibility; added date annotations to About page paragraph groups; added "My mom says I used the wrong punctuation."' },
+      brief: {
+        zh: 'EDGEDGEDGE 补含 2025.10.09 随笔的作品介绍并嵌入 Bilibili 视频；新增视频在上文字在下的 Edge 布局取代 Grid，修移动端可见性',
+        en: 'Added the EDGEDGEDGE statement with the 2025.10.09 essay and a Bilibili embed; the new Edge layout replaces Grid and fixes mobile video visibility.'
+      },
       media: ''
     },
     {
       date: '2026-06-23',
       title: { zh: '文件目录整理、本地服务器修复与排版优化', en: 'File structure reorganization, local server fix & layout refinements' },
-      body:  { zh: '将杂项文档（docx）移入 docs/ 目录，开发脚本与 SSL 证书移入 scripts/ 目录，根目录仅保留部署页面与样式指南；修复本地服务器不支持 HTTP Range 请求导致音频无法拖动进度条的问题，将服务器 Python 代码提取为独立 server.py；works 页排版全面优化：宽度 640px→960px 适配英文简介长度，条目固定高度 48px 统一行间距，标题和简介居中对齐（line-height:1 消除中英文字体基线差异），h1 标题间距缩小（margin-bottom 2px），移动端竖排布局修复（标题居中、简介不溢出）；about/changelog 页标题加 line-height:1 修复中英文切换横线偏移；首页四角导航左右对齐微调；为 riverrun 作品标题添加小写显示支持。', en: 'Moved doc files to docs/ and dev scripts + SSL certs to scripts/, keeping only deployable pages and styleguide in root; fixed local server lacking HTTP Range request support which prevented audio seek, extracted server code into standalone server.py; comprehensive works page layout refinements: widened to 960px to accommodate English briefs, fixed 48px row height for consistent line spacing, centered title and brief alignment (line-height:1 to eliminate font baseline differences), reduced h1 margin-bottom to 2px, fixed mobile vertical layout (title centered, brief not overflowing); added line-height:1 to about/changelog titles to fix border shift on lang switch; adjusted index page four-corner nav alignment; added lowercase display support for riverrun title.' },
+      brief: {
+        zh: '文档归 docs/、脚本归 scripts/；server.py 补 HTTP Range 让音频可拖进度；works 页宽 640px→960px、条目固定 48px 并居中，移动端竖排修复',
+        en: 'Moved docs to docs/ and scripts to scripts/; server.py gained HTTP Range for audio seeking; the works page widened 640px→960px with fixed 48px rows.'
+      },
       media: ''
     },
     {
       date: '2026-06-23',
       title: { zh: '代码审查与重构', en: 'Code audit & refactoring' },
-      body:  { zh: '对全站代码进行了系统性审查并修复所有问题：修复首页标题错误（WORKS → 泻火）；消除 about/changelog 页面 .page 类名冲突（拆分为 .about-page / .changelog-page）；清理 ECCE HOMO 已停用的 B站 iframe 死代码（CSS + HTML + JS + 数据）；修复 WWHBH 音频按钮硬编码英文文本，改为 i18n 驱动（启动/关闭/权限被拒）；修复 works 页标题手动硬编码与 i18n 脱节问题；将过时键名 cardNewWork 重命名为 cardEdgedgedge；移除 prevCard() 中无效的 zIndex 覆盖；重构 preview-cards.html 导航为动态渲染；将 preview-cards.html 加入 .gitignore 排除部署；同步更新 STYLEGUIDE.md。', en: 'Conducted a systematic code audit and fixed all issues: fixed homepage title (WORKS → 泻火); eliminated .page class name collision between about/changelog pages (split into .about-page / .changelog-page); removed dead Bilibili iframe code for ECCE HOMO (CSS + HTML + JS + data); fixed WWHBH audio button hardcoded English text, now i18n-driven (activate/deactivate/permission denied); fixed works page title hardcoded separately from i18n; renamed stale key cardNewWork to cardEdgedgedge; removed ineffective zIndex override in prevCard(); refactored preview-cards.html navigation to use dynamic rendering; added preview-cards.html to .gitignore; synchronized STYLEGUIDE.md.' },
+      brief: {
+        zh: '首页标题 WORKS 改回「泻火」；.page 拆成 .about-page 与 .changelog-page；WWHBH 音频按钮改由 i18n 驱动，并删 ECCE HOMO 的 B 站 iframe 死代码',
+        en: 'Homepage title corrected from WORKS to 泻火; .page split into .about-page/.changelog-page; WWHBH audio button is now i18n-driven; dead ECCE HOMO Bilibili iframe removed.'
+      },
       media: ''
     },
     {
       date: '2026-06-23',
       title: { zh: '移动端适配与作品列表页', en: 'Mobile adaptation & works list page' },
-      body:  { zh: '修复了首页四角导航在手机上被裁切或不可见的问题；禁止移动端弹性滚动（html/body position:fixed）；右侧导航文字裁切修复（用 left:50vw 替代 max-width）；添加 viewport-fit=cover 与 safe-area-inset 适配刘海屏；左下角改为 SELECT WORKS 直达链接（ECCE HOMO / riverrun / SPECTRAL DISSECTOR）加 [ALL WORKS →] 按钮；新增作品列表页（works.html）；为 ECCE HOMO 和 WWHBH 添加了简介；桌面端与移动端卡片视觉逻辑重做：桌面端上移+左偏补偿右视觉重心，移动端卡片尺寸缩小(80vw×46vw)、边框变细、间距缩小(maxSpreadX 70→40, maxStepX 14→8)并左移保证右侧不溢出；riverrun 小写视觉重心微调。', en: 'Fixed four-corner navigation being clipped on mobile; disabled mobile rubber-band scrolling (html/body position:fixed); fixed right-side nav text clipping (replaced max-width with left:50vw); added viewport-fit=cover and safe-area-inset support for notched screens; bottom-left now shows SELECT WORKS direct links (ECCE HOMO / riverrun / SPECTRAL DISSECTOR) plus [ALL WORKS →] button; added works list page (works.html); added briefs for ECCE HOMO and WWHBH; rebuilt desktop and mobile card visual logic: desktop shifted up and left to compensate right visual weight, mobile card size reduced (80vw×46vw), thinner borders, tighter spacing (maxSpreadX 70→40, maxStepX 14→8), shifted left to keep right edge within screen; adjusted riverrun lowercase visual alignment.' },
+      brief: {
+        zh: '手机端四角导航改用 left:50vw 加 safe-area-inset 适配刘海屏；新增 works.html 作品列表页；卡片缩到 80vw×46vw，maxSpreadX 70→40',
+        en: 'Mobile four-corner nav switched to left:50vw with safe-area-inset for notched screens; added works.html; cards shrunk to 80vw×46vw, maxSpreadX 70→40.'
+      },
       media: ''
     },
     {
       date: '2026-06-22',
       title: { zh: '通关了游戏武士零', en: 'Completed the game Katana ZERO' },
-      body:  { zh: '通关了武士零。', en: 'Completed Katana ZERO.' },
+      brief: {
+        zh: '通关了游戏武士零（Katana ZERO）',
+        en: 'Completed Katana ZERO.'
+      },
       media: ''
     },
     {
       date: '2026-06-22',
       title: { zh: '新增作品与网站部署', en: 'New projects & site deployment' },
-      body:  { zh: '将项目 new-work 正式命名为 EDGEDGEDGE；新增作品 The FET Mixer 与 riverrun；为 Ecce Homo 和 EDGEDGEDGE 增加了卡片封面图；Ecce Homo 改用本地音频播放器替代 B站视频嵌入；首页卡片堆叠改为水平扇形展开布局，卡片数量增加时自动缩小间距；首页整体偏左上补偿重心；更新了首页左下角导航链接；创建了本地 HTTPS 预览脚本和 GitHub 推送脚本；将网站部署至 GitHub Pages。', en: 'Renamed project new-work to EDGEDGEDGE; added new projects The FET Mixer and riverrun; added cover images for Ecce Homo and EDGEDGEDGE cards; replaced Bilibili video embed with local audio player for Ecce Homo; changed homepage card stack to horizontal fan layout with auto-shrinking spacing; shifted stack upper-left for center compensation; updated bottom-left navigation links; created local HTTPS preview script and GitHub push script; deployed the site to GitHub Pages.' },
+      brief: {
+        zh: 'new-work 更名 EDGEDGEDGE，新增 2 个作品 The FET Mixer 与 riverrun；Ecce Homo 换本地音频播放器，首页卡片改扇形展开并部署到 GitHub Pages',
+        en: 'Renamed new-work to EDGEDGEDGE, added 2 works (The FET Mixer, riverrun); Ecce Homo switched to a local audio player; cards fanned out; deployed to GitHub Pages.'
+      },
       media: ''
     },
     {
       date: '2026-06-21',
       title: { zh: '观看了电影《撒旦探戈》', en: 'Watched the film Sátántangó' },
-      body:  { zh: '观看了贝拉·塔尔执导的《撒旦探戈》。', en: 'Watched Sátántangó directed by Béla Tarr.' },
+      brief: {
+        zh: '观看贝拉·塔尔执导的《撒旦探戈》（Sátántangó）',
+        en: 'Watched Béla Tarr\'s Sátántangó.'
+      },
       media: ''
     },
     {
       date: '2026-06-20',
       title: { zh: '观看了电影《噬草者》', en: 'Watched the film The Grass Eater' },
-      body:  { zh: '观看了《噬草者》。', en: 'Watched The Grass Eater.' },
+      brief: {
+        zh: '观看电影《噬草者》（The Grass Eater）',
+        en: 'Watched The Grass Eater.'
+      },
       media: ''
     },
     {
       date: '2026-06-18',
       title: { zh: '观看了电影《拯救地球》', en: 'Watched the film Bugonia' },
-      body:  { zh: '观看了欧格斯·兰斯莫斯执导的《拯救地球》。', en: 'Watched Bugonia directed by Yorgos Lanthimos.' },
+      brief: {
+        zh: '观看欧格斯·兰斯莫斯执导的《拯救地球》（Bugonia）',
+        en: 'Watched Yorgos Lanthimos\'s Bugonia.'
+      },
       media: ''
     },
     {
       date: '2026-06-15',
       title: { zh: '为《我们将会曾经在这里》增加了作品封面', en: 'Added cover image for We Will Have Been Here' },
-      body:  { zh: '为首页卡片增加了封面图。', en: 'Added a cover image to the homepage card.' },
+      brief: {
+        zh: '为首页卡片增加封面图，作品是《我们将会曾经在这里》',
+        en: 'Added a cover image to the homepage card for We Will Have Been Here.'
+      },
       media: ''
     },
     {
       date: '2026-06-15',
       title: { zh: '修改了 Ecce Homo 的作品介绍', en: 'Updated Ecce Homo description' },
-      body:  { zh: '重写了作品介绍文本，加入了圣经拉丁文原文与卡夫卡德语原文的引用标注。', en: 'Rewrote the artist statement, added Latin Vulgate and Kafka German original text citations.' },
+      brief: {
+        zh: '重写 Ecce Homo 作品介绍，加入圣经拉丁文与卡夫卡德语原文的引用标注',
+        en: 'Rewrote the Ecce Homo statement and added citations of the Latin Vulgate and Kafka\'s German original.'
+      },
       media: ''
     },
     {
       date: '2026-06-15',
       title: { zh: '新增模块', en: 'New modules' },
-      body:  { zh: '得到了 Frequency Central 的 Wonderland 和 NLC 的 Divide & Conquer 两块模块。', en: 'Got two new modules: Frequency Central\'s Wonderland and NLC\'s Divide & Conquer.' },
+      brief: {
+        zh: '入手 2 块模块：Frequency Central 的 Wonderland 与 NLC 的 Divide & Conquer',
+        en: 'Got 2 new modules: Frequency Central\'s Wonderland and NLC\'s Divide & Conquer.'
+      },
       media: ''
     },
     {
       date: '2026-06-15',
       title: { zh: '更新了作品介绍页面', en: 'Updated project description pages' },
-      body:  { zh: '修改了《我们将会曾经在这里》的作品介绍；将作品描述拆分为独立 HTML 片段文件，优化了作品介绍页面的排版与可读性。', en: 'Updated the artist statement for We Will Have Been Here; split project descriptions into standalone HTML fragment files, improved layout and readability of project description pages.' },
+      brief: {
+        zh: '《我们将会曾经在这里》介绍拆成独立 HTML 片段文件，重排版式与可读性',
+        en: 'Split the We Will Have Been Here statement into standalone HTML fragment files and reworked the page layout.'
+      },
       media: ''
     },
     {
       date: '2026-06-13',
       title: { zh: '看了两部电影', en: 'Watched two films' },
-      body:  { zh: '看了《接近终点》和《我们的土地》。', en: 'Watched Sirât and Nuestra Tierra.' },
+      brief: {
+        zh: '看了 2 部电影《接近终点》与《我们的土地》',
+        en: 'Watched 2 films: Sirât and Nuestra Tierra.'
+      },
       media: ''
     },
     {
       date: '2026-06-10',
       title: { zh: '制作了个人网站', en: 'Made a personal website' },
-      body:  { zh: '第一个版本发布，包含项目展示与多语言支持。', en: 'First release with project showcase and i18n support.' },
+      brief: {
+        zh: '个人网站第 1 版发布，包含项目展示与多语言支持',
+        en: 'Released the first version of the personal site with a project showcase and multilingual support.'
+      },
       media: ''  // 可选：图片/视频路径，如 'img/changelog/2025-06-10.webp'
     },
     // 继续往上加新条目 …
@@ -1017,10 +1209,10 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
       dateSpan.textContent = entry.date;
       summary.appendChild(dateSpan);
 
-      const body = document.createElement('div');
-      body.className = 'body';
-      // body 按 STYLEGUIDE 约定支持 HTML
-      body.innerHTML = entry.body[lang];
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'body';   /* 类名沿用 css/changelog.css 的 `details .body` */
+      /* brief 是纯文本摘要：用 textContent，摘要里的 `works/<id>/` 这类尖括号才不会被当成标签 */
+      bodyEl.textContent = entry.brief[lang];
 
       // media 用 DOM 创建，防止注入
       if (entry.media) {
@@ -1033,19 +1225,19 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
           source.src = entry.media;
           source.type = 'video/' + ext;
           video.appendChild(source);
-          body.appendChild(video);
+          bodyEl.appendChild(video);
         } else {
           const img = document.createElement('img');
           img.src = entry.media;
           img.alt = '';
           img.loading = 'lazy';
           img.decoding = 'async';
-          body.appendChild(img);
+          bodyEl.appendChild(img);
         }
       }
 
       details.appendChild(summary);
-      details.appendChild(body);
+      details.appendChild(bodyEl);
       div.appendChild(details);
       page.appendChild(div);
     });

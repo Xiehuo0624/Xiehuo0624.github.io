@@ -226,6 +226,9 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 3. **必须严格按日期降序排列**：`2026-06-23 → 2026-06-22 → 2026-06-21 → ...`，同一天多条按时间倒序
 4. **每条必须有 `date` 字段**，格式 `YYYY-MM-DD`，不得遗漏
 5. 录入新条目前先检查前一条的日期，确认不会打乱降序
+6. **公开文件里每条只有 `title` + `brief`**（中文 ≤50 字、英文 ≤30 词），`brief` 就是页面渲染的全部文字；
+   全文先写成 `body`，跑 `node scripts/changelog-split.mjs` 存进本地 `docs/工程决策记录.md`
+   （`docs/` 已 `.gitignore`，不部署），再把 `body` 压成 `brief`。存档里已有的段落由脚本原样沿用，重跑不会清空。
 
 ### Changelog 录入格式
 
@@ -233,7 +236,7 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 {
   date: 'YYYY-MM-DD',  // 必填
   title: { zh: '中文标题', en: 'English Title' },
-  body:  { zh: '中文正文（支持HTML）', en: 'English body (HTML ok)' },
+  brief: { zh: '中文摘要（≤50 字）', en: 'English brief (≤30 words)' },
   media: ''  // 可选：图片或视频路径，留空则不显示
 }
 ```
@@ -807,6 +810,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 ├── scripts/                     开发工具与本地服务器
 │   ├── gen-projects.mjs        作品页静态生成器（§7h；`--check` 只比对不写入）
 │   ├── gen-pages.mjs           站内页静态生成器（§7i；模板是根目录那四个 HTML）
+│   ├── changelog-split.mjs     changelog 全文抽取器（公开页只留 title+brief，全文进本地 docs/工程决策记录.md，不部署）
 │   ├── gen-cjk-extras.py       SiteCJK 微型子集生成器（英文侧零散汉字；`--check` 查漂移）
 │   ├── gen-cjk-main.py         中文主字体生成器（按站内实际用字从官方字体重切；`--check` 查漂移）
 │   ├── style-probe.py          文案风格量尺（「——」等特征与基线语料对照；`--check` 超阈值退 1）
