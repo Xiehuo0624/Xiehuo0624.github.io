@@ -85,6 +85,32 @@ spawn(CHROME, [
 `mixed-gen.mjs` 新旧 JS 混用、`perf.mjs` 冷缓存 + 150ms RTT / 1.6Mbps 首屏对比），
 运行方式与各自期望见 `scripts/verify/README.md`。运行产物（Chrome profile）落在 `.gitignore` 覆盖的 `tmp/verify-artifacts/`。
 
+### 跑字体链的固定姿势（2026-10-07 补）
+
+`gen-cjk-main.py` / `gen-cjk-extras.py` 的依赖（fonttools + brotli）装在 `tmp/pylibs`，
+**必须用 Homebrew 的 python3 跑**（本机是 3.14.6）—— 那次安装就是给它装的，
+目录里躺着的是 `_brotli.cpython-314-darwin.so`。本机 `python3` 默认解析到
+`/usr/bin/python3`（3.9.6），拿它跑会在 import 那一步就死：
+
+```
+✗ 缺依赖（typing）。先跑：pip3 install --target tmp/pylibs fonttools brotli
+```
+
+**这条提示会把人引向错路**：真正的原因不是缺包，是解释器太老 —— fontTools 要
+`from typing import TypeAlias`（3.10+），3.9 上直接
+`ImportError: cannot import name 'TypeAlias' from 'typing'`。照着它重装一遍依赖没有用，
+因为包本来就在。正确姿势：
+
+```bash
+PATH="/opt/homebrew/bin:$PATH" python3 scripts/gen-cjk-main.py    # → 3.14.6，实测跑通
+# 或直接：/opt/homebrew/bin/python3.14 scripts/gen-cjk-main.py
+```
+
+该用哪个版本，看 `ls tmp/pylibs/*.so` 里的 `cpython-3XX` 就行。`tmp/` 在 `.gitignore` 里，
+所以新克隆的仓库确实要先装一次依赖（命令见脚本头部注释），但**装给哪个解释器、就用哪个跑**。
+用错解释器时脚本不会写坏任何东西（死在 import），代价只是那一轮白跑 ——
+2026-10-07 就是这么白跑一次才发现的。
+
 ---
 
 ## 4. 改动完成后的固定动作
