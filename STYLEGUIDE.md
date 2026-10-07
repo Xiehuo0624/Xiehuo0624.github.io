@@ -317,10 +317,23 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 | 标题 h2 字号 | `20px`（桌面）/ `16px`（移动 info-area） |
 | 标题 h2 letter-spacing | `2px` |
 | 标题 h2 text-transform | `uppercase` |
-| 正文长文本 line-height | `2.4` |
+| 正文长文本 line-height | `2.4`（桌面）/ `2.0`（移动 ≤768px） |
 | 正文长文本字号 | `14px` |
 | 正文长文本 letter-spacing | `0.5px` |
 | 遮蔽块 `.redact` | `background:#000; color:#000; padding:0 4px; letter-spacing:2px; margin:0 2px` |
+
+**移动端为什么收到 `2.0`（2026-10-07 作者定）**：`2.4` 是照着 1440px 宽栏定的（一行约 49 字），
+到 390px 窄栏里一行只放得下约 25 字，同一个比值读起来就散了。实测（中文页，390×844）：
+行高 33.6px → 28.0px，正文块减 15%～16%，wwhbh 整页 10.5 → 9.2 屏。
+覆盖只写在 `css/project.css` 的 `@media(max-width:768px)` 里，桌面一个字不动；
+站内页（about `1.9` / changelog `1.8` / 404 `1.9`）与 riverrun 说明栏（`1.85`）**不在范围内**，
+平板竖屏 769–1024px 维持桌面值。
+
+> **覆盖的写法有坑**：四条选择器必须与原规则**同形**。ecce 的原规则是
+> `.ecce-text #ecce-desc`（id+class），若顺手简写成裸 `#ecce-desc`，特异性更低，
+> 放在原规则之前或之后都盖不住（2026-10-07 CDP 注入实测：裸 id 仍是 33.6px，同形才是 28px）。
+> 另外作品页段落由 `<br><br>` 分隔，「空行」高度就是行高，所以**段间距随行高同步收 16.7%**；
+> 要保住原来的段间空隙得把 16 个 `data/*/*.html` 的段落改成独立元素，代价不成比例，故不做。
 
 ### 作品副标题 `.work-sub`
 
@@ -465,6 +478,7 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 主体 padding | `80px 40px 40px` | `70px 16px 24px` |
 | 标题下间距 | `margin-bottom:32px` | 同左 |
 | 正文最大宽 | `800px` | 同左 |
+| 正文行高 | `2.4` | `2.0` |
 | 按钮区 padding | `0 0 32px` | 同左 |
 | 按钮 | `width:auto; border:3px solid #000; padding:8px 18px; 12px/700/1px` | 同左 |
 | 按钮 i18n | `btnDeactivate` / `btnStart` / `btnRetry` | 同左 |
@@ -561,6 +575,7 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 音频 `.ecce-audio` | `width:100%; max-width:800px`（HTML5 `<audio>`，可选） | 同左 |
 | 文字区 padding | `24px 0 0` | 同左 |
 | 文字区最大宽 | `800px` | 同左 |
+| 正文行高（`#ecce-desc`） | `2.4` | `2.0` |
 
 ### 7d. Edge 布局（视频 + 文字，上下排列）
 
@@ -571,7 +586,7 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 媒体区 iframe | `width:100%; height:100%; border:none` | 同左 |
 | 文字区 `.edge-body` | `max-width:800px; padding-top:24px` | 同左 |
 | 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
-| 正文行高 | `2.4` | 同左 |
+| 正文行高 | `2.4` | `2.0` |
 
 ### 7e. Gallery 布局（文字在上，分组图片网格在下）
 
@@ -585,7 +600,7 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 | 整体 padding | `80px 40px 40px` | `70px 16px 24px` |
 | 文字区 `.gallery-body` | `max-width:800px` | 同左 |
 | 标题装饰 | `border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:24px` | 同左 |
-| 正文行高 | `2.4` | 同左 |
+| 正文行高 | `2.4` | `2.0` |
 | 图片区 `.gallery-sections` | `max-width:800px; margin-top:24px; border-top:3px solid #000; padding-top:24px` | 同左 |
 | 段间距 `.gallery-section + .gallery-section` | `margin-top:44px` | 同左 |
 | 段标题 `.gallery-section-title` | `12px/700; letter-spacing:2px; uppercase; margin-bottom:14px` | 同左 |

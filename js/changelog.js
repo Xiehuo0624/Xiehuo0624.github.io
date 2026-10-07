@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-07',
       title: {
+        zh: '手机端长篇正文的行高收到 2.0：窄栏一行 25 字，2.4 显得空',
+        en: 'Long-form body text drops to a 2.0 line-height on phones, where a line holds about 25 characters'
+      },
+      brief: {
+        zh: '手机端作品页长篇正文行高 2.4 → 2.0（33.6 → 28px），整页少滚约一屏半；桌面不变',
+        en: 'Work-page long-form line-height drops from 2.4 to 2.0 on phones (33.6 to 28px), cutting about 1.5 screens per page; desktop is unchanged.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-07',
+      title: {
         zh: '手机端墨层改为贴视口底边锚定：地址栏收放不再拖着整幅图案平移',
         en: 'The ink layer anchors to the viewport bottom edge, so the mobile URL bar stops dragging it'
       },
