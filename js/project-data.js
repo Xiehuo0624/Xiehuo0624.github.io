@@ -68,9 +68,23 @@ App.projects = {
   'edgedgedge': {
     layout: 'edge',
     title: { zh:'EDGEDGEDGE', en:'EDGEDGEDGE' },
-    brief: { zh:'与钢铁大腿共同创作的回授声音演出，关于模糊的边缘与失控', en:'A feedback sound performance co-created with Gangtie Datui, about blurred edges and loss of control' },
+    brief: { zh:'与钢铁大腿共同创作的回授声音演出，关于模糊的边缘与失控', en:'A feedback sound performance co-created with 钢铁大腿, about blurred edges and loss of control' },
     desc:  { file: true },
-    media: { type: 'bilibili', bvid: 'BV1VbxyzaEKA' }
+    /* 2025.06.28 Trigger 的现场资料：录音走顶层 audio（与 ecce-homo／just-type 同一机制），
+       照片走 media.photos —— 由 js/project.js 的 edge 分支交给 buildGalleryGrid，
+       与 6U104HP 共用同一套网格与 Lightbox，所以这里只是纯 src 列表。
+       规格：1600px 长边、cwebp -q 80；原图（4240×2832、无 EXIF 方向）不入库。 */
+    audio: 'audio/edgedgedge.m4a',
+    media: {
+      type: 'youtube',
+      /* 2025.06.28 Trigger 现场录像，作者自己的频道。
+         内嵌 URL 由 js/project.js 与 scripts/gen-projects.mjs 各自拼出，两处必须一致。 */
+      videoId: 'p418kifEC_4',
+      photos: [
+        'img/edgedgedge-live-01.webp', 'img/edgedgedge-live-05.webp', 'img/edgedgedge-live-07.webp',
+        'img/edgedgedge-live-08.webp', 'img/edgedgedge-live-11.webp', 'img/edgedgedge-live-12.webp'
+      ]
+    }
   },
 
   'spectral-dissector': {
@@ -86,7 +100,25 @@ App.projects = {
     title: { zh:'瞧！这个人', en:'ECCE HOMO' },
     brief: { zh:'与 Allen 共同创作的声音剧场作品，交织《圣经》与卡夫卡的文本', en:'A sound theatre piece co-created with Allen, interweaving Biblical and Kafkaesque texts' },
     desc: { file: true },
-    media: { type: 'image', src: 'img/ecce-homo-still.webp' },
+    /* 2025.01.05「声东击西」（学术厅）的 40 张剧照：放在正文之后，交给 buildGalleryGrid，
+       与 6U104HP／edgedgedge 共用同一套网格与 Lightbox，所以这里只是纯 src 列表。
+       规格：1600px 长边、cwebp -q 80；原图 8192×5464、无 EXIF 方向，不入库。 */
+    media: {
+      type: 'image',
+      src: 'img/ecce-homo-still.webp',
+      photos: [
+        'img/ecce-homo-live-01.webp', 'img/ecce-homo-live-02.webp', 'img/ecce-homo-live-03.webp', 'img/ecce-homo-live-04.webp',
+        'img/ecce-homo-live-05.webp', 'img/ecce-homo-live-06.webp', 'img/ecce-homo-live-07.webp', 'img/ecce-homo-live-08.webp',
+        'img/ecce-homo-live-09.webp', 'img/ecce-homo-live-10.webp', 'img/ecce-homo-live-11.webp', 'img/ecce-homo-live-12.webp',
+        'img/ecce-homo-live-13.webp', 'img/ecce-homo-live-14.webp', 'img/ecce-homo-live-15.webp', 'img/ecce-homo-live-16.webp',
+        'img/ecce-homo-live-17.webp', 'img/ecce-homo-live-18.webp', 'img/ecce-homo-live-19.webp', 'img/ecce-homo-live-20.webp',
+        'img/ecce-homo-live-21.webp', 'img/ecce-homo-live-22.webp', 'img/ecce-homo-live-23.webp', 'img/ecce-homo-live-24.webp',
+        'img/ecce-homo-live-25.webp', 'img/ecce-homo-live-26.webp', 'img/ecce-homo-live-27.webp', 'img/ecce-homo-live-28.webp',
+        'img/ecce-homo-live-29.webp', 'img/ecce-homo-live-30.webp', 'img/ecce-homo-live-31.webp', 'img/ecce-homo-live-32.webp',
+        'img/ecce-homo-live-33.webp', 'img/ecce-homo-live-34.webp', 'img/ecce-homo-live-35.webp', 'img/ecce-homo-live-36.webp',
+        'img/ecce-homo-live-37.webp', 'img/ecce-homo-live-38.webp', 'img/ecce-homo-live-39.webp', 'img/ecce-homo-live-40.webp'
+      ]
+    },
     audio: 'audio/ecce-homo.m4a'
   },
 
@@ -94,18 +126,34 @@ App.projects = {
     layout: 'wwhbh',
     title: { zh:'我们将会曾经在这里', en:'WE WILL HAVE BEEN HERE' },
     brief: { zh:'基于麦克风与扬声器回授的声音概念，关于时间、记忆与易失性', en:'A microphone-loudspeaker feedback concept piece about time, memory, and volatility' },
-    desc: { file: true }
+    desc: { file: true },
+    /* 2024.12.14「硬糖」@ Trigger（上海）那一场的现场资料：
+       外录（房间）走顶层 audio —— 这件作品说的就是房间本身，内录另有留档；
+       24 张照片走 media.photos，交给 buildGalleryGrid，与画廊页共用网格与 Lightbox。
+       U 盘上还有 C0001–C0006 六段机位视频，等作者上传 YouTube 后再接。 */
+    audio: 'audio/wwhbh-live.m4a',
+    media: {
+      photos: [
+        'img/wwhbh-live-01.webp', 'img/wwhbh-live-02.webp', 'img/wwhbh-live-03.webp', 'img/wwhbh-live-04.webp',
+        'img/wwhbh-live-05.webp', 'img/wwhbh-live-06.webp', 'img/wwhbh-live-07.webp', 'img/wwhbh-live-08.webp',
+        'img/wwhbh-live-09.webp', 'img/wwhbh-live-10.webp', 'img/wwhbh-live-11.webp', 'img/wwhbh-live-12.webp',
+        'img/wwhbh-live-13.webp', 'img/wwhbh-live-14.webp', 'img/wwhbh-live-15.webp', 'img/wwhbh-live-16.webp',
+        'img/wwhbh-live-17.webp', 'img/wwhbh-live-18.webp', 'img/wwhbh-live-19.webp', 'img/wwhbh-live-20.webp',
+        'img/wwhbh-live-21.webp', 'img/wwhbh-live-22.webp', 'img/wwhbh-live-23.webp', 'img/wwhbh-live-24.webp'
+      ]
+    }
   }
 };
 
-/** 作品显示顺序（从新到旧） */
+/** 作品显示顺序：按研究方向排列（2026-09-30 作者定），不按时间。
+    研究线 = 传输媒介与乐器界面作为作曲材料；6U104HP 是支撑全部创作的工具，故置末。 */
 App.projectOrder = [
-  '6u104hp',
-  'the-just-type-study',
   'the-induction-mixer',
   'riverrun',
-  'edgedgedge',
+  'wwhbh',
+  'the-just-type-study',
   'spectral-dissector',
+  'edgedgedge',
   'ecce-homo',
-  'wwhbh'
+  '6u104hp'
 ];

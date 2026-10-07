@@ -579,11 +579,46 @@
       else raf = setTimeout(frame, 100);   // 空闲也要跑 frame()，才能绘制静态点阵预览
     }
 
+    /* ============ 台面取色（深色模式） ============
+       以下 10 处颜色不再写死，改为从 css/base.css 的语义变量现取：
+       浅色下 --fg 是黑、--bg 是白，深色下两者互换，于是整块台面
+       （网格、拾音连线、可听光晕、音轨点、编号、麦克风光标）跟着反相。
+       编号画在音轨点**之上**，所以取的必须是 --bg（点的反面）而不是 --fg ——
+       与浅色下「黑点上的白字」同一条规则。
+
+       getComputedStyle 会强制一次样式重算，不能放进每帧都跑的 draw()，故缓存；
+       系统配色一变就把缓存丢掉，下一帧自然取到新值。画布循环本来就常驻
+       （播放中 rAF、空闲 100ms），不必为切换专门排一帧，也不必要求刷新页面。 */
+    let themeCache = null;
+    function theme(){
+      if (themeCache) return themeCache;
+      const rgbOf = function(name, fallback){
+        let v = '';
+        try { v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); } catch(e){}
+        return /^\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}$/.test(v) ? v.replace(/\s+/g, '') : fallback;
+      };
+      const fg = rgbOf('--fg-rgb', '0,0,0');
+      const bg = rgbOf('--bg-rgb', '255,255,255');
+      themeCache = {
+        fg: fg, bg: bg,                        // "r,g,b"，供下面拼 rgba()
+        fgSolid: 'rgb(' + fg + ')',
+        bgSolid: 'rgb(' + bg + ')'
+      };
+      return themeCache;
+    }
+    if (window.matchMedia){
+      const dark = window.matchMedia('(prefers-color-scheme: dark)');
+      const onThemeChange = function(){ themeCache = null; };   // 下一帧自会按新配色重绘
+      if (dark.addEventListener) dark.addEventListener('change', onThemeChange);
+      else if (dark.addListener) dark.addListener(onThemeChange);
+    }
+
     function draw(mics, R){
+      const C = theme();
       ctx.clearRect(0, 0, W, H);
 
       // 极淡网格（面板/蓝图感）
-      ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+      ctx.strokeStyle = 'rgba(' + C.fg + ',0.05)';
       ctx.lineWidth = 1;
       const grid = 8;
       for (let i = 1; i < grid; i++){
@@ -606,7 +641,7 @@
             const Rm = R * (0.6 + 0.4 * m.gain);
             if (dist < Rm){
               const g = m.gain * (1 - dist / Rm);
-              ctx.strokeStyle = 'rgba(0,0,0,' + (0.35 * g).toFixed(3) + ')';
+              ctx.strokeStyle = 'rgba(' + C.fg + ',' + (0.35 * g).toFixed(3) + ')';
               ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(pos.x, pos.y); ctx.stroke();
             }
           }
@@ -625,14 +660,14 @@
 
         // 可听光晕
         if (tg > 0.02){
-          ctx.fillStyle = 'rgba(0,0,0,' + (0.12 * tg).toFixed(3) + ')';
+          ctx.fillStyle = 'rgba(' + C.fg + ',' + (0.12 * tg).toFixed(3) + ')';
           ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 8 + tg * 18, 0, Math.PI * 2); ctx.fill();
         }
         // 点
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = C.fgSolid;
         ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.fill();
-        // 编号（PCB 丝印感）
-        ctx.fillStyle = tg > 0.02 ? '#fff' : 'rgba(255,255,255,0.7)';
+        // 编号（PCB 丝印感）—— 画在点之上，取点的反面配色
+        ctx.fillStyle = tg > 0.02 ? C.bgSolid : 'rgba(' + C.bg + ',0.7)';
         ctx.font = Math.max(9, baseR * 0.7) + "px 'DejaVu Sans Mono',Menlo,Consolas,monospace";
         ctx.fillText(String(i + 1).padStart(2, '0'), pos.x, pos.y + 0.5);
       }
@@ -642,19 +677,19 @@
       for (const m of mics){
         const ringR = micR + m.gain * Math.min(W, H) * 0.05;
         // 外圈虚线
-        ctx.strokeStyle = 'rgba(0,0,0,' + (0.25 + 0.45 * m.gain).toFixed(3) + ')';
+        ctx.strokeStyle = 'rgba(' + C.fg + ',' + (0.25 + 0.45 * m.gain).toFixed(3) + ')';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([4, 4]);
         ctx.beginPath(); ctx.arc(m.x, m.y, ringR, 0, Math.PI * 2); ctx.stroke();
         ctx.setLineDash([]);
         // 增益弧（实线，从顶部顺时针，长度=增益）
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = C.fgSolid;
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.arc(m.x, m.y, ringR, -Math.PI / 2, -Math.PI / 2 + m.gain * Math.PI * 2);
         ctx.stroke();
         // 十字
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = C.fgSolid;
         ctx.lineWidth = 2;
         const k = micR * 0.9;
         ctx.beginPath();
@@ -662,7 +697,7 @@
         ctx.moveTo(m.x, m.y - k); ctx.lineTo(m.x, m.y + k);
         ctx.stroke();
         // 中心点
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = C.fgSolid;
         ctx.beginPath(); ctx.arc(m.x, m.y, micR * 0.32, 0, Math.PI * 2); ctx.fill();
       }
     }

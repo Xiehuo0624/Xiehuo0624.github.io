@@ -25,7 +25,7 @@
  *   ② <title> 换成作品名，并补 description / canonical / hreflang / og:* / twitter:card
  *   ③ 当前布局的 <h2> 填好标题与副标题
  *   ④ 当前布局的正文容器填入 data/<id>/<lang>.html 的内容（爬虫读得到）
- *   ⑤ 主图（或 bilibili 内嵌页）写进媒体容器，并标 data-baked="1"
+ *   ⑤ 主图（或 YouTube 内嵌页）写进媒体容器，并标 data-baked="1"
  *   ⑥ 头部内联脚本只保留「中文才预载中日韩字体」；末尾那段「读 ?project= 定布局」的
  *      脚本整段删掉 —— 它的活儿已经由 ① 在生成时做完了
  * 其余部分原样照抄，所以模板改了（加布局、提缓存版本号）重新生成即可，不会两边漂移。
@@ -250,14 +250,25 @@ function mainFontHref(){
 
 const HEAD_SCRIPT =
   '<script>\n' +
-  '/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。\n' +
-  '   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，\n' +
-  '   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。\n' +
+  '/* 生成页：语言由路径写死，只保留两条性能决策；原文的 ?lang= > localStorage 解析必须去掉\n' +
+  '   —— 让 localStorage 覆盖路径语言，就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。\n' +
+  '\n' +
+  '   ① 中文界面才预载中日韩字体；\n' +
+  '   ② 英文界面下，语言按钮一旦有「要切过去」的意图就提前取。\n' +
+  '      切语言在作品页是**原地换语言**（见 js/i18n.js 的 _inPlace）：不跳转，也就没有新文档的\n' +
+  '      <head> 去发预载，浏览器要到中文文案换上去那一刻才发现需要这份字体。\n' +
+  '      只认真实交互（按下／聚焦），**不认掠过** —— 鼠标划过去不该让英文读者白付这 245KB。\n' +
+  '\n' +
   '   预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：\n' +
   '   HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，\n' +
   '   同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。\n' +
   '   版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */\n' +
-  `(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='${mainFontHref()}';document.head.appendChild(f);}catch(e){}})();\n` +
+  '(function(){try{var fired=false;\n' +
+  'function pre(){if(fired)return;fired=true;var f=document.createElement(\'link\');f.rel=\'preload\';f.as=\'font\';f.type=\'font/woff2\';f.crossOrigin=\'anonymous\';f.href=\'' + mainFontHref() + '\';document.head.appendChild(f);}\n' +
+  'if(document.documentElement.dataset.lang===\'zh\'){pre();return;}\n' +
+  'document.addEventListener(\'pointerdown\',function(e){var t=e.target;if(t&&t.closest&&t.closest(\'#lang-toggle\'))pre();},true);\n' +
+  'document.addEventListener(\'focusin\',function(e){var t=e.target;if(t&&t.id===\'lang-toggle\')pre();},true);\n' +
+  '}catch(e){}})();\n' +
   '</script>';
 
 function applyLegacyRegions(html, where) {
@@ -406,7 +417,7 @@ function renderPage({ template, app, origin, id, lang }) {
       tag => tag.replace(/>$/, ` data-desc-lang="${attr(lang)}">`));
   }
 
-  /* ⑦ 主图 / bilibili 内嵌页：只在生成时能静态写出的媒体才烤。
+  /* ⑦ 主图 / YouTube 内嵌页：只在生成时能静态写出的媒体才烤。
         gallery 布局不烤 —— 它的全部图（6U104HP 21 张、The Induction Mixer 3 张）
         要配灯箱点击绑定，交给 js/project.js 渲染。 */
   const media = p.media || null;
@@ -419,8 +430,10 @@ function renderPage({ template, app, origin, id, lang }) {
   }
   if (p.layout === 'edge' && media) {
     let inner = '';
-    if (media.type === 'bilibili') {
-      inner = `<iframe src="//player.bilibili.com/player.html?bvid=${attr(media.bvid)}&amp;autoplay=0" allowfullscreen="true"></iframe>`;
+    if (media.type === 'youtube') {
+      /* 与 js/project.js 的运行时分支逐字一致（含 nocookie 域与 autoplay=0&rel=0）：
+         烤好的页面与脚本重建的播放器必须是同一个，否则两条路径行为不同。 */
+      inner = `<iframe src="https://www.youtube-nocookie.com/embed/${attr(media.videoId)}?autoplay=0&amp;rel=0" allowfullscreen="true" title="${attr(title)}"></iframe>`;
     } else if (media.type === 'image') {
       inner = `<img src="${attr(media.src)}" alt="${attr(title)}" decoding="async" fetchpriority="high" style="width:100%;height:100%;object-fit:cover;">`;
     }

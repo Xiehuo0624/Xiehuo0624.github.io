@@ -1,3 +1,13 @@
+<span class="work-meta">
+<span class="work-meta-k">创作年份</span><span class="work-meta-v">2025–2026</span>
+<span class="work-meta-k">形态</span><span class="work-meta-v">Max for Live 插件：基频、谐波、瞬态与噪音分离</span>
+<span class="work-meta-k">规格</span><span class="work-meta-v">十个频带＋Perc Band＋Dry 干路；干路与各频带共用同一个 pfft~，延迟对齐 4032 samples</span>
+<span class="work-meta-k">分工</span><span class="work-meta-v">算法与架构：我；新版本的实现与 UI：闫开</span>
+<span class="work-meta-k">公开记录</span><span class="work-meta-v">本站可下载（26.09.12 版）；暂无外部使用记录</span>
+<span class="work-meta-k">状态</span><span class="work-meta-v">持续开发</span>
+<span class="work-meta-k">资料</span><span class="work-meta-v">初版界面截图；当前版界面截图（待补）；使用教程视频（YouTube，制作中）</span>
+</span>
+
 <a class="tt-download" href="data/spectral-dissector/Spectral%20Dissector%2026.09.12.zip" download>↓ 下载 Spectral Dissector（26.09.12.zip）</a>
 
 <br><br>
@@ -11,22 +21,6 @@ Spectral Dissector是一款基于Spectral Noise Gate、HPSS和Cepstrum的基频�
 <img src="img/spectral-dissector-1.webp" alt="最初版本的Spectral Dissector（Spectral Bank）Max for Live插件截图" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
 我在2026年4月对本插件的架构进行了重构：引入了HPSS和Cepstrum算法，并参照Bitwig Loud Split加入了Rise/Fall控制参数，尝试以此分离非谐波性的瞬态与噪音，使谐波的分离更加稳定、精确，并减少伪影。同时重做了界面逻辑，将每个Spectral Gate Band的逻辑改为由一个Main Threshold总控，由Spacing旋钮调整各Band阈值之间的响度差，并通过Tilt补偿高/低频的阈值。还新增了[<strong>Focus</strong> (<code>focus</code>) | 频带交叉锐度 | 大值=频带边界清晰但可能跳变；小值=过渡平滑]参数，以强调乐音信号。本版本暂时移除了包络补偿算法，因为它与Cepstrum和HPSS在打架……残念。新版本的Max for Live插件实现与UI由闫开完成。
-
-<br><br>
-
-+rep
-
-<br><br>
-
-<span style="display:block;text-align:right">2026.07.02</span>
-
-<br><br>
-
-I hate Cepstrum.
-
-<br><br>
-
-<span style="display:block;text-align:right">2026.07.04</span>
 
 <br><br>
 

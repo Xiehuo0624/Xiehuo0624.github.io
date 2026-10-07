@@ -22,6 +22,8 @@ App.PROJECT_I18N = {
   lightboxPrev:   { zh:'上一张',                     en:'Previous image' },
   lightboxNext:   { zh:'下一张',                     en:'Next image' },
   lightboxClose:  { zh:'关闭',                       en:'Close' },
+  /* 现场照片的 alt 后缀（edgedgedge 的 edge 布局用；别处复用同一键） */
+  livePhoto:      { zh:'现场照',                     en:'live photograph' },
 
   /* ---- riverrun spatial mixer ---- */
   mixerStart:     { zh:'开始混音',                                  en:'START MIXING' },

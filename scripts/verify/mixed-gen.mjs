@@ -30,7 +30,8 @@ console.log(`旧版 app.js 已构造：${OLD_APP_JS.length} 字节（现版 ${cu
 
 const chrome = spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   ['--headless=new', `--remote-debugging-port=${PORT}`, '--no-sandbox', '--disable-breakpad',
-   '--use-mock-keychain', '--password-store=basic', `--user-data-dir=${join(ROOT_TMP,'profile-mixed')}`,
+   '--use-mock-keychain', '--password-store=basic', '--deny-permission-prompts',
+   `--user-data-dir=${join(ROOT_TMP,'profile-mixed')}`,
    '--no-first-run', '--no-default-browser-check', 'about:blank'],
   { stdio: 'ignore', env: { ...process.env, HOME: join(ROOT_TMP, 'home') } });
 let v = null;

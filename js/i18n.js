@@ -11,10 +11,17 @@
  * 一起传递，并且切换语言会同步回地址栏，复制出来的 URL 带着当前语言。
  *
  * **作品页是例外**：它的语言写在路径里（works/<id>/ 与 works/<id>/zh/），
- * 页面带 data-lang-fixed，既不吃 localStorage 也不写 ?lang=，切换语言是跳转
- * 到另一语言那份页面。成因见 js/app.js 的 App.projectHref 与
- * scripts/gen-projects.mjs 顶部注释；静态页需要按语言各有一份可被抓取的 HTML，
- * 路径式是唯一能做到这点的形式。
+ * 页面带 data-lang-fixed，既不吃 localStorage 也不写 ?lang=。成因见 js/app.js 的
+ * App.projectHref 与 scripts/gen-projects.mjs 顶部注释；静态页需要按语言各有一份
+ * 可被抓取的 HTML，路径式是唯一能做到这点的形式。
+ *
+ * **但作品页的语言按钮不跳转**（2026-10-02 改）：跳转 = 换掉整个文档，会把正在进行的
+ * 作品一起销毁 —— wwhbh 的 AudioContext、MediaStream、90 秒 DelayNode 缓冲区、
+ * 以及墨层的累积数组全在那个文档里，没有一样能跨文档存活。所以作品页在 init() 时
+ * 用 { inPlace: true } 声明「我能原地换语言」，走下面那条原地分支：文案当场换掉，
+ * 地址栏用 replaceState 换成 hreflang 里那份路径。
+ * 两份静态 HTML 与 head 里的 hreflang 一个字节都没动，爬虫也不点按钮 ——
+ * 链接预览、分享、刷新拿到的仍是各自语言那份页面。
  */
 (function(){
   const DEFAULT_LANG = 'en';
@@ -44,10 +51,16 @@
   App.I18n = {
     currentLang: normalize(initial),
     _onToggle: null,
+    _inPlace: false,
     _data: {},
     _listenerAttached: false,
 
     /** 注册翻译数据并立即应用，可选 onToggle 回调
+     *
+     *  opts.inPlace：声明本页**能原地换语言**，路径固定语言的页面据此不再跳转。
+     *  只有作品页会传它 —— 那里有跨不过文档边界的活状态（音频图、墨层累积）。
+     *  不传（其余所有页面）时行为与改动前逐字相同：FIXED_LANG 页面照样跳到
+     *  hreflang 指的那份静态页。
      *
      *  **公共字符串在本方法里合并**，不由各页数据文件自己 spread：
      *  works / about / changelog / 404 四页的 `<页面>-i18n.js` 是同步 `<head>` 脚本
@@ -57,9 +70,10 @@
      *  英文界面显示「[<- 返回]」、语言按钮显示「[en] English」（2026-09-22 实测确认）。
      *  合并放到引擎里之后，公共字符串只有 i18n.js 一处定义，且与页面数据文件的
      *  加载顺序无关；页面数据即使写了同名键也会被它覆盖，不会各自漂移。 */
-    init(data, onToggle) {
+    init(data, onToggle, opts) {
       this._data = Object.assign({}, App.COMMON_I18N, data);
       this._onToggle = onToggle || null;
+      this._inPlace = !!(opts && opts.inPlace);
       this._persist();   // 内联脚本未跑（如禁用 JS 的降级路径）时也能落定偏好
       this.apply();
 
@@ -70,7 +84,7 @@
           if (!btn) return;
           e.preventDefault();
           const target = this.currentLang === 'zh' ? 'en' : 'zh';
-          /* 路径固定语言的页面：切换语言 = 跳到另一语言那份页面。
+          /* 路径固定语言的页面：默认「切换语言 = 跳到另一语言那份页面」。
              目标直接读页面头部的 <link rel="alternate" hreflang>，与给搜索引擎的
              hreflang 是同一份数据，不在 JS 里另存一张 id→URL 映射表（两份表早晚漂移）。
              但**只取路径**：hreflang 写的是规范域名（绝对地址），照搬会把本地预览
@@ -81,6 +95,28 @@
              最坏结果是地址栏不带语言目录，而不是按钮点了没反应。 */
           if (FIXED_LANG) {
             const alt = document.querySelector('link[rel="alternate"][hreflang="' + target + '"]');
+
+            /* 声明过「能原地换语言」的页面（作品页）：**不跳转**。
+               跳转要换掉整个文档，而 wwhbh 这件作品的活状态全在那个文档里 ——
+               AudioContext、MediaStream、90 秒 DelayNode 的缓冲区、墨层的累积数组，
+               没有一样能跨文档存活（2026-10-02 实测：切换引发 1 次文档导航、
+               window 上的标记消失、墨层像素 4 → 0）。作者的要求是「切语言只换语言」。
+               地址栏随后用 replaceState 换成 hreflang 里那份路径，所以：
+                 · 地址仍与显示的语言一致，复制出去、刷新拿到的都是对的那份；
+                 · 两份静态 HTML 与 hreflang 一个字节没改，爬虫照旧各取所需
+                   （爬虫不点按钮，这份运行时改动它根本读不到）。
+               localStorage 与 ?lang= 都不写：语言是路径的一部分，理由见 _persist。 */
+            if (this._inPlace) {
+              this.currentLang = target;
+              this.apply();
+              if (this._onToggle) this._onToggle(this.currentLang);
+              if (alt && alt.href) {
+                try { history.replaceState(null, '', new URL(alt.href, location.href).pathname); }
+                catch(e) {}
+              }
+              return;
+            }
+
             if (alt && alt.href) {
               try { location.href = new URL(alt.href, location.href).pathname; }
               catch(e) { location.href = alt.href; }

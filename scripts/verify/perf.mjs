@@ -22,6 +22,8 @@ const chrome = spawn(CHROME, [
   /* 不碰真实钥匙串：否则 Chrome 会去读写 macOS 的「Chrome Safe Storage」条目，
      每启动一次就在屏幕上弹一次系统授权框（约束见 AGENTS.md §3）。 */
   '--use-mock-keychain', '--password-store=basic',
+  /* 媒体权限不问系统（wwhbh 页加载即调 getUserMedia，会弹 macOS 麦克风授权框）。 */
+  '--deny-permission-prompts',
   `--user-data-dir=${join(ROOT_TMP, 'profile-perf')}`, '--no-first-run', '--no-default-browser-check',
   '--hide-scrollbars', '--window-size=1280,900', 'about:blank'
 ], { stdio: 'ignore', env: { ...process.env, HOME: join(ROOT_TMP, 'home') } });

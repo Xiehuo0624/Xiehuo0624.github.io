@@ -7,14 +7,25 @@
 <meta charset="UTF-8">
 <base href="/">
 <script>
-/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
-   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
-   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。
+/* 生成页：语言由路径写死，只保留两条性能决策；原文的 ?lang= > localStorage 解析必须去掉
+   —— 让 localStorage 覆盖路径语言，就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。
+
+   ① 中文界面才预载中日韩字体；
+   ② 英文界面下，语言按钮一旦有「要切过去」的意图就提前取。
+      切语言在作品页是**原地换语言**（见 js/i18n.js 的 _inPlace）：不跳转，也就没有新文档的
+      <head> 去发预载，浏览器要到中文文案换上去那一刻才发现需要这份字体。
+      只认真实交互（按下／聚焦），**不认掠过** —— 鼠标划过去不该让英文读者白付这 245KB。
+
    预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3c1ea7ae';document.head.appendChild(f);}catch(e){}})();
+(function(){try{var fired=false;
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=5c4bc2a1';document.head.appendChild(f);}
+if(document.documentElement.dataset.lang==='zh'){pre();return;}
+document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
+document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
+}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,9 +51,9 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=28">
-<link rel="stylesheet" href="css/nav.css?v=3">
-<link rel="stylesheet" href="css/project.css?v=6">
+<link rel="stylesheet" href="css/base.css?v=39">
+<link rel="stylesheet" href="css/nav.css?v=4">
+<link rel="stylesheet" href="css/project.css?v=12">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
@@ -51,18 +62,18 @@
      生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
      保持同步只为避免两份加载策略各自漂移。 -->
 <script src="js/app.js"></script>
-<script src="js/project-data.js?v=4"></script>
+<script src="js/project-data.js?v=8"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
-<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/i18n.js?v=7"></script>
 <script defer src="js/autospace.js"></script>
 <script defer src="js/nav.js?v=6"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic（js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
      生成器剪掉，见 scripts/gen-projects.mjs） -->
-<script defer src="js/project-i18n.js?v=4"></script>
-<script defer src="js/ink-wwhbh.js?v=1"></script>
+<script defer src="js/project-i18n.js?v=5"></script>
+<script defer src="js/ink-wwhbh.js?v=2"></script>
 <script defer src="js/audio-wwhbh.js?v=4"></script>
-<script defer src="js/project.js?v=7"></script>
+<script defer src="js/project.js?v=15"></script>
 </head>
 <body>
 
@@ -82,7 +93,17 @@
       <p class="wwhbh-status" id="wwhbh-status"></p>
       <button class="btn-mic" id="btn-mic" style="display:none"></button>
     </div>
-    <p id="wwhbh-desc" data-desc-lang="zh"><span class="work-sec">正在发生的事</span>
+    <p id="wwhbh-desc" data-desc-lang="zh"><span class="work-meta">
+<span class="work-meta-k">创作年份</span><span class="work-meta-v">2024</span>
+<span class="work-meta-k">形态</span><span class="work-meta-v">麦克风—扬声器回授的声音概念；网页版与一次现场演出，没有固定装置形态</span>
+<span class="work-meta-k">规格</span><span class="work-meta-v">网页版：90 秒延时、每轮轻 18 分贝；现场演出：延时与总周期可变，由布置与环境决定（原计划 1 小时 30 分）；没有做成装置</span>
+<span class="work-meta-k">分工</span><span class="work-meta-v">作品：我；封面图：南美大虾设计</span>
+<span class="work-meta-k">公开记录</span><span class="work-meta-v">上海音乐学院音乐工程系期末汇报（大二上）；硬糖，Trigger（上海），2024.12.14</span>
+<span class="work-meta-k">状态</span><span class="work-meta-v">完成；网页版在线可玩</span>
+<span class="work-meta-k">资料</span><span class="work-meta-v">网页版可交互（浏览器麦克风—扬声器回授）；现场录音与照片</span>
+</span>
+
+<span class="work-sec">正在发生的事</span>
 
 这个页面已经在用你的麦克风和扬声器演奏了。你不需要按任何按钮，继续往下读就好。
 
@@ -104,20 +125,82 @@
 
 <br><br>
 
-本作品封面图由南美大虾设计。
+<span class="work-sec">作品简介</span>
+
+这是一件关于时间与易失性的回授作品：麦克风听到的声音，90 秒之后从扬声器回来，再被麦克风听到，如此循环，每一轮比上一轮轻 18 分贝，直到轻到听不见。它没有固定的形态——网页版让它在浏览器里发生，现场版是一次演出。作品的核心不是旋律，是你在这里待的那段时间。
 
 <br><br>
 
-这个作品非常像Alvin Lucier的I'm Sitting in a Room，但是很有趣的是：在创作这个作品时，我还不知道I'm Sitting in a Room。
-这个作品最初的创作灵感是来源于Cathy Van Eck的一系列基于麦克风与扬声器回授的作品（主要是Words, Words, Words, Empty Chairs, 和What We Keep）和我当时对存在主义哲学（由What We Keep唤起，又可以追溯到动漫作品《黑礁》）、记忆（riverrun, past Eve and Adam's..）、不留下记录的艺术实践/表演/作品的兴趣。
+<span class="work-sec">作品动机</span>
+
+我把它交成了大二上的期末作品。答辩的时候，一位老师问我：“你知道你的分数会很低的，对吧？”我回答说我知道。其实我当时不知道，我不觉得这个作品很差：这个作品写的是我那时内心最深处的焦虑和痛苦。
+
+<br><br>
+
+我当时已经希望了很久：自己在一场意外（比如交通事故）里死去，然后被不留痕迹地彻底忘记。所以“被遗忘”在这里不是修辞——我想做的是一件不留痕迹的作品：声音进来、回来、变轻、消失，没有磁带，没有文件，关掉页面就什么都不剩。
+
+<br><br>
+
+后来在 Trigger 演过一次（2024.12.14「硬糖」），但那是无奈之举：我并不希望它是舞台形式的作品，它属于更平铺、开放和离散的空间与体验。
+
+<br><br>
+
+<span class="work-sec">灵感溯源</span>
+
+这个作品非常像 Alvin Lucier 的 <span style="font-style:italic">I Am Sitting in a Room</span>——而有趣的是，做它的时候我还不知道那件作品。最初的灵感来自 Cathy van Eck 一系列基于麦克风与扬声器回授的作品，以及我那时对存在主义哲学、记忆和不留下记录的艺术实践的兴趣。
+
+<br><br>
+
+<span class="work-note">这个作品非常像Alvin Lucier的I'm Sitting in a Room，但是很有趣的是：在创作这个作品时，我还不知道I'm Sitting in a Room。
+这个作品最初的创作灵感是来源于Cathy Van Eck的一系列基于麦克风与扬声器回授的作品（主要是Words, Words, Words, Empty Chairs, 和What We Keep）和我当时对存在主义哲学（由What We Keep唤起，又可以追溯到动漫作品《黑礁》）、记忆（riverrun, past Eve and Adam's..）、不留下记录的艺术实践/表演/作品的兴趣。</span>
+
+<br><br>
+
+“摄影是比现实更真实的现实，录音也是”这个想法来自苏珊·桑塔格（《论摄影》与《关于他人的痛苦》），也来自一件具体的事：一位朋友在扬声器里听到自己的声音，其中包括他从来没说过、我也从来没听过的话。
+
+<br><br>
+
+<span class="work-sec">技术介绍</span>
+
+网页版的延时与反馈全部由 Web Audio 的原生节点完成，音频路径里没有一行 JS：麦克风采集的声音进入 90 秒的延时，输出到扬声器，扬声器再在物理世界里回授给麦克风，每一轮衰减 18 分贝。
+
+<br><br>
+
+页面背后那层墨是“90 秒延时正在填满”的可视化，不是装饰：声音没在流动时它不会长。麦克风权限被拒、页面不在安全上下文、或者音频被浏览器挂起时，屏幕上不会出现任何墨——这是有意的，不是缺陷。
+
+<br><br>
+
+现场版的器材很少：一只麦克风（最好是全指向的）、一个足够长的数字延时（100% 干湿比、延时时间可变、无反馈）、一只全频监听音箱，以及一只限制器（放在麦克风与延时之间，防止无限正反馈伤到听众和设备）。延时与总周期由场地决定，原计划 1 小时 30 分——那是我们学校一节课的长度。
+
+<br><br>
+
+<span class="work-note">这个作品其实只是（为什么要说<span style="font-weight:700">只是</span>呢？难道这样精简的小体量作品不是我所<span style="font-weight:700">最</span>热爱的吗？其实这只是（<span style="font-weight:700">只是？</span>）对自己习惯性的无端（真的无端吗？）刁难）一个麦克风（最好是全指向的），一个足够长的延时效果器（100%干湿比，延时时间可变，无Feedback，我一般会使用数字的），一个扬声器（一般我会使用全频的监听音箱，但是如果有自己的音色特色也是很好的），和一个限制器（防止听力损伤）：麦克风录制的音频进入延时效果器，延时效果器的输出连接到扬声器，扬声器再在物理世界中Feedback回到麦克风（我一般会通过调整麦克风增益和扬声器音量来保证Feedback的响度在-12至-18dB之间），限制器一般会被放在麦克风和延时效果器之间，但是只要能避免麦克风与扬声器之间无限的正反馈循环以保护听众的听力和音频设备就足够了。</span>
+
+<br><br>
+
+<span class="work-sec">我的工作</span>
+
+作品、网页版实现与现场实施：我。封面图由南美大虾设计。
+
+<br><br>
+
+<span class="work-sec">公开记录</span>
+
+上海音乐学院音乐工程系期末汇报（大二上）；2024.12.14「硬糖」，Trigger（上海）。本页的现场录音与照片来自后者。
+
+<br><br>
+
+<span class="work-sec">后完成</span>
+
+下面的笔记写于 2026 年 6 月；文中的日期行是写作日，不是创作时间（这件作品做于 2024 年）。
 
 <br><br>
 
 这个作品被我提交为大二上的期末作品，我在同时期与Allen共同创作了Ecce Homo。
 在期末答辩的时候，一位老师（令人难过的是，我在当时认为她是答辩老师中唯一一位可以理解和接受我的创作的老师）问我："你知道你的分数会很低的，对吧？"
 我回答说："我知道。"
-其实我当时不知道，我不觉得这个作品很差，这个作品是关于我当时内心最深处的焦虑和痛苦的：我一直以来都是一个难以不被注意的人，并且我同时享受和厌烦这一点。
-我在当时已经长期地愿望和幻想了在意外（如交通事故）中死亡并被不留痕迹的完全遗忘。
+其实我当时不知道，我不觉得这个作品很差：这个作品写的是我那时内心最深处的焦虑和痛苦。我那时是一个难以不被注意的人，既享受这一点，也厌烦它。
+我当时已经希望了很久：自己在一场意外（比如交通事故）里死去，然后被不留痕迹地彻底忘记。
 
 <br><br>
 
@@ -142,10 +225,6 @@
 
 <br><br>
 
-这个作品其实只是（为什么要说<span style="font-weight:700">只是</span>呢？难道这样精简的小体量作品不是我所<span style="font-weight:700">最</span>热爱的吗？其实这只是（<span style="font-weight:700">只是？</span>）对自己习惯性的无端（真的无端吗？）刁难）一个麦克风（最好是全指向的），一个足够长的延时效果器（100%干湿比，延时时间可变，无Feedback，我一般会使用数字的），一个扬声器（一般我会使用全频的监听音箱，但是如果有自己的音色特色也是很好的），和一个限制器（防止听力损伤）：麦克风录制的音频进入延时效果器，延时效果器的输出连接到扬声器，扬声器再在物理世界中Feedback回到麦克风（我一般会通过调整麦克风增益和扬声器音量来保证Feedback的响度在-12至-18dB之间），限制器一般会被放在麦克风和延时效果器之间，但是只要能避免麦克风与扬声器之间无限的正反馈循环以保护听众的听力和音频设备就足够了。
-
-<br><br>
-
 <span style="font-weight:700">时间</span>才是这里最重要的部分：为你的场所选择时间。
 我本来计划设置三套这样的设备在学校的大厅，互相之间延时时间有细微的区别，但是总的来说，在1小时30分钟左右。
 因为我们学校一节课的时间是1小时30分钟，这是这个场所的<span style="font-weight:700">周期</span>。
@@ -163,7 +242,7 @@
 相对于I'm Sitting in a Room所留下的一盘盘磁带，Buffer中的数据无疑是及其<span style="font-weight:700">易失</span>的。
 它们存储在RAM中，难以被保留，一旦关闭系统就会永久消失，原有的数据在一遍遍写入的过程中也被反复擦写。
 <span style="font-weight:700">我不需要磁带来证明这一切，只有我的被彻底忘记才证明我活过。</span>
-我一直以来都是一个难以不被注意的人，我尝试以一种破坏性的方式来摆脱这部分特质。
+我那时是一个难以不被注意的人，我尝试以一种破坏性的方式来摆脱这部分特质。
 
 <br><br>
 
@@ -180,6 +259,9 @@
 
 <span style="display:block;text-align:right">2026.06.15</span>
 </p>
+    <!-- 现场资料（录音 + 照片网格）：运行时由 renderLive 补建。
+         放在正文之后；视频位留待作者上传 YouTube 后再接。 -->
+    <div class="wwhbh-live" id="wwhbh-live"></div>
   </div>
 </div>
 

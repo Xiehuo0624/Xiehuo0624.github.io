@@ -63,6 +63,7 @@
 |------|-----------|
 | `--no-sandbox` | Chrome 自身的进程沙箱在外层沙箱里初始化失败（日志 `Failed to initialize sandbox`），渲染进程随即崩溃、浏览器整体 `Trace/BPT trap: 5` 挂掉，CDP 连不上、脚本吊死在第一个 `await` |
 | `--use-mock-keychain` + `--password-store=basic` | Chrome 会去读写 macOS 钥匙串里的「Chrome Safe Storage」条目，**每启动一次就在作者屏幕上弹一次系统授权框**，反复弹、很烦人。加上这两个参数就不碰真实钥匙串 |
+| `--deny-permission-prompts`（2026-10-02 补） | 遍历全站会打开 `/works/wwhbh/`，那一页**加载即调 `getUserMedia`**（`js/audio-wwhbh.js`，作者 2026-09-20 定的行为），于是屏幕上弹一次 macOS 麦克风授权框。加上它 Chrome 直接拒绝，页面落进自己的「麦克风权限被拒绝」分支（探针对该状态无断言）。**不要**改用 `--use-fake-ui-for-media-stream`：那是自动同意并启用假设备，页面会进 `running` 并真的开始处理音频，探针环境就不再像真实访客 |
 | `HOME` 指到工作区内，`--user-data-dir` 也放工作区内 | Chrome 的崩溃簿记会去写 `~/Library/Application Support/Google/Chrome/Crashpad`（工作区之外）。把 HOME 改到工作区后整条命令不往外写任何东西，于是**不需要放宽文件权限**；否则每跑一次都得申请一次 `danger-full-access` |
 
 写法（Node `spawn`）：
@@ -71,9 +72,14 @@
 spawn(CHROME, [
   '--headless=new', '--no-sandbox', '--disable-breakpad',
   '--use-mock-keychain', '--password-store=basic',
+  '--deny-permission-prompts',
   `--user-data-dir=${join(HERE, 'profile')}`, /* … */
 ], { env: { ...process.env, HOME: join(HERE, 'home') } });
 ```
+
+**会弹系统框的操作，先向作者报一句原因（2026-10-02 作者要求）**：钥匙串、麦克风／摄像头、屏幕录制、
+辅助功能授权，以及任何会打断作者当前操作的窗口，都属于这一类。规矩是**先说原因、再动手**，
+不要在弹出来之后才解释；已经能靠参数避免的（上表三条）就避免掉。
 
 现成的四份都在 `scripts/verify/`（`verify.mjs` 结构与交互断言、`coverage.mjs` 中文覆盖率、
 `mixed-gen.mjs` 新旧 JS 混用、`perf.mjs` 冷缓存 + 150ms RTT / 1.6Mbps 首屏对比），
@@ -120,6 +126,21 @@ spawn(CHROME, [
 —— 不报错，只是错。现已改为端口交 `0` 让 Chrome 自选、profile 带 pid、端口从 Chrome 写出的
 `DevToolsActivePort` 读（实测两实例并发：PID 80853／80854 → 端口 54954／54955，各自通过）；
 ③ 交付时若怀疑被并发改动作废，先比对关键文件 mtime 与自己那次跑检查的时刻，别把过期的「全绿」当结论。
+④ **动共享文件之前先看时间戳**（2026-10-02 补，代价是一次真实的覆盖事故）：`scripts/gen-projects.mjs`
+与两个字体链脚本会**整页重写** `works/*/index.html` 等生成物。若另一个会话正在**直接改生成页**
+（而不是改 `data/*` 源头），重跑一次就把那些手改抹掉 —— 而那些文件是 untracked 的，**git 恢复不了**。
+所以：**重跑任何生成器、或改 `project-template.html`／`js/project*.js`／`css/*.css`／`scripts/verify/*.mjs`
+这类共享文件之前，先跑一遍**
+
+```bash
+find . -path ./tmp -prune -o -path ./.git -prune -o -type f \
+  -newermt "$(date -v-30M '+%Y-%m-%d %H:%M')" -print
+git status --short
+```
+
+发现别的会话近 30 分钟内改过同一批文件，**先问作者再动手**；不要用「反正生成器幂等」说服自己 ——
+幂等只对「源头没被绕过」成立。
+⑤ **一件作品同一时间只由一个会话负责**；跨会话接手之前先声明「谁在动哪些文件」。
 
 1. **缓存版本号**：按 `STYLEGUIDE.md` 的「缓存版本号规则」决定提不提号；改了带号的文件必须提号，原本无号的文件**不要凭空加号**。
 2. **changelog**：在 `js/changelog.js` 的 `entries` 数组**最前面**加一条，中英各一份。

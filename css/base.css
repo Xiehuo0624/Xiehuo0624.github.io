@@ -1,6 +1,53 @@
 /* ===== RESET & BASE ===== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
+/* ===== 语义配色（2026-10-02 立：深色模式跟随系统）=====
+   全站颜色**只在这里定义**：其余 7 个 CSS 一律引用变量，不再出现字面色值。
+   命名按语义，不用 --black／--white —— 深色下会反义。
+   两套值以**严格镜像**（v ↔ 255−v）为基准：底、字、留白底一一对应，
+   那几项的对比度关系因此逐项相同（实测数字见 STYLEGUIDE.md「深色模式」一节）。
+   三处**有意偏离镜像**，理由各自写在下方深色块里：
+     · --rule        硬边 —— 21:1 的极端值上，镜像会让白线明显重于黑线
+     · --muted       次要文字 —— 作者定「字面不变」
+     · --muted-soft  引文块正文 —— 同上 */
+:root{
+  --bg:#fff;                /* 纸：页面底 */
+  --bg-rgb:255,255,255;     /* 同上。需要带透明度时用（导航渐隐、riverrun 台面取色） */
+  --fg:#000;                /* 墨：正文与实心控件 */
+  --fg-rgb:0,0,0;           /* 同上。riverrun 画布与墨层取色都读它 */
+  --rule:#000;              /* 3px／2px 硬边与下划线 —— 全站识别度所在，故单独给一个变量 */
+  --muted:#888;             /* 次要文字：摘要、日期、字段标签、占位提示 */
+  --muted-soft:#666;        /* 引文块正文（.work-note） */
+  --rule-soft:#ccc;         /* 发丝线：引文块左侧竖线 */
+  --surface:#f0f0f0;        /* 照片／视频的留白底（object-fit:contain 露出的垫子） */
+  --surface-quiet:#f9f9f9;  /* 引文块底（.track-text） */
+  --surface-code:#f4f4f4;   /* 终端块底（.tt-block） */
+  --code-rule:#e4e4e4;      /* 终端块 1px 边 */
+}
+@media (prefers-color-scheme: dark){
+  /* 跟随系统。**不做手动开关、不写 localStorage**（作者 2026-10-02 定）。 */
+  :root{
+    --bg:#000;  --bg-rgb:0,0,0;
+    --fg:#fff;  --fg-rgb:255,255,255;
+    /* 硬边**不取纯白**（作者 2026-10-03 定 #e6e6e6，16.83:1）—— 这是镜像最不该
+       照搬的一处：对比度相同 ≠ 知觉重量相同。黑底白线因光渗（irradiation）比白底黑线
+       显得更粗更亮，纯白硬边在深色下「有点刺眼」；首页卡片栈一次叠出 6 条平行白边，
+       那里最先看出来。16.83:1 仍是硬边，不会看着脏。
+       代价：浅色下「边线与字同色」这条关系在深色下断了（下划线比标题字浅一档），
+       是有意换来的 —— 视觉判断见 STYLEGUIDE.md「深色模式」一节。 */
+    --rule:#e6e6e6;
+    --rule-soft:#333;
+    --surface:#0f0f0f;
+    --surface-quiet:#060606;
+    --surface-code:#0b0b0b;
+    --code-rule:#1b1b1b;
+    /* --muted／--muted-soft 不在此处重定义：作者定「字面不变」。
+       代价是两套配色下次要文字的对比度不再是同一档（浅色 #888/#fff 3.54:1、
+       深色 #888/#000 5.92:1），且 #666 与 #888 的轻重关系会互换 —— 作者 2026-10-03
+       在对照台上比过三档（现状／互换／等比反推），选了现状。详见 STYLEGUIDE.md。 */
+  }
+}
+
 /* ===== WEBFONT: PlainZero（仅 U+0030，覆盖 DejaVu 的点 0 为纯净 0；同家族同高度）===== */
 @font-face{
   font-family:'PlainZero';
@@ -38,12 +85,45 @@
    仍需手改，一致性由 scripts/verify/verify.mjs 第十二节逐字比对兜住。 */
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Regular.woff2?v=3c1ea7ae') format('woff2');
+  src:url('fonts/SourceHanSansSC-Regular.woff2?v=5c4bc2a1') format('woff2');
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Bold.woff2?v=3c1ea7ae') format('woff2');
+  src:url('fonts/SourceHanSansSC-Bold.woff2?v=5c4bc2a1') format('woff2');
+  font-weight:700;font-style:normal;font-display:swap
+}
+
+/* ===== 中文兜底：思源还没到时由本机的中文黑体顶（local()，0 字节）=====
+   **字体栈里原先没有点名任何一个中文字体**，思源还没下载完时中文只能落到 generic
+   monospace 的中文兜底 —— Windows 上那是**宋体（衬线）**，与思源黑体是两种完全不同的
+   字形语言；Mac 上是苹方（黑体），所以只在 Mac 上看问题不明显（作者 2026-10-03 报的
+   「Mac 上差别不大、Windows 上十分明显」）。同一份代码在两种系统上表现不同，就是因为
+   兜底没被点名。
+   这一层把本机的中文黑体按平台顺序列出来，**全是 local()、0 字节**：
+   macOS 苹方／冬青黑，Windows 微软雅黑，Linux／装了 Adobe 字体的机器 Noto／思源。
+   一个字都没有的系统上该面不可用，退回改动前的行为 —— 失败方向相同。
+   它排在思源之后：思源一旦到位就轮不到它。
+   （做法与下面 LocalIPA 同一套路，理由也同一类：把「本机已有的字形」显式认下来，
+   别让浏览器去猜。） */
+@font-face{
+  font-family:'CJKFallback';
+  src:local('PingFang SC'),local('Hiragino Sans GB'),local('Microsoft YaHei'),
+      local('Noto Sans CJK SC'),local('Source Han Sans SC'),local('SimHei');
+  /* 限定中日韩区段：这一层只接管汉字与中文标点，**一个拉丁字母都不碰** ——
+     否则「DejaVu 里没有的某个拉丁字形」会改由苹方／雅黑来画，那是本次改动
+     不该带来的副作用。范围取常用集：部首、中文标点、假名、围栏字、
+     扩展 A、统一表意、兼容表意、全角形式。 */
+  unicode-range:U+2E80-2EFF,U+3000-303F,U+3040-30FF,U+31C0-31EF,U+3200-32FF,
+                U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF;
+  font-weight:400;font-style:normal;font-display:swap
+}
+@font-face{
+  font-family:'CJKFallback';
+  src:local('PingFang SC Bold'),local('Hiragino Sans GB W6'),local('Microsoft YaHei Bold'),
+      local('Noto Sans CJK SC Bold'),local('Source Han Sans SC Bold'),local('SimHei');
+  unicode-range:U+2E80-2EFF,U+3000-303F,U+3040-30FF,U+31C0-31EF,U+3200-32FF,
+                U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF;
   font-weight:700;font-style:normal;font-display:swap
 }
 
@@ -74,18 +154,18 @@
    整份思源（295KB）就太贵了 —— 它们一共十几个，单独切一份只有几 KB，字形完全一致。
    src 先列 local()：装了思源黑体／Noto Sans CJK 的机器（Adobe、多数 Linux、Android）
    0 字节用本机同款字体，其余机器才下载这份子集。
-   覆盖 13 个字符：中南回大文曹泻浩火美虾轩返
+   覆盖 40 个字符：「」〔〕东中凯击南唱回声大师开文曹段泻浣浩火熊片王硬立糖美翁老腿虾西言轩返钢铁闫
    unicode-range 由脚本按实际字符算出：页面里没有这些字时，连这份子集都不会被请求。 */
 @font-face{
   font-family:'SiteCJK';
   src:local('Source Han Sans SC'),local('Source Han Sans CN'),local('Noto Sans CJK SC'),local('Noto Sans SC'),local('思源黑体'),url('fonts/SiteCJK-Regular.woff2') format('woff2');
-  unicode-range:U+4E2D,U+5357,U+56DE,U+5927,U+6587,U+66F9,U+6CFB,U+6D69,U+706B,U+7F8E,U+867E,U+8F69,U+8FD4;
+  unicode-range:U+300C,U+300D,U+3014,U+3015,U+4E1C,U+4E2D,U+51EF,U+51FB,U+5357,U+5531,U+56DE,U+58F0,U+5927,U+5E08,U+5F00,U+6587,U+66F9,U+6BB5,U+6CFB,U+6D63,U+6D69,U+706B,U+718A,U+7247,U+738B,U+786C,U+7ACB,U+7CD6,U+7F8E,U+7FC1,U+8001,U+817F,U+867E,U+897F,U+8A00,U+8F69,U+8FD4,U+94A2,U+94C1,U+95EB;
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'SiteCJK';
   src:local('Source Han Sans SC'),local('Source Han Sans CN'),local('Noto Sans CJK SC'),local('Noto Sans SC'),local('思源黑体'),url('fonts/SiteCJK-Bold.woff2') format('woff2');
-  unicode-range:U+4E2D,U+5357,U+56DE,U+5927,U+6587,U+66F9,U+6CFB,U+6D69,U+706B,U+7F8E,U+867E,U+8F69,U+8FD4;
+  unicode-range:U+300C,U+300D,U+3014,U+3015,U+4E1C,U+4E2D,U+51EF,U+51FB,U+5357,U+5531,U+56DE,U+58F0,U+5927,U+5E08,U+5F00,U+6587,U+66F9,U+6BB5,U+6CFB,U+6D63,U+6D69,U+706B,U+718A,U+7247,U+738B,U+786C,U+7ACB,U+7CD6,U+7F8E,U+7FC1,U+8001,U+817F,U+867E,U+897F,U+8A00,U+8F69,U+8FD4,U+94A2,U+94C1,U+95EB;
   font-weight:700;font-style:normal;font-display:swap
 }
 /* gen:site-cjk:end */
@@ -98,7 +178,9 @@
   中英/中数间距由 js/autospace.js 自动插入 thin space（U+2009）；DejaVu 中 U+2009 的字宽
   已单独改为 0.2em（等宽字体默认 0.6em 会过宽），故间距可控且优雅。
 */
-html,body{width:100%;height:100%;font-family:'PlainZero','DejaVu Sans Mono','LocalIPA','SiteCJK','Source Han Sans SC',Menlo,Consolas,monospace;background:#fff;color:#000}
+html,body{width:100%;height:100%;font-family:'PlainZero','DejaVu Sans Mono','LocalIPA','SiteCJK','Source Han Sans SC','CJKFallback',Menlo,Consolas,monospace;background:var(--bg);color:var(--fg)}
+/* 让滚动条、表单控件与浏览器自绘的那部分界面（下拉、日期选择器）跟随系统深浅 */
+html{color-scheme:light dark}
 
 /* ===== 内容不可拖拽 =====
    图片是页面内容，不是可拖拽对象：浏览器默认允许把 <img> 拖出半透明幽灵图，

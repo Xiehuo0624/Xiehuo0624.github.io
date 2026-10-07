@@ -1,14 +1,14 @@
 /* ===== ABOUT PAGE ===== */
 .about-page{max-width:640px;margin:0 auto;padding:80px 24px 48px}
 
-.bio{border-bottom:3px solid #000;padding-bottom:32px;margin-bottom:32px}
-.bio h1{font-size:22px;letter-spacing:3px;text-transform:uppercase;border-bottom:3px solid #000;padding-bottom:12px;margin-bottom:20px;line-height:1}
+.bio{border-bottom:3px solid var(--rule);padding-bottom:32px;margin-bottom:32px}
+.bio h1{font-size:22px;letter-spacing:3px;text-transform:uppercase;border-bottom:3px solid var(--rule);padding-bottom:12px;margin-bottom:20px;line-height:1}
 .bio p{font-size:13px;line-height:1.9;margin-bottom:16px}
 .bio-date{display:block;text-align:right;font-size:13px;margin-bottom:16px}
 
 .contact h2{font-size:16px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;line-height:1}
-.contact a{color:#000;text-decoration:none;font-size:16px;padding:2px 4px}
-.contact a:hover{background:#000;color:#fff}
+.contact a{color:var(--fg);text-decoration:none;font-size:16px;padding:2px 4px}
+.contact a:hover{background:var(--fg);color:var(--bg)}
 
 @media(max-width:768px){
   .about-page{max-width:100%;padding:80px 5vw 48px}

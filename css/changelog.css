@@ -1,11 +1,11 @@
 /* ===== CHANGELOG PAGE ===== */
 .changelog-page{max-width:680px;margin:0 auto;padding:80px 24px 48px 60px;position:relative}
-.changelog-title{font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;border-bottom:3px solid #000;padding-bottom:10px;line-height:1}
+.changelog-title{font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;border-bottom:3px solid var(--rule);padding-bottom:10px;line-height:1}
 
 .timeline{
   position:absolute;
   left:36px;top:80px;bottom:48px;
-  width:2px;background:#000;
+  width:2px;background:var(--rule);
 }
 
 .log-entry{position:relative;margin-bottom:24px}
@@ -13,11 +13,11 @@
   content:'';position:absolute;
   left:-30px;top:6px;
   width:10px;height:10px;
-  background:#000;
+  background:var(--rule);
 }
 
 details{
-  border:2px solid #000;
+  border:2px solid var(--rule);
   margin-bottom:0;
 }
 details summary{
@@ -30,15 +30,15 @@ details summary{
 details summary::-webkit-details-marker{display:none}
 details summary::before{content:'[+] ';margin-right:6px}
 details[open] summary::before{content:'[-] '}
-details summary:hover{background:#000;color:#fff}
+details summary:hover{background:var(--fg);color:var(--bg)}
 
-.date{font-size:11px;color:#888;margin-left:8px;font-weight:400}
+.date{font-size:11px;color:var(--muted);margin-left:8px;font-weight:400}
 
 details .body{
   padding:14px;
   font-size:12px;
   line-height:1.8;
-  border-top:2px solid #000;
+  border-top:2px solid var(--rule);
 }
 details .body img,
 details .body video{

@@ -22,7 +22,7 @@ body{
 }
 .card{
   position:absolute;width:100%;height:100%;
-  border:3px solid #000;background:#fff;
+  border:3px solid var(--rule);background:var(--bg);
   cursor:pointer;
   overflow:hidden;
   user-select:none;
@@ -37,7 +37,7 @@ body{
 .card-fallback{
   position:absolute;inset:0;z-index:1;
   display:flex;align-items:center;justify-content:center;
-  background:#fff;color:#000;
+  background:var(--bg);color:var(--fg);
   font-size:22px;letter-spacing:2px;text-transform:uppercase;
 }
 .card.lowercase .card-fallback{

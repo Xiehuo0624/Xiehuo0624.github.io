@@ -7,14 +7,25 @@
 <meta charset="UTF-8">
 <base href="/">
 <script>
-/* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
-   原文的 ?lang= > localStorage 解析必须去掉 —— 让 localStorage 覆盖路径语言，
-   就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。
+/* 生成页：语言由路径写死，只保留两条性能决策；原文的 ?lang= > localStorage 解析必须去掉
+   —— 让 localStorage 覆盖路径语言，就会出现「打开 /works/x/ 却是中文」这种自相矛盾的页面。
+
+   ① 中文界面才预载中日韩字体；
+   ② 英文界面下，语言按钮一旦有「要切过去」的意图就提前取。
+      切语言在作品页是**原地换语言**（见 js/i18n.js 的 _inPlace）：不跳转，也就没有新文档的
+      <head> 去发预载，浏览器要到中文文案换上去那一刻才发现需要这份字体。
+      只认真实交互（按下／聚焦），**不认掠过** —— 鼠标划过去不该让英文读者白付这 245KB。
+
    预载 URL 必须与 css/base.css 里 @font-face 的 URL 逐字相同（含 ?v=）：
    HTTP 缓存键含查询串，少一个 ?v= 就是两个条目，预载下的那份 @font-face 用不上，
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=3c1ea7ae';document.head.appendChild(f);}catch(e){}})();
+(function(){try{var fired=false;
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=5c4bc2a1';document.head.appendChild(f);}
+if(document.documentElement.dataset.lang==='zh'){pre();return;}
+document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
+document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
+}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
@@ -40,9 +51,9 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=28">
-<link rel="stylesheet" href="css/nav.css?v=3">
-<link rel="stylesheet" href="css/project.css?v=6">
+<link rel="stylesheet" href="css/base.css?v=39">
+<link rel="stylesheet" href="css/nav.css?v=4">
+<link rel="stylesheet" href="css/project.css?v=12">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
@@ -51,18 +62,18 @@
      生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
      保持同步只为避免两份加载策略各自漂移。 -->
 <script src="js/app.js"></script>
-<script src="js/project-data.js?v=4"></script>
+<script src="js/project-data.js?v=8"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
-<script defer src="js/i18n.js?v=6"></script>
+<script defer src="js/i18n.js?v=7"></script>
 <script defer src="js/autospace.js"></script>
 <script defer src="js/nav.js?v=6"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic（js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
      生成器剪掉，见 scripts/gen-projects.mjs） -->
-<script defer src="js/project-i18n.js?v=4"></script>
-<script defer src="js/ink-wwhbh.js?v=1"></script>
+<script defer src="js/project-i18n.js?v=5"></script>
+<script defer src="js/ink-wwhbh.js?v=2"></script>
 <script defer src="js/audio-wwhbh.js?v=4"></script>
-<script defer src="js/project.js?v=7"></script>
+<script defer src="js/project.js?v=15"></script>
 </head>
 <body>
 
@@ -82,7 +93,17 @@
       <p class="wwhbh-status" id="wwhbh-status"></p>
       <button class="btn-mic" id="btn-mic" style="display:none"></button>
     </div>
-    <p id="wwhbh-desc" data-desc-lang="en"><span class="work-sec">What is happening right now</span>
+    <p id="wwhbh-desc" data-desc-lang="en"><span class="work-meta">
+<span class="work-meta-k">Year</span><span class="work-meta-v">2024</span>
+<span class="work-meta-k">Type</span><span class="work-meta-v">A microphone–loudspeaker feedback concept; a web version and one live performance, with no fixed installation form</span>
+<span class="work-meta-k">Specs</span><span class="work-meta-v">Web version: 90-second delay, 18 decibels quieter each round. Live performance: delay and total period variable, set by the space and the setup (planned at around 1 hour 30 minutes); never realised as an installation</span>
+<span class="work-meta-k">Roles</span><span class="work-meta-v">Work: me; cover image: 南美大虾</span>
+<span class="work-meta-k">Shown</span><span class="work-meta-v">End-of-term presentation, Music Engineering, Shanghai Conservatory (first semester of second year); 硬糖, Trigger (Shanghai), 2024.12.14</span>
+<span class="work-meta-k">Status</span><span class="work-meta-v">Complete; the web version is playable online</span>
+<span class="work-meta-k">Media</span><span class="work-meta-v">Playable web version (browser microphone–loudspeaker feedback); live recording and photographs</span>
+</span>
+
+<span class="work-sec">What is happening right now</span>
 
 This page is already playing, using your microphone and your loudspeaker. You do not need to press anything. Just keep reading.
 
@@ -108,12 +129,74 @@ If you say something now, in 90 seconds you will hear your own voice from before
 
 <br><br>
 
-Cover image designed by 南美大虾.
+<span class="work-sec">Overview</span>
+
+A feedback piece about time and volatility: whatever the microphone hears comes back out of the loudspeaker 90 seconds later, enters the microphone again, and so on, each round 18 decibels quieter than the last, until it is too quiet to hear. It has no fixed form — the web version happens in the browser, the live version was one performance. What matters is not melody but the time you spend with it.
 
 <br><br>
 
-This work is very much like Alvin Lucier's I'm Sitting in a Room, but interestingly: when creating this work, I did not yet know I'm Sitting in a Room.
-The original inspiration for this work came from Cathy Van Eck's series of works based on microphone and loudspeaker feedback (mainly Words, Words, Words, Empty Chairs, and What We Keep) and my interest at the time in existentialist philosophy (evoked by What We Keep, which can be traced back to the anime Black Lagoon), memory (riverrun, past Eve and Adam's..), and art practices/performances/works that leave no record.
+<span class="work-sec">Motivation</span>
+
+I submitted it as my final project for the first semester of my second year. During the presentation a teacher asked me: "You know your grade will be very low, right?" I said I knew. In truth I didn't know; I didn't think the work was bad at all — it was about the deepest anxiety and pain I had at the time.
+
+<br><br>
+
+By then I had been wishing for a long time that I would die in an accident — a traffic collision, say — and be completely forgotten without a trace. So "being forgotten" here is not a figure of speech: I wanted to make a work that leaves no trace — sound comes in, returns, gets quieter, disappears; no tape, no file, close the page and nothing is left.
+
+<br><br>
+
+Later it was performed once at Trigger (硬糖, 2024.12.14), but that was a compromise: I do not want it to be a stage work. It belongs to a flatter, more open and more dispersed kind of space and experience.
+
+<br><br>
+
+<span class="work-sec">Where it comes from</span>
+
+The work is very close to Alvin Lucier's <span style="font-style:italic">I Am Sitting in a Room</span> — and, curiously, I did not know that piece when I made it. The first inspiration came from Cathy van Eck's series of works built on microphone-loudspeaker feedback, and from my interest at the time in existentialist philosophy, in memory, and in art practices that leave no record.
+
+<br><br>
+
+<span class="work-note">This work is very much like Alvin Lucier's I'm Sitting in a Room, but interestingly: when creating this work, I did not yet know I'm Sitting in a Room.
+The original inspiration for this work came from Cathy Van Eck's series of works based on microphone and loudspeaker feedback (mainly Words, Words, Words, Empty Chairs, and What We Keep) and my interest at the time in existentialist philosophy (evoked by What We Keep, which can be traced back to the anime Black Lagoon), memory (riverrun, past Eve and Adam's..), and art practices/performances/works that leave no record.</span>
+
+<br><br>
+
+The thought that "photography is a reality more real than reality itself, and so is recording" came from Susan Sontag (<span style="font-style:italic">On Photography</span> and <span style="font-style:italic">Regarding the Pain of Others</span>), and also from something concrete: a friend heard his own voice through the loudspeaker, including words he had never said and I had never heard.
+
+<br><br>
+
+<span class="work-sec">How it works</span>
+
+In the web version the delay and the feedback are built entirely from native Web Audio nodes; there is no JavaScript in the audio path. Sound from the microphone goes into a 90-second delay, out through the loudspeaker, and back into the microphone through the physical room, 18 decibels quieter each round.
+
+<br><br>
+
+The grey ink behind the page is a visualisation of that delay filling up, not decoration: it does not grow when no sound is flowing. If microphone permission is refused, if the page is not in a secure context, or if the browser suspends the audio, no ink appears at all — that is deliberate, not a defect.
+
+<br><br>
+
+The live version needs very little: one microphone (omnidirectional if possible), a long enough digital delay (100% wet, variable delay time, no feedback), a full-range monitor, and a limiter between microphone and delay to keep the loop from running away and damaging either the audience's hearing or the equipment. Delay time and total period are decided by the room; the plan was 1 hour 30 minutes — the length of one class at my school.
+
+<br><br>
+
+<span class="work-note">This work is really just (why say <span style="font-style:italic">just</span>? Isn't this kind of concise, small-scale work what I love the <span style="font-style:italic">most</span>? Actually it's just (<span style="font-style:italic">just?</span>) a habitual, unwarranted (truly unwarranted?) self-sabotage) a microphone (preferably omnidirectional), a sufficiently long delay effect processor (100% wet/dry ratio, variable delay time, no feedback — I generally use a digital one), a loudspeaker (I usually use a full-range studio monitor, but one with its own tonal character is also fine), and a limiter (to prevent hearing damage): the audio captured by the microphone goes into the delay processor, the delay processor's output is connected to the loudspeaker, and the loudspeaker feeds back into the microphone in the physical world (I generally adjust the microphone gain and loudspeaker volume to keep the feedback level between -12 and -18 dB); the limiter is typically placed between the microphone and the delay processor, but as long as it can prevent an infinite positive feedback loop between the microphone and loudspeaker to protect the audience's hearing and audio equipment, that's sufficient.</span>
+
+<br><br>
+
+<span class="work-sec">My contribution</span>
+
+Work, web implementation and live realisation: me. Cover image designed by 南美大虾.
+
+<br><br>
+
+<span class="work-sec">Where it has been shown</span>
+
+End-of-term presentation, Music Engineering, Shanghai Conservatory (first semester of second year); 硬糖, Trigger (Shanghai), 2024.12.14. The live recording and photographs on this page are from the latter.
+
+<br><br>
+
+<span class="work-sec">Postlude</span>
+
+The notes below were written in June 2026; the dates are writing dates, not the date the work was made (2024).
 
 <br><br>
 
@@ -121,7 +204,7 @@ This work was submitted as my final project for the first semester of my sophomo
 During the final presentation, a teacher (sadly, the only one among the panel I thought could understand and accept my work) asked me: "You know your grade will be very low, right?"
 I replied: "I know."
 In truth, I didn't know — I didn't think this work was bad at all.
-This work was about my deepest anxieties and pain at the time: I have always been someone difficult not to notice, and I both enjoy and resent this.
+This work was about my deepest anxieties and pain at the time: back then I was someone difficult not to notice, and I both enjoyed and resented it.
 By then I had long been wishing and fantasizing about dying in an accident (such as a traffic collision) and being completely forgotten without a trace.
 
 <br><br>
@@ -150,10 +233,6 @@ The idea that "<span style="font-style:italic">Photography is a reality more rea
 
 <br><br>
 
-This work is really just (why say <span style="font-style:italic">just</span>? Isn't this kind of concise, small-scale work what I love the <span style="font-style:italic">most</span>? Actually it's just (<span style="font-style:italic">just?</span>) a habitual, unwarranted (truly unwarranted?) self-sabotage) a microphone (preferably omnidirectional), a sufficiently long delay effect processor (100% wet/dry ratio, variable delay time, no feedback — I generally use a digital one), a loudspeaker (I usually use a full-range studio monitor, but one with its own tonal character is also fine), and a limiter (to prevent hearing damage): the audio captured by the microphone goes into the delay processor, the delay processor's output is connected to the loudspeaker, and the loudspeaker feeds back into the microphone in the physical world (I generally adjust the microphone gain and loudspeaker volume to keep the feedback level between -12 and -18 dB); the limiter is typically placed between the microphone and the delay processor, but as long as it can prevent an infinite positive feedback loop between the microphone and loudspeaker to protect the audience's hearing and audio equipment, that's sufficient.
-
-<br><br>
-
 <span style="font-style:italic">Time</span> is what matters most here: choose time for your space.
 I originally planned to set up three such systems in the school's hall, with slight differences in delay time between them, but overall around 1 hour and 30 minutes.
 Because one class period at our school is 1 hour and 30 minutes — this is the <span style="font-style:italic">cycle</span> of this space.
@@ -171,7 +250,7 @@ Another crucial aspect is <span style="font-style:italic">volatility</span>.
 Compared to the reels of tape left behind by I'm Sitting in a Room, the data in the buffer is undeniably extremely <span style="font-style:italic">volatile</span>.
 Stored in RAM, difficult to preserve — once the system is shut down, it disappears permanently, and the original data is repeatedly overwritten in each write cycle.
 <span style="font-style:italic">I need no tape to prove any of this. Only my complete erasure proves that I lived.</span>
-I have always been someone difficult not to notice, and I have tried to rid myself of this trait in a destructive way.
+Back then I was someone difficult not to notice, and I tried to rid myself of this trait in a destructive way.
 
 <br><br>
 
@@ -188,6 +267,9 @@ Making art is too hard.
 
 <span style="display:block;text-align:right">2026.06.15</span>
 </p>
+    <!-- 现场资料（录音 + 照片网格）：运行时由 renderLive 补建。
+         放在正文之后；视频位留待作者上传 YouTube 后再接。 -->
+    <div class="wwhbh-live" id="wwhbh-live"></div>
   </div>
 </div>
 

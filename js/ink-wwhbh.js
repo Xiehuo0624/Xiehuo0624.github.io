@@ -374,6 +374,42 @@
     return ((Math.random() * 4294967296) >>> 0) || 1;
   }
 
+  /* ---------- 墨色：深色下「纸黑墨白」 ----------
+     这一节**只换纸换墨，不动作品机制**。paint() 从来不写 RGB：它只写 alpha 通道
+     （`for (let i=0,p=3; …) d[p] = (a*255)|0`），RGB 由 createImageData 零初始化、
+     恒为 0，也就是黑墨；三档墨深、每轮衰减、溶解全部只作用在 alpha 上。
+     那套上色逻辑一行都没改 —— 深浅两种模式共用同一套规则。
+
+     要换的恰恰只是「墨是什么颜色」：把 RGB 三个通道整体写成当前主题的墨色
+     （浅色下是 --fg 的黑，深色下是 --fg 的白），alpha 依旧由模型算。
+     「纸」不用管：画布本身是透明的，纸就是页面底色（body 的 --bg）。
+
+     写法上只在这两个时刻整体写一遍 RGB：**画布尺寸变了**、**系统配色变了**。
+     不把这三字节的写入带进 paint() 的逐像素循环 —— 那里每帧要跑 N 次
+     （N 最大 800 × 视口高），是白白的开销，而 RGB 全程不变。
+
+     取不到变量时退回黑墨：与改动前完全一致，失败方向是安全的。 */
+  let inkRGB = [0, 0, 0];
+
+  function readInkColor(){
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--fg-rgb').trim();
+      const m = v.split(',');
+      if (m.length === 3){
+        const r = parseInt(m[0], 10), g = parseInt(m[1], 10), b = parseInt(m[2], 10);
+        if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) return [r, g, b];
+      }
+    } catch(e){}
+    return [0, 0, 0];
+  }
+
+  function applyInkColor(){
+    if (!img) return;
+    inkRGB = readInkColor();
+    const d = img.data, r = inkRGB[0], g = inkRGB[1], b = inkRGB[2];
+    for (let p = 0; p < d.length; p += 4){ d[p] = r; d[p + 1] = g; d[p + 2] = b; }
+  }
+
   /* ---------- 画布尺寸 ---------- */
   function resize(){
     const vw = Math.max(1, window.innerWidth || 1);
@@ -385,7 +421,8 @@
     if (w === cw && h === ch) return false;
     cw = w; ch = h; N = w * h;
     cv.width = w; cv.height = h;
-    img = ctx.createImageData(w, h);   // 零初始化：RGB=0（黑墨），alpha=0
+    img = ctx.createImageData(w, h);   // 零初始化：RGB=0、alpha=0；墨色由下一行按当前主题写入
+    applyInkColor();
     base = new Float32Array(N);        // 尺寸一变就重建累积层（见 resize 处理器注释）
     baseTmp = new Float32Array(N);
     ageSteps = 0; fading = false; baseAlpha = 1;
@@ -746,6 +783,22 @@
     };
     if (reduce.addEventListener) reduce.addEventListener('change', onReduceChange);
     else if (reduce.addListener) reduce.addListener(onReduceChange);
+  }
+
+  /* 系统配色切换时即时换墨 —— 不要求访问者刷新页面。
+     alpha 的模型（累积层 base 与当前这一轮）都在内存里，换完墨重画一帧就够，
+     不必重新生成图，也不会打断正在铺的那一轮。
+     冻住的画面（按了关闭 = mode 'hold'，循环已停）也要换，故这里显式重画一次；
+     还没生成过图时（field 为空）无画可刷，跳过。 */
+  if (window.matchMedia){
+    const dark = window.matchMedia('(prefers-color-scheme: dark)');
+    const onThemeChange = function(){
+      if (!img) return;
+      applyInkColor();
+      if (ctx && field) paint();
+    };
+    if (dark.addEventListener) dark.addEventListener('change', onThemeChange);
+    else if (dark.addListener) dark.addListener(onThemeChange);
   }
 
   /* 改窗口尺寸：同一张图按新尺寸重新光栅化，不换种子（那不是「重新开始」）。

@@ -15,6 +15,90 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-10-03',
+      title: {
+        zh: '思源没到时中文不再落到宋体：新增 CJKFallback 兜底层，Windows 上不再「先长一副衬线脸」',
+        en: 'A CJK fallback layer keeps Chinese text out of SimSun while Source Han is still loading'
+      },
+      brief: {
+        zh: '新增 CJKFallback 兜底层（本机中文黑体，0 字节），Windows 不再落到宋体',
+        en: 'A zero-byte CJKFallback layer names local CJK sans faces, so Windows no longer falls back to SimSun while Source Han loads.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-03',
+      title: {
+        zh: '换语言时保住读者的滚动位置：按比例还原，锚点逻辑写进 js/project.js',
+        en: 'Switching language keeps the reader\'s place, restoring the same proportional position in the body text'
+      },
+      brief: {
+        zh: '换语言时按比例还原读者的滚动位置（中文正文比英文短三成，原先会整段挪走）',
+        en: 'Switching language restores the reader\'s proportional position in the body text, which used to shift wholesale because Chinese runs shorter.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-03',
+      title: {
+        zh: '覆盖率探针的就绪闸不再被第三方内嵌拖成假红：readyState 放宽到「不是 loading」',
+        en: 'The coverage probe no longer goes falsely red when a third-party embed never finishes loading'
+      },
+      brief: {
+        zh: 'coverage 探针就绪闸放宽为「不是 loading」，不再被第三方内嵌拖成假红',
+        en: 'The coverage probe now requires readyState not loading, so an unfinished third-party embed can no longer make it falsely red.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-03',
+      title: {
+        zh: '全站适配深色模式：颜色变量化、跟随系统 prefers-color-scheme，两件画布作品一并反相',
+        en: 'The site gains a dark mode that follows the system: every colour becomes a variable, and both canvas works invert with it'
+      },
+      brief: {
+        zh: '颜色全量变量化，深色模式跟随系统；深色硬边取 #e6e6e6，两件画布一并反相，浅色视觉逐字节未变',
+        en: 'Every colour becomes a variable and the site follows the system into dark mode; dark hard edges take #e6e6e6 and both canvas works invert, light mode unchanged.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-03',
+      title: {
+        zh: '作品页切语言改为原地换语言：不再清空墨层与 90 秒录音，地址仍走 replaceState 跟过去',
+        en: 'Project pages switch language in place, so the ink layer and the 90-second delay line survive while replaceState keeps the address honest'
+      },
+      brief: {
+        zh: '作品页切语言改为原地换语言：不再清空墨层与 90 秒录音；并修掉随之而来的正文窜位与字体白字形',
+        en: 'Project pages now switch language in place rather than reloading, so the ink layer and the 90-second delay line survive; this also fixes a layout jump and the fallback glyphs.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-02',
+      title: {
+        zh: 'EDGEDGEDGE 动机段改为作者改稿全文（最小单位设计、FCCW 电压、A-152 与 Multimod）；灵感溯源首段改为重庆那次行程，删拉康与 Mark Fisher 两段',
+        en: 'EDGEDGEDGE takes the author\'s rewritten motivation, replaces the provenance opening with a trip to Chongqing, and drops the Lacan and Mark Fisher passages'
+      },
+            brief: {
+        zh: 'EDGEDGEDGE 动机段与灵感溯源按作者改稿整段替换（新增重庆那段），删拉康与 Mark Fisher 两段；中文改稿原先只存在于对话里、未落盘',
+        en: 'EDGEDGEDGE takes the author\'s rewritten motivation and provenance, adds the Chongqing passage, and deletes the Lacan and Mark Fisher paragraphs.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-02',
+      title: {
+        zh: 'EDGEDGEDGE 现场资料移到正文之后、照片从 16 张减到 6 张；录像由 B 站换成 YouTube；「当时的记录」改用引文样式',
+        en: 'EDGEDGEDGE moves its live material below the text and its photo set from 16 to 6, switches the video to YouTube, and gives the dated notes a quotation style'
+      },
+      brief: {
+        zh: 'EDGEDGEDGE 现场资料移到正文之后、照片 16 → 6 张；录像换 YouTube 并改正文案；「当时的记录」改用引文样式，不换字体',
+        en: 'EDGEDGEDGE moves live material below the text, trims photos from 16 to 6, switches the video to YouTube, and restyles the dated notes.'
+      },
+      media: ''
+    },
+    {
       date: '2026-09-25',
       title: {
         zh: 'riverrun 两处破折号改标点，「——」密度 4.06‰ → 2.70‰，全站不再有超阈页面',

@@ -23,7 +23,7 @@
 
 1. **脚本阻塞 + 发现晚**：所有 `<script>` 放在 `<body>` 末尾、无 `defer`。虽然浏览器预扫描会提前发现，但执行阶段仍串行阻塞，且无法与 CSS 并行下载做到最优。
 2. **12 MB 音频立即拉取**：ecce-homo 页 `<audio controls>` 默认 `preload="auto"`，进入页面即下载 12 MB。
-3. **B 站播放器整页加载**：Edge 布局（EDGEDGEDGE）一进入就加载 `player.bilibili.com` 的 iframe 及其全部 JS/资源，无 `preconnect`。
+3. **第三方播放器整页加载**：Edge 布局（EDGEDGEDGE）一进入就加载内嵌播放器的 iframe 及其全部 JS/资源，无 `preconnect`。（当时实测的是 B 站播放器 `player.bilibili.com`；2026-10-02 该页换成 YouTube 内嵌，结论不变 —— 仍是第三方 iframe 随首屏加载。）
 4. **非首屏媒体全部 eager**：Gallery 水平 slider 里的后续帧、Changelog `<details>` 折叠区里的图片/视频，都立即下载。
 5. **字体发现晚**：`@font-face` 在 `base.css` 内，浏览器要等 CSS 解析后才发起字体请求（多一跳）；虽有 `font-display:swap` 不阻塞文字，但 swap 时机偏晚。
 6. **跳转无预取**：点首页卡片 → 项目页，每次都是冷启动，无任何 `prefetch`。

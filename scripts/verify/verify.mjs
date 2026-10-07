@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* 作品页改造的实测验证：headless Chrome + CDP。
- * 覆盖：16 个生成页的结构/元信息/媒体/正文、旧地址、语言切换跳转、
- *       首页卡片与作品列表链接、404 页、Gallery Lightbox、字体 URL 一致性、
+ * 覆盖：16 个生成页的结构/元信息/媒体/正文、旧地址、语言切换（作品页原地换语言、
+ *       站内页仍跳转）、深色模式计算值、首页卡片与作品列表链接、404 页、Gallery Lightbox、字体 URL 一致性、
  *       Esc 返回（子页面 → 首页、首页不响应、Lightbox 优先、旧地址与 404 的落点），
  *       以及控制台报错与 4xx 请求。
  * 用法：先起本地服务（python3 -m http.server 8765），再 node scripts/verify/verify.mjs
@@ -42,10 +42,21 @@ class CDP {
     await new Promise((res, rej) => { ws.onopen = res; ws.onerror = () => rej(new Error('ws error')); });
     return new CDP(ws);
   }
+  /* 每条 CDP 调用都带超时。没有它时 Chrome 一旦不回话，整遍就**无声挂死**：
+     2026-10-03 实测两次 —— 最后一份产物停在 13:30，进程活到 19:50，六个多小时零输出。
+     coverage.mjs 早先踩过同一个坑并加了 15s 超时，这里补上同一套：
+     超时即 reject、用例记失败，至少能看见是哪一条卡住，而不是整轮没有结论。 */
   send(method, params = {}, sessionId) {
     const id = ++this.seq;
+    const TIMEOUT_MS = 20000;
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
+      const timer = setTimeout(() => {
+        if (this.pending.delete(id)) reject(new Error(`CDP ${method} 超过 ${TIMEOUT_MS}ms 无响应`));
+      }, TIMEOUT_MS);
+      this.pending.set(id, {
+        resolve: v => { clearTimeout(timer); resolve(v); },
+        reject:  e => { clearTimeout(timer); reject(e); }
+      });
       this.ws.send(JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }));
     });
   }
@@ -60,6 +71,10 @@ const chrome = spawn(CHROME, [
   /* 不碰真实钥匙串：否则 Chrome 会去读写 macOS 的「Chrome Safe Storage」条目，
      每启动一次就在屏幕上弹一次系统授权框（约束见 AGENTS.md §3）。 */
   '--use-mock-keychain', '--password-store=basic',
+  /* 媒体权限同样不问系统：wwhbh 页加载即调 getUserMedia（js/audio-wwhbh.js），
+     遍历全站会在屏幕上弹一次 macOS 麦克风授权框。--deny-permission-prompts 让
+     Chrome 直接拒绝，页面落进它自己的「麦克风权限被拒绝」分支（探针对此无断言）。 */
+  '--deny-permission-prompts',
   `--user-data-dir=${join(ROOT_TMP, 'profile')}`,
   '--no-first-run', '--no-default-browser-check', '--disable-gpu',
   '--hide-scrollbars', '--window-size=1280,900', 'about:blank'
@@ -81,7 +96,7 @@ if (!version) { console.error('Chrome 起不来'); process.exit(2); }
 const browser = await CDP.connect(version.webSocketDebuggerUrl);
 
 /* ---------- 访问一个页面并收集证据 ---------- */
-async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false } = {}) {
+async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null } = {}) {
   /* 一个用例一个浏览器上下文：localStorage 天然是干净的，否则「本页有没有写 localStorage」
      会被上一页残留的偏好污染（同一 profile 共用存储）。 */
   const { browserContextId } = await browser.send('Target.createBrowserContext');
@@ -109,6 +124,15 @@ async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 
   });
 
   if (noJs) await browser.send('Emulation.setScriptExecutionDisabled', { value: true }, sessionId);
+  /* 模拟深色：走 CDP 的 Emulation.setEmulatedMedia，**不是** --force-dark-mode。
+     后者是 Chrome 自身的自动暗化，会把结论污染成「看起来变了」——
+     那种「变了」在关掉变量化之后照样成立，验不出任何东西。 */
+  /* scheme 一律**显式**给：'dark' 或 'light'。不能靠「不设就是浅色」——
+     实测这条覆盖会漏到后续新建的目标上，浅色那几轮于是拿到深色值（首版踩到）。 */
+  if (scheme) {
+    await browser.send('Emulation.setEmulatedMedia',
+      { features: [{ name: 'prefers-color-scheme', value: scheme }] }, sessionId);
+  }
   await browser.send('Page.enable', {}, sessionId);
   await browser.send('Runtime.enable', {}, sessionId);
   await browser.send('Network.enable', {}, sessionId);
@@ -169,10 +193,10 @@ const P = [
   { id: 'the-just-type-study', layout: 'ecce',    zh: 'The JustType Study', en: 'The JustType Study', media: 'img+audio', n: 1 },
   { id: 'the-induction-mixer', layout: 'gallery', zh: 'THE INDUCTION MIXER', en: 'THE INDUCTION MIXER', media: 'gallery', n: 3 },
   { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'none', n: 0 },
-  { id: 'edgedgedge',         layout: 'edge',    zh: 'EDGEDGEDGE',         en: 'EDGEDGEDGE',         media: 'iframe', n: 1 },
+  { id: 'edgedgedge',         layout: 'edge',    zh: 'EDGEDGEDGE',         en: 'EDGEDGEDGE',         media: 'iframe+live', n: 6 },
   { id: 'spectral-dissector', layout: 'ecce',    zh: 'SPECTRAL DISSECTOR', en: 'SPECTRAL DISSECTOR', media: 'img', n: 1 },
-  { id: 'ecce-homo',          layout: 'ecce',    zh: '瞧！这个人',          en: 'ECCE HOMO',          media: 'img+audio', n: 1 },
-  { id: 'wwhbh',              layout: 'wwhbh',   zh: '我们将会曾经在这里',   en: 'WE WILL HAVE BEEN HERE', media: 'none', n: 0 }
+  { id: 'ecce-homo',          layout: 'ecce',    zh: '瞧！这个人',          en: 'ECCE HOMO',          media: 'img+audio+live', n: 40 },
+  { id: 'wwhbh',              layout: 'wwhbh',   zh: '我们将会曾经在这里',   en: 'WE WILL HAVE BEEN HERE', media: 'live', n: 24 }
 ];
 
 console.log('=== 一、16 个生成页 ===');
@@ -203,7 +227,7 @@ for (const p of P) {
       panelVisible: getComputedStyle(document.querySelector('[id^="layout-"]')).display,
       imgs: document.querySelectorAll('[id$="-media"] img, .gallery-grid img').length,
       iframes: document.querySelectorAll('[id$="-media"] iframe').length,
-      audios: document.querySelectorAll('.ecce-audio').length,
+      audios: document.querySelectorAll('.work-audio').length,
       related: [...document.querySelectorAll('.project-related a')].map(a=>a.getAttribute('href')),
       srcdocTitle: document.querySelector('title').textContent
     })`);
@@ -232,7 +256,18 @@ for (const p of P) {
     if (p.media === 'gallery') check(`${tag} 画廊图数量`, info.imgs, p.n);
     if (p.media === 'img') check(`${tag} 主图数量`, info.imgs, 1);
     if (p.media === 'img+audio') check(`${tag} 主图 + 音频`, [info.imgs, info.audios], [1, 1]);
-    if (p.media === 'iframe') check(`${tag} bilibili iframe 数量`, info.iframes, 1);
+    /* ecce 布局：顶部剧照 + 音频 + 正文之后的现场剧照网格。p.n 是网格张数，
+       imgs 还要加上顶部那一张剧照，故为 p.n + 1。 */
+    if (p.media === 'img+audio+live') check(`${tag} 顶部剧照 + 音频 + 剧照网格`,
+      [info.imgs, info.audios], [p.n + 1, 1]);
+    if (p.media === 'iframe') check(`${tag} 视频 iframe 数量`, info.iframes, 1);
+    /* edge 布局的「现场资料」：视频 iframe + 现场录音 + 照片网格。
+       网格走 .gallery-grid（与画廊页同一套渲染），故计入 imgs。 */
+    if (p.media === 'iframe+live') check(`${tag} 视频 + 现场录音 + 现场照`,
+      [info.iframes, info.audios, info.imgs], [1, 1, p.n]);
+    /* wwhbh 的「现场资料」：只有外录音频 + 照片网格，视频位待作者给 YouTube 链接。 */
+    if (p.media === 'live') check(`${tag} 现场录音 + 现场照`,
+      [info.audios, info.imgs, info.iframes], [1, p.n, 0]);
     if (p.media === 'none') check(`${tag} 无静态媒体`, [info.imgs, info.iframes, info.audios], [0, 0, 0]);
 
     if (p.id === 'riverrun') check(`${tag} 相关作品链接`, info.related, [`works/the-induction-mixer/${dir}`]);
@@ -250,20 +285,138 @@ for (const p of P) {
   }
 }
 
-console.log('=== 二、语言切换 = 跳到另一语言目录 ===');
+console.log('=== 二、语言切换：作品页原地换语言，站内页仍跳到另一语言目录 ===');
 {
-  const v = await visit('/works/spectral-dissector/zh/', { clickSelector: '#lang-toggle', afterClickMs: 1200 });
-  const url = await v.evaluate('location.pathname');
-  check('中文页点切换 → 英文目录', url, '/works/spectral-dissector/');
-  const lang = await v.evaluate('document.documentElement.dataset.lang');
-  check('落地页语言为 en', lang, 'en');
-  await v.close();
-}
-{
-  const v = await visit('/works/spectral-dissector/', { clickSelector: '#lang-toggle', afterClickMs: 1200 });
-  const url = await v.evaluate('location.pathname');
-  check('英文页点切换 → 中文目录', url, '/works/spectral-dissector/zh/');
-  await v.close();
+  /* 作品页（带 data-lang-fixed，且 js/project.js 声明了 { inPlace: true }）：
+     **原地换语言，不换文档**。为什么不换文档是硬要求：wwhbh 的 AudioContext、
+     MediaStream、90 秒 DelayNode 的缓冲区、以及墨层的累积数组全在那个文档里，
+     换一次就全没了（2026-10-02 实测：切换引发 1 次文档导航、墨层像素 4 → 0）。
+     判据用 window 上的标记 —— 换了文档它就没了；只断言 location 会被
+     replaceState 蒙过去（地址确实变了，但那不是跳转）。 */
+  for (const [from, to, lang] of [
+    ['/works/spectral-dissector/zh/', '/works/spectral-dissector/',    'en'],
+    ['/works/spectral-dissector/',    '/works/spectral-dissector/zh/', 'zh']
+  ]) {
+    const v = await visit(from, { waitMs: 1200 });
+    await v.evaluate(`(window.__langMark = 'alive', 1)`);
+    await v.evaluate(`(document.querySelector('#lang-toggle').click(), 1)`);
+    await sleep(1600);
+    const r = await v.evaluate(`({
+      path: location.pathname,
+      lang: document.documentElement.dataset.lang,
+      mark: window.__langMark || null,
+      back: (document.querySelector('.back a[data-i18n="back"]') || {}).getAttribute
+              ? document.querySelector('.back a[data-i18n="back"]').getAttribute('href') : null,
+      canonical: (document.querySelector('link[rel=canonical]') || {}).getAttribute
+              ? document.querySelector('link[rel=canonical]').getAttribute('href') : null
+    })`);
+    check(`${from} 点切换 → ${to}`, r.path, to);
+    check(`${from} 落地语言为 ${lang}`, r.lang, lang);
+    check(`${from} 原地换语言、没换文档（作品不被打断）`, r.mark, 'alive');
+    check(`${from} 返回按钮跟着换语言目录`, r.back, lang === 'zh' ? './zh/' : './');
+    checkTrue(`${from} canonical 跟着换语言目录`,
+      r.canonical && r.canonical.endsWith(`/works/spectral-dissector/${lang === 'zh' ? 'zh/' : ''}`));
+    await v.close();
+  }
+
+  /* 往返一次后正文必须与最初**逐字相同**。原地换语言会把正文换成另一门语言，
+     而 data-desc-lang 是「这份正文是哪门语言」的标记 —— 它不跟着走的话，切回来时
+     js/project.js 里「烤好的就是这一门」那条捷径会误判成立、直接 return，
+     把上一门语言的正文当成这一门用。这条回归路径只有原地切换才会走到。
+     **两个起始语言都测**：英文起始是「烤英文 → fetch 中文 → 再 fetch 英文」，
+     中文起始是「烤中文 → fetch 英文 → 再 fetch 中文」，走的是同一段代码的两个入口。 */
+  for (const [start, mid, back] of [
+    ['/works/wwhbh/',    'zh', 'en'],
+    ['/works/wwhbh/zh/', 'en', 'zh']
+  ]) {
+    const rt = await visit(start, { waitMs: 1600 });
+    const READ = `((document.querySelector('#wwhbh-desc') || {}).textContent || '')`;
+    const first = await rt.evaluate(READ);
+    /* 换语言时正文容器**不许被清空**。清了它就从 6239px 塌到 34px，排在它后面的
+       现场资料块（录音 + 照片网格）当场窜到内容最上面、fetch 回来再弹回去 ——
+       作者 2026-10-02 报的「下面的图片闪到上面一瞬间」。
+       观测方式：挂在容器上的 MutationObserver 记录正文长度的最小值。
+       **必须看 DOM 而不是看画面** —— 本机 fetch 只要 1–5ms，塌陷态通常不足一帧，
+       截图与逐帧采样都抓不到它（实测：不压网时探针测不出，压到 150ms RTT 才现形，
+       那一刻容器高度是 34px、现场资料块从 6528px 窜到 326px）。 */
+    await rt.evaluate(`(function(){
+      var el = document.querySelector('#wwhbh-desc');
+      window.__minLen = (el.textContent || '').length;
+      new MutationObserver(function(){
+        var n = (el.textContent || '').length;
+        if (n < window.__minLen) window.__minLen = n;
+      }).observe(el, { childList: true, subtree: true, characterData: true });
+      return 1; })()`);
+    await rt.evaluate(`(document.querySelector('#lang-toggle').click(), 1)`);
+    await sleep(1800);
+    const midText = await rt.evaluate(READ);
+    const midMark = await rt.evaluate(`document.querySelector('#wwhbh-desc').dataset.descLang`);
+    const minLen = await rt.evaluate('window.__minLen');
+    await rt.evaluate(`(document.querySelector('#lang-toggle').click(), 1)`);
+    await sleep(1800);
+    const finalText = await rt.evaluate(READ);
+    checkTrue(`${start} 切到 ${mid} 后正文确实换了（${first.length} 字 → ${midText.length} 字）`,
+      midText.length > 100 && midText !== first);
+    check(`${start} 正文标记 data-desc-lang 跟着语言走`, midMark, mid);
+    checkTrue(`${start} 换语言过程中正文容器没被清空（最短 ${minLen} 字，两门语言各 ${first.length}／${midText.length} 字）`,
+      minLen >= Math.min(first.length, midText.length) * 0.5);
+    checkTrue(`${start} 往返后正文与最初逐字相同（${first.length} 字）`, finalText === first);
+    await rt.close();
+  }
+
+  /* ---- 滚动锚点：换语言后，读者在正文里的**比例**必须不变（作者 2026-10-03 定「按比例」）----
+     中文译文比英文短约三成，而滚动位置记的是「从文档顶部往下多少像素」——不补的话读者
+     盯着的那一段会整体挪走。实测 /works/wwhbh/：停在照片那一屏切语言，文档从 8277px 缩到
+     6248px，浏览器自己的滚动锚定只补回 880px，剩下 1149px 让照片直接从眼前跑掉。
+     断言的是不变量本身（比例前后一致），不是某个具体像素数 —— 后者会随文案长度变动而失效。 */
+  {
+    const v = await visit('/works/wwhbh/', { waitMs: 1600, scheme: 'light' });
+    const READ = `(function(){
+      const d = document.querySelector('#wwhbh-desc');
+      const r = d.getBoundingClientRect();
+      const top = r.top + window.scrollY;
+      return { frac: (window.scrollY - top) / Math.max(1, r.height),
+               h: Math.round(r.height), live: Math.round(document.querySelector('#wwhbh-live').getBoundingClientRect().top) };
+    })()`;
+    const settle = async lang => {
+      for (let i = 0; i < 40; i++) {
+        await sleep(150);
+        if (await v.evaluate(`document.querySelector('#wwhbh-desc').dataset.descLang`) === lang) break;
+      }
+      await sleep(700);   // 留给锚点自己那两次补正（rAF + 200ms）
+    };
+    for (const [name, setup] of [
+      ['正文中段', `(function(){ const d=document.querySelector('#wwhbh-desc'); const r=d.getBoundingClientRect();
+                    window.scrollTo(0, Math.round(r.top + window.scrollY + r.height * 0.45)); return 1; })()`],
+      ['照片处',   `(function(){ const e=document.querySelector('#wwhbh-live');
+                    window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY - 300); return 1; })()`]
+    ]) {
+      await v.evaluate(setup);
+      await sleep(400);
+      const a = await v.evaluate(READ);
+      await v.evaluate(`(document.querySelector('#lang-toggle').click(), 1)`);
+      await settle('zh');
+      const b = await v.evaluate(READ);
+      checkTrue(`换语言后「${name}」处读者在正文里的比例不变（${(a.frac * 100).toFixed(1)}% → ${(b.frac * 100).toFixed(1)}%，正文 ${a.h} → ${b.h}px）`,
+        Math.abs(b.frac - a.frac) < 0.05);
+      await v.evaluate(`(document.querySelector('#lang-toggle').click(), 1)`);
+      await settle('en');
+    }
+    await v.close();
+  }
+
+  /* 对照组：**没有**声明 inPlace 的目录式页面必须仍然跳转 ——
+     语言按钮在作品页以外的所有页面上行为一字未变。判据同上：标记没了就是换了文档。 */
+  for (const path of ['/works/', '/about/']) {
+    const v = await visit(path, { waitMs: 1100 });
+    await v.evaluate(`(window.__langMark = 'alive', 1)`);
+    await v.evaluate(`(document.querySelector('#lang-toggle').click(), 1)`);
+    await sleep(1600);
+    const r = await v.evaluate(`({ path: location.pathname, mark: window.__langMark || null })`);
+    checkTrue(`${path} 仍跳到另一语言目录（${r.path}）`, r.path.endsWith('/zh/'));
+    check(`${path} 确实换了文档（对照：跳转式行为一字未变）`, r.mark, null);
+    await v.close();
+  }
 }
 
 console.log('=== 三、旧地址仍然可用 + 声明 canonical ===');
@@ -469,6 +622,32 @@ console.log('=== 七、导航文案 i18n 与 CJK 字体下载（2026-09-22 四�
     checkTrue(`${path} 无报错/4xx`, v.consoleErrors.length === 0 && v.net.bad.length === 0);
     if (v.net.bad.length) failures.push(`${path} 4xx：${JSON.stringify(v.net.bad)}`);
     if (v.consoleErrors.length) failures.push(`${path} 控制台：${JSON.stringify(v.consoleErrors)}`);
+    await v.close();
+  }
+
+  /* ---- 意图预载：英文作品页上，语言按钮一被按下就提前取中文字体 ----
+     切语言在作品页是**原地换**（js/i18n.js 的 _inPlace）：不跳转，就没有新文档的 <head>
+     去发预载，浏览器要到中文文案换上去那一刻才发现需要这份 245KB。
+     加这条断言是因为上面那张表全是**程序化** .click() —— 它不派发 pointerdown，
+     于是新增的意图预载一次都没被走到（实测：跑完整套也照样全绿）。
+     两条一起断言，缺一不可：
+       ① 没碰按钮时**不许**发请求（上面那张表的 expectFont=false 已经在守这条，
+          但那是另一批页面，这里再对同一页守一次，免得将来把监听写成无条件触发）；
+       ② 真按下之后就**必须**发请求，否则这个功能等于没接上。 */
+  {
+    const v = await visit('/works/6u104hp/', { waitMs: 2500 });
+    check('英文作品页：没碰语言按钮时不预取中文字体',
+      v.net.all.some(x => /SourceHanSansSC/.test(x)), false);
+    await v.evaluate(`(function(){
+      const a = document.querySelector('#lang-toggle');
+      a.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
+      return 1; })()`);
+    await sleep(1200);
+    check('英文作品页：按下语言按钮后提前取中文字体',
+      v.net.all.some(x => /SourceHanSansSC/.test(x)), true);
+    /* 只是按下、没抬手：语言**不该**已经切过去 */
+    check('只按下没抬手时语言不变（意图预载不提前改页面）',
+      await v.evaluate('document.documentElement.dataset.lang'), 'en');
     await v.close();
   }
 }
@@ -801,6 +980,94 @@ console.log('=== 十三、Esc 返回（子页面 → 首页；首页不响应；
   await sleep(900);
   check('404 页按 Esc 回首页', (await state(nf)).path, '/');
   await nf.close();
+}
+
+/* ---------- 十四、深色模式：计算值断言 ---------- */
+console.log('=== 十四、深色模式：计算值断言（Emulation.setEmulatedMedia，不是 --force-dark-mode）===');
+{
+  /* 断的是**计算值**，不是截图：截图比不出「变量有没有真的落到渲染上」——
+     css/base.css 里变量写错名字时页面会静默退回初始值，截图上未必看得出。
+     深色一律用 CDP 的 Emulation.setEmulatedMedia 模拟；**不用 --force-dark-mode**，
+     那是 Chrome 自身的自动暗化，关掉变量化之后照样「看起来变了」，验不出东西。
+
+     覆盖按任务书 §4.1：首页、/works/、about、changelog、一个 gallery 作品页（6U104HP）、
+     一个 ecce 作品页（ecce-homo）、wwhbh、riverrun。
+     每页给两处选择器：一处落在 3px 硬边上，一处落在次要文字上（没有则传 null）。 */
+  const LIGHT = { bg: 'rgb(255, 255, 255)', fg: 'rgb(0, 0, 0)',       rule: 'rgb(0, 0, 0)' };
+  const DARK  = { bg: 'rgb(0, 0, 0)',       fg: 'rgb(255, 255, 255)', rule: 'rgb(230, 230, 230)' };  // --rule:#e6e6e6，作者 2026-10-03 定
+  const MUTED = 'rgb(136, 136, 136)';   // --muted 深色下字面不变（#888）
+
+  /* 每页给四处：3px 硬边的选择器**与它用的是哪条边**、次要文字的选择器（没有则 null）。
+     **必须指明是哪条边**：`border-*-color` 即使那条边宽度为 0 也会计算成 `currentColor`，
+     于是拿 `borderTopColor || borderBottomColor` 兜底是兜不住的 —— 上边框恒为真值，
+     深色下拿到的是正文的纯白、不是硬边的 #e6e6e6。
+     首版就栽在这里：五个只有下边框的页面全红，而四边都有边框的三页（首页卡片、
+     .btn-mic、.mixer-stage）正常 —— 现象本身就指向这个口径。 */
+  const PAGES = [
+    ['/',                 '首页',        '.card',            'borderTopColor',    null],
+    ['/works/',           '作品列表',     '.works-page h1',   'borderBottomColor', '.works-brief'],
+    ['/about/',           '简介',        '.bio h1',          'borderBottomColor', null],
+    ['/changelog/',       '进程日志',     '.changelog-title', 'borderBottomColor', '.date'],
+    ['/works/6u104hp/',   'gallery 布局', '.gallery-body h2', 'borderBottomColor', '.work-meta-k'],
+    ['/works/ecce-homo/', 'ecce 布局',    '.ecce-still',      'borderBottomColor', '.work-meta-k'],
+    ['/works/wwhbh/',     'wwhbh 布局',   '.btn-mic',         'borderTopColor',    '.work-meta-k'],
+    ['/works/riverrun/',  'mixer 布局',   '.mixer-stage',     'borderTopColor',    '.work-meta-k'],
+  ];
+
+  const probe = (ruleSel, ruleProp, mutedSel) => `(function(){
+    const cs = getComputedStyle(document.documentElement);
+    const v = n => cs.getPropertyValue(n).trim();
+    const c = (s, p) => { const e = s && document.querySelector(s); return e ? getComputedStyle(e)[p] : null; };
+    const back = document.querySelector('.back');
+    return {
+      vars: { bg: v('--bg'), fg: v('--fg'), rule: v('--rule'), muted: v('--muted') },
+      bodyBg: getComputedStyle(document.body).backgroundColor,
+      bodyFg: getComputedStyle(document.body).color,
+      scheme: cs.colorScheme,
+      rule: c(${JSON.stringify(ruleSel)}, ${JSON.stringify(ruleProp)}),
+      muted: c(${JSON.stringify(mutedSel)}, 'color'),
+      /* 例外②：nav 的 mask-image 是**遮罩 alpha**，深色下必须仍是黑（不透明），
+         一旦跟着变量翻成白，返回栏的模糊渐隐会整体失效、底部出现硬边。 */
+      mask: back ? (getComputedStyle(back, '::before').maskImage ||
+                    getComputedStyle(back, '::before').webkitMaskImage) : null
+    };
+  })()`;
+
+  for (const [path, label, ruleSel, ruleProp, mutedSel] of PAGES) {
+    for (const [mode, want, opt] of [['浅色', LIGHT, { scheme: 'light' }], ['深色', DARK, { scheme: 'dark' }]]) {
+      const v = await visit(path, { waitMs: 1200, ...opt });
+      const g = await v.evaluate(probe(ruleSel, ruleProp, mutedSel));
+      const at = `${label} ${path} ${mode}`;
+      check(`${at} 页面底`, g.bodyBg, want.bg);
+      check(`${at} 正文`, g.bodyFg, want.fg);
+      check(`${at} 硬边`, g.rule, want.rule);
+      check(`${at} --bg 变量`, g.vars.bg, mode === '深色' ? '#000' : '#fff');
+      check(`${at} --fg 变量`, g.vars.fg, mode === '深色' ? '#fff' : '#000');
+      /* color-scheme 两套配色下都是 light dark —— 它声明的是「本页两套都支持」，
+         由系统决定用哪套，不是当前用了哪套 */
+      check(`${at} color-scheme 声明`, g.scheme, 'light dark');
+      if (mutedSel) check(`${at} 次要文字`, g.muted, MUTED);
+      if (g.mask) checkTrue(`${at} 遮罩仍是黑（不跟随深色）`,
+        /rgb\(0,\s*0,\s*0\)/.test(g.mask) && !/rgb\(255,\s*255,\s*255\)/.test(g.mask));
+      await v.close();
+    }
+  }
+
+  /* 例外①：Lightbox 两套配色下都该是深色遮罩（它是懒创建的，先点开一张图）。 */
+  for (const [mode, opt] of [['浅色', { scheme: 'light' }], ['深色', { scheme: 'dark' }]]) {
+    const v = await visit('/works/6u104hp/', { waitMs: 1500, ...opt });
+    await v.evaluate(`(document.querySelector('.gallery-grid img').click(), 1)`);
+    await sleep(500);
+    const g = await v.evaluate(`(function(){
+      const lb = document.querySelector('.lightbox');
+      return { open: !!lb, bg: lb ? getComputedStyle(lb).backgroundColor : null,
+               close: lb ? getComputedStyle(lb.querySelector('.lightbox-close')).color : null };
+    })()`);
+    checkTrue(`Lightbox ${mode} 打开`, g.open);
+    check(`Lightbox ${mode} 遮罩两套配色下都是深色`, g.bg, 'rgba(0, 0, 0, 0.92)');
+    check(`Lightbox ${mode} 关闭键是白字`, g.close, 'rgb(255, 255, 255)');
+    await v.close();
+  }
 }
 
 /* ---------- 汇总 ---------- */

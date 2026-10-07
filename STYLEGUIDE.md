@@ -12,13 +12,53 @@
 | 中文必须全量覆盖 | 主字体子集按**站内实际用字**推导（作品片段、i18n 数据、`project-data.js`、changelog 条目、页面可见文本），覆盖不到的字会静默落到系统字体、与思源混排 —— 2026-09 之前就发生了（234 字）。改了中文内容后跑 `python3 scripts/gen-cjk-main.py`，并用覆盖率探针 `scripts/verify/coverage.mjs` 复验「渲染出的每个中日韩字符都有自托管字形」 |
 | 英文字体不该被 CJK 拖累 | 字体栈的语义是「前者缺字形才轮到后者」，所以 DejaVu 子集缺字形的字符会一路落到整份思源（295KB）。英文侧实测只有十几处这种字符（署名、`此即人人`、`南美大虾`、音标 `ɔ`），故切一份 4KB 的 `SiteCJK` 排在思源之前、并用 `unicode-range` 只声明它真正拥有的字；`ɔ` 连思源子集都没有，交给 `LocalIPA`（全 `local()`，本机 Menlo／Segoe UI 承担，实测渲染与改动前逐像素一致）。改了英文片段后跑 `python3 scripts/gen-cjk-extras.py`，`--check` 查漂移 |
 | 中英/中数间距 | `js/autospace.js` 自动在 CJK↔英数 边界插入 thin space（U+2009）；DejaVu Sans Mono 中 U+2009 的字宽已单独改为 0.2em（等宽字体默认 0.6em 会过宽）。全站自动生效，幂等，覆盖动态注入内容 |
-| 背景色 | `#fff` |
-| 前景色 | `#000` |
+| 中文兜底：思源没到时谁在画（2026-10-03 加） | 字体栈原**没有点名任何中文字体**，思源下载完之前中文只能落到 generic `monospace` 的中文兜底 —— **Windows 上那是宋体（衬线）**，与思源黑体是两种字形语言，几秒后字到了再整体换一次，看起来就是「中文先长着一副宋体脸」。Mac 上兜底是苹方（黑体），所以同一个问题在 Mac 上几乎看不出来（作者 2026-10-03 报的正是这个差异）。修法：加一层 `CJKFallback`（全 `local()`，**0 字节**），按平台列出本机中文黑体（苹方／冬青黑／微软雅黑／Noto／思源／黑体），排在思源之后；并带 `unicode-range` 限定中日韩区段，**一个拉丁字母都不碰**（否则「DejaVu 里没有的某个拉丁字形」会改由苹方／雅黑来画，那是本次不该有的副作用）。实测：屏蔽思源后中文由具名黑体绘制，而 `.work-meta-v` 与英文 h2 仍全部是 DejaVu Sans Mono。做法与 `LocalIPA` 同一套路 |
+| 背景色／前景色 | 不再是固定值：两套配色由 `css/base.css` 的语义变量给出，浅色 `--bg:#fff`／`--fg:#000`，深色 `--bg:#000`／`--fg:#fff`。**只在那一个文件里定义**，见下节 |
 | 重置 | 全局 `margin:0; padding:0; box-sizing:border-box` |
 | 内容不可拖拽 | `<img>` 一律不可拖拽：`css/base.css` 设 `-webkit-user-drag:none`（Chrome/Safari/Edge），Firefox 不支持该属性、项目页图片又由 JS 动态插入，故由 `js/nav.js` 的 `dragstart` 统一兜底。导航 UI 文字额外不可选中，见 §2。一旦浏览器进入原生拖拽（`dragstart`），`mouseup` 就不再派发 `click`，卡片/按钮会「点不动、只在拖」 |
 | 标题行高 | 所有页面标题（h1/h2）统一 `line-height:1`，消除中英文字体基线差异导致切换语言时横线位置偏移 |
 | viewport | `viewport-fit=cover`（所有页面，启用 `env(safe-area-inset-*)`） |
 | 标签页 `<title>` | 首页 `泻火 曹浩轩`；内页 `ABOUT`/`WORKS`/`CHANGELOG`/`PROJECT`（项目页运行时动态设为作品标题，404 时为 `404 — 未找到`） |
+
+### 深色模式（2026-10-03 立）
+
+**跟随系统**：写在 `css/base.css` 的 `@media (prefers-color-scheme: dark)` 里，**不做手动开关、不写 localStorage**（作者 2026-10-02 定）。`html` 上声明 `color-scheme:light dark`，滚动条与浏览器自绘的表单控件跟着走。
+
+**颜色只在一处定义**：全站色值集中在 `css/base.css` 的 `:root` 与那个媒体查询里，其余 7 个 CSS 一律引用变量，不再出现字面色值。命名按语义，不用 `--black`／`--white`（深色下会反义）。
+
+| 变量 | 用途 | 浅色 | 深色 |
+|------|------|------|------|
+| `--bg` ／ `--bg-rgb` | 纸：页面底 | `#fff` ／ `255,255,255` | `#000` ／ `0,0,0` |
+| `--fg` ／ `--fg-rgb` | 墨：正文与实心控件 | `#000` ／ `0,0,0` | `#fff` ／ `255,255,255` |
+| `--rule` | 3px／2px 硬边与下划线 | `#000` | `#e6e6e6`（**有意不取纯白**，见下） |
+| `--muted` | 次要文字：摘要、日期、字段标签、占位提示 | `#888` | `#888`（**字面不变**，见下） |
+| `--muted-soft` | 引文块正文（`.work-note`） | `#666` | `#666`（同上） |
+| `--rule-soft` | 发丝线：引文块左侧竖线 | `#ccc` | `#333` |
+| `--surface` | 照片／视频的留白底（`object-fit:contain` 露出的垫子） | `#f0f0f0` | `#0f0f0f` |
+| `--surface-quiet` | 引文块底（`.track-text`） | `#f9f9f9` | `#060606` |
+| `--surface-code` | 终端块底（`.tt-block`） | `#f4f4f4` | `#0b0b0b` |
+| `--code-rule` | 终端块 1px 边 | `#e4e4e4` | `#1b1b1b` |
+
+`-rgb` 两个分量形式不是重复：带透明度的场合（导航渐隐的 `linear-gradient`、riverrun 的 `.mixer-center` 遮罩）与画布取色需要 `rgba(var(--…),α)` 这种写法，而 `rgba()` 里放不进一个完整的色值。
+
+除 `--rule` 与两个灰之外，两套值是**严格镜像**（v ↔ 255−v），那几项的对比度关系因此逐项相同 —— 实测发丝线 1.61:1 → 1.66:1、终端块 1px 边 1.16:1 → 1.14:1、留白底 1.14:1 → 1.10:1，边与垫子的可见度被原样保住。
+
+**三处有意偏离镜像**：
+
+- **`--rule` 取 `#e6e6e6`（16.83:1）而非纯白**（作者 2026-10-03 定）。对比度相同 ≠ 知觉重量相同：黑底白线因光渗（irradiation）比白底黑线显得更粗更亮，21:1 的纯白硬边在深色下刺眼，而首页卡片栈一次叠出 6 条平行白边，那里最先看出来。代价是浅色下「边线与字同色」这条关系在深色下断了（下划线比标题字浅一档）—— 是有意换来的。
+- **`--muted`／`--muted-soft` 字面不变**（作者 2026-10-03 在对照台上比过「现状／互换／等比反推」三档后选定现状）。代价：两套配色下次要文字的对比度不再是同一档（浅色 3.54:1／5.74:1，深色 5.92:1／3.66:1），且 `#666` 与 `#888` 的轻重关系会互换 —— 浅色下引文比字段标签重，深色下反过来。二者在页面上从不同屏（`/works/wwhbh/` 上相隔约 1800px），所以判断口径是**各自与正文（21:1）比**，不是互相压过。
+
+**两件画布的取色**：
+
+- **wwhbh 墨层**（`js/ink-wwhbh.js`）：这是一次**换纸换墨**，不是改作品机制。`paint()` 从来不写 RGB、只写 alpha；RGB 在 `createImageData` 之后由 `applyInkColor()` 整体写成 `--fg-rgb`（浅色黑墨、深色白墨），**alpha 的写入逻辑一行未改**。RGB 只在「画布尺寸变了」与「系统配色变了」两个时刻重写，不进逐像素循环（那里每帧要跑 N 次）。「纸」不用管 —— 画布是透明的，纸就是 `body` 的 `--bg`。取不到变量时退回黑墨，与改动前一致。
+- **riverrun 台面**（`js/mixer-riverrun.js`）：10 处颜色改为运行时读 `--fg-rgb`／`--bg-rgb` 并缓存，`matchMedia('(prefers-color-scheme: dark)')` 的 change 事件把缓存丢掉、下一帧自绘 —— **系统切换时不要求刷新页面**。编号画在音轨点之上，取的是点的反面（`--bg`），与浅色下「黑点上的白字」同一条规则。
+
+**不跟随深色的例外**（只此两处，动任一处前先读这里）：
+
+1. **Lightbox**（`css/project.css` 末尾）：两套配色下都该是深色遮罩，色值保留字面量。
+2. **`css/nav.css` 里 `mask-image` 的 `#000`**：那是**遮罩的 alpha，不是颜色**。换成像其他地方那样引用变量，深色下返回栏的模糊渐隐会整体失效（模糊不再淡出、底部出现一条硬边）。这是本次最容易踩的坑。
+
+**实测**（2026-10-03）：颜色字面量 118 → 33（其中 18 是两套变量定义、6 是 Lightbox、4 是遮罩、5 是 `rgba(var(--…),α)`），其余 0 处；CSS 合计 37,639 → 40,632 字节（gzip 12,532 → 13,626）。浅色侧九个页面截图逐字节相同（用 CDP 的 Fetch 域把 CSS 响应换成改动前的快照）；墨层在同一张冻结的画面上原地切配色，alpha 指纹逐字节相同（`0x9baa710d`、上墨 591 像素、alpha 和 22504、最深 79 四项全不变），只有 RGB 在 0↔255 之间翻且可逆；riverrun 两向亮点数都是 9196、只有墨色 8.3 ↔ 248.8，且不重载页面。验证一律用 `Emulation.setEmulatedMedia`，**不用 `--force-dark-mode`** —— 那是浏览器自身的自动暗化，会把结论污染成「看起来变了」。深色断言在 `scripts/verify/verify.mjs`。
 
 ### 移动端弹性滚动
 
@@ -332,6 +372,15 @@ const sub = ((project.subtitle || project.brief || {})[App.I18n.currentLang]) ||
 .edge-body h2:has(+ #edge-desc > .work-meta){margin-bottom:14px}
 ```
 
+**ecce 布局是另一种情形（2026-09-30 补）**：ecce 页的 h2 与描述之间夹着顶部图片 `.ecce-media`，所以 h2 不是信息栏的前一个兄弟；它上方那条线是**图片自己的下边框**（`.ecce-still{border-bottom:3px solid #000}`），不是标题下边框。等距因此要改 `.ecce-text` 的 `padding-top`：
+
+```css
+.ecce-text:has(#ecce-desc > .work-meta){padding-top:14px}
+/* 移动端同段媒体查询内：padding-top:12px */
+```
+
+同样**与 `.work-meta` 的 `padding-bottom` 成对**（桌面 14 / 移动 12）。`:has()` 不匹配时 `.ecce-text` 维持原有的 `padding-top:24px`，即没有信息栏的 ecce 页不受影响。
+
 - **间距值必须与 `.work-meta` 的 `padding-bottom` 成对修改**，改一个就要改另一个（桌面 14 / 移动 12），否则等距立刻被破坏
 - 用 `:has()` 而不是给信息栏加负外边距：负外边距要靠 `<p>` 的边距合并才生效，而 `.work-meta` 是 grid 容器，是否参与合并要看浏览器实现；直接改标题自身的 `margin-bottom` 没有这层不确定性
 - `:has()` 不匹配时（描述不是以信息栏开头，或浏览器不支持）维持标题原有的 24px，即退回改动前的样子，不会更糟
@@ -637,7 +686,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 项 | 规则 |
 |----|------|
 | 为什么生成 | 一个模板 + 客户端路由的代价是**服务器返回的 HTML 里没有作品内容**：`<title>` 是 `PROJECT`、正文是「[ 演示视频 / 硬件照片 ]」样板，不执行 JS 的抓取者（微信／X／Slack 链接预览、搜索引擎）看到的是空模板，八个作品共用一个标题、全站 0 处 `og:*`。生成是把内容写死在 HTML 里，而不是要求抓取者去跑 JS |
-| 生成什么 | `<html>` 的 `data-lang`／`data-project`／`data-layout`；`<title>`；当前布局 `<h2>` 的标题与副标题；正文容器（片段内容 + `data-desc-lang`）；主图或 bilibili 内嵌页（`data-baked="1"`）；`description`／`canonical`／`hreflang`／`og:*`／`twitter:card` |
+| 生成什么 | `<html>` 的 `data-lang`／`data-project`／`data-layout`；`<title>`；当前布局 `<h2>` 的标题与副标题；正文容器（片段内容 + `data-desc-lang`）；主图或 YouTube 内嵌页（`data-baked="1"`）；`description`／`canonical`／`hreflang`／`og:*`／`twitter:card` |
 | 剪枝 | 未使用的五个布局面板连同其注释一并删除 —— 不剪的话样板文案与另外五个布局的控件仍会留在 HTML 里。剪枝后自检：只剩一个面板、`<div>` 配平 |
 | 不生成什么 | Gallery 的图片仍由 `js/project.js` 渲染（要配灯箱绑定）；语言切换仍走 fetch 回退 |
 | 脚本剪枝 | 只被个别布局用到的脚本按布局剪掉：`js/ink-wwhbh.js`（40KB）与 `js/audio-wwhbh.js`（6KB）只在 wwhbh 布局挂、`js/mixer-riverrun.js`（35KB）只在 mixer 布局挂 —— 八个作品里六个用不到，未压缩合计约 81KB。`js/project.js` 只在 projectId／layout 匹配时才调用对应 `App.init*`，剪掉不会抛错。**旧地址 `project-template.html` 保持全挂**（它要承载所有布局） |
@@ -647,7 +696,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 封面约定 | `og:image` 用首页卡片封面 `img/<id>.webp`（1200px 宽，八个作品都有）。缺图时**生成失败**，不静默降级 |
 | 标题用词 | 标签页 `<title>` 只写作品名（站内惯例，窄标签栏不截断）；说明性的一整句放 `description` 与 `og:description`（即 `subtitle` 或退回 `brief`）。**不把副标题拼进标题**：英文 66–133 字符必被预览截断，且与说明行重复 |
 | 旧地址 | 不删：已发出的链接必须一直能打开。静态 `<meta name="robots" content="noindex,follow">` 覆盖不跑 JS 的抓取者；`js/project.js` 在旧地址上再补一条 canonical 指向目录式地址，覆盖跑 JS 的抓取者。**不做跳转**（GitHub Pages 给不了真 301） |
-| 路径式语言 | 生成页带 `data-lang-fixed`：不吃 localStorage、不把 `?lang=` 写回地址栏（否则刚复制出来的干净地址立刻又被弄脏），切换语言 = 跳到另一语言那份页面。目标从 `link[rel=alternate][hreflang]` 读（与给搜索引擎的 hreflang 是同一份数据，不另存映射表），且**只取路径**：用绝对地址会把本地预览与 github.io 镜像上的读者甩到正式域名 |
+| 路径式语言 | 生成页带 `data-lang-fixed`：不吃 localStorage、不把 `?lang=` 写回地址栏（否则刚复制出来的干净地址立刻又被弄脏），切换语言 = 换到另一语言那份内容。目标从 `link[rel=alternate][hreflang]` 读（与给搜索引擎的 hreflang 是同一份数据，不另存映射表），且**只取路径**：用绝对地址会把本地预览与 github.io 镜像上的读者甩到正式域名。**作品页原地换（地址走 `replaceState`），站内页仍跳转** —— 见 §8「路径式语言（作品页）」 |
 | 首页与列表链接 | 一律经 `App.projectHref(id)`（`js/app.js`）。它自带语言，**不要再套 `App.langHref`**，否则得到 `works/x/zh/?lang=zh` 这种自相矛盾的地址 |
 | 首页卡片 | `.card` 同时带 `data-project`（规范来源）与 `data-href`（旧地址留档）。后者只在「新 HTML 配旧缓存 app.js」的窗口里兜底，**不要删、也不要以它为准** |
 | 收尾产物 | `sitemap.xml` 与 `robots.txt`（由生成器写，域名取自 `CNAME`，避免两处漂移）；`404.html`（GitHub Pages 对任意不存在的路径都返回它，故资源引用一律以 `/` 开头，**并声明 `<base href="/">`** —— 见 §7i）；`works/index.html`（`/works/` 被手改短时转发到 `/works.html`，并保留 `?lang=`） |
@@ -690,9 +739,11 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 地址栏必要性 | 语言若只存 localStorage，把链接发给别人时对方永远看到默认语言，发链接的人无法控制。`?lang=` 让语言随链接传递（**申请语境下为必需**：招生读者点开链接必须落在英文版） |
 | 首屏定语言 | 五个页面的 `<head>` 各有一段**同步内联脚本**，在首次绘制前把语言写进 `<html data-lang>`；否则中文文案会一闪而过（defer 脚本来不及）。它同时按语言条件注入 CJK 字体预加载（见下行） |
 | 字体条件加载 | `SourceHanSansSC` Regular+Bold 合计 599KB，英文界面一个字都用不到（英文走 `PlainZero` / `DejaVu Sans Mono`），故只在中文界面注入其 preload；浏览器仍可经 CSS `unicode-range` 按需补取 |
+| 字体**意图**预载（2026-10-02 加） | 英文作品页上，`#lang-toggle` 一被**真实交互**（`pointerdown` / `focusin`，捕获阶段挂在 `document` 上，故按钮由 JS 生成也不影响）就提前注入同一份 preload。成因：作品页切语言是原地换，不跳转就没有新文档的 `<head>` 去发预载。**只认按下与聚焦，不认掠过** —— 鼠标划过不该让英文读者白付 245KB。实测（150ms RTT / 1.6Mbps、冷缓存）：越白字形窗口从 6686ms 降到 5477ms（按下到抬手间隔 250ms 时），快击（20ms）只降 45ms；快网下本来就看不到白字形。断言在 `verify.mjs` 第七节：没碰按钮不许发请求、按下之后必须发 |
 | 链接语言传播 | 所有动态生成的站内链接走 `App.langHref(href)`（唯一出口，勿在别处硬拼 URL）：默认语言不加参数，其它语言追加 `?lang=` / `&lang=`。否则中文界面点进作品页会被打回默认英文 |
 | 切换 | 点击 `#lang-toggle`，zh ↔ en 互切。切换按钮是 `<a href="#">`，靠 `document` 上的 click 委托触发；导航 UI 已禁用文本选择与原生链接拖拽（§2），否则鼠标微动会被浏览器判为拖拽、丢掉 click |
-| 路径式语言（作品页） | 生成页（`works/<id>/`、`works/<id>/zh/`）带 `data-lang-fixed`：语言由**路径**决定，不吃 localStorage、不把 `?lang=` 写回地址栏，`#lang-toggle` 改为跳到另一语言那份页面（目标读 `hreflang` 且只取路径）。其余页面仍走 `?lang=`。成因见 §7h |
+| 滚动锚点（原地换语言时） | 中文译文比英文短约三成，而滚动位置记的是「从文档顶部往下多少像素」——不补的话读者盯着的那一段会整体挪走（实测 `/works/wwhbh/`：停在照片那一屏切语言，文档 8277 → 6248px，浏览器自己的滚动锚定只补回 880px，剩下 1149px 让照片直接从眼前跑掉）。做法：切之前在 `js/project.js` 的 `anchorOf()` 里记下「视口顶部落在正文的百分之几」，正文换完由 `restoreAnchor()` 把同一百分比换算回新的文档坐标。**按比例而不是按像素**（作者 2026-10-03 定）：中英是同一篇的两个版本、段落一一对应，同一个百分比最接近「还在读同一段」。三种候选在 `tmp/scroll-anchor.html` 上实测过 —— 按像素那条在两种场景下都与「不干预」结果相同（目标要么超出新文档最大滚动位置被钳回，要么就等于不动），等于没做；锚住正文之后那块则会把正在读的正文抽走。读者本来就在正文之上（含页面顶端）时不补：他上方内容没变，硬滚反而莫名其妙。断言在 `verify.mjs` 第二节（量的是「比例前后一致」这个不变量，不是某个像素数） |
+| 路径式语言（作品页） | 生成页（`works/<id>/`、`works/<id>/zh/`）带 `data-lang-fixed`：语言由**路径**决定，不吃 localStorage、不把 `?lang=` 写回地址栏。**作品页的 `#lang-toggle` 原地换语言**（`init(..., { inPlace: true })`）：文案当场换、地址栏用 `history.replaceState` 换成 `hreflang` 里那份路径，**不换文档** —— 跳转会销毁 `AudioContext`／`MediaStream`／90 秒 `DelayNode` 缓冲区与墨层累积数组，把正在进行的作品清掉（实测跳转式：1 次文档导航、墨层 4 → 0；原地式：`getUserMedia` 1 次、`AudioContext` 建 1 次、`close` 0 次、导航 0 次）。两份静态页与 `hreflang` 未动，爬虫不点按钮，故链接预览／分享／刷新不变。**站内页（`/works/`、`/about/` 等）不传这个参数，仍跳到另一语言那份页面**（对照实测：标记消失、确实换了文档）。其余页面仍走 `?lang=`。成因见 §7h，运行时细节见 `程序编写说明.md` §7.1 |
 | 标记 | HTML 元素加 `data-i18n="key"` 属性 |
 | 初始化 | 各页面调用 `I18n.init(data, onToggle?)` |
 | 公共字符串 | `back`／`langToggle` 只定义在 `js/i18n.js` 一处，由 `init()` 在注册页面数据时合并（`Object.assign({}, App.COMMON_I18N, data)`）。**各页数据文件不要再写 `...App.COMMON_I18N`**：works／about／changelog／404 的数据文件是同步 `<head>` 脚本，执行时 i18n.js 还没跑，spread 到 `undefined` 会静默少键，导航停在硬编码中文上（2026-09-22 实测） |

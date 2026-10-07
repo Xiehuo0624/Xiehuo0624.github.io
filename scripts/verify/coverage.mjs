@@ -87,6 +87,8 @@ rmSync(PROFILE, { recursive: true, force: true });     // 清掉可能残留的�
 const chrome = spawn(CHROME, [
   '--headless=new', '--remote-debugging-port=0', '--no-sandbox', '--disable-breakpad',
   '--use-mock-keychain', '--password-store=basic',
+  /* 媒体权限不问系统（wwhbh 页加载即调 getUserMedia，会弹 macOS 麦克风授权框）。 */
+  '--deny-permission-prompts',
   `--user-data-dir=${PROFILE}`, '--no-first-run', '--no-default-browser-check',
   '--window-size=1440,900', 'about:blank'
 ], { stdio: 'ignore', env: { ...process.env, HOME: join(ROOT_TMP, 'home') } });
@@ -138,14 +140,22 @@ const failures = [];
    为什么要有它：/works/* 的正文是 fetch data/<id>/<lang>.html 之后异步注入的。原来的写法
    只 sleep(1200) 就抓快照，于是**同一份内容**实测给出 8／20／36／0 四种结果，还出现过正文
    一个字都没填却记「0 缺字」通过 —— 假红和假绿都出，比漏检更危险。
-   判据三条：① readyState 完成；② 页面若有 [data-desc-lang] 容器，其文本必须 >200 字符
-   （与 verify.mjs 第 226 行同一道闸）；③ innerText 长度连续 3 次采样不变（等 i18n 注入与
-   自动间距收敛）。任一不满足即判该页未就绪，记失败并退出码 1——**不落进「0 缺字」那一档**。 */
+   判据三条：① readyState 不是 loading；② 页面若有 [data-desc-lang] 容器，其文本必须 >200
+   字符（与 verify.mjs 第 226 行同一道闸）；③ innerText 长度连续 3 次采样不变（等 i18n 注入与
+   自动间距收敛）。任一不满足即判该页未就绪，记失败并退出码 1——**不落进「0 缺字」那一档**。
+
+   ① 为什么是「不是 loading」而不是「必须 complete」（2026-10-03 改）：
+   `complete` 要等**全部子资源**，其中包含第三方内嵌。`/works/edgedgedge/` 里烤着 YouTube，
+   机器没外网时那个 iframe 永远加载不完，readyState 卡在 `interactive` —— 于是这两页必然记
+   「未就绪」、退出码 1，**尽管字形覆盖完全正常**（实测：离线时两页失败、接上外网立刻全绿，
+   两次的字形差集都是 0）。一个会随网络环境假红的闸，比没有闸更坏：它会教人忽略它。
+   而 `interactive` 已经意味着文档解析完毕、**defer 脚本全部执行过**（DOMContentLoaded 就在
+   这个状态触发），防「脚本还没跑就采样」的保护一点没少。真正管用的本来就是 ②③ 两条。 */
 async function settled(sessionId) {
   const expr = `(() => {
     const d = document.querySelector('[data-desc-lang]');
     return JSON.stringify({
-      ready: document.readyState === 'complete',
+      ready: document.readyState !== 'loading',
       desc: d ? d.textContent.trim().length : -1,
       len: document.body.innerText.length
     });

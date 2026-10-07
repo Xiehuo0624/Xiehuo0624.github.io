@@ -1,5 +1,5 @@
 /* ===== NAV: back + lang toggle =====
-   背景由纯色改为竖向渐隐：前 --fade-top 高度保持原有 rgba(255,255,255,.75)
+   背景由纯色改为竖向渐隐：前 --fade-top 高度保持原有 --bg 的 75% 不透明度
    不变（正好覆盖返回 / 语言切换那一行，含链接自身 padding），
    从文字行底边开始向下线性降到全透明。
    文字位置与改动前完全一致：新增的高度全部落在 padding-bottom 过渡带上。
@@ -15,9 +15,9 @@
   padding:8px 24px calc(8px + var(--fade-blur));
   width:100%;box-sizing:border-box;
   background:linear-gradient(180deg,
-    rgba(255,255,255,.75) 0,
-    rgba(255,255,255,.75) var(--fade-top),
-    rgba(255,255,255,0) calc(var(--fade-top) + var(--fade-blur)));
+    rgba(var(--bg-rgb),.75) 0,
+    rgba(var(--bg-rgb),.75) var(--fade-top),
+    rgba(var(--bg-rgb),0) calc(var(--fade-top) + var(--fade-blur)));
 }
 .back::before{
   content:'';position:absolute;inset:0;z-index:-1;
@@ -29,8 +29,8 @@
     #000 0,#000 var(--fade-top),
     transparent calc(var(--fade-top) + var(--fade-blur)));
 }
-.back a{color:#000;text-decoration:none;padding:2px 6px;font-size:14px}
-.back a:hover{background:#000;color:#fff}
+.back a{color:var(--fg);text-decoration:none;padding:2px 6px;font-size:14px}
+.back a:hover{background:var(--fg);color:var(--bg)}
 
 /* ===== 语言按钮与返回栏的汉字（返回／中文）=====
    2026-09-22 曾把这两处移出思源字体栈、改走系统字体（macOS 苹方／Windows 雅黑），为的是省下
@@ -66,10 +66,10 @@
   padding-top:var(--nav-y);
 }
 .nav-top-left a{
-  display:block;color:#000;text-decoration:none;
+  display:block;color:var(--fg);text-decoration:none;
   padding:0 6px;margin-bottom:8px;
 }
-.nav-top-left a:hover{background:#000;color:#fff}
+.nav-top-left a:hover{background:var(--fg);color:var(--bg)}
 .nav-lowercase{position:relative;top:-1px}
 
 /* nav variant: bottom-left works link (index page) */
@@ -80,10 +80,10 @@
   padding-bottom:var(--nav-y);
 }
 .nav-bottom-left a{
-  display:block;color:#000;text-decoration:none;
+  display:block;color:var(--fg);text-decoration:none;
   padding:0 6px;
 }
-.nav-bottom-left a:hover{background:#000;color:#fff}
+.nav-bottom-left a:hover{background:var(--fg);color:var(--bg)}
 
 /* nav variant: top-right name (index page) */
 .nav-top-right{
@@ -101,9 +101,9 @@
   padding-bottom:var(--nav-y);
 }
 .nav-bottom-right a{
-  color:#000;text-decoration:none;padding:0 6px;
+  color:var(--fg);text-decoration:none;padding:0 6px;
 }
-.nav-bottom-right a:hover{background:#000;color:#fff}
+.nav-bottom-right a:hover{background:var(--fg);color:var(--bg)}
 
 @media(max-width:768px){
   .back{

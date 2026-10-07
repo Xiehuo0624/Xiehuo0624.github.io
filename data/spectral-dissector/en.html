@@ -1,3 +1,13 @@
+<span class="work-meta">
+<span class="work-meta-k">Year</span><span class="work-meta-v">2025–2026</span>
+<span class="work-meta-k">Type</span><span class="work-meta-v">A Max for Live plugin: fundamental, harmonic, transient and noise separation</span>
+<span class="work-meta-k">Specs</span><span class="work-meta-v">Ten bands, a Perc Band and a Dry path; the dry path runs through the same pfft~ as the bands, delay-aligned at 4032 samples</span>
+<span class="work-meta-k">Roles</span><span class="work-meta-v">Algorithm and architecture: me; implementation and UI of the new version: 闫开</span>
+<span class="work-meta-k">Shown</span><span class="work-meta-v">Downloadable from this site (26.09.12); no external use so far</span>
+<span class="work-meta-k">Status</span><span class="work-meta-v">In development</span>
+<span class="work-meta-k">Media</span><span class="work-meta-v">Screenshot of the first version; screenshot of the current version (to come); usage tutorial video (YouTube, in progress)</span>
+</span>
+
 <a class="tt-download" href="data/spectral-dissector/Spectral%20Dissector%2026.09.12.zip" download>↓ Download Spectral Dissector (26.09.12.zip)</a>
 
 <br><br>
@@ -11,22 +21,6 @@ Spectral Dissector is a fundamental-frequency, harmonic, transient, and noise se
 <img src="img/spectral-dissector-1.webp" alt="Screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
 In April 2026 I refactored the plugin's architecture: I introduced HPSS and Cepstrum algorithms and, drawing on Bitwig Loud Split, added a Rise/Fall control parameter, attempting thereby to separate non-harmonic transients and noise so that harmonic separation becomes more stable, more precise, and freer of artifacts. At the same time I reworked the interface logic: each Spectral Gate Band is now governed overall by a single Main Threshold, with a Spacing knob adjusting the loudness difference between the bands' thresholds and Tilt compensating the thresholds at high and low frequencies. I also added a [<strong>Focus</strong> (<code>focus</code>) | band-crossing sharpness | large value = clear band boundaries but possible discontinuities; small value = smooth transitions] parameter to emphasize tonal signals. In the current version the envelope-compensation algorithm has been temporarily removed because it conflicts with Cepstrum and HPSS... a shame. The implementation and UI of the new Max for Live device were done by Yan Kai.
-
-<br><br>
-
-+rep
-
-<br><br>
-
-<span style="display:block;text-align:right">2026.07.02</span>
-
-<br><br>
-
-I hate Cepstrum.
-
-<br><br>
-
-<span style="display:block;text-align:right">2026.07.04</span>
 
 <br><br>
 
