@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-07',
       title: {
+        zh: '手机端墨层改为贴视口底边锚定：地址栏收放不再拖着整幅图案平移',
+        en: 'The ink layer anchors to the viewport bottom edge, so the mobile URL bar stops dragging it'
+      },
+      brief: {
+        zh: '墨层改为贴视口底边锚定：地址栏收放不再拖着整幅图案平移，顶边那 56px 切在屏幕外',
+        en: 'The ink layer anchors to the viewport bottom edge, so the mobile URL bar stops dragging the pattern; the 56px top strip stays clipped off-screen.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-07',
+      title: {
         zh: '手机端墨层不再被地址栏拉伸与重建：高度锚在 100lvh，尺寸改读墨层盒子',
         en: 'The ink layer stops stretching and rebuilding when the mobile URL bar collapses'
       },

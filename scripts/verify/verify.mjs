@@ -1075,33 +1075,55 @@ console.log('=== 十四、深色模式：计算值断言（Emulation.setEmulated
   }
 }
 
-/* ---------- 十五、wwhbh 墨层：高度锚在大视口，地址栏收放不重建 ---------- */
-console.log('=== 十五、wwhbh 墨层：高度锚在 lvh（手机地址栏收放不重建、不拉伸）===');
+/* ---------- 十五、wwhbh 墨层：高度锚在大视口、贴底边，地址栏收放不重建也不平移 ---------- */
+console.log('=== 十五、wwhbh 墨层：高度锚在 lvh、贴底边（地址栏收放不重建、不拉伸、不平移）===');
 {
-  /* 作者 2026-10-07 在 Android Chrome 上报的现象：滚动时「墨水被拉伸、或整体跳一下」。
-     成因有两层，都在**地址栏收放**上（滚动本身不动 fixed 层，这一点下面也断言了）：
-       ① 墨层原先靠 inset:0 取「当前视口」，地址栏一收放它立刻变高变矮，
-          而 canvas 的后备缓冲没变 —— 屏幕上就是整幅墨被纵向拉伸；
-       ② 紧接着 js/ink-wwhbh.js 的 350ms 防抖按新的 innerHeight 重算，
-          重建整张渗透率场、并把累积层清零 —— 画面跳一下、攒下来的墨全没。
-     修法两半，都在这里钉住：css/project.css 把高度写成 100lvh（大视口＝常量），
-     js/ink-wwhbh.js 的尺寸改读墨层盒子而不是 window.innerHeight。
-     本节断的是：规则里真的带 height:100lvh（声明被解析进 CSSOM，不是被丢掉）、
-     滚动后几何与画面都不动、**只改 innerHeight（＝手机上地址栏收放那一下）时
-     后备缓冲与墨像素指纹都不许变**。
-     注意：headless 没有浏览器 UI，这里 lvh 与 dvh 数值相同，所以「lvh 在真机上确实
-     不随地址栏变」这一点验不了 —— 那是规范保证（CSS Values 4 的 svh/lvh/dvh），
-     这条测试管的是**我们这边的两个机制**：尺寸取自盒子、且不再随 innerHeight 重建。 */
+  /* 作者 2026-10-07 在 Android Chrome 上先后报了两个现象，同一套机制（**地址栏收放**）：
+       「墨水被拉伸、或整体跳一下」→「位置依然会改变（整幅平移）」。
+     滚动本身不动 fixed 层，这两条下面都断言了。三层成因：
+        ① 墨层原先靠 inset:0 取「当前视口」，地址栏一收放它立刻变高变矮，
+           而 canvas 的后备缓冲没变 —— 屏幕上就是整幅墨被纵向拉伸；
+        ② 紧接着 js/ink-wwhbh.js 的 350ms 防抖按新的 innerHeight 重算，
+           重建整张渗透率场、并把累积层清零 —— 画面跳一下、攒下来的墨全没；
+        ③ 高度改成常量之后，墨层仍以**视口顶边**为基准（top:0），而 Android Chrome 的
+           地址栏在屏幕顶部、正是从顶部撑大／缩小视口 —— 顶边跟着上下走约 56px，
+           于是整幅图案随地址栏平移。底边任何时候都贴着屏幕底边。
+     修法三半：css/project.css 高度写 100lvh（大视口＝常量）并**贴底边锚定**
+     （@supports 里 top:auto，整块一起生效、一起退化），js/ink-wwhbh.js 的尺寸改读墨层盒子。
+      本节断的是：生效的规则里真的带 height:100lvh 与 top:auto（声明被解析进 CSSOM）、
+      墨层仍覆盖整个视口、滚动后几何与画面都不动、**只改 innerHeight（＝手机上地址栏
+      收放那一下）时后备缓冲与墨像素指纹都不许变**。
+      注意：headless 没有浏览器 UI，lvh 与 dvh 数值相同，所以「lvh 恒定」「顶边会随地址栏
+      移动、底边不会」这两点都验不了 —— 前者是规范保证（CSS Values 4 的 svh/lvh/dvh），
+      后者要真机。这条测试管的是**我们这边的机制**：尺寸取自盒子、不随 innerHeight 重建、
+      锚定边写在声明里（改回 top:0 会让下面第二条断言变红）。 */
   const v = await visit('/works/wwhbh/', { waitMs: 900, scheme: 'light', motion: 'no-preference' });
+  /* 墨层现在由**两条**规则描述：顶层那条（inset:0 兜底）与 @supports 里那条
+     （height:100lvh + top:auto）。@supports 内层是 CSSSupportsRule、没有 selectorText，
+     所以要递归进去收；只扫顶层会漏掉真正生效的那条（第一版就这么漏过）。 */
   const g0 = await v.evaluate(`(function(){
-    let rule = null;
-    for (const ss of document.styleSheets){
-      try { for (const r of ss.cssRules){ if (r.selectorText === '.wwhbh-ink') rule = r.cssText; } } catch(e){}
-    }
-    return { rule: rule, supports: CSS.supports('height', '100lvh') };
+    const rules = [];
+    const walk = list => { for (const r of list){
+      if (r.selectorText === '.wwhbh-ink') rules.push(r.cssText);
+      if (r.cssRules) walk(r.cssRules);
+    } };
+    for (const ss of document.styleSheets){ try { walk(ss.cssRules); } catch(e){} }
+    const host = document.getElementById('wwhbh-ink');
+    const rect = host.getBoundingClientRect();
+    return { rules: rules, supports: CSS.supports('height', '100lvh'),
+             top: Math.round(rect.top), bottom: Math.round(rect.bottom),
+             innerH: innerHeight, h: Math.round(rect.height) };
   })()`);
-  checkTrue('墨层规则带 height:100lvh', g0.rule && /height:\s*100lvh/.test(g0.rule));
-  checkTrue('本浏览器支持 lvh（不支持时该声明会被丢掉，下面的断言就失去意义）', g0.supports);
+  const all = (g0.rules || []).join(' ');
+  checkTrue('墨层规则带 height:100lvh', /height:\s*100lvh/.test(all));
+  /* 锚定边：top:auto + bottom:0（来自兜底那条的 inset:0）。
+     **这一条只能断声明**：headless 没有浏览器 UI，lvh 与 dvh 数值相同，
+     改锚定前后几何一模一样（都是铺满视口），所以量不出差别 —— 真机上顶边会随地址栏
+     上下走、底边不会，那由作者在手机上确认。 */
+  checkTrue('墨层贴底边锚定（top:auto）而不是顶边', /top:\s*auto/.test(all));
+  checkTrue('格式串里仍有 inset:0 兜底（不支持 lvh 时靠它）', /inset:\s*0/.test(all));
+  checkTrue('本浏览器支持 lvh（不支持时 @supports 整块不生效，下面的断言就失去意义）', g0.supports);
+  check('墨层覆盖整个视口（top ≤ 0 且 bottom ≥ 视口高）', g0.top <= 0 && g0.bottom >= g0.innerH, true);
 
   /* 把墨强制打开：探针带 --deny-permission-prompts，正常运行下墨根本不会长。
      8 秒是留了余量的数 —— 起点在屏幕外左下，最近的可见像素归一化到达时刻约 0.05，

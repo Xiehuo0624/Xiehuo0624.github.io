@@ -144,10 +144,22 @@ h2 .work-sub{
    js/ink-wwhbh.js 的 350ms 防抖按新的 innerHeight 重做一遍，累积的墨一起被洗掉。
    作者在 Android Chrome 上看到的就是这两下（2026-10-07 报「墨水可以被滑动／跳一下」）。
    lvh 是**常量**：地址栏收放、滚动都不改它，整条链路因此安静下来。
-   代价：地址栏显示时这一层比可见区高约 56px（多出来的那截在屏幕下方，看不见；
-   墨本来就从屏幕外的左下角长出来，所以看不出来）。桌面 lvh 与 vh 相等，无差别。
-   不支持 lvh 的浏览器丢掉这一条声明，退回上面的 inset:0（＝旧行为，旧毛病也还在）。 */
-.wwhbh-ink{position:fixed;inset:0;height:100lvh;z-index:200;pointer-events:none;overflow:hidden}
+
+   **并且贴视口的底边锚定**（top:auto + 继承自 inset:0 的 bottom:0，见下面 @supports 块）：
+   手机地址栏在屏幕**顶部**，它是从顶部把视口撑大／缩小的 —— 视口的**顶边**会跟着地址栏
+   上下走约 56px，底边则任何时候都贴着屏幕底边。只把高度改成 lvh 而仍留 top:0 时，
+   拉伸与洗墨都没了，但整幅墨**仍然跟着地址栏平移**（作者复测报的第二次现象）。
+   贴底边之后图案不再动：地址栏显示时被切在屏幕外的是**顶边**那 56px ——
+   那正是墨最后才铺满的角落（前缘从左下屏幕外长进来），看不出来。
+   桌面 lvh 与 vh 相等、也没有动态地址栏，两种锚定完全一样。
+
+   不支持 lvh 的浏览器整块 @supports 都不生效，退回上面的 inset:0（＝旧行为，旧毛病也还在）。
+   **不要**把 height:100lvh 与 top:auto 拆到两个顶层规则里：lvh 不被识别时高度那条会被丢掉，
+   而 top:auto 仍生效，这一层就只剩 bottom:0、高度塌成 0。 */
+.wwhbh-ink{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
+@supports (height:100lvh){
+  .wwhbh-ink{height:100lvh;top:auto}
+}
 .wwhbh-ink canvas{display:block;width:100%;height:100%}
 .wwhbh-body{max-width:800px;width:100%;text-align:left}
 .wwhbh-body h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px}
