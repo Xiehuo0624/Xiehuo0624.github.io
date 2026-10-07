@@ -2,7 +2,8 @@
 /* 作品页改造的实测验证：headless Chrome + CDP。
  * 覆盖：16 个生成页的结构/元信息/媒体/正文、旧地址、语言切换（作品页原地换语言、
  *       站内页仍跳转）、深色模式计算值、首页卡片与作品列表链接、404 页、Gallery Lightbox、字体 URL 一致性、
- *       Esc 返回（子页面 → 首页、首页不响应、Lightbox 优先、旧地址与 404 的落点），
+ *       Esc 返回（子页面 → 首页、首页不响应、Lightbox 优先、旧地址与 404 的落点）、
+ *       wwhbh 墨层锚定、移动端正文行高（390×844 下 28px／桌面 33.6px），
  *       以及控制台报错与 4xx 请求。
  * 用法：先起本地服务（python3 -m http.server 8765），再 node scripts/verify/verify.mjs
  */
@@ -96,7 +97,7 @@ if (!version) { console.error('Chrome 起不来'); process.exit(2); }
 const browser = await CDP.connect(version.webSocketDebuggerUrl);
 
 /* ---------- 访问一个页面并收集证据 ---------- */
-async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null, motion = null } = {}) {
+async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null, motion = null, viewport = null } = {}) {
   /* 一个用例一个浏览器上下文：localStorage 天然是干净的，否则「本页有没有写 localStorage」
      会被上一页残留的偏好污染（同一 profile 共用存储）。 */
   const { browserContextId } = await browser.send('Target.createBrowserContext');
@@ -124,6 +125,14 @@ async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 
   });
 
   if (noJs) await browser.send('Emulation.setScriptExecutionDisabled', { value: true }, sessionId);
+  /* 手机视口（第十六节用）：整份探针此前只跑 --window-size=1280,900，
+     从来命中不了 @media(max-width:768px) —— 而移动端正文行高那四条覆盖正写在里面。
+     一个用例一个浏览器上下文，关掉时整个上下文一起销毁，不需要复位。 */
+  if (viewport) {
+    await browser.send('Emulation.setDeviceMetricsOverride', {
+      width: viewport.width, height: viewport.height, deviceScaleFactor: 2, mobile: true
+    }, sessionId);
+  }
   /* 模拟深色：走 CDP 的 Emulation.setEmulatedMedia，**不是** --force-dark-mode。
      后者是 Chrome 自身的自动暗化，会把结论污染成「看起来变了」——
      那种「变了」在关掉变量化之后照样成立，验不出任何东西。 */
@@ -1172,6 +1181,58 @@ console.log('=== 十五、wwhbh 墨层：高度锚在 lvh、贴底边（地址�
   check('伪地址栏后后备缓冲未变（没有重栅格化）', c.backing, a.backing);
   check('伪地址栏后墨像素指纹未变（累积层保住）', c.hash, a.hash);
   await v.close();
+}
+
+console.log('=== 十六、移动端正文行高：手机 2.0（28px）、桌面仍是 2.4（33.6px）===');
+{
+  /* 2026-10-07 作者定：手机 ≤768px 下，作品页长篇正文（wwhbh／edge／gallery／ecce
+     四种布局）的行高从 2.4 收到 2.0，桌面一个字不改。四条覆盖写在 css/project.css
+     的 @media(max-width:768px) 里，站内页（about／changelog／404）与 riverrun 说明栏
+     不在范围内。
+     本节防的是**静默失效** —— 它不是假设，是当天实测出来的：
+       ① 覆盖规则的选择器若被简写成裸 `#ecce-desc`，特异性低于原规则
+          `.ecce-text #ecce-desc`（id+class），页面上不报错、控制台干净、
+          桌面看不出（桌面本来就该 2.4），只有手机上又变回 33.6px；
+       ② 谁动了原规则的 2.4，桌面与移动会一起漂。
+     两个视口都钉死：移动 28px（2.0 × 14px）、桌面 33.6px（2.4 × 14px）。
+     改设计值时必须同时改这里 —— 那正是目的：让改动永远是有意识的。
+     末条反向断言站内页没被「顺手统一」铺上 2.0，用比值而不是像素，
+     免得 About 页字号将来一改就误报。 */
+  const CASES = [
+    { path: '/works/wwhbh/',      sel: '#wwhbh-desc',   layout: 'wwhbh' },
+    { path: '/works/edgedgedge/', sel: '#edge-desc',    layout: 'edge' },
+    { path: '/works/6u104hp/',    sel: '#gallery-desc', layout: 'gallery' },
+    { path: '/works/ecce-homo/',  sel: '#ecce-desc',    layout: 'ecce' }
+  ];
+  const LH = sel => `(function(){
+    const el = document.querySelector(${JSON.stringify(sel)});
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const lh = parseFloat(cs.lineHeight), fs = parseFloat(cs.fontSize);
+    return { lh: cs.lineHeight, ratio: Math.round(lh / fs * 100) / 100, fs: cs.fontSize,
+             narrow: matchMedia('(max-width:768px)').matches, w: innerWidth };
+  })()`;
+  const MOBILE = { width: 390, height: 844 };
+  for (const c of CASES) {
+    const vm = await visit(c.path, { waitMs: 900, viewport: MOBILE });
+    const m = await vm.evaluate(LH(c.sel));
+    checkTrue(`移动端 390×844 确实命中窄栏媒体查询 · ${c.layout}`, m && m.narrow);
+    check(`移动端正文行高 28px（2.0 × 14px）· ${c.layout}`, m && m.lh, '28px');
+    await vm.close();
+
+    const vd = await visit(c.path, { waitMs: 900 });
+    const d = await vd.evaluate(LH(c.sel));
+    checkTrue(`桌面 1280×900 不命中窄栏媒体查询 · ${c.layout}`, d && !d.narrow);
+    check(`桌面正文行高仍是 33.6px（2.4 × 14px）· ${c.layout}`, d && d.lh, '33.6px');
+    await vd.close();
+  }
+  const va = await visit('/about/', { waitMs: 900, viewport: MOBILE });
+  const a = await va.evaluate(`(function(){
+    const cs = getComputedStyle(document.querySelector('.bio p'));
+    return Math.round(parseFloat(cs.lineHeight) / parseFloat(cs.fontSize) * 100) / 100;
+  })()`);
+  check('About 页正文没被顺手统一（行高比仍是 1.9）', a, 1.9);
+  await va.close();
 }
 
 /* ---------- 汇总 ---------- */

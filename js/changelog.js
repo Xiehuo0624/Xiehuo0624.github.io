@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-07',
       title: {
+        zh: '给手机端行高补一条会失败的断言：防的是「改错了也不报错」',
+        en: 'A failing assertion for the mobile line-height, so a silent regression cannot pass unnoticed'
+      },
+      brief: {
+        zh: 'verify 新增第十六节：手机 390×844 下四个正文容器必须是 28px、桌面 33.6px，防行高被无声改回',
+        en: 'verify section sixteen pins the mobile line-height: 390×844 must give 28px and desktop 33.6px, so it cannot regress unnoticed.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-07',
+      title: {
         zh: '手机端长篇正文的行高收到 2.0：窄栏一行 25 字，2.4 显得空',
         en: 'Long-form body text drops to a 2.0 line-height on phones, where a line holds about 25 characters'
       },
