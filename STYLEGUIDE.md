@@ -64,6 +64,8 @@
 
 首页 `html, body` 均设置 `position:fixed; top:0; left:0; right:0; bottom:0; overflow:hidden`，阻止 iOS Safari rubber-band 滚动。内页无需此处理。
 
+**内页与作品页滚到边界时的拉伸回弹保持浏览器原样 —— 不要加 `overscroll-behavior`**（作者 2026-10-07 定）。它是浏览器自带的边界反馈（Android Chrome 的 stretch、iOS Safari 的橡皮筋），**站内没有任何一行代码在管它**（唯一沾边的是 `css/project.css` 里 `.mixer-canvas` 的 `touch-action:none`，那只管 riverrun 那块画布的手写笔输入）。2026-10-07 作者在 wwhbh 页看到整屏墨被拉伸后问「能不能关掉」，方案与代价都摆过：`html,body{overscroll-behavior-y:none}` 能压住 Android Chrome 的 stretch，但**站内下拉刷新会一并失效**（同一个属性管的：`none` 连本地回弹一起不要，`contain` 只挡「继续往浏览器传」），且 iOS 上文档级橡皮筋有已知边角情况（WebKit bug 244232 —— 页面短到不需要滚动时压不住）；另可只关 wwhbh 一页，代价是同一站内手感不一致。**作者选择保留原生手感。真要动，先问。**
+
 ---
 
 ## 2. 导航栏

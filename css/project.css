@@ -249,6 +249,19 @@ h2 .work-sub{
   .edge-media{aspect-ratio:16/9}
   .gallery-panel{padding:70px 16px 24px}
   .gallery-grid{grid-template-columns:repeat(2,1fr)}
+
+  /* 长篇正文的行高：桌面 2.4 是照着 1440px 宽栏定的（一行约 49 字），
+     手机 390px 一行只放得下约 25 字，同一个比值读起来就散了 ——
+     2026-10-07 实测：33.6px 行高、一屏 23 行，wwhbh 正文块 6790px ≈ 8 屏。
+     收到 2.0（28px）后正文块减 15%～16%，整页少滚 1.3～1.6 屏。
+     桌面一个字不动；站内页（about／changelog／404）与 riverrun 说明栏也不在范围内。
+     **选择器必须与原规则同形**：ecce 那条原规则是 `.ecce-text #ecce-desc`（id+class），
+     若顺手简写成裸 `#ecce-desc`，特异性低于原规则，这条覆盖会静默失效 ——
+     CDP 注入实测确认过（写成裸 id 时五个容器里只有它仍是 33.6px）。 */
+  .wwhbh-body p,
+  .ecce-text #ecce-desc,
+  .edge-body p,
+  .gallery-body p{line-height:2.0}
 }
 
 /* ===== MIXER layout (riverrun) ===== */
