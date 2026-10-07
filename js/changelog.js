@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-07',
       title: {
+        zh: '作品图片筛选：ecce-homo 从 40 张收到 8 张、wwhbh 从 24 张收到 6 张',
+        en: 'Photo curation: ECCE HOMO drops from 40 photos to 8, WE WILL HAVE BEEN HERE from 24 to 6'
+      },
+      brief: {
+        zh: 'ecce-homo 40→8、wwhbh 24→6；剔掉的 50 张从 git 删去，素材仍在历史',
+        en: 'ECCE HOMO 40 to 8 and WE WILL HAVE BEEN HERE 24 to 6; the 50 dropped photos leave git, their files recoverable from history.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-07',
+      title: {
         zh: '给 SPECTRAL DISSECTOR 补一份许可声明：站内信息栏一行 + 包内 LICENSE 与 README',
         en: 'A licence for SPECTRAL DISSECTOR: one info-bar row on the site, LICENSE and README inside the download'
       },

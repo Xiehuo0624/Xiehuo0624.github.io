@@ -348,7 +348,7 @@
         }
       }
       /* 现场剧照网格：**放在正文之后**（容器在 .ecce-text 之外），与画廊页同一信息结构，
-         这样 40 张不会把正文推到十几屏之后。 */
+         这样 8 张不会把正文推到十几屏之后。 */
       if (!mediaRendered) renderLive('ecce-live', project, t);
     }
     mediaRendered = true;

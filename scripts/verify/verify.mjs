@@ -209,8 +209,8 @@ const P = [
   { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'none', n: 0 },
   { id: 'edgedgedge',         layout: 'edge',    zh: 'EDGEDGEDGE',         en: 'EDGEDGEDGE',         media: 'iframe+live', n: 6 },
   { id: 'spectral-dissector', layout: 'ecce',    zh: 'SPECTRAL DISSECTOR', en: 'SPECTRAL DISSECTOR', media: 'img', n: 1 },
-  { id: 'ecce-homo',          layout: 'ecce',    zh: '瞧！这个人',          en: 'ECCE HOMO',          media: 'img+audio+live', n: 40 },
-  { id: 'wwhbh',              layout: 'wwhbh',   zh: '我们将会曾经在这里',   en: 'WE WILL HAVE BEEN HERE', media: 'live', n: 24 }
+  { id: 'ecce-homo',          layout: 'ecce',    zh: '瞧！这个人',          en: 'ECCE HOMO',          media: 'img+audio+live', n: 8 },
+  { id: 'wwhbh',              layout: 'wwhbh',   zh: '我们将会曾经在这里',   en: 'WE WILL HAVE BEEN HERE', media: 'live', n: 6 }
 ];
 
 console.log('=== 一、16 个生成页 ===');

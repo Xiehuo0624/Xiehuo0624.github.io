@@ -12,7 +12,7 @@
      这里也带意图预载：旧地址的语言按钮同样是**原地换语言**（它本来就不跳转），
      所以和生成页一样，中文字形要等 245KB 到了才画得对。只认按下／聚焦，不认掠过。 -->
 <script>
-(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;var fired=false;function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='css/fonts/SourceHanSansSC-Regular.woff2?v=477ef9ee';document.head.appendChild(f);}if(l==='zh'){pre();return;}document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);}catch(e){}})();
+(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='zh'||p==='en')?p:(localStorage.getItem('lang')||'en');if(l!=='zh'&&l!=='en')l='en';document.documentElement.dataset.lang=l;document.documentElement.lang=l;var fired=false;function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='css/fonts/SourceHanSansSC-Regular.woff2?v=91a7813d';document.head.appendChild(f);}if(l==='zh'){pre();return;}document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);}catch(e){}})();
 </script>
 <!-- /gen:legacy-only:lang -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -29,7 +29,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=40">
+<link rel="stylesheet" href="css/base.css?v=41">
 <link rel="stylesheet" href="css/nav.css?v=4">
 <link rel="stylesheet" href="css/project.css?v=15">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -46,7 +46,7 @@
      前提；之所以仍然保持同步，是为了与模板共用同一套加载策略，避免两份各自漂移。 -->
 <!-- /gen:legacy-only:sync -->
 <script src="js/app.js"></script>
-<script src="js/project-data.js?v=8"></script>
+<script src="js/project-data.js?v=9"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/i18n.js?v=7"></script>
 <script defer src="js/autospace.js"></script>
@@ -57,7 +57,7 @@
 <script defer src="js/ink-wwhbh.js?v=4"></script>
 <script defer src="js/audio-wwhbh.js?v=4"></script>
 <script defer src="js/mixer-riverrun.js?v=6"></script>
-<script defer src="js/project.js?v=15"></script>
+<script defer src="js/project.js?v=16"></script>
 </head>
 <body>
 

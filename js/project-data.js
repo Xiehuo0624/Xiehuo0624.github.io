@@ -100,23 +100,16 @@ App.projects = {
     title: { zh:'瞧！这个人', en:'ECCE HOMO' },
     brief: { zh:'与 Allen 共同创作的声音剧场作品，交织《圣经》与卡夫卡的文本', en:'A sound theatre piece co-created with Allen, interweaving Biblical and Kafkaesque texts' },
     desc: { file: true },
-    /* 2025.01.05「声东击西」（学术厅）的 40 张剧照：放在正文之后，交给 buildGalleryGrid，
-       与 6U104HP／edgedgedge 共用同一套网格与 Lightbox，所以这里只是纯 src 列表。
+    /* 2025.01.05「声东击西」（学术厅）的剧照：2026-10-07 作者从 40 张里筛出 8 张，
+       放在正文之后，交给 buildGalleryGrid，与 6U104HP／edgedgedge 共用同一套网格与
+       Lightbox，所以这里只是纯 src 列表。
        规格：1600px 长边、cwebp -q 80；原图 8192×5464、无 EXIF 方向，不入库。 */
     media: {
       type: 'image',
       src: 'img/ecce-homo-still.webp',
       photos: [
-        'img/ecce-homo-live-01.webp', 'img/ecce-homo-live-02.webp', 'img/ecce-homo-live-03.webp', 'img/ecce-homo-live-04.webp',
-        'img/ecce-homo-live-05.webp', 'img/ecce-homo-live-06.webp', 'img/ecce-homo-live-07.webp', 'img/ecce-homo-live-08.webp',
-        'img/ecce-homo-live-09.webp', 'img/ecce-homo-live-10.webp', 'img/ecce-homo-live-11.webp', 'img/ecce-homo-live-12.webp',
-        'img/ecce-homo-live-13.webp', 'img/ecce-homo-live-14.webp', 'img/ecce-homo-live-15.webp', 'img/ecce-homo-live-16.webp',
-        'img/ecce-homo-live-17.webp', 'img/ecce-homo-live-18.webp', 'img/ecce-homo-live-19.webp', 'img/ecce-homo-live-20.webp',
-        'img/ecce-homo-live-21.webp', 'img/ecce-homo-live-22.webp', 'img/ecce-homo-live-23.webp', 'img/ecce-homo-live-24.webp',
-        'img/ecce-homo-live-25.webp', 'img/ecce-homo-live-26.webp', 'img/ecce-homo-live-27.webp', 'img/ecce-homo-live-28.webp',
-        'img/ecce-homo-live-29.webp', 'img/ecce-homo-live-30.webp', 'img/ecce-homo-live-31.webp', 'img/ecce-homo-live-32.webp',
-        'img/ecce-homo-live-33.webp', 'img/ecce-homo-live-34.webp', 'img/ecce-homo-live-35.webp', 'img/ecce-homo-live-36.webp',
-        'img/ecce-homo-live-37.webp', 'img/ecce-homo-live-38.webp', 'img/ecce-homo-live-39.webp', 'img/ecce-homo-live-40.webp'
+        'img/ecce-homo-live-01.webp', 'img/ecce-homo-live-05.webp', 'img/ecce-homo-live-15.webp', 'img/ecce-homo-live-16.webp',
+        'img/ecce-homo-live-22.webp', 'img/ecce-homo-live-25.webp', 'img/ecce-homo-live-38.webp', 'img/ecce-homo-live-40.webp'
       ]
     },
     audio: 'audio/ecce-homo.m4a'
@@ -129,17 +122,14 @@ App.projects = {
     desc: { file: true },
     /* 2024.12.14「硬糖」@ Trigger（上海）那一场的现场资料：
        外录（房间）走顶层 audio —— 这件作品说的就是房间本身，内录另有留档；
-       24 张照片走 media.photos，交给 buildGalleryGrid，与画廊页共用网格与 Lightbox。
+       6 张照片（2026-10-07 从 24 张里筛出）走 media.photos，交给 buildGalleryGrid，
+       与画廊页共用网格与 Lightbox。
        U 盘上还有 C0001–C0006 六段机位视频，等作者上传 YouTube 后再接。 */
     audio: 'audio/wwhbh-live.m4a',
     media: {
       photos: [
-        'img/wwhbh-live-01.webp', 'img/wwhbh-live-02.webp', 'img/wwhbh-live-03.webp', 'img/wwhbh-live-04.webp',
-        'img/wwhbh-live-05.webp', 'img/wwhbh-live-06.webp', 'img/wwhbh-live-07.webp', 'img/wwhbh-live-08.webp',
-        'img/wwhbh-live-09.webp', 'img/wwhbh-live-10.webp', 'img/wwhbh-live-11.webp', 'img/wwhbh-live-12.webp',
-        'img/wwhbh-live-13.webp', 'img/wwhbh-live-14.webp', 'img/wwhbh-live-15.webp', 'img/wwhbh-live-16.webp',
-        'img/wwhbh-live-17.webp', 'img/wwhbh-live-18.webp', 'img/wwhbh-live-19.webp', 'img/wwhbh-live-20.webp',
-        'img/wwhbh-live-21.webp', 'img/wwhbh-live-22.webp', 'img/wwhbh-live-23.webp', 'img/wwhbh-live-24.webp'
+        'img/wwhbh-live-02.webp', 'img/wwhbh-live-03.webp', 'img/wwhbh-live-05.webp', 'img/wwhbh-live-19.webp', 'img/wwhbh-live-20.webp',
+        'img/wwhbh-live-23.webp'
       ]
     }
   }
