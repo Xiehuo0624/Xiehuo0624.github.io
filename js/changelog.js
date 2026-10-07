@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-07',
       title: {
+        zh: '给 SPECTRAL DISSECTOR 补一份许可声明：站内信息栏一行 + 包内 LICENSE 与 README',
+        en: 'A licence for SPECTRAL DISSECTOR: one info-bar row on the site, LICENSE and README inside the download'
+      },
+      brief: {
+        zh: '信息栏加「许可」行、包内加许可文件，包名去掉日期：免费使用（含商业作品），禁止再分发与转售',
+        en: 'An info-bar licence row and a licence file inside the package, whose name loses its date: free to use, even commercially; no redistribution or resale.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-07',
+      title: {
         zh: '给手机端行高补一条会失败的断言：防的是「改错了也不报错」',
         en: 'A failing assertion for the mobile line-height, so a silent regression cannot pass unnoticed'
       },
