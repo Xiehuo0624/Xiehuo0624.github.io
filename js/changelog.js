@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-10-07',
+      title: {
+        zh: '手机端墨层不再被地址栏拉伸与重建：高度锚在 100lvh，尺寸改读墨层盒子',
+        en: 'The ink layer stops stretching and rebuilding when the mobile URL bar collapses'
+      },
+      brief: {
+        zh: '手机地址栏收放不再拉伸墨层、不再洗掉累积的墨：高度锚在 100lvh，尺寸改读墨层盒子',
+        en: 'The mobile URL bar no longer stretches the ink layer or washes away the accumulated ink: its height is anchored to 100lvh and sizing reads the layer box.'
+      },
+      media: ''
+    },
+    {
       date: '2026-10-03',
       title: {
         zh: '思源没到时中文不再落到宋体：新增 CJKFallback 兜底层，Windows 上不再「先长一副衬线脸」',

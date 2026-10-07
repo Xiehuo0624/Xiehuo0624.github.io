@@ -96,7 +96,7 @@ if (!version) { console.error('Chrome 起不来'); process.exit(2); }
 const browser = await CDP.connect(version.webSocketDebuggerUrl);
 
 /* ---------- 访问一个页面并收集证据 ---------- */
-async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null } = {}) {
+async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null, motion = null } = {}) {
   /* 一个用例一个浏览器上下文：localStorage 天然是干净的，否则「本页有没有写 localStorage」
      会被上一页残留的偏好污染（同一 profile 共用存储）。 */
   const { browserContextId } = await browser.send('Target.createBrowserContext');
@@ -129,9 +129,14 @@ async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 
      那种「变了」在关掉变量化之后照样成立，验不出任何东西。 */
   /* scheme 一律**显式**给：'dark' 或 'light'。不能靠「不设就是浅色」——
      实测这条覆盖会漏到后续新建的目标上，浅色那几轮于是拿到深色值（首版踩到）。 */
-  if (scheme) {
-    await browser.send('Emulation.setEmulatedMedia',
-      { features: [{ name: 'prefers-color-scheme', value: scheme }] }, sessionId);
+  if (scheme || motion) {
+    /* 两条覆盖一起给：CDP 的 features 是**整份替换**，只给 motion 会把配色覆盖清掉。 */
+    const features = [];
+    if (scheme) features.push({ name: 'prefers-color-scheme', value: scheme });
+    /* headless Chrome 默认 prefers-reduced-motion:reduce，那一档下墨层按设计根本不启动
+       （js/ink-wwhbh.js 的 resume() 直接 return 并调 blank()），量到的会是一张空画布。 */
+    if (motion) features.push({ name: 'prefers-reduced-motion', value: motion });
+    await browser.send('Emulation.setEmulatedMedia', { features }, sessionId);
   }
   await browser.send('Page.enable', {}, sessionId);
   await browser.send('Runtime.enable', {}, sessionId);
@@ -1068,6 +1073,83 @@ console.log('=== 十四、深色模式：计算值断言（Emulation.setEmulated
     check(`Lightbox ${mode} 关闭键是白字`, g.close, 'rgb(255, 255, 255)');
     await v.close();
   }
+}
+
+/* ---------- 十五、wwhbh 墨层：高度锚在大视口，地址栏收放不重建 ---------- */
+console.log('=== 十五、wwhbh 墨层：高度锚在 lvh（手机地址栏收放不重建、不拉伸）===');
+{
+  /* 作者 2026-10-07 在 Android Chrome 上报的现象：滚动时「墨水被拉伸、或整体跳一下」。
+     成因有两层，都在**地址栏收放**上（滚动本身不动 fixed 层，这一点下面也断言了）：
+       ① 墨层原先靠 inset:0 取「当前视口」，地址栏一收放它立刻变高变矮，
+          而 canvas 的后备缓冲没变 —— 屏幕上就是整幅墨被纵向拉伸；
+       ② 紧接着 js/ink-wwhbh.js 的 350ms 防抖按新的 innerHeight 重算，
+          重建整张渗透率场、并把累积层清零 —— 画面跳一下、攒下来的墨全没。
+     修法两半，都在这里钉住：css/project.css 把高度写成 100lvh（大视口＝常量），
+     js/ink-wwhbh.js 的尺寸改读墨层盒子而不是 window.innerHeight。
+     本节断的是：规则里真的带 height:100lvh（声明被解析进 CSSOM，不是被丢掉）、
+     滚动后几何与画面都不动、**只改 innerHeight（＝手机上地址栏收放那一下）时
+     后备缓冲与墨像素指纹都不许变**。
+     注意：headless 没有浏览器 UI，这里 lvh 与 dvh 数值相同，所以「lvh 在真机上确实
+     不随地址栏变」这一点验不了 —— 那是规范保证（CSS Values 4 的 svh/lvh/dvh），
+     这条测试管的是**我们这边的两个机制**：尺寸取自盒子、且不再随 innerHeight 重建。 */
+  const v = await visit('/works/wwhbh/', { waitMs: 900, scheme: 'light', motion: 'no-preference' });
+  const g0 = await v.evaluate(`(function(){
+    let rule = null;
+    for (const ss of document.styleSheets){
+      try { for (const r of ss.cssRules){ if (r.selectorText === '.wwhbh-ink') rule = r.cssText; } } catch(e){}
+    }
+    return { rule: rule, supports: CSS.supports('height', '100lvh') };
+  })()`);
+  checkTrue('墨层规则带 height:100lvh', g0.rule && /height:\s*100lvh/.test(g0.rule));
+  checkTrue('本浏览器支持 lvh（不支持时该声明会被丢掉，下面的断言就失去意义）', g0.supports);
+
+  /* 把墨强制打开：探针带 --deny-permission-prompts，正常运行下墨根本不会长。
+     8 秒是留了余量的数 —— 起点在屏幕外左下，最近的可见像素归一化到达时刻约 0.05，
+     而一轮 90 秒；实测 3.5 秒（≈0.039 轮）时左下角已经有非零像素，这里取约两倍，
+     免得这条断言变成随机失败。 */
+  await v.evaluate(`(App.wwhbhInk.resume(true), 1)`);
+  await sleep(8000);
+  await v.evaluate(`(App.wwhbhInk.pause(), 1)`);   // 冻住：画面从此静态，指纹才可比
+  await sleep(300);
+
+  const SNAP = `(function(){
+    const host = document.getElementById('wwhbh-ink');
+    const cv = document.getElementById('wwhbh-ink-cv');
+    const r = host.getBoundingClientRect(), c = cv.getBoundingClientRect();
+    const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+    let sum = 0, hash = 0;
+    for (let p = 3; p < d.length; p += 4){ sum += d[p]; hash = (hash * 31 + d[p]) >>> 0; }
+    return { top: Math.round(r.top), hostH: Math.round(r.height), hostW: Math.round(r.width),
+             css: [Math.round(c.width), Math.round(c.height)], backing: [cv.width, cv.height],
+             inner: [innerWidth, innerHeight], sum: sum, hash: hash };
+  })()`;
+  const a = await v.evaluate(SNAP);
+  check('8 秒后左下角已上墨（alpha 和 > 0，否则下面比的是两张空画布）', a.sum > 0, true);
+
+  /* 滚动：fixed 层钉在视口上，几何与画面都不该动 */
+  await v.evaluate(`(window.scrollTo(0, 600), 1)`);
+  await sleep(600);
+  const b = await v.evaluate(SNAP);
+  check('滚动后墨层 top 仍是 0', b.top, 0);
+  check('滚动后墨层高／画布 CSS／后备缓冲', [b.hostH, b.css, b.backing], [a.hostH, a.css, a.backing]);
+  check('滚动后墨像素指纹', b.hash, a.hash);
+
+  /* 地址栏收放：只改 innerHeight（元素盒子不动），不许重栅格化、不许洗掉累积层。
+     innerHeight 是 window 自身的访问器属性，改完**必须把原描述符放回去**（不能 delete：
+     delete 会把整个属性删掉，页面后续读 innerHeight 直接 ReferenceError）。 */
+  const faked = await v.evaluate(`(function(){
+    window.__ihDesc = Object.getOwnPropertyDescriptor(window, 'innerHeight');
+    const real = window.innerHeight;
+    Object.defineProperty(window, 'innerHeight', { configurable: true, get: function(){ return real + 56; } });
+    window.dispatchEvent(new Event('resize'));
+    return window.innerHeight;
+  })()`);
+  await sleep(1200);                                // 防抖 350ms + 生成时间
+  const c = await v.evaluate(SNAP);
+  check('伪地址栏后 innerHeight（＝手机上收放那一下）', faked, a.inner[1] + 56);
+  check('伪地址栏后后备缓冲未变（没有重栅格化）', c.backing, a.backing);
+  check('伪地址栏后墨像素指纹未变（累积层保住）', c.hash, a.hash);
+  await v.close();
 }
 
 /* ---------- 汇总 ---------- */

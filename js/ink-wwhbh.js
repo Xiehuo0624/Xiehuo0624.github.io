@@ -63,6 +63,9 @@
  *
  * ── 交互 ──
  * position:fixed 铺满视口（不是文档），pointer-events:none 不挡选字与点击。
+ * 高度是 **100lvh**（大视口，常量）而不是当前视口 —— 手机地址栏收放改的是动态视口，
+ * 跟着它走的话滚动一次就会「整幅墨被拉伸 + 累积的墨被洗掉」。见 css/project.css
+ * 的 .wwhbh-ink 与下面 hostSize() 的注释。
  */
 (function(){
   /* ---------- 时间与尺度 ---------- */
@@ -214,6 +217,7 @@
   const SOAK      = 1.0;     // 每轮有多少比例永久留下
 
   let cv = null, ctx = null, img = null;
+  let host = null;           // #wwhbh-ink：尺寸以它的盒子为准，见 hostSize()
   let cw = 0, ch = 0, N = 0;
   let base = null;           // Float32Array(N)：渗进纸里的累积墨量（0..1），跨轮次保留
   let baseTmp = null;        // 扩散用的双缓冲（避免就地更新的方向偏置）
@@ -411,9 +415,22 @@
   }
 
   /* ---------- 画布尺寸 ---------- */
+  /* 视口尺寸取自**墨层元素自己的盒子**，不取 window.innerHeight。
+     手机地址栏收放会改 innerHeight（Android Chrome 约 56px），却改不了
+     css/project.css 里高度写着 100lvh 的那一层；照着 innerHeight 算，
+     滚动时（地址栏一收放）就会重建整张图、把累积的墨一起洗掉 ——
+     这正是作者在手机上看到的「跳一下」。
+     元素拿不到时退回 window，失败方向与改动前相同。 */
+  function hostSize(){
+    if (host){
+      const w = host.clientWidth, h = host.clientHeight;
+      if (w > 1 && h > 1) return { vw: w, vh: h };
+    }
+    return { vw: Math.max(1, window.innerWidth || 1), vh: Math.max(1, window.innerHeight || 1) };
+  }
   function resize(){
-    const vw = Math.max(1, window.innerWidth || 1);
-    const vh = Math.max(1, window.innerHeight || 1);
+    const s = hostSize();
+    const vw = s.vw, vh = s.vh;
     let w = Math.round(vw / SCALE);
     if (w < MIN_W) w = MIN_W;
     if (w > MAX_W) w = MAX_W;
@@ -712,6 +729,7 @@
 
   /* ---------- 对外 ---------- */
   function initCanvas(){
+    host = document.getElementById('wwhbh-ink');
     cv = document.getElementById('wwhbh-ink-cv');
     if (!cv || !cv.getContext) return false;
     ctx = cv.getContext('2d');
@@ -802,13 +820,15 @@
   }
 
   /* 改窗口尺寸：同一张图按新尺寸重新光栅化，不换种子（那不是「重新开始」）。
-     移动端地址栏收放会不停改 innerHeight，所以要挡住「只变了一点点高度」
-     的那种抖动 —— 否则滚动时每 350ms 就重做一次生成（含程函求解）。
+     尺寸读的是墨层盒子（hostSize），而它的高度是 100lvh —— 常量，
+     所以手机滚动时地址栏收放**不会再走到这里**（那正是本函数存在的理由之外的事）。
+     保留 350ms 防抖与 24px 抖动阈值，是给真实尺寸变化用的：
+     拖拽桌面窗口、旋转屏幕这类连续变化，光栅化一次就够。
      淡出层的数组是旧尺寸，尺寸一变就直接丢掉它（少见，且只影响一次淡出）。 */
   let rt = 0;
   function targetSize(){
-    const vw = Math.max(1, window.innerWidth || 1);
-    const vh = Math.max(1, window.innerHeight || 1);
+    const s = hostSize();
+    const vw = s.vw, vh = s.vh;
     let w = Math.round(vw / SCALE);
     if (w < MIN_W) w = MIN_W;
     if (w > MAX_W) w = MAX_W;
