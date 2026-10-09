@@ -243,7 +243,7 @@ for (const p of P) {
       panelVisible: getComputedStyle(document.querySelector('[id^="layout-"]')).display,
       imgs: document.querySelectorAll('[id$="-media"] img, .gallery-grid img').length,
       iframes: document.querySelectorAll('[id$="-media"] iframe').length,
-      audios: document.querySelectorAll('.work-audio').length,
+      audios: document.querySelectorAll('.work-audio, .ecce-audio').length,
       related: [...document.querySelectorAll('.project-related a')].map(a=>a.getAttribute('href')),
       srcdocTitle: document.querySelector('title').textContent
     })`);

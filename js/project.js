@@ -104,10 +104,12 @@
    *  网格交给 buildGalleryGrid，所以 Lightbox 的索引、翻页与计数与画廊页同源；
    *  容器在烤好的页面里是空的（没有 data-baked），因此这一块不吃 isBaked 的判断，
    *  由运行时补建。altBase 一般是作品名，后缀取自 i18n 的 livePhoto。 */
-  function renderLive(hostId, project, altBase){
+  function renderLive(hostId, project, altBase, opts){
     const host = document.getElementById(hostId);
     if (!host) return;
-    if (project.audio) {
+    /* opts.skipAudio：ecce 布局的音频已经在顶部剧照下面渲染过一次（.ecce-audio），
+       再在这里渲染就会出现两个播放器放同一个文件（2026-10-09 实测两页各两个）。 */
+    if (project.audio && !(opts && opts.skipAudio)) {
       const au = document.createElement('audio');
       au.className = 'work-audio';
       au.controls = true;
@@ -388,7 +390,7 @@
       }
       /* 现场剧照网格：**放在正文之后**（容器在 .ecce-text 之外），与画廊页同一信息结构，
          这样 8 张不会把正文推到十几屏之后。 */
-      if (!mediaRendered) renderLive('ecce-live', project, t);
+      if (!mediaRendered) renderLive('ecce-live', project, t, { skipAudio: true });
     }
     mediaRendered = true;
 

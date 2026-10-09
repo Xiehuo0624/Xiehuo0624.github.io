@@ -188,6 +188,9 @@ h2 .work-sub{
 .ecce-still{width:100%;max-width:800px;border-bottom:3px solid var(--rule);display:block}
 /* 现场资料块的音频：edge／ecce／wwhbh 三个布局共用 */
 .work-audio{width:100%;max-width:800px;display:block;margin:0 0 16px;padding:0}
+/* 顶部剧照下的音频（ecce 布局）：与 .work-audio 同宽。
+   原先没有这条规则，<audio> 吃浏览器默认的 300px 内在宽度，看上去"很短"（2026-10-09 实测 300 vs 709px）。 */
+.ecce-audio{width:100%;max-width:800px;display:block;margin:16px 0 0;padding:0}
 .ecce-text{padding:24px 0 0;max-width:800px;width:100%}
 .ecce-text #ecce-desc{line-height:2.4;font-size:14px;letter-spacing:0.5px}
 

@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: '修掉 ecce 布局作品页的两个播放器：顶层那个还只有 300px 宽',
+        en: 'One audio player per ecce page: the duplicate goes, and the first one fills the column'
+      },
+      brief: {
+        zh: '两个播放器变一个：ecce 页顶层那个补上宽度规则，现场块不再重复渲染',
+        en: 'Two players become one: the ecce audio gets a width rule, and the live block stops rendering a copy.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: '现场照片首次带图注：每张写清「哪一次、什么场合」',
         en: 'Live photographs get captions: which evening, which room'
       },
