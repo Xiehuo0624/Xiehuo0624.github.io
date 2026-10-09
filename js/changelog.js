@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: 'ecce-homo 技术介绍改写一句：阶段指示是总谱，不规定音高、只限定情绪',
+        en: 'ecce-homo: the stage cues are a score that fixes mood, not pitch'
+      },
+      brief: {
+        zh: 'ecce-homo 技术介绍末句改写：总谱不规定音高、只限定情绪（中英同步，破折号改省略号）',
+        en: 'ecce-homo\'s stage-cue sentence now fixes mood rather than pitch, in both languages.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: 'changelog 全文存档里三条正文被静默截断：脚本只读了第一个字面量',
         en: 'Three archived changelog bodies were silently truncated: the script read only the first literal'
       },
