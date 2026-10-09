@@ -21,7 +21,7 @@
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
 (function(){try{var fired=false;
-function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=91a7813d';document.head.appendChild(f);}
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=fa9bec44';document.head.appendChild(f);}
 if(document.documentElement.dataset.lang==='zh'){pre();return;}
 document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
 document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
@@ -51,7 +51,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=41">
+<link rel="stylesheet" href="css/base.css?v=42">
 <link rel="stylesheet" href="css/nav.css?v=4">
 <link rel="stylesheet" href="css/project.css?v=15">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -192,10 +192,6 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 
 <span class="work-sec">后完成</span>
 
-下面的笔记写于 2026 年 6 月；文中的日期行是写作日，不是创作时间（这件作品做于 2024 年）。
-
-<br><br>
-
 这个作品被我提交为大二上的期末作品，我在同时期与Allen共同创作了Ecce Homo。
 在期末答辩的时候，一位老师（令人难过的是，我在当时认为她是答辩老师中唯一一位可以理解和接受我的创作的老师）问我："你知道你的分数会很低的，对吧？"
 我回答说："我知道。"
@@ -258,6 +254,14 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <br><br>
 
 <span style="display:block;text-align:right">2026.06.15</span>
+
+<br><br>
+
+我一直以为这个作品是一件很令人悲伤的作品……无论是因为它的出发点还是它没有得到我所期待的理解和承认。但是实际上在整理演出照片的时候我才想起来那天我玩得很开心。也许很多事情没有必要那么感伤，也没有必要那么复杂……
+
+<br><br>
+
+<span style="display:block;text-align:right">2026.10.09</span>
 </p>
     <!-- 现场资料（录音 + 照片网格）：运行时由 renderLive 补建。
          放在正文之后；视频位留待作者上传 YouTube 后再接。 -->

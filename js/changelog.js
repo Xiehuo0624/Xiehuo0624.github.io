@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-10-09',
+      title: {
+        zh: 'wwhbh 的「后完成」补最后一则（2026.10.09），并删去开头那句阅读提示',
+        en: 'WE WILL HAVE BEEN HERE: a final postlude entry, and the reading note at its head goes'
+      },
+      brief: {
+        zh: '「后完成」补 2026.10.09 一则；删掉开头的阅读提示，信息栏已有创作年份',
+        en: 'A final postlude entry dated 2026.10.09; the reading note at its head goes, the info bar now carries the year.'
+      },
+      media: ''
+    },
+    {
       date: '2026-10-07',
       title: {
         zh: '作品图片筛选：ecce-homo 从 40 张收到 8 张、wwhbh 从 24 张收到 6 张',
