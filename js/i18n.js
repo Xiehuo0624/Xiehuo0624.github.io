@@ -197,6 +197,9 @@
    */
   App.COMMON_I18N = {
     back:       { zh:'[<- 返回]',    en:'[<- BACK]' },
+    /* 返回目标是作品列表时用这一条（js/nav.js 的 App.syncBackNav 选它）。
+       只对「从作品列表点进来的作品页」生效，见 js/nav.js 顶部那节注释。 */
+    backWorks:  { zh:'[<- 全部作品]', en:'[<- ALL WORKS]' },
     langToggle: { zh:'[en] English', en:'[zh] 中文' }
   };
   /* 四角署名（js/nav.js 的 .nav-top-right）保持汉字，不走 i18n：

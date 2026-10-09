@@ -331,6 +331,9 @@ h2 .work-sub{
 .lightbox img{
   max-width:92vw;max-height:88vh;
   object-fit:contain;
+  /* 点图片 = 下一张（js/project.js 的 lbOverlay click 分支，2026-10-09 加）：
+     没有 pointer 就没有任何「这里可以点」的暗示。 */
+  cursor:pointer;
 }
 .lightbox-nav{
   position:absolute;top:50%;transform:translateY(-50%);

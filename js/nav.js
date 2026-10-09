@@ -37,17 +37,67 @@ if (typeof App.projectHref !== 'function') {
   };
 }
 
+/* ===== 返回栏的目标：从作品列表点进来的作品页，返回回列表 =====
+ *
+ * 作者 2026-10-09 定：**只认「从作品列表点进来」**这一种来路，其余一律回首页。
+ * 判定用 document.referrer —— 实测（headless Chrome，本地与线上同构）从 /works/ 与
+ * /works/zh/ 点进作品页时 referrer 带完整路径，而且**刷新之后仍然保留**，所以不需要
+ * sessionStorage 之类的补强；referrer 被隐私设置抹掉、从外站或书签直接进来时为 ''，
+ * 返回栏维持指向首页（失败方向与今天完全一致）。线上响应头没有 Referrer-Policy，
+ * 浏览器默认策略下同源导航会带完整 URL。
+ *
+ * 只对**作品页**生效：`.back` 在站内页（作品列表/简介/进程日志/404）也指向首页，
+ * 今天没有「从作品列表点到那些页」的入口，但将来若加了，这里也不会突然改道。
+ * 作品页的判据是 <html data-layout> —— 只有 project-template.html 的绘制前脚本会挂它。
+ *
+ * 返回目标是**算出来的、不是写死的**：原地换语言后 App.syncBackNav() 会重算一遍，
+ * 于是「中文页面上点返回回到英文首页」与「切完语言返回仍指旧语言」一并解决。
+ * Esc 处理器读的就是这个链接的 href（见文件末尾），所以不要在别处另算一份地址。 */
+App.backTarget = function(){
+  const home = App.pageHref('index');
+  try {
+    if (!document.documentElement.hasAttribute('data-layout')) return home;
+    const r = document.referrer;
+    if (!r) return home;
+    const u = new URL(r);
+    if (u.origin !== location.origin) return home;
+    /* 目录式 /works/、/works/zh/，以及仍可用的旧地址 /works.html（中文旧地址还挂 ?lang=） */
+    if (/\/works\/(zh\/)?$/.test(u.pathname) || /\/works\.html$/.test(u.pathname)) {
+      return App.pageHref('works');
+    }
+  } catch(e) {}
+  return home;
+};
+
+/** 把返回栏的 href 与文案同步成 App.backTarget() 的结果。
+ *  文案：目标是作品列表时用 backWorks（「[<- 全部作品]」），否则回到 back（「[<- 返回]」）。
+ *  **不换 data-i18n 键** —— `[data-i18n="back"]` 同时被本文件末尾的 Esc 处理器与
+ *  js/project.js 的原地换语言逻辑当选择器用，换键会让那两处一起失灵。 */
+App.syncBackNav = function(){
+  const a = document.querySelector('.back a[data-i18n="back"]');
+  if (!a) return;
+  const target = App.backTarget();
+  const lang = (App.I18n && App.I18n.currentLang) || 'en';
+  const C = App.COMMON_I18N || {};
+  const entry = (target === App.pageHref('works')) ? C.backWorks : C.back;
+  a.setAttribute('href', target);
+  if (entry && entry[lang]) a.textContent = entry[lang];
+};
+
 /** 子页面：顶部全宽返回栏 + 语言切换
- *  生成页（/about/、/works/、/changelog/ 与作品页）把它静态烤在 HTML 里，爬虫才看得到
- *  「返回」与语言按钮；这种情况下本函数直接返回，不再重复创建。 */
+ *  站内页（/about/、/works/、/changelog/、404）的生成页把它静态烤在 HTML 里，爬虫才看得到
+ *  「返回」与语言按钮；这种情况下本函数不再重复创建，只把目标与文案同步一次。
+ *  **作品页的返回栏没有烤**（project-template.html 里没有这一段，生成器也不写），
+ *  它由 js/project.js 调用本函数在运行时插入 —— 所以无 JS 的读者在作品页看不到返回链接。 */
 App.renderBackNav = function() {
-  if (document.querySelector('.back')) return;
+  if (document.querySelector('.back')) { App.syncBackNav(); return; }
   const nav = document.createElement('div');
   nav.className = 'back';
   nav.innerHTML =
-    '<a href="' + App.pageHref('index') + '" data-i18n="back">[<- 返回]</a>' +
+    '<a href="' + App.backTarget() + '" data-i18n="back">[<- 返回]</a>' +
     '<a href="#" id="lang-toggle" data-i18n="langToggle">[en] English</a>';
   document.body.prepend(nav);
+  App.syncBackNav();
 };
 
 /** 首页：四角导航

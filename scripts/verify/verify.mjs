@@ -658,6 +658,72 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   await v.close();
 }
 
+/* ---------- 四之四、返回栏的目标：从作品列表点进作品页时回列表（2026-10-09 加）----------
+   判定用 document.referrer，所以这里必须**真的从列表页点进去** —— 程序化 location.href
+   与 Page.navigate 都不带 referrer，那种写法会永远走「回首页」那一支、测不到新逻辑。
+   实测：referrer 在刷新后仍然保留，因此不需要 sessionStorage 之类的补强。 */
+{
+  /* ① 从作品列表点进作品页 → 返回栏＝列表、文案＝「[<- 全部作品]」，Esc 跟着走 */
+  {
+    const v = await visit('/works/zh/', { waitMs: 1200 });
+    await v.evaluate(`(document.querySelector('.works-item').click(), 1)`);
+    await sleep(2200);
+    const nav = await v.evaluate(`(() => { const a = document.querySelector('.back a[data-i18n="back"]');
+      return { path: location.pathname, href: a && a.getAttribute('href'), text: a && a.textContent,
+               referrer: document.referrer }; })()`);
+    checkTrue('从列表点进作品页：referrer 就是作品列表', /\/works\/zh\/$/.test(nav.referrer));
+    check('返回栏目标是中文作品列表', nav.href, 'works/zh/');
+    check('返回栏文案换成「[<- 全部作品]」', nav.text, '[<- 全部作品]');
+    await v.evaluate(`(document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})), 1)`);
+    await sleep(1800);
+    check('作品页按 Esc → 落在作品列表（Esc 读的就是这个 href）',
+      await v.evaluate(`location.pathname`), '/works/zh/');
+    await v.close();
+  }
+  /* ② 直接打开（无来路）与从另一作品页跳过来 → 都回首页，文案回到「[<- 返回]」 */
+  {
+    const v = await visit('/works/riverrun/zh/', { waitMs: 1500 });
+    const nav = await v.evaluate(`(() => { const a = document.querySelector('.back a[data-i18n="back"]');
+      return { href: a && a.getAttribute('href'), text: a && a.textContent, referrer: document.referrer }; })()`);
+    check('直接打开作品页：referrer 为空', nav.referrer, '');
+    check('直接打开作品页：返回栏指向主页', nav.href, './zh/');
+    check('直接打开作品页：文案仍是「[<- 返回]」', nav.text, '[<- 返回]');
+    await v.close();
+  }
+  {
+    const v = await visit('/works/riverrun/zh/', { waitMs: 1500 });
+    await v.evaluate(`(document.querySelector('.project-related-link').click(), 1)`);
+    await sleep(2200);
+    const nav = await v.evaluate(`(() => { const a = document.querySelector('.back a[data-i18n="back"]');
+      return { href: a && a.getAttribute('href'), referrer: document.referrer }; })()`);
+    checkTrue('从另一作品页跳过来：referrer 是那件作品页', /\/works\/[^/]+\/zh\/$/.test(nav.referrer));
+    check('从另一作品页跳过来：返回栏仍指向主页（只认列表那一种来路）', nav.href, './zh/');
+    await v.close();
+  }
+  /* ③ 原地换语言：目标与文案都按新语言重算，来路不变 */
+  {
+    const v = await visit('/works/zh/', { waitMs: 1200 });
+    await v.evaluate(`(document.querySelector('.works-item').click(), 1)`);
+    await sleep(2200);
+    await v.evaluate(`(document.getElementById('lang-toggle').click(), 1)`);
+    await sleep(1000);
+    const nav = await v.evaluate(`(() => { const a = document.querySelector('.back a[data-i18n="back"]');
+      return { href: a && a.getAttribute('href'), text: a && a.textContent, lang: document.documentElement.lang }; })()`);
+    check('原地切成英文后：返回栏指向英文作品列表', nav.href, 'works/');
+    check('原地切成英文后：文案「[<- ALL WORKS]」', nav.text, '[<- ALL WORKS]');
+    await v.close();
+  }
+  /* ④ 站内页不受影响：规则只对作品页生效（作品列表也进不到简介页） */
+  {
+    const v = await visit('/about/zh/', { waitMs: 1200 });
+    const nav = await v.evaluate(`(() => { const a = document.querySelector('.back a[data-i18n="back"]');
+      return { href: a && a.getAttribute('href'), text: a && a.textContent }; })()`);
+    check('简介页返回栏仍指向主页', nav.href, './zh/');
+    check('简介页文案仍是「[<- 返回]」', nav.text, '[<- 返回]');
+    await v.close();
+  }
+}
+
 console.log('=== 五、/works/ 转发与 404 页 ===');
 {
   /* /works/ 曾经是转发到 /works.html 的薄壳，现在**它自己就是作品列表页**（英文规范地址） */
@@ -955,6 +1021,57 @@ console.log('=== 十一、Gallery Lightbox 位置指示 ===');
   })`);
   check('→ 之后计数 16 / 21', stepped.count, '16 / 21');
   check('→ 之后换到下一张', stepped.src, 'img/6u104hp-expo-5.webp');
+
+  /* ---- 滚轮 / 点图 / 触屏滑动切图（2026-10-09 加）----
+     滚轮手感照抄首页卡片栈：400ms 冷却 + 尖峰检测 —— 所以「连发 6 次」必须只走一张。
+     当前停在第 16 张（expo-5，索引 15），邻居是 expo-4 与 expo-6。 */
+  const lbCount = () => v.evaluate(`(document.querySelector('.lightbox-count')||{}).textContent`);
+  const lbSrc = () => v.evaluate(`((document.querySelector('.lightbox img')||{}).getAttribute('src')||'').split('/').pop()`);
+  const wheel = async (dy, n = 1, gap = 60) => {
+    for (let i = 0; i < n; i++) {
+      await v.raw('Input.dispatchMouseEvent', { type: 'mouseWheel', x: 720, y: 400, deltaX: 0, deltaY: dy });
+      await sleep(gap);
+    }
+  };
+
+  await sleep(500);                                   // 等上一次翻页的冷却过期
+  await wheel(120); await sleep(500);
+  check('滚轮下滚 → 下一张（17 / 21）', await lbCount(), '17 / 21');
+  check('滚轮下滚换的是下一张图', await lbSrc(), '6u104hp-expo-6.webp');
+  await sleep(500);
+  await wheel(-120); await sleep(500);
+  check('滚轮上滚 → 上一张（16 / 21）', await lbCount(), '16 / 21');
+  check('滚轮上滚换的是上一张图', await lbSrc(), '6u104hp-expo-5.webp');
+
+  await sleep(600);
+  await wheel(120, 6, 40); await sleep(700);          // 触控板惯性：6 个事件只该算一次
+  check('连发 6 次下滚只走一张（400ms 冷却 + 尖峰检测）', await lbCount(), '17 / 21');
+
+  await sleep(400);
+  await v.evaluate(`document.querySelector('.lightbox img').click()`);
+  await sleep(450);
+  check('点图片 → 下一张（18 / 21）', await lbCount(), '18 / 21');
+  check('点图片换的是下一张图', await lbSrc(), '6u104hp-expo-7.webp');
+
+  /* 触屏左右滑动：先开触摸模拟，再派发真实的 touch 序列 */
+  await v.raw('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+  const swipe = async dx => {
+    await v.raw('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 720, y: 400 }] });
+    await v.raw('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 720 + dx, y: 400 }] });
+    await v.raw('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await sleep(450);
+  };
+  await swipe(-90);
+  check('触屏左滑 → 下一张（19 / 21）', await lbCount(), '19 / 21');
+  await swipe(90);
+  check('触屏右滑 → 上一张（18 / 21）', await lbCount(), '18 / 21');
+
+  /* 预取：当前第 18 张（expo-7，索引 17）的邻居 16 / 18 都该已经进过网络 */
+  const pre = await v.evaluate(`performance.getEntriesByType('resource').map(e => e.name.split('/').pop())`);
+  checkTrue('相邻图已预取（expo-6 与 expo-8 都在资源条目里）',
+    pre.includes('6u104hp-expo-6.webp') && pre.includes('6u104hp-expo-8.webp'));
+  checkTrue('图片可点的暗示：.lightbox img 的 cursor 是 pointer',
+    (await v.evaluate(`getComputedStyle(document.querySelector('.lightbox img')).cursor`)) === 'pointer');
 
   // ESC 关闭
   await v.evaluate(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))`);

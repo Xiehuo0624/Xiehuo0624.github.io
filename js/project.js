@@ -38,6 +38,8 @@
   let lbImg = null;
   let lbCount = null;
   let lbCap = null;
+  /* 滚轮/点图/滑动切图的状态（2026-10-09 加）：与上面同样声明在这里，避免 TDZ */
+  let lbLastWheel = 0, lbPrevDelta = 0, lbLastImgClick = 0, lbTouchX = 0, lbTouchY = 0;
   let lbAlt = '';
 
   /** 分组标题。文字是可见内容，故登记下来，切语言时原地更新。 */
@@ -210,10 +212,16 @@
     /* <html data-lang> 只在脚本启动时被读一次，改它不影响本次运行；
        留着不改则是文档自己说了假话 —— lang 属性已经被 apply() 改成新语言了。 */
     root.dataset.lang = lang;
-    /* 返回栏的地址也带语言（'./' 与 './zh/'）。它由 js/nav.js 现生成，而 apply()
-       只换文字、不换 href —— 不同步就会「在中文页面上点返回，回到英文首页」。 */
-    const back = document.querySelector('.back a[data-i18n="back"]');
-    if (back) back.setAttribute('href', App.pageHref('index'));
+    /* 返回栏的地址与文案都由 js/nav.js 的 App.syncBackNav() 现算：它同时管语言
+       （'./' 与 './zh/'）与来路（从作品列表点进来时回列表）。apply() 只换 [data-i18n]
+       的文字、不换 href，所以这里必须补一次，否则「在中文页面上点返回，回到英文首页」。
+       **不要在这里自己算一遍地址** —— 两份真相迟早漂移。新旧 JS 混用（nav.js 还没更新）
+       时退回旧行为：写死首页。 */
+    if (typeof App.syncBackNav === 'function') App.syncBackNav();
+    else {
+      const back = document.querySelector('.back a[data-i18n="back"]');
+      if (back) back.setAttribute('href', App.pageHref('index'));
+    }
   }
 
   /* ---- 换语言时的滚动锚点：**按比例**（作者 2026-10-03 定）----
@@ -515,7 +523,32 @@
     });
   }
 
-  /* ---- Gallery lightbox ---- */
+  /* ---- Gallery lightbox ----
+     2026-10-09 补三种切图方式（作者定）：滚轮、点图片、触屏左右滑动。
+     滚轮的手感与首页卡片栈**完全一致**：400ms 冷却 + 尖峰检测 —— 触控板一次惯性会发
+     几十个 wheel 事件，没有冷却就会一滚到底（首页那套的判据是 currentDelta>40 且
+     「距上次 ≥1000ms 或增量还在变大」才算一次刻意滚动）。两处参数要改请一起改。 */
+  const LB_COOLDOWN_MS = 400;   // 与 js/index.js 的 COOLDOWN_MS 同值
+  const LB_SWIPE_PX = 50;       // 与首页卡片栈的翻牌阈值同值
+
+  /* 滚轮：下滚/右滚 = 下一张，与首页卡片栈同向；循环翻（lbStep 取模）。
+     preventDefault 是明确表态「不让事件外溢」—— 实测现状是滚轮被 body{overflow:hidden}
+     吞掉、既不动图也不滚页；Ctrl+滚轮留给浏览器缩放，不拦。 */
+  function lbWheel(e){
+    if (e.ctrlKey) return;
+    e.preventDefault();
+    if (!lbOverlay || !lbOverlay.classList.contains('open')) return;
+    const current = Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY));
+    const now = Date.now();
+    if (now - lbLastWheel < LB_COOLDOWN_MS) { lbPrevDelta = current; return; }
+    const isSpike = current > 40 && ((now - lbLastWheel) >= 1000 || current >= lbPrevDelta);
+    if (isSpike){
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      lbStep(delta > 0 ? 1 : -1);
+      lbLastWheel = now;
+    }
+    lbPrevDelta = current;
+  }
 
   function openLightbox(images, index, alt) {
     lbImages = images;
@@ -555,12 +588,32 @@
       lbOverlay.appendChild(lbCount);
       document.body.appendChild(lbOverlay);
 
+      /* 点空白关闭（不变）；**点图片 = 下一张**（2026-10-09 定）。
+         图片这条加 250ms 节流，双击不会跳两张；左右按钮不加节流（连点两下本就该走两张）。 */
       lbOverlay.addEventListener('click', e => {
         if (e.target === lbOverlay) closeLightbox();
+        else if (e.target === lbImg) {
+          const now = Date.now();
+          if (now - lbLastImgClick < 250) return;
+          lbLastImgClick = now;
+          lbStep(1);
+        }
       });
       prev.addEventListener('click', e => { e.stopPropagation(); lbStep(-1); });
       next.addEventListener('click', e => { e.stopPropagation(); lbStep(1); });
       close.addEventListener('click', closeLightbox);
+      lbOverlay.addEventListener('wheel', lbWheel, { passive: false });
+      /* 触屏左右滑动（触屏没有滚轮；左滑 = 下一张，与首页手势同向）。
+         阈值与首页同一个 50px；纵向为主的手势不动。 */
+      lbOverlay.addEventListener('touchstart', e => {
+        const t = e.touches[0]; lbTouchX = t.clientX; lbTouchY = t.clientY;
+      }, { passive: true });
+      lbOverlay.addEventListener('touchend', e => {
+        const t = e.changedTouches[0];
+        const dx = t.clientX - lbTouchX, dy = t.clientY - lbTouchY;
+        if (Math.abs(dx) < LB_SWIPE_PX && Math.abs(dy) < LB_SWIPE_PX) return;
+        if (Math.abs(dx) >= Math.abs(dy)) lbStep(dx < 0 ? 1 : -1);
+      }, { passive: true });
       document.addEventListener('keydown', lbKeyHandler);
     }
     lbShow();
@@ -570,6 +623,14 @@
 
   function lbShow() {
     lbImg.src = lbImages[lbIndex];
+    /* 预取相邻两张（2026-10-09 定）：滚轮/点图连翻时下一张已经在缓存里，不会空帧。
+       图集是环形的，所以两端也预取（末张的下一张就是第一张）。 */
+    if (lbImages.length > 1) {
+      [1, -1].forEach(d => {
+        const im = new Image();
+        im.src = lbImages[(lbIndex + d + lbImages.length) % lbImages.length];
+      });
+    }
     const cap = captionFor(lbImages[lbIndex]);
     const capText = (cap && cap[App.I18n.currentLang]) || '';
     lbImg.alt = capText || lbAlt;

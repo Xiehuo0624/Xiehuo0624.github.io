@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: '作品页返回回到来路（从全部作品进来就回列表）；Lightbox 可用滚轮、点图、滑动切图',
+        en: 'Work pages return to where you came from; the lightbox steps by wheel, click and swipe'
+      },
+      brief: {
+        zh: '作品页从「全部作品」进来时返回回列表；Lightbox 支持滚轮、点图、触屏滑动切图',
+        en: 'Work pages return to the works list when you came from it; the lightbox steps by wheel, click and swipe.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: '首页卡片：悬停出展签（作品名 + 年份 · 形态），点下层卡片改为置顶',
         en: 'Homepage cards: a hover label (name + year · type), and clicking a lower card brings it forward'
       },
