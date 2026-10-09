@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: '首页卡片：悬停出展签（作品名 + 年份 · 形态），点下层卡片改为置顶',
+        en: 'Homepage cards: a hover label (name + year · type), and clicking a lower card brings it forward'
+      },
+      brief: {
+        zh: '悬停任意卡片（含扇形窄条）在卡片下方出两行展签；点下层卡片改为把它置顶（原为翻一张）',
+        en: 'Hovering any card shows a two-line label below it; clicking a lower card brings it to the front.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: '展签（作品信息栏）统一成一套标准：上下各一条白线、线到文字 14px',
         en: 'One standard for the work info bar: a rule above and below, 14px to the text'
       },

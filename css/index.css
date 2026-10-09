@@ -24,7 +24,10 @@ body{
   position:absolute;width:100%;height:100%;
   border:3px solid var(--rule);background:var(--bg);
   cursor:pointer;
-  overflow:hidden;
+  /* overflow 由 hidden 改为 visible（2026-10-09）：卡片下方那层悬停展签要露出来。
+     card-image 是 object-fit:cover + inset:0，自己裁在自己的盒子里，不受影响
+     （2026-08-13「卡片标题」那版改过同一处，见 docs/首页卡片标题方案.md）。 */
+  overflow:visible;
   user-select:none;
 }
 
@@ -57,6 +60,45 @@ body{
   object-position:50% 72.5%;
 }
 
+/* ===== layer 3 — 悬停展签（2026-10-09 立）=====
+   悬停任意一张卡片（含扇形里露出的那道窄条）时，在**卡片下方**出现两行展签：
+   第一行作品名（复用卡片原有的 cardXxx i18n 键），第二行「年份 · 形态」（取自作品页信息栏）。
+   整块由 CSS 驱动，js/index.js 完全不参与 —— 徽标既不进 #stack 的 children（那是洗牌与翻牌
+   用的列表），也不吃指针（pointer-events:none）。
+
+   位置只能在卡片下方：放上方时下层卡片的展签会被顶层卡片的画面盖掉底边
+   （1440×900、8 张卡实测：第 4 张被盖 6px，最深一张约 15px —— 正好是下边框甚至整行事实）。
+   原因是卡片各自带着内联 z-index，各自成层叠上下文，子元素逃不出去。 */
+.card-label{
+  position:absolute;left:0;
+  /* 11 = 想要的外缘间距 8px + 卡片自身 3px 边框：绝对定位的包含块是卡片的 padding box，
+     写成 calc(100% + 8px) 实测只剩 5px。 */
+  top:calc(100% + 11px);
+  z-index:3;
+  display:none;                 /* 纯触摸设备整块不参与布局，见下面的 any-pointer */
+  flex-direction:column;gap:1px;
+  max-width:min(560px, calc(100vw - 40px));
+  padding:5px 9px;
+  background:var(--bg);color:var(--fg);
+  border:3px solid var(--rule);
+  font-size:12px;line-height:1.5;letter-spacing:.5px;
+  text-align:left;
+  pointer-events:none;
+  opacity:0;visibility:hidden;  /* 不可见时一并移出无障碍树 */
+  transition:opacity 90ms ease-out, visibility 0s linear 90ms;
+}
+/* 只有存在「精细指针」（鼠标／触控板）的设备才出现 */
+@media (any-pointer: fine){ .card-label{display:flex} }
+/* 进入：等 150ms 再淡入 —— 扫过扇形时不会一路闪牌；离开：90ms 立刻收掉 */
+.card:hover .card-label{
+  opacity:1;visibility:visible;
+  transition:opacity 90ms ease-out 150ms, visibility 0s linear 150ms;
+}
+.card-label-title{font-weight:700}
+.card-label-facts{color:var(--muted);font-size:11px}
+/* riverrun 这类小写作品名不在展签里被转成大写（卡片自己的 .card-fallback 同理） */
+.card.lowercase .card-label{text-transform:none}
+
 @media(max-width:768px){
   .stack-wrap{
     width:80vw;max-width:380px;
@@ -67,8 +109,11 @@ body{
   .card-fallback{font-size:16px;letter-spacing:1px}
   .card{border-width:2px}
   .card-image--justtype{object-position:50% 65%}
+  .card-label{font-size:11px;top:calc(100% + 9px)}   /* 移动端边框 2px，故 +9 = 间距 7 + 2 */
+  .card-label-facts{font-size:10px}
 }
 
 @media (prefers-reduced-motion: reduce){
   .card{transition:none !important}
+  .card-label,.card:hover .card-label{transition:none}
 }

@@ -16,7 +16,7 @@
 | 首页 8 张卡片封面（WebP） | 约 1.5 MB（以实际构建为准） | 全部首屏可见 |
 | `audio/ecce-homo.m4a` | **12 MB** | 仅 ecce-homo 项目页用 |
 | `audio/riverrun/1..12.m4a` | 约 **17 MB** | 仅 riverrun 页启动混音后按需拉流（`preload="metadata"`） |
-| `js/changelog.js`（内联数据） | 64 KB | 仅 changelog 页 |
+| `js/changelog.js`（内联数据） | 83 KB（82,901 字节；gzip 29 KB） | 仅 changelog 页，随条目增长（2026-10-09 实测） |
 | 单页 JS 总量 | 12–43 KB | 多个小文件，HTTP/2 下非瓶颈 |
 
 ### 2. 加载链路上的问题（优化前）

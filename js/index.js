@@ -204,7 +204,50 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
   /* 鼠标在窗口外松开时收不到 mouseup，兜底复位，避免光标卡在 grabbing */
   window.addEventListener('blur', endMouseDrag);
 
-  /* ---- CLICK ---- */
+  /* ---- BRING TO TOP：点下层卡片 → 把它置顶（2026-10-09 立）----
+     原先点下层卡片只是 nextCard() 翻一张，读不出「我点的是哪张」；现在把被点的那张
+     直接提到顶层（移到 DOM 末尾 = 视觉最上层），其余卡片往后让一格。
+
+     错峰「卡片优先」（作者在 tmp 里逐条比过七个候选后选定）：被点的这张立刻起步，
+     其余卡片延后 STAGGER_MS 再让位 —— 点下去那一下的响应感属于你点的那张。
+
+     FLIP 三步不能省：append 之后浏览器不把这次 transform 变化算作同一次过渡，
+     直接放开过渡会**瞬移**（实测采样：被点卡片 82ms 还在 x=47.14，151ms 已是 0）。
+     nextCard 没这问题，是因为它先把卡片移到屏幕外再重排，本来就该瞬间落位。 */
+  const STAGGER_MS = REDUCED_MOTION ? 0 : 120;
+
+  function bringToTop(card){
+    if(isAnimating || card === stack.lastElementChild) return;
+    isAnimating = true;
+
+    const old = card.style.transform;                 /* 它此刻的扇形偏移 */
+    [...stack.children].forEach(c => {
+      if(c !== card) c.style.transition = `transform ${ANIM_MS}ms ease-out ${STAGGER_MS}ms`;
+    });
+
+    stack.append(card);                               /* 移到 DOM 末尾 = 视觉最上层 */
+    reindex();
+
+    if(old){
+      card.style.transition = 'none';
+      card.style.transform = old;
+      void card.offsetHeight;                         /* 强制重排，让旧位置落定 */
+      card.style.transition = `transform ${ANIM_MS}ms ease-out`;
+      card.style.transform = 'translate(0px, 0px)';
+    }
+
+    setTimeout(() => {
+      [...stack.children].forEach(c => c.style.transition = 'none');
+      isAnimating = false;
+      /* 动画期间跨过 768px 断点或屏幕旋转时补跑一次（与 nextCard 同一套） */
+      if (reindexPending) { reindexPending = false; reindex(); }
+    }, ANIM_MS + STAGGER_MS);
+  }
+
+  /* ---- CLICK ----
+     顶层卡片 → 进作品页；下层卡片 → 把它置顶（不再是「翻一张」）。
+     拖拽收尾的那次 click 在第一行就被 suppressClick 丢弃，所以「拖过一下没到阈值」
+     既不会打开作品页、也不会顺手置顶。 */
   stack.addEventListener('click', e => {
     if(suppressClick){ suppressClick = false; return; }   // 拖拽收尾的 click 丢弃
     const card = e.target.closest('.card');
@@ -224,7 +267,7 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
           : card.dataset.href;
       if (href) window.location.href = href;
     } else {
-      nextCard();
+      bringToTop(card);
     }
   });
 

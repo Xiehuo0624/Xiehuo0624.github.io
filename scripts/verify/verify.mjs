@@ -172,6 +172,23 @@ async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 
 
   return {
     sessionId, path, net, consoleErrors, exceptions, clickError, evaluate: evaluate_,
+    /* 原始 CDP：悬停（:hover 才成立的展签）、置顶用的真实点击这类交互，程序化 .click()
+       与 evaluate 里改样式都验不到，必须派发真实鼠标事件。第十七节起开始用 Input 域。 */
+    raw: (method, params) => browser.send(method, params, sessionId),
+    async hoverAt(x, y, waitMs = 400) {
+      await browser.send('Input.dispatchMouseEvent',
+        { type: 'mouseMoved', x, y, button: 'none' }, sessionId);
+      await sleep(waitMs);
+    },
+    async clickAt(x, y) {
+      await browser.send('Input.dispatchMouseEvent',
+        { type: 'mouseMoved', x, y, button: 'none' }, sessionId);
+      await sleep(80);
+      await browser.send('Input.dispatchMouseEvent',
+        { type: 'mousePressed', x, y, button: 'left', clickCount: 1, buttons: 1 }, sessionId);
+      await browser.send('Input.dispatchMouseEvent',
+        { type: 'mouseReleased', x, y, button: 'left', clickCount: 1, buttons: 1 }, sessionId);
+    },
     async shot(name) {
       const { data } = await browser.send('Page.captureScreenshot', { format: 'png' }, sessionId);
       writeFileSync(join(SHOTS, name + '.png'), Buffer.from(data, 'base64'));
@@ -502,6 +519,142 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   await sleep(1500);
   const url = await v.evaluate('location.pathname');
   check(`中文界面点顶层卡片（${top}）→ 中文作品页`, url, `/works/${top}/zh/`);
+  await v.close();
+}
+
+/* ---------- 四之二、悬停展签（2026-10-09 加）----------
+   展签完全由 CSS 的 :hover 驱动，程序化 .click() 与 evaluate 里改样式都验不到：
+   必须派发**真实鼠标移动**，浏览器才会算出 :hover。 */
+{
+  const v = await visit('/index.html', { waitMs: 1500 });
+  const info = await v.evaluate(`(() => {
+    const cards = [...document.querySelectorAll('#stack .card')];
+    return {
+      cards: cards.length,
+      children: document.getElementById('stack').children.length,
+      labels: document.querySelectorAll('#stack .card > .card-label').length,
+      outerLabels: document.querySelectorAll('#stack > .card-label').length,
+      keys: cards.map(c => {
+        const t = c.querySelector('.card-label-title'), f = c.querySelector('.card-label-facts');
+        return c.dataset.project + '=' + (t ? t.dataset.i18n : '-') + '/' + (f ? f.dataset.i18n : '-');
+      }).sort()
+    };
+  })()`);
+  check('8 张卡片各带一层展签', info.labels, 8);
+  check('#stack 仍只有 8 个子元素（展签不能进洗牌与翻牌用的 children）', info.children, info.cards);
+  check('展签没有被放到 #stack 之下（会多出第 9 个「卡片」）', info.outerLabels, 0);
+  check('展签两行的 i18n 键逐张对应', info.keys, [
+    '6u104hp=card6u104hp/label6u104hp',
+    'ecce-homo=cardEcce/labelEcce',
+    'edgedgedge=cardEdgedgedge/labelEdgedgedge',
+    'riverrun=cardRiverrun/labelRiverrun',
+    'spectral-dissector=cardSpectral/labelSpectral',
+    'the-induction-mixer=cardFetMixer/labelFetMixer',
+    'the-just-type-study=cardJustType/labelJustType',
+    'wwhbh=cardWwbh/labelWwbh'
+  ]);
+
+  const idle = await v.evaluate(`(() => { const l = document.querySelector('#stack .card:last-child .card-label');
+    const cs = getComputedStyle(l); return cs.opacity + '/' + cs.visibility + '/' + cs.display; })()`);
+  check('未悬停时展签不可见', idle, '0/hidden/flex');
+
+  const topBox = await v.evaluate(`(() => { const r = document.querySelector('#stack .card:last-child').getBoundingClientRect();
+    return { x: Math.round(r.x + r.width / 2), y: Math.round(r.y + r.height / 2) }; })()`);
+  await v.raw('Input.dispatchMouseEvent', { type: 'mouseMoved', x: topBox.x, y: topBox.y, button: 'none' });
+  await sleep(60);
+  check('停留期内（60ms）展签还没出来', await v.evaluate(
+    `getComputedStyle(document.querySelector('#stack .card:last-child .card-label')).opacity`), '0');
+  await sleep(450);
+  const shown = await v.evaluate(`(() => {
+    const t = document.querySelector('#stack .card:last-child');
+    const on = [...document.querySelectorAll('#stack .card > .card-label')].filter(l => +getComputedStyle(l).opacity > 0.5);
+    return { n: on.length, mine: on.length === 1 && on[0].closest('.card') === t,
+             title: on[0] ? on[0].querySelector('.card-label-title').textContent : null,
+             cardText: t.querySelector('.card-fallback').textContent.trim(),
+             gap: on[0] ? Math.round(on[0].getBoundingClientRect().top - t.getBoundingClientRect().bottom) : null };
+  })()`);
+  check('悬停顶层：只有它的展签可见', shown.n, 1);
+  checkTrue('可见的展签属于顶层卡片', shown.mine);
+  check('展签首行与卡片自己的文字一致', shown.title, shown.cardText);
+  check('展签与卡片外缘间距 8px（top:calc(100% + 11px) 里含 3px 边框）', shown.gap, 8);
+
+  /* 窄条：第二张卡右缘那道约 15.7px 的竖条 —— 展签最有用的场景（只看得见一条图片边） */
+  const sliver = await v.evaluate(`(() => {
+    const k = [...document.querySelectorAll('#stack .card')], c = k[k.length - 2], r = c.getBoundingClientRect();
+    return { id: c.dataset.project, top: document.querySelector('#stack .card:last-child').dataset.project,
+             x: Math.round(r.right - 4), y: Math.round(r.y + r.height / 2) };
+  })()`);
+  await v.hoverAt(sliver.x, sliver.y, 500);
+  const onSliver = await v.evaluate(`(() => {
+    const on = [...document.querySelectorAll('#stack .card > .card-label')].filter(l => +getComputedStyle(l).opacity > 0.5);
+    return { n: on.length, id: on.length === 1 ? on[0].closest('.card').dataset.project : null };
+  })()`);
+  checkTrue('（那条窄条确实不属于顶层卡片，这条断言才有意义）', sliver.id !== sliver.top);
+  check('窄条悬停：也只出一层展签', onSliver.n, 1);
+  check('窄条悬停出的是那张卡自己的展签', onSliver.id, sliver.id);
+
+  /* 纯触摸设备：@media (any-pointer:fine) 不匹配 → 整块 display:none。
+     实测 CDP 的 setTouchEmulationEnabled 能真的把这条媒体查询翻过去
+     （默认 fine=true/display=flex，开触摸模拟后 fine=false/display=none）。 */
+  const vt = await visit('/index.html', { waitMs: 1200 });
+  await vt.raw('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+  await sleep(200);
+  const touch = await vt.evaluate(`(() => ({
+    fine: matchMedia('(any-pointer: fine)').matches,
+    display: getComputedStyle(document.querySelector('.card-label')).display
+  }))()`);
+  check('纯触摸设备：any-pointer:fine 不匹配、展签 display:none', [touch.fine, touch.display], [false, 'none']);
+  await vt.close();
+  await v.close();
+}
+
+/* ---------- 四之三、点击下层卡片 → 置顶（2026-10-09 加）----------
+   三道断言：动画中途不能是瞬移（FLIP 的回归网）、落定后它成为顶层且其余顺序不变、
+   按住拖过一下再松手（过 8px 臂、不到 50px 翻牌阈值）既不许置顶也不许翻牌。 */
+{
+  const v = await visit('/index.html', { waitMs: 1500 });
+  const t = await v.evaluate(`(() => {
+    const k = [...document.querySelectorAll('#stack .card')], c = k[k.length - 4], r = c.getBoundingClientRect();
+    return { id: c.dataset.project, order: k.map(x => x.dataset.project),
+             x: Math.round(r.right - 4), y: Math.round(r.y + r.height / 2) };
+  })()`);
+  await v.hoverAt(t.x, t.y, 150);
+  await v.raw('Input.dispatchMouseEvent', { type: 'mousePressed', x: t.x, y: t.y, button: 'left', clickCount: 1, buttons: 1 });
+  await v.raw('Input.dispatchMouseEvent', { type: 'mouseReleased', x: t.x, y: t.y, button: 'left', clickCount: 1, buttons: 1 });
+  await sleep(150);
+  const mid = await v.evaluate(`(() => {
+    const c = document.querySelector('#stack .card:last-child');
+    const m = /matrix\\(([-\\d.]+), 0, 0, ([\\d.]+), ([-\\d.]+), ([-\\d.]+)\\)/.exec(getComputedStyle(c).transform);
+    return m ? { x: Math.round(parseFloat(m[3])), y: Math.round(parseFloat(m[4])) } : null;
+  })()`);
+  checkTrue('置顶动画中途还在半路（不是瞬移；FLIP 回归网）',
+    mid && (Math.abs(mid.x) > 2 || Math.abs(mid.y) > 1));
+  await sleep(1000);
+  const after = await v.evaluate(`(() => {
+    const k = [...document.querySelectorAll('#stack .card')], top = k[k.length - 1];
+    return { top: top.dataset.project, z: top.style.zIndex, transform: top.style.transform,
+             order: k.map(c => c.dataset.project) };
+  })()`);
+  check('点击下层卡片 → 它成为顶层', after.top, t.id);
+  check('置顶后 z-index = 8', after.z, '8');
+  check('置顶后回到栈中心（transform 归零）', after.transform, 'translate(0px, 0px)');
+  check('其余 7 张相对顺序逐字不变', after.order.filter(x => x !== t.id), t.order.filter(x => x !== t.id));
+  await v.close();
+}
+{
+  const v = await visit('/index.html', { waitMs: 1500 });
+  const t = await v.evaluate(`(() => {
+    const k = [...document.querySelectorAll('#stack .card')], c = k[k.length - 4], r = c.getBoundingClientRect();
+    return { id: c.dataset.project, order: k.map(x => x.dataset.project),
+             x: Math.round(r.right - 4), y: Math.round(r.y + r.height / 2) };
+  })()`);
+  await v.raw('Input.dispatchMouseEvent', { type: 'mouseMoved', x: t.x, y: t.y, button: 'none' });
+  await v.raw('Input.dispatchMouseEvent', { type: 'mousePressed', x: t.x, y: t.y, button: 'left', clickCount: 1, buttons: 1 });
+  await v.raw('Input.dispatchMouseEvent', { type: 'mouseMoved', x: t.x - 30, y: t.y, button: 'left', buttons: 1 });
+  await v.raw('Input.dispatchMouseEvent', { type: 'mouseReleased', x: t.x - 30, y: t.y, button: 'left', clickCount: 1, buttons: 1 });
+  await sleep(900);
+  const after = await v.evaluate(`[...document.querySelectorAll('#stack .card')].map(c => c.dataset.project)`);
+  check('按住拖 30px 再松手：既不置顶也不翻牌（顺序逐字不变）', after, t.order);
   await v.close();
 }
 
@@ -1020,7 +1173,9 @@ console.log('=== 十四、深色模式：计算值断言（Emulation.setEmulated
      首版就栽在这里：五个只有下边框的页面全红，而四边都有边框的三页（首页卡片、
      .btn-mic、.mixer-stage）正常 —— 现象本身就指向这个口径。 */
   const PAGES = [
-    ['/',                 '首页',        '.card',            'borderTopColor',    null],
+    /* 首页那处次要文字原先传 null；2026-10-09 起展签的事实行就是首页唯一的 --muted 文字，
+       于是顺手把它纳入：展签在深色下也必须仍是 #888（--muted 不随配色反义）。 */
+    ['/',                 '首页',        '.card',            'borderTopColor',    '.card-label-facts'],
     ['/works/',           '作品列表',     '.works-page h1',   'borderBottomColor', '.works-brief'],
     ['/about/',           '简介',        '.bio h1',          'borderBottomColor', null],
     ['/changelog/',       '进程日志',     '.changelog-title', 'borderBottomColor', '.date'],
@@ -1237,6 +1392,57 @@ console.log('=== 十六、移动端正文行高：手机 2.0（28px）、桌面�
   })()`);
   check('About 页正文没被顺手统一（行高比仍是 1.9）', a, 1.9);
   await va.close();
+}
+
+/* ---------- 十七、首页展签：逐张对应 + 年份与作品页信息栏一致（静态比对） ----------
+   展签的事实行是「年份 · 形态」，从作品页信息栏抄来。形态是人工压短的（有些作品的形态在
+   信息栏里是一整句，例如 wwhbh），没法机器比对；**年份可以**，而年份正是最容易漂的那项
+   （作品页改了创作年份、首页展签不会自己跟着变）。这里逐件拆出两边的年份串比一遍。
+   静态读文件即可，不需要浏览器 —— 放在最后，与第十二节同一路数。 */
+console.log('=== 十七、首页展签：8 张逐张对应，年份与 data/<id>/*.html 逐字一致 ===');
+{
+  const idx = readFileSync(join(ROOT, 'index.html'), 'utf8');
+  const i18n = readFileSync(join(ROOT, 'js', 'index-i18n.js'), 'utf8');
+
+  /* 按卡片切开 index.html：切点写成正则 `<div class="card"` 或 `<div class="card `（后者是
+     riverrun 那张带 lowercase 的）—— 写成 '<div class="card' 会把展签那一层
+     '<div class="card-label"' 也切开，于是多出 8 段没有 data-project 的假卡片。 */
+  const cards = idx.split(/<div class="card(?:"| )/).slice(1).map(ch => ({
+    id:        (ch.match(/data-project="([^"]+)"/) || [])[1] || null,
+    titleKey:  (ch.match(/card-label-title" data-i18n="([A-Za-z0-9_]+)"/) || [])[1] || null,
+    factsKey:  (ch.match(/card-label-facts" data-i18n="([A-Za-z0-9_]+)"/) || [])[1] || null,
+    fallback:  (ch.match(/card-fallback" data-i18n="([A-Za-z0-9_]+)"/) || [])[1] || null
+  }));
+
+  check('解析到 8 张卡片', cards.length, 8);
+  check('每张卡片都带展签的两个键', cards.filter(c => c.titleKey && c.factsKey).length, 8);
+  check('展签标题行与卡片兜底文字共用同一个键（不另抄一份文案）',
+    cards.filter(c => c.titleKey === c.fallback).length, 8);
+  check('8 个展签事实键互不重复', new Set(cards.map(c => c.factsKey)).size, 8);
+
+  /* 信息栏第一行是「创作年份／Year」，第二行是「形态／Type」（STYLEGUIDE §7 的固定八行顺序） */
+  const metaYear = (id, lang) => {
+    const t = readFileSync(join(ROOT, 'data', id, lang + '.html'), 'utf8');
+    const m = t.match(/<span class="work-meta-k">(?:创作年份|Year)<\/span><span class="work-meta-v">([^<]*)</);
+    return m ? m[1].trim() : null;
+  };
+  /* 展签里「年份 · 形态」，年份就是第一个分隔符之前那段 */
+  const labelYear = (key, lang) => {
+    const m = i18n.match(new RegExp(key + ":\\s*\\{[^}]*?" + lang + ":'([^']*)'"));
+    return m ? m[1].split(' · ')[0].trim() : null;
+  };
+
+  const bad = [];
+  let pairs = 0;
+  for (const c of cards) {
+    for (const lang of ['zh', 'en']) {
+      const want = metaYear(c.id, lang), got = labelYear(c.factsKey, lang);
+      pairs++;
+      if (!want || want !== got) bad.push(`${c.id} ${lang}: 展签「${got}」≠ 信息栏「${want}」`);
+    }
+  }
+  check('8 件 × 中英 = 16 处年份都能解析出来', pairs, 16);
+  check('16 处年份与作品页信息栏逐字一致', bad, []);
 }
 
 /* ---------- 汇总 ---------- */

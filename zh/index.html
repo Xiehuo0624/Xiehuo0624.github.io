@@ -11,7 +11,7 @@
 <script>
 /* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
    预载 URL 由 mainFontHref() 从 css/base.css 现读，不在这里硬编码版本号。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=01929e93';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=1cdf093a';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>泻火 曹浩轩</title>
@@ -47,9 +47,9 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=43">
+<link rel="stylesheet" href="css/base.css?v=44">
 <link rel="stylesheet" href="css/nav.css?v=4">
-<link rel="stylesheet" href="css/index.css?v=5">
+<link rel="stylesheet" href="css/index.css?v=6">
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/app.js"></script>
 <script defer src="js/i18n.js?v=7"></script>
@@ -57,8 +57,8 @@
 <script defer src="js/nav.js?v=6"></script>
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic -->
-<script defer src="js/index-i18n.js?v=2"></script>
-<script defer src="js/index.js?v=5"></script>
+<script defer src="js/index-i18n.js?v=3"></script>
+<script defer src="js/index.js?v=6"></script>
 </head>
 <body>
 
@@ -76,37 +76,74 @@
      只在「新 HTML 配旧缓存 app.js（缺 App.projectHref）」的新旧混用窗口里兜底 ——
      JS 缓存 4 小时而 HTML 只有 600 秒，这个窗口是真实存在的（见 js/nav.js 顶部注释）。
      不要删 data-href，也不要以它为准。 -->
+<!-- 每张卡片三层：card-fallback（文字兜底）／card-label（悬停展签，2026-10-09 加）／card-image（封面）。
+     展签是卡片的子元素，所以它跟着卡片一起位移、在翻牌与置顶时不会掉队；
+     样式见 css/index.css 的 .card-label，位置固定在卡片下方（上方会被顶层卡片的画面盖住底边）。
+     展签的两个 span 各有自己的 data-i18n 键：标题行复用卡片原有的 cardXxx 键（不另抄一份），
+     事实行是 labelXxx（年份 · 形态，取自作品页信息栏；年份有 verify 静态比对兜着）。 -->
 <div class="stack-wrap" id="stack">
   <div class="card" data-project="the-just-type-study" data-href="project-template.html?project=the-just-type-study">
     <div class="card-fallback" data-i18n="cardJustType">The JustType Study</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardJustType">The JustType Study</span>
+      <span class="card-label-facts" data-i18n="labelJustType">2026 · Eurorack 模块合成器系统设计与一次 Live Set</span>
+    </div>
     <img class="card-image card-image--justtype" src="img/the-just-type-study.webp" alt="The JustType Study" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-project="the-induction-mixer" data-href="project-template.html?project=the-induction-mixer">
     <div class="card-fallback" data-i18n="cardFetMixer">THE INDUCTION MIXER</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardFetMixer">THE INDUCTION MIXER</span>
+      <span class="card-label-facts" data-i18n="labelFetMixer">2025–2026 · 空间混音器 / 可演奏的电子乐器</span>
+    </div>
     <img class="card-image" src="img/the-induction-mixer.webp" alt="THE INDUCTION MIXER" decoding="async" fetchpriority="high">
   </div>
   <div class="card lowercase" data-project="riverrun" data-href="project-template.html?project=riverrun">
     <div class="card-fallback" data-i18n="cardRiverrun">riverrun</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardRiverrun">riverrun</span>
+      <span class="card-label-facts" data-i18n="labelRiverrun">2026 · 交互式声音作品</span>
+    </div>
     <img class="card-image" src="img/riverrun.webp" alt="riverrun" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-project="edgedgedge" data-href="project-template.html?project=edgedgedge">
     <div class="card-fallback" data-i18n="cardEdgedgedge">EDGEDGEDGE</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardEdgedgedge">EDGEDGEDGE</span>
+      <span class="card-label-facts" data-i18n="labelEdgedgedge">2025 · 回授声音演出，两名演奏员</span>
+    </div>
     <img class="card-image" src="img/edgedgedge.webp" alt="EDGEDGEDGE" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-project="spectral-dissector" data-href="project-template.html?project=spectral-dissector">
     <div class="card-fallback" data-i18n="cardSpectral">SPECTRAL DISSECTOR</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardSpectral">SPECTRAL DISSECTOR</span>
+      <span class="card-label-facts" data-i18n="labelSpectral">2025–2026 · Max for Live 插件：基频、谐波、瞬态与噪音分离</span>
+    </div>
     <img class="card-image" src="img/spectral-dissector.webp" alt="SPECTRAL DISSECTOR" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-project="ecce-homo" data-href="project-template.html?project=ecce-homo">
     <div class="card-fallback" data-i18n="cardEcce">瞧！这个人</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardEcce">瞧！这个人</span>
+      <span class="card-label-facts" data-i18n="labelEcce">2024 · 半即兴的声音剧场，两位表演者</span>
+    </div>
     <img class="card-image" src="img/ecce-homo.webp" alt="ECCE HOMO" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-project="wwhbh" data-href="project-template.html?project=wwhbh">
     <div class="card-fallback" data-i18n="cardWwbh">我们将会曾经在这里</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="cardWwbh">我们将会曾经在这里</span>
+      <span class="card-label-facts" data-i18n="labelWwbh">2024 · 麦克风—扬声器回授的声音概念</span>
+    </div>
     <img class="card-image" src="img/wwhbh.webp" alt="We Will Have Been Here" decoding="async" fetchpriority="high">
   </div>
   <div class="card" data-project="6u104hp" data-href="project-template.html?project=6u104hp">
     <div class="card-fallback" data-i18n="card6u104hp">6U104HP</div>
+    <div class="card-label" aria-hidden="true">
+      <span class="card-label-title" data-i18n="card6u104hp">6U104HP</span>
+      <span class="card-label-facts" data-i18n="label6u104hp">2023–2025 · 铝合金 Eurorack 电源箱，在售产品</span>
+    </div>
     <img class="card-image" src="img/6u104hp.webp" alt="6U104HP" decoding="async" fetchpriority="high">
   </div>
 </div>
