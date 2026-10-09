@@ -445,7 +445,11 @@ function renderPage({ template, app, origin, id, lang }) {
   if (p.layout === 'ecce') {
     let inner = '';
     if (media && media.type === 'image') {
-      inner += `<img class="ecce-still" src="${attr(media.src)}" alt="${attr(title)}" decoding="async" fetchpriority="high">`;
+      /* crop:'card' —— 顶部图沿用首页卡片封面那套裁切（The JustType Study）。
+         类名与 css/project.css 的 .ecce-still--card 对应；运行时那条分支（js/project.js）
+         只在没烤入时跑，所以这一处必须一起改，否则内页永远拿不到这个类。 */
+      const stillCls = 'ecce-still' + (media.crop === 'card' ? ' ecce-still--card' : '');
+      inner += `<img class="${stillCls}" src="${attr(media.src)}" alt="${attr(title)}" decoding="async" fetchpriority="high">`;
     }
     if (p.audio) {
       inner += `<audio class="ecce-audio" controls preload="none" src="${attr(p.audio)}"></audio>`;

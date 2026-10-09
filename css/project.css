@@ -186,6 +186,9 @@ h2 .work-sub{
 .ecce-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
 .ecce-panel>h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;align-self:flex-start;max-width:800px;width:100%}
 .ecce-still{width:100%;max-width:800px;border-bottom:3px solid var(--rule);display:block}
+/* 顶部图按首页卡片封面的裁切（cover + 50% 72.5%）：同一张照片在两处看起来是同一个构图。
+   数值必须与 css/index.css 的 .card-image--justtype 一致（那里是卡片框 460×300）。 */
+.ecce-still--card{aspect-ratio:460/300;object-fit:cover;object-position:50% 72.5%}
 /* 现场资料块的音频：edge／ecce／wwhbh 三个布局共用 */
 .work-audio{width:100%;max-width:800px;display:block;margin:0 0 16px;padding:0}
 /* 顶部剧照下的音频（ecce 布局）：与 .work-audio 同宽。

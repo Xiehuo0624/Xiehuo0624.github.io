@@ -45,6 +45,10 @@ App.projects = {
        两张剧照从 21 秒现场录像里抽帧。三张都走 buildGalleryGrid，图注见 App.imageCaptions。 */
     media: {
       type: 'image',
+      /* crop: 'card' —— 顶部这张与首页卡片封面是同一张照片（卡片用 img/the-just-type-study.webp，
+         1200×901；这里是 1600×1201 的同构图）。作者 2026-10-09 定：内页也用卡片那套裁切
+         （cover + object-position 50% 72.5%），见 css/project.css 的 .ecce-still--card。 */
+      crop: 'card',
       src: 'img/the-just-type-study-still.webp',
       photos: [
         'img/the-just-type-study-cedarland-poster.webp',

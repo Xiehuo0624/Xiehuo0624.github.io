@@ -371,7 +371,8 @@
           mediaEl.innerHTML = '';
           if (project.media && project.media.type === 'image') {
             const img = document.createElement('img');
-            img.className = 'ecce-still';
+            /* crop:'card' 的作品（目前只有 The JustType Study）：顶部图沿用首页卡片封面那套裁切。 */
+            img.className = 'ecce-still' + (project.media.crop === 'card' ? ' ecce-still--card' : '');
             img.src = project.media.src;
             img.alt = t;
             img.decoding = 'async';

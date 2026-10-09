@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: 'The JustType Study 内页顶部图改用首页卡片那套裁切',
+        en: 'The JustType Study page adopts the homepage card crop for its top image'
+      },
+      brief: {
+        zh: '内页顶部图与首页卡片封面同一张照片：沿用卡片的 cover + 50% 72.5% 裁切',
+        en: 'The page top image is the card photograph: it now uses the card crop, cover at 50% 72.5%.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: '修掉 ecce 布局作品页的两个播放器：顶层那个还只有 300px 宽',
         en: 'One audio player per ecce page: the duplicate goes, and the first one fills the column'
       },
