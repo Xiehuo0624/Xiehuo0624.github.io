@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: '展签（作品信息栏）统一成一套标准：上下各一条白线、线到文字 14px',
+        en: 'One standard for the work info bar: a rule above and below, 14px to the text'
+      },
+      brief: {
+        zh: '展签统一成一套标准：上下各一条白线、线到文字 14px、下白线到正文 32px（以 6U104HP 为准）',
+        en: 'The info bar gets one standard: a rule above and below, 14px to the text, 32px to the body.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: 'SPECTRAL DISSECTOR 的首图与展签之间补上间距：14px → 40px',
         en: 'Breathing room between the top image and the info bar: 14px becomes 40px'
       },

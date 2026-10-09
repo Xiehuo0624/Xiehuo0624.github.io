@@ -1025,7 +1025,9 @@ console.log('=== 十四、深色模式：计算值断言（Emulation.setEmulated
     ['/about/',           '简介',        '.bio h1',          'borderBottomColor', null],
     ['/changelog/',       '进程日志',     '.changelog-title', 'borderBottomColor', '.date'],
     ['/works/6u104hp/',   'gallery 布局', '.gallery-body h2', 'borderBottomColor', '.work-meta-k'],
-    ['/works/ecce-homo/', 'ecce 布局',    '.ecce-still',      'borderBottomColor', '.work-meta-k'],
+    /* 2026-10-09 展签统一标准：ecce 布局的那条 3px 硬边从「顶部图的下边框」改成
+       「展签（信息栏）的上边框」——图片不再画线，线归展签。断言跟着挪到新位置。 */
+    ['/works/ecce-homo/', 'ecce 布局',    '.work-meta',       'borderTopColor',    '.work-meta-k'],
     ['/works/wwhbh/',     'wwhbh 布局',   '.btn-mic',         'borderTopColor',    '.work-meta-k'],
     ['/works/riverrun/',  'mixer 布局',   '.mixer-stage',     'borderTopColor',    '.work-meta-k'],
   ];

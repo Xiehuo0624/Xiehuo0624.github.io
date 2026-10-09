@@ -38,8 +38,9 @@
   grid-template-columns:88px 1fr;
   gap:3px 14px;
   margin:0 0 32px;
+  border-top:3px solid var(--rule);
   border-bottom:3px solid var(--rule);
-  padding:0 0 14px;
+  padding:14px 0 14px;
   font-size:12.5px;
   line-height:1.7;
   letter-spacing:0.5px;
@@ -64,11 +65,6 @@
    的 padding-top，而不是 h2 的 margin-bottom。**与 .work-meta 的 padding-bottom
    成对修改**（桌面 14 / 移动 12），改一个就要改另一个。 */
 .ecce-text:has(#ecce-desc > .work-meta){padding-top:14px}
-/* 首图与展签之间**没有音频**时（目前只有 SPECTRAL DISSECTOR），14px 太挤：图片的下边框
-   与展签的下边框只隔 14px，读起来像两条挤在一起的线。另外两页（just-type／ecce-homo）
-   中间夹着音频播放器，实测实际留白 84px。这里只给"没有音频"的这一种情况多留一些。
-   数值改这一行即可；2026-10-09 由作者提出，先取 40px。 */
-.ecce-media:not(:has(.ecce-audio)) + .ecce-text:has(#ecce-desc > .work-meta){padding-top:40px}
 
 /* 正文里的分节小标题 */
 .work-sec{display:block;font-weight:700;margin-bottom:8px}
@@ -118,9 +114,21 @@ h2 .work-sub{
 /* mixer 布局的描述栏只有 380px 宽（css 同文件 .mixer-desc），
    信息栏的 88px 标签列在这里太占位，收窄到 68px。 */
 .mixer-desc .work-meta{grid-template-columns:68px 1fr;gap:3px 10px}
+/* 展签统一标准（2026-10-09，以 6U104HP 为准）：上下各一条 3px 白线、线到文字 14px、
+   下白线到正文 32px。上面这四处的「上白线」由别人提供 —— info-area／gallery-body／
+   edge-body 是标题 h2 的下边框（margin-bottom 14px），mixer-desc 是面板自己的边框
+   （padding-top 14px）。所以它们里面的展签不再自带上边框，否则会出现两条平行线。 */
+.info-area .work-meta,
+.gallery-body .work-meta,
+.edge-body .work-meta,
+.mixer-desc .work-meta{border-top:none;padding-top:0}
 
 @media(max-width:768px){
-  .work-meta{grid-template-columns:72px 1fr;gap:3px 10px;margin-bottom:24px;padding:0 0 12px;font-size:12px}
+  .work-meta{grid-template-columns:72px 1fr;gap:3px 10px;margin-bottom:24px;padding:12px 0 12px;font-size:12px}
+  .info-area .work-meta,
+  .gallery-body .work-meta,
+  .edge-body .work-meta,
+  .mixer-desc .work-meta{padding-top:0}
   /* 与信息栏移动端的 padding-bottom（12px）配套，见上 */
   .info-area h2:has(+ #grid-desc > .work-meta),
   .gallery-body h2:has(+ #gallery-desc > .work-meta),
@@ -172,7 +180,7 @@ h2 .work-sub{
 /* 麦克风状态与控制：紧贴标题下方。
    页面加载即自动申请权限，这里显示 申请中／待点击／聆听中／被拒／不可用。
    状态行占据剩余宽度，按钮只在其有意义时（重试／关闭）出现且为自适应宽度。 */
-.wwhbh-mic{display:flex;align-items:center;gap:16px;margin:-14px 0 32px;min-height:34px}
+.wwhbh-mic{display:flex;align-items:center;gap:16px;margin:-14px 0 14px;min-height:34px}
 .wwhbh-status{margin:0;flex:1;font-size:13px;letter-spacing:1px;color:var(--muted);line-height:1.5}
 .wwhbh-status.on{color:var(--fg);font-weight:700}
 /* 待点击时整行可点（浏览器自动播放策略要求至少一次用户手势） */
@@ -190,7 +198,7 @@ h2 .work-sub{
 /* ===== ECCE HOMO layout ===== */
 .ecce-panel{display:none;flex-direction:column;align-items:center;padding:80px 40px 40px}
 .ecce-panel>h2{font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;align-self:flex-start;max-width:800px;width:100%}
-.ecce-still{width:100%;max-width:800px;border-bottom:3px solid var(--rule);display:block}
+.ecce-still{width:100%;max-width:800px;display:block}
 /* 顶部图按首页卡片封面的裁切（cover + 50% 72.5%）：同一张照片在两处看起来是同一个构图。
    数值必须与 css/index.css 的 .card-image--justtype 一致（那里是卡片框 460×300）。 */
 .ecce-still--card{aspect-ratio:460/300;object-fit:cover;object-position:50% 72.5%}
@@ -206,7 +214,7 @@ h2 .work-sub{
 .tt-wrap{width:100%;margin:8px 0 0;line-height:1.5}
 .tt-block{font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace;font-size:13px;line-height:1.7;white-space:pre;overflow-x:auto;background:var(--surface-code);color:var(--fg);padding:16px 18px;border:1px solid var(--code-rule);border-radius:6px;box-shadow:0 1px 3px rgba(var(--fg-rgb),0.06);margin:0 0 16px}
 .tt-block .tt-h{font-weight:700}
-.tt-download{display:inline-block;margin-top:4px;font-size:13px;letter-spacing:0.5px;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--rule)}
+.tt-download{display:inline-block;margin-top:0;font-size:13px;letter-spacing:0.5px;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--rule)}
 .tt-download:hover{background:var(--fg);color:var(--bg)}
 
 /* ===== EDGE layout ===== */
@@ -255,12 +263,11 @@ h2 .work-sub{
   .info-area{padding:20px 16px}
   .info-area h2{font-size:16px}
   .wwhbh-panel{padding:70px 16px 24px}
-  .wwhbh-mic{gap:10px;margin:-10px 0 24px;min-height:30px}
+  .wwhbh-mic{gap:10px;margin:-10px 0 12px;min-height:30px}
   .wwhbh-status{font-size:12px}
   .wwhbh-mic .btn-mic{padding:7px 12px;font-size:11px}
   .ecce-panel{padding:70px 16px 24px}
   .ecce-text:has(#ecce-desc > .work-meta){padding-top:12px}
-  .ecce-media:not(:has(.ecce-audio)) + .ecce-text:has(#ecce-desc > .work-meta){padding-top:28px}
   .edge-panel{padding:70px 16px 24px}
   .edge-media{aspect-ratio:16/9}
   .gallery-panel{padding:70px 16px 24px}
