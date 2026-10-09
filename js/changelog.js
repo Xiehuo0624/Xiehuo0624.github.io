@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: 'SPECTRAL DISSECTOR 的首图与展签之间补上间距：14px → 40px',
+        en: 'Breathing room between the top image and the info bar: 14px becomes 40px'
+      },
+      brief: {
+        zh: '首图与展签之间没有音频时补间距：14px → 40px（移动 28px），另两页不动',
+        en: 'Where no audio sits between image and info bar, the gap grows from 14px to 40px.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: '两张界面图改由作者自己在 tmp 裁切工具里框选；新增那个工具',
         en: 'Both interface shots are cropped by the author in a local tool, which is new here'
       },

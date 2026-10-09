@@ -64,6 +64,11 @@
    的 padding-top，而不是 h2 的 margin-bottom。**与 .work-meta 的 padding-bottom
    成对修改**（桌面 14 / 移动 12），改一个就要改另一个。 */
 .ecce-text:has(#ecce-desc > .work-meta){padding-top:14px}
+/* 首图与展签之间**没有音频**时（目前只有 SPECTRAL DISSECTOR），14px 太挤：图片的下边框
+   与展签的下边框只隔 14px，读起来像两条挤在一起的线。另外两页（just-type／ecce-homo）
+   中间夹着音频播放器，实测实际留白 84px。这里只给"没有音频"的这一种情况多留一些。
+   数值改这一行即可；2026-10-09 由作者提出，先取 40px。 */
+.ecce-media:not(:has(.ecce-audio)) + .ecce-text:has(#ecce-desc > .work-meta){padding-top:40px}
 
 /* 正文里的分节小标题 */
 .work-sec{display:block;font-weight:700;margin-bottom:8px}
@@ -255,6 +260,7 @@ h2 .work-sub{
   .wwhbh-mic .btn-mic{padding:7px 12px;font-size:11px}
   .ecce-panel{padding:70px 16px 24px}
   .ecce-text:has(#ecce-desc > .work-meta){padding-top:12px}
+  .ecce-media:not(:has(.ecce-audio)) + .ecce-text:has(#ecce-desc > .work-meta){padding-top:28px}
   .edge-panel{padding:70px 16px 24px}
   .edge-media{aspect-ratio:16/9}
   .gallery-panel{padding:70px 16px 24px}
