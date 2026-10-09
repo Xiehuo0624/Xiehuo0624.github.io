@@ -25,7 +25,9 @@
  *   ① 定位 `const entries = [` 到数组结尾的 `];`，按大括号配对切出每个条目对象
  *   ② 每条读 `date` → `title: { zh, en }` → 可选的 `body: { zh, en }`
  *   ③ 字符串按 JS 单引号字面量的规则反转义（`\n` → 真换行、`\'` → `'`、
- *      `\\` → `\`），所以产出与浏览器里渲染出来的文字一致
+ *      `\\` → `\`），所以产出与浏览器里渲染出来的文字一致。**`'a' + 'b'` 这种拼接
+ *      写法同样支持**（readExpr 会把整段表达式读完）；遇到模板字面量、变量一类不认识的
+ *      写法直接报错退出 —— 只读第一个字面量会把全文静默截断，2026-10-09 踩到过）
  *   ④ 每条一节写进 docs/工程决策记录.md，顺序与数组一致（最新在前）
  * 因此它对格式差异免疫：早期条目写成 `body:  { zh: '…', en: '…' }`（两个空格、
  * en 同行），晚期写成多行，两种都能抓。
@@ -65,6 +67,36 @@ function skipWs(src, i) {
  * 从 src[i]（必须是单引号）读一个单引号字符串字面量。
  * 返回 { value, end }：value 是反转义后的文本，end 是闭引号之后的下标。
  */
+/** 读一个「字符串表达式」：单引号字面量，或用 `+` 拼起来的多个字面量。
+ *
+ *  为什么要支持拼接：正文常用
+ *        body: { zh: '① …'
+ *                 + '② …', en: '…' }
+ *  这种写法排版更好读。**只读第一个字面量会静默截断全文** —— 2026-10-09 实测踩到过：
+ *  三条 1200–1500 字的正文，在存档里只剩第一句（58–253 字），而且不报任何错。
+ *
+ *  因此本函数做两件事：① 把 `+` 连接的字面量全部读完、拼成一个字符串；
+ *  ② 读完最后一个字面量之后，下一个非空白字符必须是 `,` 或 `}` ——
+ *  否则说明这里用上了脚本不认识的东西（模板字面量、变量、函数调用……），
+ *  当场报错退出，绝不产出一份被截断的存档。 */
+function readExpr(src, i) {
+  let out = '';
+  for (;;) {
+    const s = readString(src, i);
+    out += s.value;
+    i = skipWs(src, s.end);
+    if (src[i] !== '+') {
+      if (src[i] !== ',' && src[i] !== '}') {
+        throw new Error(
+          `第 ${i} 字符处的字符串表达式没读完（只认识单引号字面量与 + 拼接，` +
+          `拼接的每一段都必须是单引号字面量）：${JSON.stringify(src.slice(i, i + 30))}`);
+      }
+      return { value: out, end: s.end };
+    }
+    i = skipWs(src, i + 1);
+  }
+}
+
 function readString(src, i) {
   i = skipWs(src, i);
   if (src[i] !== "'") throw new Error(`第 ${i} 字符不是字符串开头：${JSON.stringify(src.slice(i, i + 30))}`);
@@ -172,10 +204,10 @@ function extractEntries(src) {
     if (!titleAt) throw new Error(`${date.value} 这条没有 title`);
     const titleZhAt = findKey(t, titleAt.colonEnd, t.length, 'zh');
     if (!titleZhAt) throw new Error(`${date.value} 这条的 title 没有 zh`);
-    const titleZh = readString(t, titleZhAt.colonEnd);
+    const titleZh = readExpr(t, titleZhAt.colonEnd);
     const titleEnAt = findKey(t, titleZh.end, t.length, 'en');
     if (!titleEnAt) throw new Error(`${date.value} 这条的 title 没有 en`);
-    const titleEn = readString(t, titleEnAt.colonEnd);
+    const titleEn = readExpr(t, titleEnAt.colonEnd);
     if (!titleZh.value.trim() || !titleEn.value.trim()) throw new Error(`${date.value} 这条的 title 有空串`);
 
     /* body 是可选的：新条目先写全文，压成 brief 之后就只剩 brief */
@@ -185,10 +217,10 @@ function extractEntries(src) {
     if (bodyAt) {
       const bodyZhAt = findKey(t, bodyAt.colonEnd, t.length, 'zh');
       if (!bodyZhAt) throw new Error(`${date.value} 这条的 body 没有 zh`);
-      const zh = readString(t, bodyZhAt.colonEnd);
+      const zh = readExpr(t, bodyZhAt.colonEnd);
       const bodyEnAt = findKey(t, zh.end, t.length, 'en');
       if (!bodyEnAt) throw new Error(`${date.value} 这条的 body 没有 en`);
-      const en = readString(t, bodyEnAt.colonEnd);
+      const en = readExpr(t, bodyEnAt.colonEnd);
       if (!zh.value.trim() || !en.value.trim()) throw new Error(`${date.value} 这条的 body 有空串`);
       bodyZh = zh.value.trim();
       bodyEn = en.value.trim();

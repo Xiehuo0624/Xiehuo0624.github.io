@@ -17,6 +17,30 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: 'changelog 全文存档里三条正文被静默截断：脚本只读了第一个字面量',
+        en: 'Three archived changelog bodies were silently truncated: the script read only the first literal'
+      },
+      brief: {
+        zh: '全文存档三条正文被静默截断：split 脚本只读第一个字面量，已修并复原',
+        en: 'Three archived bodies were silently truncated by the split script; fixed and restored.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
+        zh: '作品页的返回栏与语言按钮烤进静态 HTML：不跑 JS 也走得出作品页',
+        en: 'The back bar and language switch are baked into work pages: navigation without JS'
+      },
+      brief: {
+        zh: '作品页返回栏与语言按钮改由生成器烤进 16 个生成页，不跑 JS 也有 2 个站内链接',
+        en: 'Work pages bake the back bar and language switch, so no-JS visitors get two internal links.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: '作品页返回回到来路（从全部作品进来就回列表）；Lightbox 可用滚轮、点图、滑动切图',
         en: 'Work pages return to where you came from; the lightbox steps by wheel, click and swipe'
       },

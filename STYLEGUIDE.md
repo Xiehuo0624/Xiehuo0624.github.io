@@ -86,7 +86,7 @@
 | 交互 | hover → 黑底白字 | 同左 |
 | 文字选择 / 拖拽 | 禁用：`user-select:none` + `-webkit-user-drag:none`（五个导航容器统一，见 `css/nav.css`），`js/nav.js` 的 `dragstart` 兜底 Firefox。导航文字是 UI 标签而非可复制正文；若不禁用链接拖拽，在 `[en] English` / `[zh] 中文` 上按下鼠标只要移动几像素就进入链接拖拽手势，`mouseup` 不再派发 `click`，表现为「点字切不了语言，只是在拖」 | 同左 |
 | 键盘 | `Esc` = 点击「返回」。目标**现读该链接的 `href`**，不在 JS 里重算地址 —— 返回栏的三种地址写法（生成页带 `<base>`、手写模板相对地址、旧地址带 `?lang=`）因此自动正确，按钮修好快捷键跟着好。首页没有返回栏故不响应；Lightbox 打开时先关它、本次按键不跳页（`Esc` 逐层退出，见 §7e-补）。实现见 `js/nav.js` 末尾，取舍见 `程序编写说明.md` §11.1b | 同左（外接键盘；不另做触屏入口，触屏本来就有返回按钮） |
-| 返回目标（2026-10-09 立） | **从作品列表点进来的作品页 → 回作品列表；其余一律回首页。** 判定用 `document.referrer`（同源、路径为 `/works/`、`/works/zh/` 或旧地址 `/works.html`），实测刷新后仍保留，故不需要 sessionStorage；referrer 为空（书签/外站/隐私设置）时回首页——与改动前一致。目标与文案都由 `js/nav.js` 的 `App.syncBackNav()` 现算（目标＝`App.pageHref('works')` 或 `App.pageHref('index')`，按**当前语言**），所以原地换语言后两者一起跟着变，`Esc` 因读 `href` 而自动跟随。**规则只对作品页生效**（判据 `<html data-layout>`）：作品列表/简介/进程日志/404 的返回栏一律指首页。文案在目标是列表时换成 `backWorks`（`[<- 全部作品]`／`[<- ALL WORKS]`），**不换 `data-i18n` 键**——`[data-i18n="back"]` 同时是 Esc 与 `js/project.js` 的选择器 | 同左 |
+| 返回目标（2026-10-09 立） | **从作品列表点进来的作品页 → 回作品列表；其余一律回首页。** 判定用 `document.referrer`（同源、路径为 `/works/`、`/works/zh/` 或旧地址 `/works.html`），实测刷新后仍保留，故不需要 sessionStorage；referrer 为空（书签/外站/隐私设置）时回首页——与改动前一致。目标与文案都由 `js/nav.js` 的 `App.syncBackNav()` 现算（目标＝`App.pageHref('works')` 或 `App.pageHref('index')`，按**当前语言**），所以原地换语言后两者一起跟着变，`Esc` 因读 `href` 而自动跟随。**规则只对作品页生效**（判据 `<html data-layout>`）：作品列表/简介/进程日志/404 的返回栏一律指首页。文案在目标是列表时换成 `backWorks`（`[<- 全部作品]`／`[<- ALL WORKS]`），**不换 `data-i18n` 键**——`[data-i18n="back"]` 同时是 Esc 与 `js/project.js` 的选择器。**这条栏本身烤在生成页里**（站内页由 `gen-pages.mjs` 的 `bakeBackNav()`、作品页由 `gen-projects.mjs` 的 `backBar()`，静态默认目标是主页），所以不跑 JS 的读者与抓取者也看得到「返回」与语言按钮；只有五个旧地址模板由 `js/nav.js` 在运行时插入 | 同左 |
 
 ### 首页导航（四角布局）
 
@@ -752,7 +752,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 项 | 规则 |
 |----|------|
 | 为什么生成 | 一个模板 + 客户端路由的代价是**服务器返回的 HTML 里没有作品内容**：`<title>` 是 `PROJECT`、正文是「[ 演示视频 / 硬件照片 ]」样板，不执行 JS 的抓取者（微信／X／Slack 链接预览、搜索引擎）看到的是空模板，八个作品共用一个标题、全站 0 处 `og:*`。生成是把内容写死在 HTML 里，而不是要求抓取者去跑 JS |
-| 生成什么 | `<html>` 的 `data-lang`／`data-project`／`data-layout`；`<title>`；当前布局 `<h2>` 的标题与副标题；正文容器（片段内容 + `data-desc-lang`）；主图或 YouTube 内嵌页（`data-baked="1"`）；`description`／`canonical`／`hreflang`／`og:*`／`twitter:card` |
+| 生成什么 | `<html>` 的 `data-lang`／`data-project`／`data-layout`；`<title>`；当前布局 `<h2>` 的标题与副标题；正文容器（片段内容 + `data-desc-lang`）；主图或 YouTube 内嵌页（`data-baked="1"`）；**顶部返回栏**（返回 + 语言按钮，`data-baked="1"`，2026-10-09 加 —— 此前它只在运行时插入，不跑 JS 时作品页 0 个站内链接；href 为 `./`／`./zh/`，运行时再按来路升级，见 §2「返回目标」）；`description`／`canonical`／`hreflang`／`og:*`／`twitter:card` |
 | 剪枝 | 未使用的五个布局面板连同其注释一并删除 —— 不剪的话样板文案与另外五个布局的控件仍会留在 HTML 里。剪枝后自检：只剩一个面板、`<div>` 配平 |
 | 不生成什么 | Gallery 的图片仍由 `js/project.js` 渲染（要配灯箱绑定）；语言切换仍走 fetch 回退 |
 | 脚本剪枝 | 只被个别布局用到的脚本按布局剪掉：`js/ink-wwhbh.js`（40KB）与 `js/audio-wwhbh.js`（6KB）只在 wwhbh 布局挂、`js/mixer-riverrun.js`（35KB）只在 mixer 布局挂 —— 八个作品里六个用不到，未压缩合计约 81KB。`js/project.js` 只在 projectId／layout 匹配时才调用对应 `App.init*`，剪掉不会抛错。**旧地址 `project-template.html` 保持全挂**（它要承载所有布局） |

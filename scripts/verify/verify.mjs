@@ -724,6 +724,52 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   }
 }
 
+/* ---------- 四之五、作品页返回栏烤进静态 HTML（无 JS 也看得到，2026-10-09 加）----------
+   此前返回栏只由 js/project.js 在运行时插入，于是不跑 JS 的作品页**一个站内链接都没有**
+   （实测 links=0，正文文字倒是在）。现在由 scripts/gen-projects.mjs 与站内页同一套烤法写进
+   16 个生成页；运行时 renderBackNav() 见到 .back 已存在就不再创建，只按来路升级目标。 */
+{
+  const L = [['en', './', 'BACK'], ['zh', './zh/', '返回']];
+  const bad = [];
+  let bars = 0;
+  for (const { id } of P) {
+    for (const [lang, href, label] of L) {
+      const rel = `works/${id}/${lang === 'zh' ? 'zh/' : ''}index.html`;
+      const html = readFileSync(join(ROOT, rel), 'utf8');
+      const found = html.match(/<div class="back" data-baked="1">/g) || [];
+      bars += found.length;
+      const want = `<a href="${href}" data-i18n="back">[&lt;- ${label}]</a>`;
+      if (found.length !== 1 || !html.includes(want)) {
+        bad.push(`${rel}：返回栏 ${found.length} 处，锚点${html.includes(want) ? '在' : '缺失'}`);
+      }
+    }
+  }
+  check('16 个作品页各含恰好一处烤好的返回栏', bars, 16);
+  check('16 页的返回栏 href 与文案逐页正确（./ 与 ./zh/）', bad, []);
+
+  /* 不跑 JS：返回 + 语言切换两个链接都得在（此前是 0 个） */
+  const v = await visit('/works/riverrun/zh/', { noJs: true, waitMs: 800 });
+  const info = await v.evaluate(`(() => {
+    const back = document.querySelector('.back a[data-i18n="back"]');
+    return { links: document.querySelectorAll('a[href]').length,
+             backText: back && back.textContent, backAbs: back && back.href,
+             toggle: !!document.querySelector('#lang-toggle'),
+             hasText: document.body.innerText.includes('作品简介') };
+  })()`);
+  check('无 JS 的作品页有 2 个站内链接（返回 + 语言切换）', info.links, 2);
+  check('无 JS 时返回文案是「[<- 返回]」', info.backText, '[<- 返回]');
+  checkTrue('无 JS 时返回指向该语言的主页', /\/zh\/$/.test(info.backAbs || ''));
+  checkTrue('无 JS 时语言按钮也在', info.toggle);
+  checkTrue('无 JS 时正文仍在（与返回栏一起构成可读可走）', info.hasText);
+  await v.close();
+
+  /* 跑 JS 之后不许出现第二处（renderBackNav 见到 .back 就早返回） */
+  const v2 = await visit('/works/riverrun/zh/', { waitMs: 1200 });
+  check('跑 JS 后返回栏仍只有一处（不重复创建）',
+    await v2.evaluate(`document.querySelectorAll('.back').length`), 1);
+  await v2.close();
+}
+
 console.log('=== 五、/works/ 转发与 404 页 ===');
 {
   /* /works/ 曾经是转发到 /works.html 的薄壳，现在**它自己就是作品列表页**（英文规范地址） */

@@ -85,10 +85,13 @@ App.syncBackNav = function(){
 };
 
 /** 子页面：顶部全宽返回栏 + 语言切换
- *  站内页（/about/、/works/、/changelog/、404）的生成页把它静态烤在 HTML 里，爬虫才看得到
- *  「返回」与语言按钮；这种情况下本函数不再重复创建，只把目标与文案同步一次。
- *  **作品页的返回栏没有烤**（project-template.html 里没有这一段，生成器也不写），
- *  它由 js/project.js 调用本函数在运行时插入 —— 所以无 JS 的读者在作品页看不到返回链接。 */
+ *  六类页面都把它**静态烤在 HTML 里**，不跑 JS 的读者与爬虫才看得到「返回」与语言按钮：
+ *    · 站内页（/works/、/about/、/changelog/）—— 由 scripts/gen-pages.mjs 的 bakeBackNav()
+ *    · 作品页（16 个）—— 由 scripts/gen-projects.mjs 的 backBar()（2026-10-09 加；
+ *      在那之前作品页的返回栏只在运行时插入，于是无 JS 时一个站内链接都没有）
+ *  已存在时本函数不再重复创建，只调 App.syncBackNav() 按来路与语言把目标与文案同步一次。
+ *  旧地址模板（works.html／about.html／changelog.html／project-template.html／404.html）
+ *  没有烤，它们仍由本函数在运行时插入。 */
 App.renderBackNav = function() {
   if (document.querySelector('.back')) { App.syncBackNav(); return; }
   const nav = document.createElement('div');

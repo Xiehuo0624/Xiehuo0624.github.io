@@ -26,7 +26,8 @@
  *   ③ 当前布局的 <h2> 填好标题与副标题
  *   ④ 当前布局的正文容器填入 data/<id>/<lang>.html 的内容（爬虫读得到）
  *   ⑤ 主图（或 YouTube 内嵌页）写进媒体容器，并标 data-baked="1"
- *   ⑥ 头部内联脚本只保留「中文才预载中日韩字体」；末尾那段「读 ?project= 定布局」的
+ *   ⑥ 顶部返回栏（返回 + 语言按钮）写进 <body> 开头并标 data-baked="1"（2026-10-09 加）
+ *   ⑦ 头部内联脚本只保留「中文才预载中日韩字体」；末尾那段「读 ?project= 定布局」的
  *      脚本整段删掉 —— 它的活儿已经由 ① 在生成时做完了
  * 其余部分原样照抄，所以模板改了（加布局、提缓存版本号）重新生成即可，不会两边漂移。
  *
@@ -319,7 +320,35 @@ function assertPhrasingOnly(fragment, where) {
 
 /* ---------- 单页生成 ---------- */
 
-function renderPage({ template, app, origin, id, lang }) {
+/* 公共字符串（返回、语言切换）从 js/i18n.js 里取出来 —— 与 scripts/gen-pages.mjs 同一套做法。
+   烤进 HTML 的文字必须与运行时 apply() 用的那份同源，绝不能在这里另抄一遍。 */
+function readCommonI18n() {
+  const src = readFileSync(join(ROOT, 'js', 'i18n.js'), 'utf8');
+  const block = /App\.COMMON_I18N\s*=\s*\{([\s\S]*?)\n  \};/.exec(src);
+  if (!must(block, 'js/i18n.js 里找不到 App.COMMON_I18N 区块')) return {};
+  const ctx = { App: {} };
+  vm.createContext(ctx);
+  vm.runInContext('App.COMMON_I18N = {' + block[1] + '\n};', ctx);
+  return ctx.App.COMMON_I18N;
+}
+
+/* 返回栏（2026-10-09 加）：**无 JS 的读者与抓取者也要看得到「返回」与语言按钮**。
+   此前它只由 js/project.js 调 App.renderBackNav() 在运行时插入，于是不跑 JS 时作品页
+   一个站内链接都没有（实测 0 个）。现在与站内页同一套烤法（见 gen-pages.mjs 的 bakeBackNav）。
+   静态默认目标是首页：'./' 与 './zh/'（配生成页的 <base href="/">，与 App.pageHref('index') 同值）。
+   来访者从作品列表点进来时，运行时的 App.syncBackNav()（js/nav.js）会把 href 与文案升级成
+   作品列表 —— 那条逻辑读 document.referrer，只在浏览器里做得了。 */
+function backBar(lang, c) {
+  const home = lang === 'zh' ? './zh/' : './';
+  const back = (c.back && c.back[lang]) || '[<- 返回]';
+  const toggle = (c.langToggle && c.langToggle[lang]) || '[en] English';
+  return '<div class="back" data-baked="1">' +
+    `<a href="${attr(home)}" data-i18n="back">${esc(back)}</a>` +
+    `<a href="#" id="lang-toggle" data-i18n="langToggle">${esc(toggle)}</a>` +
+    '</div>';
+}
+
+function renderPage({ template, app, origin, id, lang, common }) {
   const p = app.projects[id];
   const where = `works/${id}/${LANG_DIR[lang]}`;
   const title = p.title && p.title[lang];
@@ -353,6 +382,12 @@ function renderPage({ template, app, origin, id, lang }) {
         下载链接）都要按站点根解析。放在 <meta charset> 之后、任何取 URL 的元素之前。 */
   html = replaceOnce(html, '<meta charset="UTF-8">', '<meta charset="UTF-8">\n<base href="/">',
     where + '：meta charset');
+
+  /* ②b 返回栏（2026-10-09）：烤在 <body> 开头，位置与运行时 document.body.prepend() 一致。
+        运行时 renderBackNav() 见到 .back 已存在就不再创建，只调 App.syncBackNav() 按来路
+        升级目标（从作品列表点进来时回列表）。 */
+  html = replaceOnce(html, '<body>\n', '<body>\n\n' + backBar(lang, common) + '\n',
+    where + '：返回栏');
 
   /* ③ 模板里那些「只在旧地址生效」的区块：换成生成页自己的版本，或整块删掉。
         其中 gen:legacy-only:lang 会被换成「只按语言预载字体」的一小段；末尾那段
@@ -550,6 +585,7 @@ function emit(relPath, content) {
 
 const app = readProjectData();
 const origin = readOrigin();
+const common = readCommonI18n();
 const templatePath = join(ROOT, 'project-template.html');
 must(existsSync(templatePath), '找不到 project-template.html（它同时是本生成器的模板来源）');
 const template = existsSync(templatePath) ? readFileSync(templatePath, 'utf8') : '';
@@ -562,7 +598,7 @@ if (app && failures.length === 0) {
     must(app.projects[id], `js/project-data.js 的 projectOrder 里有 ${id}，但 projects 里没有`);
     if (!app.projects[id]) continue;
     for (const lang of LANGS) {
-      const html = renderPage({ template, app, origin, id, lang });
+      const html = renderPage({ template, app, origin, id, lang, common });
       if (html) emit(`works/${id}/${LANG_DIR[lang]}index.html`, html);
     }
   }
