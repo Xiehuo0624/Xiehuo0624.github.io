@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: '两张界面图改由作者自己在 tmp 裁切工具里框选；新增那个工具',
+        en: 'Both interface shots are cropped by the author in a local tool, which is new here'
+      },
+      brief: {
+        zh: '新增 tmp 裁切工具；两张界面图改由作者自己框选（1111×376），替换页首与技术介绍里那两张',
+        en: 'A local cropping tool, with both interface shots cropped by the author at 1111 by 376.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: 'SPECTRAL DISSECTOR 补上路由菜单截图；「当前版界面截图（待补）」那句改准',
         en: 'SPECTRAL DISSECTOR gains its routing-menu screenshot, and a stale "to come" is corrected'
       },
