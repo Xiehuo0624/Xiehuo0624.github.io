@@ -17,6 +17,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: 'SPECTRAL DISSECTOR 补上路由菜单截图；「当前版界面截图（待补）」那句改准',
+        en: 'SPECTRAL DISSECTOR gains its routing-menu screenshot, and a stale "to come" is corrected'
+      },
+      brief: {
+        zh: '路由菜单截图进「技术介绍」；两套截图按同一把尺子裁（1172×367）；「待补」那句改准',
+        en: 'The routing menu joins the how-it-works section, both shots cropped to one standard, and a stale “to come” corrected.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: 'The JustType Study 内页顶部图改用首页卡片那套裁切',
         en: 'The JustType Study page adopts the homepage card crop for its top image'
       },
