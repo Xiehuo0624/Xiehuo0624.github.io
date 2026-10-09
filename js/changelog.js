@@ -17,6 +17,30 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
     {
       date: '2026-10-09',
       title: {
+        zh: '现场照片首次带图注：每张写清「哪一次、什么场合」',
+        en: 'Live photographs get captions: which evening, which room'
+      },
+      brief: {
+        zh: '新增 App.imageCaptions：网格与 Lightbox 写「哪一次、什么场合」，alt 用图注，换语言原地更新',
+        en: 'App.imageCaptions puts which-evening captions in the grids and the Lightbox; captions double as alt text.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
+        zh: '两件作品补上档案结构：SPECTRAL DISSECTOR 与 The JustType Study',
+        en: 'The last two work pages gain their archive structure'
+      },
+      brief: {
+        zh: '两页按七个槽位重排；spectral 技术节重写、频带数修正，just-type 分工只留作者、补 10.04 公开记录',
+        en: 'Two pages rearranged into the seven slots; corrected band count and roles, and a new date under where it has been shown.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-09',
+      title: {
         zh: 'wwhbh 的「后完成」补最后一则（2026.10.09），并删去开头那句阅读提示',
         en: 'WE WILL HAVE BEEN HERE: a final postlude entry, and the reading note at its head goes'
       },

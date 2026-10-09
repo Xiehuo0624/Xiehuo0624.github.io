@@ -40,7 +40,18 @@ App.projects = {
     title: { zh:'The JustType Study', en:'The JustType Study' },
     brief: { zh:'以 JustType 为核心的模块合成器系统设计', en:'A modular synthesizer system designed around JustType' },
     desc: { file: true },
-    media: { type: 'image', src: 'img/the-just-type-study-still.webp' },
+    /* 2026.10.04 Cedar Land（上海 CPARK）那一场的海报与两张现场照：
+       海报由作者提供的手机照片透视矫正裁切而来（绿色墙全部去掉，698×932）；
+       两张剧照从 21 秒现场录像里抽帧。三张都走 buildGalleryGrid，图注见 App.imageCaptions。 */
+    media: {
+      type: 'image',
+      src: 'img/the-just-type-study-still.webp',
+      photos: [
+        'img/the-just-type-study-cedarland-poster.webp',
+        'img/the-just-type-study-cedarland-live-1.webp',
+        'img/the-just-type-study-cedarland-live-2.webp'
+      ]
+    },
     audio: 'audio/the-just-type-study.m4a'
   },
 
@@ -133,6 +144,46 @@ App.projects = {
       ]
     }
   }
+};
+
+/** 图片图注（2026-10-09 作者逐张口述，我整理）。
+ *  键是图片路径，必须与 media 里的 src 逐字相同；值是 { zh, en }。
+ *  渲染位置：画廊网格里每张图下方（`<figcaption>`）与 Lightbox 底部；没有条目的图片不显示图注。
+ *  口径：三件现场照（ecce-homo／wwhbh／edgedgedge，共 21 张）统一写「日期 + 场地」的场次级；
+ *  6U104HP 的 21 张仍按展会分组，出处由组标题承担，不逐张写。
+ *  有图注的图片，alt 直接用图注文字（比「作品名 — 现场照片」有信息量，见 js/project.js 的 applyGalleryLang）。 */
+App.imageCaptions = {
+  /* ECCE HOMO —— 2025.01.05「声东击西」，上音学术厅（剧照来自这一场） */
+  'img/ecce-homo-still.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-01.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-05.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-15.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-16.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-22.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-25.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-38.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+  'img/ecce-homo-live-40.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅', en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, Academic Hall, Shanghai Conservatory of Music' },
+
+  /* WE WILL HAVE BEEN HERE —— 2024.12.14「硬糖」，Trigger（上海） */
+  'img/wwhbh-live-02.webp': { zh: '2024.12.14「硬糖」，Trigger（上海）', en: '2024.12.14, "Hard Candy", Trigger, Shanghai' },
+  'img/wwhbh-live-03.webp': { zh: '2024.12.14「硬糖」，Trigger（上海）', en: '2024.12.14, "Hard Candy", Trigger, Shanghai' },
+  'img/wwhbh-live-05.webp': { zh: '2024.12.14「硬糖」，Trigger（上海）', en: '2024.12.14, "Hard Candy", Trigger, Shanghai' },
+  'img/wwhbh-live-19.webp': { zh: '2024.12.14「硬糖」，Trigger（上海）', en: '2024.12.14, "Hard Candy", Trigger, Shanghai' },
+  'img/wwhbh-live-20.webp': { zh: '2024.12.14「硬糖」，Trigger（上海）', en: '2024.12.14, "Hard Candy", Trigger, Shanghai' },
+  'img/wwhbh-live-23.webp': { zh: '2024.12.14「硬糖」，Trigger（上海）', en: '2024.12.14, "Hard Candy", Trigger, Shanghai' },
+
+  /* EDGEDGEDGE —— 2025.06.28 Trigger（上海）（与 wwhbh 那场不是同一场） */
+  'img/edgedgedge-live-01.webp': { zh: '2025.06.28 Trigger（上海）', en: '2025.06.28, Trigger, Shanghai' },
+  'img/edgedgedge-live-05.webp': { zh: '2025.06.28 Trigger（上海）', en: '2025.06.28, Trigger, Shanghai' },
+  'img/edgedgedge-live-07.webp': { zh: '2025.06.28 Trigger（上海）', en: '2025.06.28, Trigger, Shanghai' },
+  'img/edgedgedge-live-08.webp': { zh: '2025.06.28 Trigger（上海）', en: '2025.06.28, Trigger, Shanghai' },
+  'img/edgedgedge-live-11.webp': { zh: '2025.06.28 Trigger（上海）', en: '2025.06.28, Trigger, Shanghai' },
+  'img/edgedgedge-live-12.webp': { zh: '2025.06.28 Trigger（上海）', en: '2025.06.28, Trigger, Shanghai' },
+
+  /* The JustType Study —— 2026.10.04 Cedar Land（上海 CPARK），受邀拼盘 */
+  'img/the-just-type-study-cedarland-poster.webp': { zh: '2026.10.04 Cedar Land（上海 CPARK）演出海报', en: 'Poster for 2026.10.04, Cedar Land at CPARK, Shanghai' },
+  'img/the-just-type-study-cedarland-live-1.webp': { zh: '2026.10.04 Cedar Land（上海 CPARK）现场', en: '2026.10.04, Cedar Land at CPARK, Shanghai' },
+  'img/the-just-type-study-cedarland-live-2.webp': { zh: '2026.10.04 Cedar Land（上海 CPARK）现场', en: '2026.10.04, Cedar Land at CPARK, Shanghai' }
 };
 
 /** 作品显示顺序：按研究方向排列（2026-09-30 作者定），不按时间。

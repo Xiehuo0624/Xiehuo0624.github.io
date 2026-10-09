@@ -1,9 +1,9 @@
 <span class="work-meta">
 <span class="work-meta-k">Year</span><span class="work-meta-v">2025–2026</span>
 <span class="work-meta-k">Type</span><span class="work-meta-v">A Max for Live plugin: fundamental, harmonic, transient and noise separation</span>
-<span class="work-meta-k">Specs</span><span class="work-meta-v">Ten bands, a Perc Band and a Dry path; the dry path runs through the same pfft~ as the bands, delay-aligned at 4032 samples</span>
-<span class="work-meta-k">Roles</span><span class="work-meta-v">Algorithm and architecture: me; implementation and UI of the new version: 闫开</span>
-<span class="work-meta-k">Shown</span><span class="work-meta-v">Downloadable from this site (26.09.12); no external use so far</span>
+<span class="work-meta-k">Specs</span><span class="work-meta-v">Eight harmonic bands, one Cepstrum band (Band 9) and one percussive band (Perc, Band 10), plus a Dry path; all of them share one <code>pfft~</code>, delay-aligned at 4032 samples</span>
+<span class="work-meta-k">Roles</span><span class="work-meta-v">Algorithm and architecture: me; the <code>pfft~</code> of the first parallel Spectral Gates: 任时弘; implementation and UI of the new version: 闫开</span>
+<span class="work-meta-k">Shown</span><span class="work-meta-v">Downloadable from this site (current version); no external use so far</span>
 <span class="work-meta-k">License</span><span class="work-meta-v">All rights reserved. Free for personal and commercial use; modification for own use permitted; redistribution and resale prohibited. See LICENSE.txt in the package.</span>
 <span class="work-meta-k">Status</span><span class="work-meta-v">In development</span>
 <span class="work-meta-k">Media</span><span class="work-meta-v">Screenshot of the first version; screenshot of the current version (to come); usage tutorial video (YouTube, in progress)</span>
@@ -13,32 +13,95 @@
 
 <br><br>
 
+<span class="work-sec">Overview</span>
+
 A work co-created with Yan Kai.
 
 <br><br>
 
-Spectral Dissector is a fundamental-frequency, harmonic, transient, and noise separation plugin based on Spectral Noise Gate, HPSS, and Cepstrum, inspired by analog filterbanks, SPEAR, Bitwig Loud Split, Bitwig Harmonic Split, Ircam iana~, and others. I have always loved using filterbanks to decompose sound in the frequency domain and recombine it, and I wanted a more precise tool for doing so: to separate a sound's fundamental, first, second, third harmonics and so on in real time and with precision. The work's original form was a set of six parallel Spectral Gates whose thresholds were chained end to end and interlinked. The image below shows a screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device. The first version was completed around June 2025.
+Spectral Dissector is a Max for Live plugin that splits a sound into its fundamental, harmonic, transient and noise components.
+
+<br><br>
+
+Its first form was a set of six parallel Spectral Gates whose thresholds were chained end to end and interlinked; in April 2026 I rebuilt it into the present architecture: eight harmonic bands, one Cepstrum band and one percussive band (Perc), plus a Dry path. The image below is the first version (Spectral Bank, finished around June 2025).
 
 <img src="img/spectral-dissector-1.webp" alt="Screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
-In April 2026 I refactored the plugin's architecture: I introduced HPSS and Cepstrum algorithms and, drawing on Bitwig Loud Split, added a Rise/Fall control parameter, attempting thereby to separate non-harmonic transients and noise so that harmonic separation becomes more stable, more precise, and freer of artifacts. At the same time I reworked the interface logic: each Spectral Gate Band is now governed overall by a single Main Threshold, with a Spacing knob adjusting the loudness difference between the bands' thresholds and Tilt compensating the thresholds at high and low frequencies. I also added a [<strong>Focus</strong> (<code>focus</code>) | band-crossing sharpness | large value = clear band boundaries but possible discontinuities; small value = smooth transitions] parameter to emphasize tonal signals. In the current version the envelope-compensation algorithm has been temporarily removed because it conflicts with Cepstrum and HPSS... a shame. The implementation and UI of the new Max for Live device were done by Yan Kai.
+The plugin can be downloaded from this site (link at the top of the page); the licence is stated in the info bar and in LICENSE.txt inside the package.
 
 <br><br>
 
-All known functional bugs have been fixed; the plugin now behaves as expected.
+<span class="work-sec">Motivation</span>
+
+I have always taken sounds apart in the frequency domain with filter banks and put them back together. The problem with a hardware filter bank is that it gives you a few fixed bands, and every threshold has to be set by hand, one by one. What I wanted was a more precise tool: one that separates a sound's fundamental, first harmonic, second harmonic and so on in real time and precisely — and that can put them back together unchanged.
 
 <br><br>
 
-<span style="display:block;text-align:right">2026.08.13</span>
+SPEAR was the first solution I found. But it is offline, and its sinusoidal modelling, although it sounds like the original signal, is not the original signal. Ircam's iana~ is real-time, but it does not automatically separate harmonics, and it cannot handle percussive material.
 
 <br><br>
 
-This version adds a <strong>Dry</strong> switch: when it is on, channels 1-2 output the full-band dry signal, which can be sent into the same mix alongside the individual bands. The dry path now runs through the same <code>pfft~</code> as the ten bands, so its latency and phase align exactly with theirs (4032 samples); summing dry with any band no longer causes beating or comb filtering. The switch is off by default.
+I also considered the approach of Bitwig's Harmonic Split, but it relies on fundamental tracking and loses track of weak-pitched signals.
 
 <br><br>
 
-It also fixes an architecture-level bug: the Perc Band was not in fact separated out of Bands 1-9 as intended, and its signal was duplicated there — purely percussive content, with the harmonic gate closed, fell entirely into Band 9 / Residual while the Perc Band also output it separately. Bands 1-9 now multiply their reconstruction by the harmonic mask <code>1 - perc_mask</code>, and the Perc Band outputs <code>perc_mask</code>; the two are strictly complementary and energy-conserving: Bands 1-9 plus the Perc Band sum to the original input, sample for sample, with no added FFT context or latency.
+On top of that I wanted this plugin to satisfy my wish for as much routing freedom as possible, and for taking a sound apart, processing the parts in parallel and mixing them back in any way I like.
 
 <br><br>
 
-<span style="display:block;text-align:right">2026.09.12</span>
+The rebuilt architecture goes some way towards that: I can now separate an audio signal in real time and use any microphone, sampler or sound source as a harmonic oscillator.
+
+<br><br>
+
+<span class="work-sec">Where it comes from</span>
+
+Filter banks (Buchla 295, Serge Resonant EQ, Erica Graphic Resonant FB, NLC MUN and others)<br>
+SPEAR<br>
+Bitwig Loud Split &amp; Harmonic Split<br>
+Ircam iana~ &amp; ASAP
+
+<br><br>
+
+<span class="work-sec">How it works</span>
+
+I did not invent a new algorithm. HPSS, Cepstrum and Spectral Noise Gate are all existing methods; what I did was connect them into a tool that can be used in a work in real time, and whose separation is reversible.
+
+<br><br>
+
+Technically it splits a sound into ten bands that can be processed separately — eight harmonic bands, one Cepstrum band (Band 9) and one percussive band (Band 10 / Perc) — plus a Dry path. Every band and the dry path share a single <code>pfft~</code>; the separation adds no further FFT analysis and no latency.
+
+<br><br>
+
+Using it is simple: send one sound in and each band, the Perc Band and the Dry path come out separately, so you can send them through different effect chains and mix them back together.
+
+<br><br>
+
+The dry path runs through exactly the same <code>pfft~</code> as the ten bands, with latency and phase fully aligned (4032 samples): summing the dry path with any band produces no comb filtering (no phase cancellation).
+
+<br><br>
+
+You first adjust the HPSS section to pull the percussive signal out, then the Cepstrum section to separate steady noise and breath. After that you only need <strong>Main Threshold</strong> (the common threshold of all bands), <strong>Spacing</strong> (the loudness difference between harmonic bands), <strong>Tilt</strong> (high- and low-frequency compensation), <strong>Rise / Fall</strong> (the onset and release of transients) and <strong>Focus</strong> (the sharpness of band crossings) — and you have the harmonic content separated into up to 8 Bands in the Harmonic Bands.
+
+<br><br>
+
+The Perc Band and the harmonic bands are separated by a strictly complementary pair of masks: percussive content goes to <code>perc_mask</code>, while the harmonic bands multiply their reconstruction by <code>1 - perc_mask</code>. The two sum to the original input, sample for sample, with no added FFT analysis or latency. The envelope-compensation algorithm is temporarily removed in the current version because it conflicts with Cepstrum and HPSS.
+
+<br><br>
+
+<span class="work-sec">My contribution</span>
+
+Thanks to 房大磊, who explained the basic principle of the vocoder to me, and to 任时弘, who explained Ircam ASAP's Spectral Clipping to me and designed the <code>pfft~</code> of the first parallel Spectral Gates.
+
+<br><br>
+
+Roles: algorithm and architecture, me; the <code>pfft~</code> of the first parallel Spectral Gates, 任时弘; implementation and UI of the new version, 闫开.
+
+<br><br>
+
+<span class="work-sec">Where it has been shown</span>
+
+Downloadable from this site (current version). There is no external use record.
+
+<br><br>
+
+I used the first version (2025.06, Spectral Bank) in a work of my own: amplified saxophone, the first version of the plugin and some synthesizers, with a slide deck and a recording.

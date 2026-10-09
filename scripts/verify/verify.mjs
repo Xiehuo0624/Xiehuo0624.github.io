@@ -204,7 +204,9 @@ function checkTrue(name, got) { check(name, !!got, true); }
 /* ---------- 期望表（与 js/project-data.js 同源，人工核对一遍） ---------- */
 const P = [
   { id: '6u104hp',            layout: 'gallery', zh: '6U104HP',            en: '6U104HP',            media: 'gallery', n: 21 },
-  { id: 'the-just-type-study', layout: 'ecce',    zh: 'The JustType Study', en: 'The JustType Study', media: 'img+audio', n: 1 },
+  /* 2026-10-09：just-type 补了 2026.10.04 Cedar Land 的海报与两张现场照（走 ecce 的现场网格），
+     故从 img+audio 改为 img+audio+live，n = 3（断言里 imgs 为 n + 1，另加顶部那张 still）。 */
+  { id: 'the-just-type-study', layout: 'ecce',    zh: 'The JustType Study', en: 'The JustType Study', media: 'img+audio+live', n: 3 },
   { id: 'the-induction-mixer', layout: 'gallery', zh: 'THE INDUCTION MIXER', en: 'THE INDUCTION MIXER', media: 'gallery', n: 3 },
   { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'none', n: 0 },
   { id: 'edgedgedge',         layout: 'edge',    zh: 'EDGEDGEDGE',         en: 'EDGEDGEDGE',         media: 'iframe+live', n: 6 },

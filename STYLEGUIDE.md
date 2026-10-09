@@ -655,7 +655,22 @@ media: {
 }
 ```
 
-- 图注由**组标题**承担，因此不逐张写题注。
+- 图注由**组标题**承担，因此不逐张写题注（6U104HP 的 21 张即如此）。
+- **逐张图注**（2026-10-09 立）：现场照这类"读者需要知道这是哪一次"的图，写进
+  `App.imageCaptions`（`js/project-data.js`），键是图片路径、值是 `{zh, en}`：
+
+  ```js
+  App.imageCaptions = {
+    'img/ecce-homo-live-01.webp': { zh: '2025.01.05「声东击西」汇报演出，上音学术厅',
+                                    en: '2025.01.05, "Sheng Dong Ji Xi" presentation concert, …' }
+  };
+  ```
+
+  渲染位置有两处、同一句话：网格里该图下方（`<figure><figcaption>`，11px、`--muted`）与
+  Lightbox 底部（`.lightbox-caption`）。**图注口径**是"哪一次、什么场合"（日期 + 场地 + 活动名），
+  同一场的多张用同一句；没有图注的图不显示图注、也不生成 `<figure>`。
+  **有图注的图片，`alt` 直接用图注文字**（比"作品名 — 现场照片"有信息量）；切语言时图注与 alt
+  都由 `applyGalleryLang()` 原地更新，网格不重建。
 - **向后兼容**：老式的扁平 `media.images`（The Induction Mixer 仍在用）由 `js/project.js` 归一成
   `[{ images }]`，两件画廊作品共用同一套渲染与样式。
 - 分组标题是可见文字，**切换语言时必须原地更新文字、不得重建网格** —— 重建会丢滚动位置，

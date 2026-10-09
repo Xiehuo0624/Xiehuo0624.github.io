@@ -2,21 +2,53 @@
 <span class="work-meta-k">Year</span><span class="work-meta-v">2026</span>
 <span class="work-meta-k">Type</span><span class="work-meta-v">A Eurorack modular system design and a live set</span>
 <span class="work-meta-k">Specs</span><span class="work-meta-v">3+1U, 64HP; eight modules</span>
-<span class="work-meta-k">Roles</span><span class="work-meta-v">System design, scripting and performance: me; Monome Teletype clone: 王凯文; harmonic progression: a friend; Pico FX and Output modules: fm.things (qoɔ)</span>
-<span class="work-meta-k">Shown</span><span class="work-meta-v">2026.07.24, antianti, Shanghai (invited artist)</span>
+<span class="work-meta-k">Roles</span><span class="work-meta-v">System design, scripting and performance: me</span>
+<span class="work-meta-k">Shown</span><span class="work-meta-v">End-of-term presentation, Music Engineering, Shanghai Conservatory of Music (first semester of the second year)<br>2026.07.24, antianti, Shanghai (invited artist)<br>2026.10.04, Cedar Land, CPARK, Shanghai (invited, part of a line-up)</span>
 <span class="work-meta-k">Status</span><span class="work-meta-v">Complete</span>
-<span class="work-meta-k">Media</span><span class="work-meta-v">System demo recording (22:51); downloadable Teletype scene; system photographs (to be taken)</span>
+<span class="work-meta-k">Media</span><span class="work-meta-v">System demo recording (22:51); downloadable Teletype scene; poster and photographs from 2026.10.04 (below); system photographs (to be taken)</span>
 </span>
 
-This is a Eurorack modular synthesizer system I designed for a performance on July 24, 2026; it is 3+1U, 64HP. The system contains a Monome Teletype clone (made by 王凯文) — a programming module with its own scripting language that lets you write your own scripts to create algorithmic music; a Mannequins Just Friends — a digital oscillator that can be digitally controlled over I2C by the Teletype; a Holocene AWMS — a Radio, LFO and S&H; a Holocene Seiche — a complex dual filter; a khiat v.dws — a control module that converts a wire displacement sensor, like the ring of the Ondes Martenot, into a voltage output; a 1U Nearness Mixer designed by sarnesjo to provide mixing with panning; a 1U Pico FX to provide reverb; and a 1U active output module. The Pico FX and Output are from fm.things, made by my friend qoɔ.
+<span class="work-sec">Overview</span>
+
+This is a Eurorack system I designed for a performance on 24 July 2026; it is 3+1U, 64HP, eight modules in total.
 
 <br><br>
 
-The starting points for designing this system were: learning how to use the Teletype — something I had been planning to do for the past two years but never actually did; making some pleasant music that most people can accept; and designing a live set within a small system I don't often use. I don't know why I've long owned a Teletype yet never felt like learning it — perhaps because it is too menu-diving, has a high learning cost, and has never really been part of my workflow. I've always placed popular accessibility very low on my list of priorities when creating works, so my performances are often hard for most people to accept. Part of the reason is my lack of skill and study in popular music design; another part is that I don't approach composition from the angle of listenability. Lastly, I'm used to working with large systems like 24U 104HP; considering that I plan to go study sound art in Europe in the future, and that carrying such a huge system is impractical, I need to learn how to design my modular system under the various constraints of a small system.
+At its centre is a Monome Teletype clone (made by 王凯文) — a programming module with its own scripting language that lets you organise music in scripts; the harmony, quantisation and triggering of a piece are all written in the script, which can be downloaded from this page.
 
 <br><br>
 
-In this system, emulating the logic of the Instruō harmonàig, I wrote a script that builds chords from only a root-note input, and (with the help of an anonymous friend) designed a chord progression so that Just Friends outputs 3-6 play block chords following that progression. Outputs 3-6 each trigger with a slight time offset; by designing those time offsets to match the panning positions of those jacks on the Nearness, I arrived at "left-to-right-triggered" organic block chords. Outputs 1-2 carry the melody, their pitches an octave apart. The melody's pitch comes from the voltage output of the v.dws ring module, fed into the Teletype's CV in and run through a quantization script that snaps it to chord tones of the current chord. When the input voltage changes, the melody is triggered; when it stays unchanged for a long time, the melody stops. I also designed a set of rhythmic trigger outputs to ping the two filters on the Seiche, giving me percussion, while the AWMS supplies Radio output, LFO and S&H to help the system breathe.
+The other seven: a Mannequins Just Friends (a digital oscillator that can be controlled digitally over I2C by the Teletype), a Holocene AWMS (Radio, LFO and S&amp;H), a Holocene Seiche (complex dual filters), a khiat v.dws (a control module that turns a wire displacement sensor, like the ring of the Ondes Martenot, into a voltage output), a 1U Nearness Mixer designed by sarnesjo (mixing with panning), a 1U Pico FX (reverb) and a 1U active output module. The Pico FX and the Output module come from fm.things and were made by my friend qoɔ.
+
+<br><br>
+
+<span class="work-sec">Motivation</span>
+
+The system had three starting points:
+
+<br><br>
+
+First, learning the Teletype. I had owned it for two years, always planning to learn it and never starting — perhaps because it is too menu-driven, has a high learning cost, and has never been part of my workflow.
+
+<br><br>
+
+Second, making something most people can accept. I have always placed popular listenability very low among my priorities, so my performances are often hard for most people to take; part of that is my lack of skill and study in popular music design, and another part is that I simply do not design from the angle of listenability.
+
+<br><br>
+
+Third, designing a live set inside a small system. I am used to working with large systems such as 24U 104HP, and since I plan to study sound art in Europe, carrying a system that big is impractical — I need to learn to design within the constraints of a small system.
+
+<br><br>
+
+<span class="work-sec">Where it comes from</span>
+
+The chord script follows the logic of the Instruō harmonàig: quantise the pitches inside a chord and let the system decide what the next note may be.
+
+<br><br>
+
+<span class="work-sec">How it works</span>
+
+In this system, emulating the logic of the Instruō harmonàig, I wrote a script that builds chords from only a root-note input, and designed a chord progression so that Just Friends outputs 3-6 play block chords following that progression. Outputs 3-6 each trigger with a slight time offset; by designing those time offsets to match the panning positions of those jacks on the Nearness, I arrived at "left-to-right-triggered" block chords. Outputs 1-2 carry the melody, their pitches an octave apart. The melody's pitch comes from the voltage output of the v.dws ring module, fed into the Teletype's CV in and run through a quantisation script that snaps it to chord tones of the current chord. When the input voltage changes, the melody is triggered; when it stays unchanged for a long time, the melody stops. I also designed a set of rhythmic trigger outputs to ping the two filters on the Seiche, giving me percussion, while the AWMS supplies Radio output, LFO and S&amp;H to help the system breathe.
 
 <br><br>
 
@@ -89,3 +121,23 @@ JF.TR 1 1
 JF.TR 2 1</pre>
 <a class="tt-download" href="data/the-just-type-study/tt20s.txt" download>↓ Download full Teletype scene (tt20s.txt)</a>
 </div>
+
+<br><br>
+
+<span class="work-sec">My contribution</span>
+
+System design, scripting and performance: me.
+
+<br><br>
+
+<span class="work-sec">Where it has been shown</span>
+
+2026.07.24, antianti, Shanghai (invited artist). No recording was made of that evening.
+
+<br><br>
+
+2026.10.04, Cedar Land at CPARK, Shanghai (invited, part of a line-up). The poster and two photographs are below.
+
+<br><br>
+
+The recording on this page is a demo of the system (22:51), not a recording of either performance.

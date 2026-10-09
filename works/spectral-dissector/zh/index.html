@@ -21,7 +21,7 @@
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
 (function(){try{var fired=false;
-function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=fa9bec44';document.head.appendChild(f);}
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=01929e93';document.head.appendChild(f);}
 if(document.documentElement.dataset.lang==='zh'){pre();return;}
 document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
 document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
@@ -51,9 +51,9 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=42">
+<link rel="stylesheet" href="css/base.css?v=43">
 <link rel="stylesheet" href="css/nav.css?v=4">
-<link rel="stylesheet" href="css/project.css?v=15">
+<link rel="stylesheet" href="css/project.css?v=16">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
@@ -62,7 +62,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
      生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
      保持同步只为避免两份加载策略各自漂移。 -->
 <script src="js/app.js"></script>
-<script src="js/project-data.js?v=9"></script>
+<script src="js/project-data.js?v=10"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/i18n.js?v=7"></script>
 <script defer src="js/autospace.js"></script>
@@ -71,7 +71,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <!-- page data + logic（js/ink-wwhbh.js、js/audio-wwhbh.js、js/mixer-riverrun.js 只在 wwhbh / mixer 布局用到，本页已由
      生成器剪掉，见 scripts/gen-projects.mjs） -->
 <script defer src="js/project-i18n.js?v=5"></script>
-<script defer src="js/project.js?v=16"></script>
+<script defer src="js/project.js?v=17"></script>
 </head>
 <body>
 
@@ -87,9 +87,9 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
     <div id="ecce-desc" data-desc-lang="zh"><span class="work-meta">
 <span class="work-meta-k">创作年份</span><span class="work-meta-v">2025–2026</span>
 <span class="work-meta-k">形态</span><span class="work-meta-v">Max for Live 插件：基频、谐波、瞬态与噪音分离</span>
-<span class="work-meta-k">规格</span><span class="work-meta-v">十个频带＋Perc Band＋Dry 干路；干路与各频带共用同一个 pfft~，延迟对齐 4032 samples</span>
-<span class="work-meta-k">分工</span><span class="work-meta-v">算法与架构：我；新版本的实现与 UI：闫开</span>
-<span class="work-meta-k">公开记录</span><span class="work-meta-v">本站可下载（26.09.12 版）；暂无外部使用记录</span>
+<span class="work-meta-k">规格</span><span class="work-meta-v">八个谐波频带＋一条 Cepstrum 带（Band 9）＋一条打击带（Perc，Band 10）＋ Dry 干路；全部共用一个 pfft~，延迟对齐 4032 samples</span>
+<span class="work-meta-k">分工</span><span class="work-meta-v">算法与架构：我；初版并联 Spectral Gates 的 pfft~：任时弘；新版本的实现与 UI：闫开</span>
+<span class="work-meta-k">公开记录</span><span class="work-meta-v">本站可下载（当前版）；暂无外部使用记录</span>
 <span class="work-meta-k">许可</span><span class="work-meta-v">保留所有权利。个人与商业作品可免费使用，可自用修改；禁止再分发、转售。详见包内 LICENSE.txt</span>
 <span class="work-meta-k">状态</span><span class="work-meta-v">持续开发</span>
 <span class="work-meta-k">资料</span><span class="work-meta-v">初版界面截图；当前版界面截图（待补）；使用教程视频（YouTube，制作中）</span>
@@ -99,35 +99,98 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 
 <br><br>
 
+<span class="work-sec">作品简介</span>
+
 与闫开共同创作的作品。
 
 <br><br>
 
-Spectral Dissector是一款基于Spectral Noise Gate、HPSS和Cepstrum的基频、谐波、瞬态、噪音分离插件，灵感来源于模拟滤波器组、SPEAR、Bitwig Loud Split、Bitwig Harmonic Split、Ircam iana~等。我非常喜欢用滤波器组把声音在频域上拆解后重新组合，一直希望能有一个更精确的工具，把声音的基频、一次、二次、三次谐波等材料实时、精确地分离。这个作品最初的形态是一组6个并联的Spectral Gates，其阈值首尾相连、互相联动。下图为最初版本的Spectral Dissector（Spectral Bank）Max for Live插件截图。初版插件约完成于2025年6月。
+Spectral Dissector 是一件把声音拆成基频、谐波、瞬态与噪音的 Max for Live 插件。
+
+<br><br>
+
+它最初的形态是一组 6 个并联的 Spectral Gates，阈值首尾相连、互相联动；2026 年 4 月重构为现在的架构：八条谐波频带、一条 Cepstrum 带与一条打击带（Perc），外加一条 Dry 干路。下图为最初版本（Spectral Bank，约完成于 2025 年 6 月）的截图。
 
 <img src="img/spectral-dissector-1.webp" alt="最初版本的Spectral Dissector（Spectral Bank）Max for Live插件截图" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
-我在2026年4月对本插件的架构进行了重构：引入了HPSS和Cepstrum算法，并参照Bitwig Loud Split加入了Rise/Fall控制参数，尝试以此分离非谐波性的瞬态与噪音，使谐波的分离更加稳定、精确，并减少伪影。同时重做了界面逻辑，将每个Spectral Gate Band的逻辑改为由一个Main Threshold总控，由Spacing旋钮调整各Band阈值之间的响度差，并通过Tilt补偿高/低频的阈值。还新增了[<strong>Focus</strong> (<code>focus</code>) | 频带交叉锐度 | 大值=频带边界清晰但可能跳变；小值=过渡平滑]参数，以强调乐音信号。本版本暂时移除了包络补偿算法，因为它与Cepstrum和HPSS在打架……残念。新版本的Max for Live插件实现与UI由闫开完成。
+插件在本站可以直接下载（见页首链接），许可写在信息栏与包内 LICENSE.txt。
 
 <br><br>
 
-所有已知功能性Bug已经修复，行为符合预期。
+<span class="work-sec">作品动机</span>
+
+我一直在用滤波器组把声音在频域上拆开、再拼回去。硬件滤波器组的问题是它只能给你几个固定的带，而且每个带的阈值要用手一根一根去调；我想要的是一个更精确的工具：能把基频、一次谐波、二次谐波这些材料实时、精确地分开，并且分开之后还能原样合回来。
 
 <br><br>
 
-<span style="display:block;text-align:right">2026.08.13</span>
+SPEAR 是我最开始找到的解决方案。但是它是离线的，并且正弦建模的结果尽管听起来像原始信号，实际上并不是原始信号。尽管 Ircam 的 iana~ 是在线的，它并不能达到我想要自动分离谐波的目的，也不能用于打击乐处理。
 
 <br><br>
 
-本版新增<strong>Dry</strong>开关：打开后，通道1-2输出全频带干路信号，可与各个频带一同送入同一套混音。干路改走与十个频带相同的<code>pfft~</code>，延迟与相位和各频带完全对齐（4032 samples），因此「干路 + 频带」相加不会再拍打，也不会产生梳状滤波。开关默认关闭。
+我也考虑过 Bitwig Harmonic Split 的做法，但它靠的是基频跟踪（fundamental tracking），遇到弱音高信号会跟丢。
 
 <br><br>
 
-同时修复了一个架构层面的Bug：Perc Band并没有如预期那样从Band 1-9中分离出去，它的信号在Band 1-9里还留有一份复制——纯打击成分因谐波门关闭而整块落入Band 9 / Residual，又由Perc Band独立输出一次。现在Band 1-9的重建统一乘以谐波掩膜<code>1 - perc_mask</code>，Perc Band输出<code>perc_mask</code>，两者严格互补、能量守恒：Band 1-9与Perc Band相加即等于原始输入，逐样本成立，且没有新增任何FFT上下文或延迟。
+不仅如此，我还希望这一插件可以满足我对尽可能多通道路由的自由度的追求，和对将一个声音拆解，平行处理不同部分后再用各种方式 Mixing 的追求。
 
 <br><br>
 
-<span style="display:block;text-align:right">2026.09.12</span>
+重构后的架构一定程度上实现了我的追求，我现在终于可以实时地分离音频信号，把任一麦克风、采样器或声源当作谐波振荡器来用了。
+
+<br><br>
+
+<span class="work-sec">灵感溯源</span>
+
+Filterbanks（Buchla 295、Serge Resonant EQ、Erica Graphic Resonant FB、NLC MUN 等）<br>
+SPEAR<br>
+Bitwig Loud Split &amp; Harmonic Split<br>
+Ircam iana~ &amp; ASAP
+
+<br><br>
+
+<span class="work-sec">技术介绍</span>
+
+我没有发明新算法。HPSS、Cepstrum、Spectral Noise Gate 都是现成的方法；我把它们接成了一个能在作品里实时使用、分离可逆的工具。
+
+<br><br>
+
+技术上，它把声音拆成十条可以分别处理的频带：八条谐波带、一条 Cepstrum 带（Band 9）、一条打击带（Band 10 / Perc），外加一条 Dry 干路。全部频带与干路共用同一个 <code>pfft~</code>；分离过程不新增 FFT 分析，也不增加延迟。
+
+<br><br>
+
+它的用法很简单：把一路声音送进去，每个频带、Perc Band 与 Dry 干路各自独立输出，你可以把它们送去不同的效果链，再混回来。
+
+<br><br>
+
+干路走的是与十个频带完全相同的 <code>pfft~</code>，延迟与相位完全对齐（4032 samples）：把干路与各频带相加，不会产生梳状滤波（相位抵消）。
+
+<br><br>
+
+先调整 HPSS 区域把 Perc 信号分离出来，再调整 Cepstrum 区域把稳定的噪音与气声分离。之后只需要调整 <strong>Main Threshold</strong>（全部频带的统一阈值）、<strong>Spacing</strong>（各谐波带之间的响度差）、<strong>Tilt</strong>（高低频补偿）、<strong>Rise / Fall</strong>（瞬态的起落）与 <strong>Focus</strong>（频带交叠的锐度），你就可以在 Harmonic Bands 中得到分离成最多 8 Bands 的谐波成分。
+
+<br><br>
+
+Perc Band 与谐波频带之间是一对严格互补的掩码：打击成分走 <code>perc_mask</code>，谐波频带的重建统一乘以 <code>1 - perc_mask</code>，两者相加即等于原始输入，逐样本成立，也没有为此新增 FFT 分析或延迟。当前版本暂时移除了包络补偿算法，因为它与 Cepstrum、HPSS 互相干扰。
+
+<br><br>
+
+<span class="work-sec">我的工作</span>
+
+特别感谢：房大磊老师（为我讲解 Vocoder 的基本原理）、任时弘老师（为我讲解 Ircam ASAP 的 Spectral Clipping，并设计了初版并联 Spectral Gates 的 pfft~）。
+
+<br><br>
+
+分工：算法与架构：我；初版并联 Spectral Gates 的 pfft~：任时弘；新版本的 Max for Live 实现与界面：闫开。
+
+<br><br>
+
+<span class="work-sec">公开记录</span>
+
+本站可下载（当前版）。没有外部使用记录。
+
+<br><br>
+
+初版（2025.06，Spectral Bank）我用在一件自己的作品里：扩音萨克斯、初版插件与合成器，有一份 PPT 与录音。
 </div>
   </div>
   <div class="ecce-live" id="ecce-live"></div>

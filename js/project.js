@@ -27,6 +27,18 @@
   /* ---- Gallery 分组渲染 ---- */
   let galleryImages = [];   // 扁平图集：Lightbox 在全部图上前后切换，索引与点击处一致
   let galleryLabels = [];   // [{el, label}]：切语言时只改文字，不重建网格
+  let galleryCaptions = []; // [{el, caption}]：图注同理（App.imageCaptions 的形状是 { zh, en }）
+
+  /* Lightbox 状态。**必须声明在这里**：applyGalleryLang() 在首屏渲染（fillContent）里就会被调到，
+     而 fillContent 跑在本文件后半段那些 let 之前 —— 声明留在下面会落进 TDZ，
+     报 "Cannot access 'lbOverlay' before initialization"，整页渲染当场中断（2026-10-09 实测）。 */
+  let lbOverlay = null;
+  let lbImages = [];
+  let lbIndex = 0;
+  let lbImg = null;
+  let lbCount = null;
+  let lbCap = null;
+  let lbAlt = '';
 
   /** 分组标题。文字是可见内容，故登记下来，切语言时原地更新。 */
   function addGalleryLabel(parent, label, className){
@@ -38,7 +50,26 @@
     parent.appendChild(el);
   }
 
-  /** 一组等宽网格。每张图在扁平图集里登记自己的下标，点击即从该张打开。 */
+  /** 图注：键是图片路径，值是 { zh, en }。没有条目的图片不显示图注。 */
+  function captionFor(src){
+    return (App.imageCaptions && App.imageCaptions[src]) || null;
+  }
+
+  /** 切语言：图注、分组标题与 alt 都是文字，必须跟着换；网格不重建。
+   *  alt 有图注时用图注（比「作品名 — 现场照片」有信息量），没有才退回调用处的通用 alt。 */
+  function applyGalleryLang(altFallback){
+    const lang = App.I18n.currentLang;
+    galleryLabels.forEach(item => { item.el.textContent = item.label[lang]; });
+    galleryCaptions.forEach(item => { item.el.textContent = item.caption[lang] || ''; });
+    document.querySelectorAll('.gallery-grid img').forEach(im => {
+      const caption = captionFor(im.getAttribute('src'));
+      im.alt = (caption && caption[lang]) || altFallback;
+    });
+    if (lbOverlay && lbOverlay.classList.contains('open')) lbShow();
+  }
+
+  /** 一组等宽网格。每张图在扁平图集里登记自己的下标，点击即从该张打开。
+   *  有图注的图包一层 <figure>：图注是可见文字，切语言时原地更新，不重建网格。 */
   function buildGalleryGrid(images, alt){
     const grid = document.createElement('div');
     grid.className = 'gallery-grid';
@@ -46,13 +77,25 @@
       const idx = galleryImages.push(src) - 1;
       const img = document.createElement('img');
       img.src = src;
-      img.alt = alt;
+      const caption = captionFor(src);
+      img.alt = (caption && caption[App.I18n.currentLang]) || alt;
       /* 网格里只有首屏可见，其余懒加载 */
       img.loading = 'lazy';
       img.decoding = 'async';
       img.dataset.index = String(idx);
       img.addEventListener('click', () => openLightbox(galleryImages, idx, alt));
-      grid.appendChild(img);
+      if (caption) {
+        const fig = document.createElement('figure');
+        fig.className = 'gallery-figure';
+        const fc = document.createElement('figcaption');
+        fc.textContent = caption[App.I18n.currentLang] || '';
+        galleryCaptions.push({ el: fc, caption });
+        fig.appendChild(img);
+        fig.appendChild(fc);
+        grid.appendChild(fig);
+      } else {
+        grid.appendChild(img);
+      }
     });
     return grid;
   }
@@ -288,6 +331,7 @@
           rootEl.innerHTML = '';
           galleryImages = [];
           galleryLabels = [];
+          galleryCaptions = [];
           /* 老数据只有扁平 images（the-induction-mixer）；归一成同一形状后共用下面这套渲染 */
           const sections = project.media.sections || [{ images: project.media.images }];
           sections.forEach(sec => {
@@ -306,14 +350,9 @@
           });
         }
       }
-      /* 分组标题与 alt 是文字，切语言必须跟着换；网格不重建 —— 重建会丢滚动位置、
-         也会让已经解码的图片重新入队下载（媒体只渲染一次的原因见文件头变量注释）。 */
-      const galleryLang = App.I18n.currentLang;
-      galleryLabels.forEach(item => { item.el.textContent = item.label[galleryLang]; });
-      if (galleryImages.length) {
-        const gridRoot = document.getElementById('gallery-sections');
-        if (gridRoot) gridRoot.querySelectorAll('img').forEach(im => { im.alt = t; });
-      }
+      /* 分组标题、图注与 alt 是文字，切语言必须跟着换；网格不重建 —— 重建会丢滚动位置、
+         也会让已经解码的图片重新入队下载（媒体只渲染一次的原因见文件头变量注释）。
+         统一在 mediaRendered 之后调一次 applyGalleryLang()，四个布局共用。 */
     } else if (layout === 'wwhbh') {
       setTitle('wwhbh-title');
       /* 现场资料：2024.12.14「硬糖」@ Trigger（上海）那一场的录音与照片。
@@ -352,6 +391,9 @@
       if (!mediaRendered) renderLive('ecce-live', project, t);
     }
     mediaRendered = true;
+
+    /* 四个布局的网格（画廊分组、现场照片）共用这一处：图注、分组标题、alt 全部按当前语言刷新。 */
+    applyGalleryLang(t);
 
     /* 主图／内嵌页只在首次渲染时建一次（切语言不重建，见 mediaRendered 的注释），
        所以它的 alt／title 会停在烤进 HTML 时那一版语言。原地换语言时补一次 ——
@@ -471,12 +513,6 @@
   }
 
   /* ---- Gallery lightbox ---- */
-  let lbOverlay = null;
-  let lbImages = [];
-  let lbIndex = 0;
-  let lbImg = null;
-  let lbCount = null;
-  let lbAlt = '';
 
   function openLightbox(images, index, alt) {
     lbImages = images;
@@ -501,11 +537,15 @@
       lbCount = document.createElement('div');
       lbCount.className = 'lightbox-count';
       lbCount.setAttribute('aria-hidden', 'true');
+      /* 图注：与网格里那张图下方写的是同一句（都取自 App.imageCaptions）。 */
+      lbCap = document.createElement('div');
+      lbCap.className = 'lightbox-caption';
       prev.type = 'button'; prev.setAttribute('aria-label', App.I18n.t('lightboxPrev'));
       next.type = 'button'; next.setAttribute('aria-label', App.I18n.t('lightboxNext'));
       close.type = 'button'; close.setAttribute('aria-label', App.I18n.t('lightboxClose'));
 
       lbOverlay.appendChild(lbImg);
+      lbOverlay.appendChild(lbCap);
       lbOverlay.appendChild(prev);
       lbOverlay.appendChild(next);
       lbOverlay.appendChild(close);
@@ -527,7 +567,11 @@
 
   function lbShow() {
     lbImg.src = lbImages[lbIndex];
-    lbImg.alt = lbAlt;
+    const cap = captionFor(lbImages[lbIndex]);
+    const capText = (cap && cap[App.I18n.currentLang]) || '';
+    lbImg.alt = capText || lbAlt;
+    lbCap.textContent = capText;
+    lbCap.style.display = capText ? '' : 'none';
     lbCount.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
     const prev = lbOverlay.querySelector('.lightbox-prev');
     const next = lbOverlay.querySelector('.lightbox-next');

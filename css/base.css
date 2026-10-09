@@ -85,12 +85,12 @@
    仍需手改，一致性由 scripts/verify/verify.mjs 第十二节逐字比对兜住。 */
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Regular.woff2?v=fa9bec44') format('woff2');
+  src:url('fonts/SourceHanSansSC-Regular.woff2?v=01929e93') format('woff2');
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'Source Han Sans SC';
-  src:url('fonts/SourceHanSansSC-Bold.woff2?v=fa9bec44') format('woff2');
+  src:url('fonts/SourceHanSansSC-Bold.woff2?v=01929e93') format('woff2');
   font-weight:700;font-style:normal;font-display:swap
 }
 
@@ -154,18 +154,18 @@
    整份思源（295KB）就太贵了 —— 它们一共十几个，单独切一份只有几 KB，字形完全一致。
    src 先列 local()：装了思源黑体／Noto Sans CJK 的机器（Adobe、多数 Linux、Android）
    0 字节用本机同款字体，其余机器才下载这份子集。
-   覆盖 40 个字符：「」〔〕东中凯击南唱回声大师开文曹段泻浣浩火熊片王硬立糖美翁老腿虾西言轩返钢铁闫
+   覆盖 45 个字符：「」〔〕东中任凯击南唱回声大师开弘房文时曹段泻浣浩火熊片王硬磊立糖美翁老腿虾西言轩返钢铁闫
    unicode-range 由脚本按实际字符算出：页面里没有这些字时，连这份子集都不会被请求。 */
 @font-face{
   font-family:'SiteCJK';
   src:local('Source Han Sans SC'),local('Source Han Sans CN'),local('Noto Sans CJK SC'),local('Noto Sans SC'),local('思源黑体'),url('fonts/SiteCJK-Regular.woff2') format('woff2');
-  unicode-range:U+300C,U+300D,U+3014,U+3015,U+4E1C,U+4E2D,U+51EF,U+51FB,U+5357,U+5531,U+56DE,U+58F0,U+5927,U+5E08,U+5F00,U+6587,U+66F9,U+6BB5,U+6CFB,U+6D63,U+6D69,U+706B,U+718A,U+7247,U+738B,U+786C,U+7ACB,U+7CD6,U+7F8E,U+7FC1,U+8001,U+817F,U+867E,U+897F,U+8A00,U+8F69,U+8FD4,U+94A2,U+94C1,U+95EB;
+  unicode-range:U+300C,U+300D,U+3014,U+3015,U+4E1C,U+4E2D,U+4EFB,U+51EF,U+51FB,U+5357,U+5531,U+56DE,U+58F0,U+5927,U+5E08,U+5F00,U+5F18,U+623F,U+6587,U+65F6,U+66F9,U+6BB5,U+6CFB,U+6D63,U+6D69,U+706B,U+718A,U+7247,U+738B,U+786C,U+78CA,U+7ACB,U+7CD6,U+7F8E,U+7FC1,U+8001,U+817F,U+867E,U+897F,U+8A00,U+8F69,U+8FD4,U+94A2,U+94C1,U+95EB;
   font-weight:400;font-style:normal;font-display:swap
 }
 @font-face{
   font-family:'SiteCJK';
   src:local('Source Han Sans SC'),local('Source Han Sans CN'),local('Noto Sans CJK SC'),local('Noto Sans SC'),local('思源黑体'),url('fonts/SiteCJK-Bold.woff2') format('woff2');
-  unicode-range:U+300C,U+300D,U+3014,U+3015,U+4E1C,U+4E2D,U+51EF,U+51FB,U+5357,U+5531,U+56DE,U+58F0,U+5927,U+5E08,U+5F00,U+6587,U+66F9,U+6BB5,U+6CFB,U+6D63,U+6D69,U+706B,U+718A,U+7247,U+738B,U+786C,U+7ACB,U+7CD6,U+7F8E,U+7FC1,U+8001,U+817F,U+867E,U+897F,U+8A00,U+8F69,U+8FD4,U+94A2,U+94C1,U+95EB;
+  unicode-range:U+300C,U+300D,U+3014,U+3015,U+4E1C,U+4E2D,U+4EFB,U+51EF,U+51FB,U+5357,U+5531,U+56DE,U+58F0,U+5927,U+5E08,U+5F00,U+5F18,U+623F,U+6587,U+65F6,U+66F9,U+6BB5,U+6CFB,U+6D63,U+6D69,U+706B,U+718A,U+7247,U+738B,U+786C,U+78CA,U+7ACB,U+7CD6,U+7F8E,U+7FC1,U+8001,U+817F,U+867E,U+897F,U+8A00,U+8F69,U+8FD4,U+94A2,U+94C1,U+95EB;
   font-weight:700;font-style:normal;font-display:swap
 }
 /* gen:site-cjk:end */
