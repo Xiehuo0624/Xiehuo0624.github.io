@@ -1,0 +1,69 @@
+# License · 许可
+
+This repository mixes two different kinds of material, licensed differently.
+本仓库包含两类性质不同的内容，分别授权。
+
+---
+
+## 1. Code · 代码
+
+**MIT License** — applies to the source code that builds this site:
+
+- `css/**`
+- `js/**`
+- `scripts/**`
+
+```
+MIT License
+
+Copyright (c) 2026 Cao Haoxuan (Xiehuo)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+You are welcome to learn from the code, reuse the build scripts, or adapt the
+layout for your own site.
+
+---
+
+## 2. Works & content · 作品与内容
+
+**All rights reserved · 保留所有权利**
+
+Everything that is *not* the code listed above — including but not limited to:
+
+- images and artwork (`img/**`, `res/**`, any embedded graphics)
+- audio (`audio/**`)
+- written content, project descriptions and prose (all `.html` page bodies,
+  `*.md` documents, `data/**`)
+- the site's visual design as a whole
+
+…is the original work of Cao Haoxuan and is **not** covered by the MIT grant
+above. It may not be copied, redistributed, modified, or used commercially
+without prior written permission.
+
+作品（图像、音频、文字、整体视觉设计等）为曹浩轩原创，**不适用**上述 MIT 授权，
+未经书面许可不得复制、转载、修改或用于商业用途。
+
+If you would like to use any of the works, please get in touch via
+<https://caohaoxuan.com>.
+
+---
+
+*Short version: the plumbing is MIT, the art is mine. 一句话：代码随便用，作品请先问我。*
