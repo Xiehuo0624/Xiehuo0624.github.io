@@ -151,18 +151,35 @@ const FONT_PRELOAD = `<script>
 (function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='${mainFontHref()}';document.head.appendChild(f);}catch(e){}})();
 </script>`;
 
+/* 标记区块在生成页里换成什么 —— 与 scripts/gen-projects.mjs 的 LEGACY_REGIONS 同一套写法：
+     null   → 换成生成页专用的字体预载脚本
+     字符串 → 换成这段注释
+   `OPTIONAL_REGIONS` 里的区块允许模板里没有：首页模板 index.html 本身就是英文规范地址，
+   不该有 noindex；其余三个模板（works / about / changelog）是旧地址页，必须有。 */
+const LEGACY_REGIONS = {
+  lang:     null,
+  prepaint: '<!-- 绘制前定文案的内联脚本已由生成器删除：文案在生成时按语言烤好，不需要运行时再定 -->',
+  noindex:  '<!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->'
+};
+const OPTIONAL_REGIONS = new Set(['noindex']);
+
 function applyLegacyRegions(html, where) {
   let out = html;
-  for (const name of ['lang', 'prepaint']) {
+  for (const [name, replacement] of Object.entries(LEGACY_REGIONS)) {
     const re = new RegExp('<!-- gen:legacy-only:' + name + ' -->[\\s\\S]*?<!-- /gen:legacy-only:' + name + ' -->');
-    const hits = out.match(new RegExp(re.source, 'g'));
-    if (!must(hits && hits.length === 1,
-      `${where}：模板里 gen:legacy-only:${name} 标记应恰好 1 处，实际 ${hits ? hits.length : 0} 处`)) continue;
-    out = out.replace(re, name === 'lang'
-      ? FONT_PRELOAD
-      : '<!-- 绘制前定文案的内联脚本已由生成器删除：文案在生成时按语言烤好，不需要运行时再定 -->');
+    const hits = out.match(new RegExp(re.source, 'g')) || [];
+    if (hits.length === 0 && OPTIONAL_REGIONS.has(name)) continue;
+    if (!must(hits.length === 1,
+      `${where}：模板里 gen:legacy-only:${name} 标记应恰好 1 处，实际 ${hits.length} 处`)) continue;
+    out = out.replace(re, replacement === null ? FONT_PRELOAD : replacement);
   }
   must(!/gen:legacy-only/.test(out), `${where}：生成结果里残留 gen:legacy-only 标记`);
+  /* 兜底不变量（2026-10-10 加）：本生成器的产物**全部是规范地址**，一个都不许带 noindex。
+     此前 works／about／changelog 三条模板的 noindex 没包标记，被原样抄进生成页 —— 6 个规范地址
+     因此对搜索引擎自报「别收录我」，与 sitemap.xml、与旧地址页的 canonical 直接冲突，藏了 18 天。
+     标记是显式机制、要靠人记得加；这条是失败即止的兜底：改模板时漏了标记会当场报错，不会静默发布。 */
+  must(!/<meta[^>]+name=["']robots["'][^>]*noindex/i.test(out),
+    `${where}：生成页里残留 noindex —— 生成页是规范地址、必须可被索引；模板里的 noindex 要用 gen:legacy-only:noindex 包起来`);
   return out;
 }
 

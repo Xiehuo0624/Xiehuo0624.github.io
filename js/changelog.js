@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-10-10',
+      title: {
+        zh: 'works／about／changelog 规范地址误带 noindex：模板漏包标记，生成器也没登记该区块',
+        en: 'The canonical section pages shipped noindex: an unwrapped marker the generator never knew about'
+      },
+      brief: {
+        zh: '六个规范地址误带 noindex，与 sitemap、canonical 冲突 18 天；已包标记并加生成器兜底',
+        en: 'Six canonical pages shipped noindex for 18 days, contradicting the sitemap and their own canonicals; the marker is wrapped now and the generator fails closed.'
+      },
+      media: ''
+    },
+    {
       date: '2026-10-09',
       title: {
         zh: 'ecce-homo 技术介绍改写一句：阶段指示是总谱，不规定音高、只限定情绪',

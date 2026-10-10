@@ -1023,6 +1023,19 @@ console.log('=== 十、爬取路径与旧地址声明 ===');
     checkTrue(`${path} 页面照常可用`, (info.h1 || '').length > 0);
     await v.close();
   }
+
+  /* 规范地址必须**没有** noindex（2026-10-10 加）。
+     此前这一节只查了旧地址那一侧，第十六节只查了作品页 —— 唯独没查站内页的规范地址，
+     而出问题的正是这一格：works／about／changelog 三条模板的 noindex 没包 gen:legacy-only
+     标记，被 scripts/gen-pages.mjs 原样抄进生成页，于是 6 个规范地址对搜索引擎自报
+     「别收录我」，与 sitemap.xml、与上面那些 canonical 指向的地址直接冲突。
+     2026-09-22 上线，2026-10-10 才发现（894 项断言全绿）。这一条补的就是漏掉的那一格。 */
+  for (const path of ['/', '/zh/', '/works/', '/works/zh/', '/about/', '/about/zh/', '/changelog/', '/changelog/zh/']) {
+    const v = await visit(path);
+    const robots = await v.evaluate(`(document.querySelector('meta[name=robots]')||{}).content || null`);
+    check(`${path} 规范地址不得带 noindex`, robots, null);
+    await v.close();
+  }
 }
 
 /* ---------- 十一、Gallery Lightbox：从网格任意一张进入，位置指示正确 ---------- */
