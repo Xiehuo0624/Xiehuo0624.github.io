@@ -18,3 +18,6 @@ tmp/
 
 # 图片原图留档（本地保留，不部署）
 img/originals/
+
+# 音频母版与编码评估产物（1.58 GiB，本地保留，绝不部署到 Pages）
+audio-masters/
