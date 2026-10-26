@@ -87,8 +87,16 @@ body{
   opacity:0;visibility:hidden;  /* 不可见时一并移出无障碍树 */
   transition:opacity 90ms ease-out, visibility 0s linear 90ms;
 }
-/* 只有存在「精细指针」（鼠标／触控板）的设备才出现 */
-@media (any-pointer: fine){ .card-label{display:flex} }
+/* 展签只在「精细指针 + 非手机宽度 + 当前不是触摸输入」三者同时成立时出现（作者 2026-10-09 定）。
+   三道的分工：
+     · any-pointer:fine —— 纯触摸设备（手机/平板）不出现；
+     · min-width:769px —— 与牌堆的移动断点同一条；DevTools 的手机模拟、窄窗口里那仍是「鼠标」，
+       不按宽度再断一次，模拟器里照样能看到展签（实测过）；
+     · html.touch-input —— **手指**按下时挂上、鼠标一动摘掉（js/index.js 末尾）。触屏笔记本的
+       any-pointer:fine 恒为真（它确实有鼠标），媒体查询分不出「这只手是手指还是鼠标」，
+       只有 pointerdown 的 pointerType 分得出。 */
+@media (any-pointer: fine) and (min-width: 769px){ .card-label{display:flex} }
+html.touch-input .card-label{display:none}
 /* 进入：等 150ms 再淡入 —— 扫过扇形时不会一路闪牌；离开：90ms 立刻收掉 */
 .card:hover .card-label{
   opacity:1;visibility:visible;

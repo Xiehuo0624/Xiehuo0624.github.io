@@ -15,6 +15,30 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-10-27',
+      title: {
+        zh: '移动端不显示悬停展签；触摸点下层卡片不再置顶（鼠标行为不变）',
+        en: 'No hover label on touch; touching a lower card no longer brings it forward'
+      },
+      brief: {
+        zh: '展签加宽度与触摸两道门；触摸点下层卡片不置顶也不翻牌（鼠标行为不变）',
+        en: 'The hover label is gated by width and input type; touch taps no longer reorder the stack.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-10-27',
+      title: {
+        zh: '切中英文时首页卡片顺序不再重排：顺序改为同一标签页内固定',
+        en: 'Language toggle no longer reshuffles the homepage cards: order is now fixed per tab'
+      },
+      brief: {
+        zh: '中英切换会重新加载首页并重洗卡片。顺序改装 sessionStorage，同一标签页内固定，新标签页仍随机',
+        en: 'Switching language reloaded the homepage and reshuffled the cards. The order now lives in sessionStorage: fixed per tab, still random per visit.'
+      },
+      media: ''
+    },
+    {
       date: '2026-10-10',
       title: {
         zh: 'works／about／changelog 规范地址误带 noindex：模板漏包标记，生成器也没登记该区块',

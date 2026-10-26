@@ -522,6 +522,57 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   await v.close();
 }
 
+/* ---------- 四之一、卡片顺序在同一标签页内固定（2026-10-27 加）----------
+   中英切换是**一次文档导航**（/ 与 /zh/ 是两份 page），此前每次加载都重洗，
+   于是切一次语言卡片就重排一次。现在顺序存在 sessionStorage 里，同一标签页内复用。
+   这里必须在**同一个 tab** 里从 / 导航到 /zh/ —— 换一个 visit() 就是另一个浏览器上下文，
+   sessionStorage 天然是空的，那条断言就永远「通过」且什么也没验到。
+   存的是 8 张卡片 data-project 的排列；两侧 id 集合相同是前提，否则「顺序不变」无意义。 */
+{
+  const orderOf = `[...document.querySelectorAll('#stack .card')].map(c => c.dataset.project)`;
+  const v = await visit('/index.html', { waitMs: 1200 });
+  const first = await v.evaluate(`(() => ({
+    order: ${orderOf},
+    stored: sessionStorage.getItem('indexCardOrder')
+  }))()`);
+  checkTrue('首次进入首页：8 张卡片顺序已写进 sessionStorage',
+    first.stored && JSON.parse(first.stored).length === 8);
+  check('存下来的就是当前 DOM 顺序（读的与用的一致）', JSON.parse(first.stored || '[]'), first.order);
+
+  await v.raw('Page.navigate', { url: BASE + '/zh/' });
+  await sleep(1500);
+  const second = await v.evaluate(`(() => ({
+    path: location.pathname,
+    order: ${orderOf},
+    stored: sessionStorage.getItem('indexCardOrder')
+  }))()`);
+  check('已导航到中文首页', second.path, '/zh/');
+  check('切到中文：卡片顺序与英文页逐字相同', second.order, first.order);
+  check('切到中文：sessionStorage 里的顺序没被重写', second.stored, first.stored);
+
+  /* 反向：清掉存储 = 假装新开一个标签页，顺序必须重新随机并重新落盘。
+     8 张卡片随机排列恰好等于旧顺序的概率是 1/40320，不设这个前提的话
+     「新标签页顺序不一样」这一条会以 0.0025% 的概率假失败。 */
+  await v.evaluate(`sessionStorage.removeItem('indexCardOrder')`);
+  await v.raw('Page.navigate', { url: BASE + '/' });
+  await sleep(1500);
+  const third = await v.evaluate(`(() => ({
+    order: ${orderOf},
+    stored: sessionStorage.getItem('indexCardOrder')
+  }))()`);
+  checkTrue('新标签页（存储已清）：顺序重新洗过',
+    JSON.stringify(third.order) !== JSON.stringify(first.order));
+  check('新标签页：新的顺序同样落盘了', third.stored, JSON.stringify(third.order));
+
+  /* 上面「顺序不变」只有在两份页面卡片集合相同时才有意义：回中文页再比一次 id 集合 */
+  await v.raw('Page.navigate', { url: BASE + '/zh/' });
+  await sleep(1500);
+  const zhOrder = await v.evaluate(`(() => ${orderOf})()`);
+  check('中英两页的卡片 id 集合相同（「顺序不变」才有意义）',
+    [...zhOrder].sort(), [...first.order].sort());
+  await v.close();
+}
+
 /* ---------- 四之二、悬停展签（2026-10-09 加）----------
    展签完全由 CSS 的 :hover 驱动，程序化 .click() 与 evaluate 里改样式都验不到：
    必须派发**真实鼠标移动**，浏览器才会算出 :hover。 */
@@ -605,6 +656,31 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   }))()`);
   check('纯触摸设备：any-pointer:fine 不匹配、展签 display:none', [touch.fine, touch.display], [false, 'none']);
   await vt.close();
+
+  /* 宽度门与触摸门（2026-10-09 加）。为什么要两道：
+     · 真手机上 any-pointer:fine 本来就是假（上面那条），但 DevTools 的手机模拟与窄窗口里
+       指针仍然是鼠标 —— 不按宽度再断一次，展签会漏进「移动尺寸」；
+     · 触屏笔记本的 any-pointer:fine 恒为真（它确实有鼠标），媒体查询分不出手指与鼠标，
+       只能看 pointerdown 的 pointerType。 */
+  const vm = await visit('/index.html', { waitMs: 1200, viewport: { width: 390, height: 844 } });
+  const narrow = await vm.evaluate(`(() => ({ fine: matchMedia('(any-pointer: fine)').matches,
+    display: getComputedStyle(document.querySelector('.card-label')).display }))()`);
+  check('移动尺寸（390px）+ 鼠标：展签 display:none（宽度门）', [narrow.fine, narrow.display], [true, 'none']);
+  await vm.close();
+
+  const vg = await visit('/index.html', { waitMs: 1200 });
+  check('桌面（1280px）基线：展签 display:flex',
+    await vg.evaluate(`getComputedStyle(document.querySelector('.card-label')).display`), 'flex');
+  await vg.evaluate(`(document.dispatchEvent(new PointerEvent('pointerdown',{pointerType:'touch',bubbles:true})), 1)`);
+  await sleep(120);
+  const off = await vg.evaluate(`(() => ({ display: getComputedStyle(document.querySelector('.card-label')).display,
+    cls: document.documentElement.classList.contains('touch-input') }))()`);
+  check('手指按下后：.touch-input 挂上、展签 display:none', [off.cls, off.display], [true, 'none']);
+  await vg.evaluate(`(document.dispatchEvent(new PointerEvent('pointermove',{pointerType:'mouse',bubbles:true})), 1)`);
+  await sleep(120);
+  check('鼠标一动：展签恢复 display:flex',
+    await vg.evaluate(`getComputedStyle(document.querySelector('.card-label')).display`), 'flex');
+  await vg.close();
   await v.close();
 }
 
@@ -655,6 +731,23 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   await sleep(900);
   const after = await v.evaluate(`[...document.querySelectorAll('#stack .card')].map(c => c.dataset.project)`);
   check('按住拖 30px 再松手：既不置顶也不翻牌（顺序逐字不变）', after, t.order);
+  await v.close();
+}
+{
+  /* 触摸点击不置顶（2026-10-09 定）：同一位置改用触摸事件，顺序必须逐字不变。
+     click 事件本身不带输入类型，代码读的是 pointerdown 记下的 pointerType。 */
+  const v = await visit('/index.html', { waitMs: 1500 });
+  const t = await v.evaluate(`(() => {
+    const k = [...document.querySelectorAll('#stack .card')], c = k[k.length - 4], r = c.getBoundingClientRect();
+    return { id: c.dataset.project, order: k.map(x => x.dataset.project),
+             x: Math.round(r.right - 4), y: Math.round(r.y + r.height / 2) };
+  })()`);
+  await v.raw('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
+  await v.raw('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: t.x, y: t.y }] });
+  await v.raw('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await sleep(900);
+  check('触摸点击下层卡片：不置顶（顺序逐字不变）',
+    await v.evaluate(`[...document.querySelectorAll('#stack .card')].map(c => c.dataset.project)`), t.order);
   await v.close();
 }
 

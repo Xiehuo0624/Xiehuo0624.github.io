@@ -13,14 +13,73 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
   const ANIM_MS = REDUCED_MOTION ? 0 : 300;   // 减少动态偏好下不保留动画计时
   let reindexPending = false;
 
-  /* ---- shuffle card order on each page load ---- */
-  (function shuffle(){
-    const cards = [...stack.children];
-    for (let i = cards.length - 1; i > 0; i--) {
+  /* ---- shuffle card order：每个标签页首次随机，之后同一标签页内固定 ----
+     （2026-10-27 改；此前是「每次页面加载都重洗」）
+
+     为什么必须固定：中英切换**不是原地换文案** —— 首页英文在 `/`、中文在 `/zh/`
+     （两份页面各自 `data-lang-fixed`，见 js/i18n.js 文件头与 scripts/gen-pages.mjs），
+     点语言按钮是一次真正的文档导航。若每次都重洗，切一次语言卡片就重排一次，
+     读者会以为点错了什么。
+
+     做法：把这一次洗出的顺序（8 张卡片 data-project 的排列）写进 sessionStorage，
+     之后（切语言、刷新、从作品页返回首页）**按这一份顺序重排**，不再随机。
+     sessionStorage 的作用域就是「一个标签页」：关掉标签页再进来，顺序重新随机 ——
+     保留「每次访问都是新排序」的初衷。**不用 localStorage**：那样随机一辈子只发生一次，
+     2026-06-24 定的随机性就名存实亡了（作者 2026-10-27 选的范围）。
+     不用「只存种子再算一遍」：增删卡片后同一颗种子会算出不同的排列，
+     存排列本身才能把「顺序」这件事说清楚。
+
+     存的排列与当前卡片集合对不上（增删了作品）时**重洗一次并覆盖**：
+     不拿新卡片往旧顺序上凑，因为凑出来的位置带有偏置，而且读者看不出这是旧的。 */
+  const ORDER_KEY = 'indexCardOrder';
+
+  function randomOrder(n){
+    /* Fisher-Yates；洗的是下标，DOM 重排在 applyOrder 里统一做 */
+    const idx = Array.from({ length: n }, (_, i) => i);
+    for (let i = n - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      stack.appendChild(cards[j]);            // 随机重排 DOM 顺序
-      cards[j] = cards[i];                    // 交换引用，避免重复
+      const t = idx[i]; idx[i] = idx[j]; idx[j] = t;
     }
+    return idx;
+  }
+
+  /** 按给定的 id 顺序重排 #stack（appendChild 到末尾 = 视觉最上层） */
+  function applyOrder(ids){
+    const byId = new Map([...stack.children].map(c => [c.dataset.project, c]));
+    ids.forEach(id => {
+      const card = byId.get(id);
+      if (card) stack.appendChild(card);
+    });
+  }
+
+  /** 读回本标签页已有的顺序；读不到、或与当前卡片对不上，都返回 null */
+  function savedOrder(ids){
+    let raw = null;
+    try { raw = sessionStorage.getItem(ORDER_KEY); } catch(e) { return null; }  // 隐私模式等：静默降级
+    if (!raw) return null;
+    try {
+      const order = JSON.parse(raw);
+      /* 必须恰好是当前这批卡片的排列：少一张（删了作品）、多一张/多一个未知 id
+         （换了作品）都视为过期。集合比较不看先后，比较的是「有没有覆盖到」 */
+      if (!Array.isArray(order) || order.length !== ids.length) return null;
+      const given = new Set(order), mine = new Set(ids);
+      if (given.size !== order.length) return null;
+      return order.every(id => mine.has(id)) ? order : null;
+    } catch(e) { return null; }
+  }
+
+  (function shuffle(){
+    const ids = [...stack.children].map(c => c.dataset.project);
+    /* 少于两张不必洗；有卡片没写 data-project（或 id 重复）时**整块跳过**，
+       保留 HTML 里的书写顺序 —— 洗了也存不下来、下次也对不回来，宁可不洗 */
+    if (ids.length < 2 || ids.some(id => !id) || new Set(ids).size !== ids.length) return;
+
+    const order = savedOrder(ids);
+    if (order) { applyOrder(order); return; }      // 本标签页已定过序：照旧
+
+    const shuffled = randomOrder(ids.length).map(i => ids[i]);
+    applyOrder(shuffled);
+    try { sessionStorage.setItem(ORDER_KEY, JSON.stringify(shuffled)); } catch(e) {}
   })();
 
   function reindex(){
@@ -244,8 +303,25 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
     }, ANIM_MS + STAGGER_MS);
   }
 
+  /* ---- 输入类型：同一台设备上「手指」与「鼠标」要分开对待（作者 2026-10-09 定）----
+     ① 展签只在鼠标悬停时出现：手指按下就把 .touch-input 挂到 <html>（css/index.css 里一条
+        规则把展签整块 display:none），鼠标一动再摘掉。**媒体查询做不到这件事** ——
+        触屏笔记本的 any-pointer:fine 恒为真（它确实有鼠标），只有 pointerdown 的
+        pointerType 分得清「这一下是手指还是鼠标」；DevTools 的手机模拟则靠宽度那道门。
+     ② 点下层卡片置顶只给鼠标：触摸点击不再置顶，也**不翻牌** —— 手指划到一半的误触最
+        容易被当成点击，不该顺手改动牌堆。点顶层卡片两边都进作品页（触摸端这是唯一的
+        进入路径，不能动）。 */
+  let lastPointerType = 'mouse';       // 程序化 click() 没有 pointerdown，按鼠标处理
+  document.addEventListener('pointerdown', e => {
+    lastPointerType = e.pointerType || 'mouse';
+    document.documentElement.classList.toggle('touch-input', lastPointerType === 'touch');
+  }, true);
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType === 'mouse') document.documentElement.classList.remove('touch-input');
+  }, true);
+
   /* ---- CLICK ----
-     顶层卡片 → 进作品页；下层卡片 → 把它置顶（不再是「翻一张」）。
+     顶层卡片 → 进作品页；下层卡片 → 把它置顶（不再是「翻一张」，且**只对鼠标**）。
      拖拽收尾的那次 click 在第一行就被 suppressClick 丢弃，所以「拖过一下没到阈值」
      既不会打开作品页、也不会顺手置顶。 */
   stack.addEventListener('click', e => {
@@ -266,8 +342,8 @@ document.getElementById('name-easter').addEventListener('click', () => alert('�
           ? App.langHref(card.dataset.href)
           : card.dataset.href;
       if (href) window.location.href = href;
-    } else {
-      bringToTop(card);
+    } else if (lastPointerType !== 'touch') {
+      bringToTop(card);                        /* 触摸点击不置顶（作者 2026-10-09 定） */
     }
   });
 
