@@ -288,11 +288,20 @@ h2 .work-sub{
   .gallery-body p{line-height:2.0}
 }
 
-/* ===== MIXER layout (riverrun) ===== */
-.mixer-panel{display:none;flex-direction:column;height:100vh;height:100dvh;padding:76px 20px 18px;gap:10px;overflow:hidden;max-width:1080px;margin:0 auto;width:100%}
-.mixer-header{padding:0 4px}
-.mixer-header h2{font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
+/* ===== MIXER layout (riverrun / The Induction Mixer) ===== */
+/* 首屏与改动前的 .mixer-panel 同尺寸（100dvh / max-width 1080 / padding 76 20 18 /
+   gap 10），拆成 .mixer-hero 之后，面板本身可以继续向下接照片区而不裁切首屏。
+   riverrun 没有 media，照片区与两个链接保持 hidden，首屏与改动前一致。 */
+.mixer-panel{display:none;flex-direction:column;width:100%}
+.mixer-hero{display:flex;flex-direction:column;height:100vh;height:100dvh;padding:76px 20px 18px;gap:10px;overflow:hidden;max-width:1080px;margin:0 auto;width:100%}
+.mixer-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 12px;padding:0 4px}
+.mixer-header h2{flex:1 1 auto;min-width:0;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
 .mixer-panel.lowercase .mixer-header h2{text-transform:none;letter-spacing:1px}
+/* 照片跳转：只在作品带 media 时由 js/project.js 取消 hidden；riverrun 看不到 */
+.mixer-photos-link,.mixer-gallery-back{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px;white-space:nowrap}
+.mixer-photos-link{flex:none;margin-left:auto;color:var(--muted)}
+.mixer-photos-link:hover,.mixer-gallery-back:hover{background:var(--fg);color:var(--bg)}
+.mixer-photos-link[hidden]{display:none}
 .mixer-body{display:flex;flex:1;min-height:0;gap:14px}
 .mixer-stage{position:relative;flex:1;min-width:0;border:3px solid var(--rule);background:var(--bg);overflow:hidden}
 .mixer-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
@@ -308,13 +317,24 @@ h2 .work-sub{
 .btn-mixer{font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:3px solid var(--rule);background:var(--fg);color:var(--bg);padding:14px 28px;cursor:pointer}
 .btn-mixer:hover{background:var(--bg);color:var(--fg)}
 .btn-mixer:disabled{opacity:.6;cursor:default}
+/* 照片区：首屏之下，与 gallery 布局共用 .gallery-grid 与 Lightbox。
+   宽 800 与正文页的画廊一致；标题行自带 3px 上边线，作为首屏与资料的分界。 */
+.mixer-gallery{width:100%;max-width:800px;margin:0 auto;padding:0 40px 40px;scroll-margin-top:76px}
+.mixer-gallery[hidden]{display:none}
+.mixer-gallery-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 12px;border-top:3px solid var(--rule);padding-top:24px;margin-bottom:14px}
+.mixer-gallery-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
+.mixer-gallery-back{margin-left:auto}
+.mixer-gallery .gallery-grid{margin-top:0}
 
 @media(max-width:768px){
-  .mixer-panel{flex-direction:column;height:auto;min-height:100dvh;padding:64px 12px 48px;gap:8px;overflow:visible;max-width:none;margin:0}
+  .mixer-hero{height:auto;min-height:100dvh;padding:64px 12px 48px;gap:8px;overflow:visible;max-width:none;margin:0}
   .mixer-body{display:flex;flex-direction:column;flex:none;gap:8px}
   .mixer-header h2{font-size:15px}
+  .mixer-photos-link,.mixer-gallery-back{font-size:10px}
   .mixer-stage{height:40dvh;flex:none}
   .mixer-desc{width:auto;flex:none;border:none;background:transparent;overflow:visible;padding:6px 2px 0;font-size:12.5px;line-height:1.85}
+  .mixer-gallery{padding:0 16px 24px;scroll-margin-top:64px}
+  .mixer-gallery-head{padding-top:18px}
   .btn-mixer{font-size:13px;padding:12px 22px}
   .mixer-hud{top:8px;right:8px;gap:6px}
   .btn-mixer-sm{font-size:10px;padding:5px 8px}

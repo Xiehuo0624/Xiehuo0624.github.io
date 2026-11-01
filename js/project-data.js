@@ -60,11 +60,17 @@ App.projects = {
   },
 
   'the-induction-mixer': {
-    layout: 'gallery',
+    layout: 'mixer',
     title: { zh:'THE INDUCTION MIXER', en:'THE INDUCTION MIXER' },
     subtitle: { zh:'基于近场电磁感应的交互式矩阵电子混音器的乐器设计', en:'An interactive matrix electronic mixer built on near-field electromagnetic induction' },
     brief: { zh:'基于近场电磁感应的12输入4输出空间混音器', en:'A 12-in 4-out spatial mixer based on near-field electromagnetic induction' },
     desc: { file: true },
+    /* 网页版混音器：与 riverrun 共用 js/mixer-riverrun.js，但音源改为从 Sample 清单里
+       每次 START 随机抽 12 条（不重复），每条各自 loop。清单由 scripts/gen-samples.mjs
+       从 audio-masters/ 里 7 条录音 loop + 12 条生成打击乐转码生成。 */
+    sampleManifest: 'data/the-induction-mixer/samples.json',
+    sampleCount: 12,
+    tracks: 12,
     media: { type: 'gallery', images: ['img/the-induction-mixer.webp','img/the-induction-mixer-2.webp','img/the-induction-mixer-3.webp'] },
     related: [ { id:'riverrun', role:{ zh:'应用于', en:'Used in' } } ]
   },

@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-02',
+      title: {
+        zh: 'THE INDUCTION MIXER 网页版：19 条 Sample 随机抽 12 条，各自循环',
+        en: 'The Induction Mixer goes web: 12 of 19 samples, looping independently'
+      },
+      brief: {
+        zh: '网页版混音器接入 19 条 Sample，每次随机抽 12 条各自循环；7 录音 + 12 打击乐。',
+        en: 'The web mixer now draws 12 of 19 samples per start, each looping independently: seven recorded loops plus twelve single-voice percussion loops. The placeholder is gone.'
+      },
+      media: ''
+    },
+    {
       date: '2026-10-27',
       title: {
         zh: '移动端不显示悬停展签；触摸点下层卡片不再置顶（鼠标行为不变）',

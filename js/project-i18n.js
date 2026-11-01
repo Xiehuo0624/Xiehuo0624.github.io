@@ -25,8 +25,15 @@ App.PROJECT_I18N = {
   /* 现场照片的 alt 后缀（edgedgedge 的 edge 布局用；别处复用同一键） */
   livePhoto:      { zh:'现场照',                     en:'live photograph' },
 
-  /* ---- riverrun spatial mixer ---- */
+  /* ---- riverrun / The Induction Mixer spatial mixer ---- */
   mixerStart:     { zh:'开始混音',                                  en:'START MIXING' },
   mixerStop:      { zh:'停止',                                      en:'STOP' },
   mixerLoading:   { zh:'载入音轨',                                  en:'LOADING TRACKS' },
+  mixerNeedSamples:{ zh:'样本库不足 12 条',                          en:'NEED 12 SAMPLES' },
+  mixerLoadFailed:{ zh:'样本载入失败，请重试',                       en:'SAMPLE LOAD FAILED — RETRY' },
+
+  /* ---- The Induction Mixer 作品页：混音器下方的照片区 ---- */
+  photosTitle:    { zh:'照片',                                      en:'PHOTOGRAPHS' },
+  photosLink:     { zh:'照片 ↓',                                    en:'PHOTOS ↓' },
+  backToMixer:    { zh:'↑ 回到混音器',                              en:'↑ BACK TO MIXER' },
 };

@@ -699,27 +699,30 @@ media: {
 | 翻页范围 | **全部图**（不分段分组）：从任意一张进入都能一路翻到底，索引与点击处一致 |
 | 逻辑位置 | `js/project.js` 的 `openLightbox()`，网格渲染时绑定 click |
 
-### 7f. Mixer 布局（riverrun 交互式空间混音）
+### 7f. Mixer 布局（riverrun / The Induction Mixer 交互式空间混音）
 
-riverrun 作品页的交互式空间混音器，复现 The Induction Mixer 的交互逻辑：12 条音轨在 Canvas 面板上排布为带编号的黑点，点半径随响度脉动；光标（虚拟麦克风）离点越近该轨音量越大。全屏面板，Web Audio API 驱动。
+riverrun 与 The Induction Mixer 两个作品页共用的交互式空间混音器：12 个音源在 Canvas 面板上排布为带编号的点，点半径随响度脉动；光标（虚拟麦克风）离点越近该音源音量越大。全屏面板，Web Audio API 驱动。riverrun 用 12 条等长音轨；The Induction Mixer 每次 START 从 Sample 清单随机抽 12 条、各自循环（见《程序编写说明》§9.5）。带 `media` 的混音作品在首屏下方接一段照片区；riverrun 没有 media，照片区与两个跳转链接保持 `hidden`，首屏与改动前一致。
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
-| 面板 `.mixer-panel` | 纵向：`flex-direction:column; height:100vh; max-width:1080px; margin:0 auto`（整体收窄居中，标题横跨顶部） | 上下分栏：`flex-direction:column; height:auto; min-height:100dvh; padding:64px 12px 48px; overflow:visible`（页面自然滚动） |
+| 面板 `.mixer-panel` | 容器：`display:flex; flex-direction:column; width:100%`；首屏尺寸在 `.mixer-hero` 上 | 同左 |
+| 首屏 `.mixer-hero` | `height:100dvh; max-width:1080px; margin:0 auto; padding:76px 20px 18px; gap:10px; overflow:hidden` | `height:auto; min-height:100dvh; padding:64px 12px 48px; overflow:visible`（页面自然滚动） |
+| 标题区 `.mixer-header` | 横跨顶部：标题 + 副标题（`p.subtitle || p.brief`）；有 media 时右侧「照片 ↓」链接 | 同左；链接可换行，`margin-left:auto` 靠右 |
 | 内容行 `.mixer-body` | `flex:1`（行：舞台 + 说明列） | `flex-direction:column; flex:none` |
-| 标题区 `.mixer-header` | 横跨面板顶部，仅标题，无副标题 | 同左 |
-| 舞台 `.mixer-stage` | `flex:1; border:3px solid #000; position:relative`（与说明列纵向对齐等高） | `height:40dvh; flex:none` |
-| 说明列 `.mixer-desc` | 右侧 `width:380px; overflow-y:auto; border:3px solid #000`（与舞台纵向对齐） | 交互下方，无边框、透明背景、随页面滚动 |
+| 舞台 `.mixer-stage` | `flex:1; border:3px solid var(--rule); position:relative`（与说明列纵向对齐等高） | `height:40dvh; flex:none` |
+| 说明列 `.mixer-desc` | 右侧 `width:380px; overflow-y:auto; border:3px solid var(--rule)`（与舞台纵向对齐） | 交互下方，无边框、透明背景、随页面滚动 |
 | Canvas `.mixer-canvas` | `position:absolute; inset:0; touch-action:none; cursor:crosshair` | 同左 |
 | 启动按钮 `.btn-mixer` | 黑底白字、`3px` 边框、居中覆盖 | `13px` 字号 |
 | HUD 控件 | 右上角仅 STOP | 同左 |
 | 增益 | 无 UI 控件：增益只由麦克风光标外圈半径 + 增益弧指示，桌面滚轮（wheel）调节、手机固定 100%、手写笔 pressure | 同左 |
 | 交互 | 鼠标常驻一只麦克风（滚轮调增益）；触控每指一只（手机固定增益 100%） | 同左 |
-| 逻辑位置 | `js/mixer-riverrun.js` 的 `App.initRiverrunMixer()`，`js/project.js` 的 mixer 分支初始化 | |
+| 照片区 `.mixer-gallery` | 首屏下方，`max-width:800px`；3 列（手机 2 列）、4:3 contain、Lightbox；标题行「照片 / PHOTOGRAPHS」+「↑ 回到混音器」 | 同左 |
+| 照片跳转 | 舞台滚轮仍调增益；照片区用链接跳转。**裸 `#id` 会被 `<base href="/">` 解析成站点根**，必须用当前 URL + `#id` 并由 JS 接管滚动 | 同左 |
+| 逻辑位置 | `js/mixer-riverrun.js` 的 `App.initRiverrunMixer()`，`js/project.js` 的 mixer 分支初始化、`bindMixerGalleryLinks()` 绑定照片链接 | |
 
-> Gallery 布局适用于有多张图片需要展示的作品（如硬件作品），图片从 `project-data.js` 的 `media.sections`（段 → 组 → 图；老的扁平 `media.images` 仍受支持）渲染，不在描述 HTML 中内嵌。
+> Gallery 布局适用于纯图片作品（6U104HP 21 张）；The Induction Mixer 的 3 张照片走 Mixer 布局的 `.mixer-gallery`，不再用 Gallery。
 
-> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），含多张图片的作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`），均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
+> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），纯多图作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`）；混音作品即使带照片资料也用 Mixer（照片区在首屏下方），不要退回 Gallery。均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
 
 ### 7g. 首屏布局选择（绘制前定布局）
 
@@ -901,7 +904,8 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 ├── audio/                        音频资源
 │   ├── ecce-homo.m4a
 │   ├── the-just-type-study.m4a
-│   └── riverrun/               riverrun 12 条音轨（1.m4a ~ 12.m4a）
+│   ├── riverrun/               riverrun 12 条音轨（1.m4a ~ 12.m4a）
+│   └── the-induction-mixer/    网页混音器 19 条 Sample（7 录音 + 12 打击乐）
 │
 ├── img/                         图片资源（部署用 WebP，原图留档于 originals/）
 │   ├── ecce-homo.webp
@@ -912,7 +916,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   ├── spectral-dissector.webp
 │   ├── spectral-dissector-1.webp    项目页介绍内嵌图1（初版 M4L 截图）
 │   ├── spectral-dissector-2.webp    项目页顶部介绍图
-│   ├── the-induction-mixer.webp      卡片封面 + Gallery 首图共用
+│   ├── the-induction-mixer.webp      卡片封面 + 首屏下方照片区首图共用
 │   ├── the-induction-mixer-2.webp
 │   ├── the-induction-mixer-3.webp
 │   ├── the-just-type-study.webp        卡片封面
@@ -926,6 +930,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │
 ├── scripts/                     开发工具与本地服务器
 │   ├── gen-projects.mjs        作品页静态生成器（§7h；`--check` 只比对不写入）
+│   ├── gen-samples.mjs         网页混音器 Sample 转码 + 清单生成（audio-masters/ → audio/the-induction-mixer/）
 │   ├── gen-pages.mjs           站内页静态生成器（§7i；模板是根目录那四个 HTML）
 │   ├── changelog-split.mjs     changelog 全文抽取器（公开页只留 title+brief，全文进本地 docs/工程决策记录.md，不部署）
 │   ├── gen-cjk-extras.py       SiteCJK 微型子集生成器（英文侧零散汉字；`--check` 查漂移）

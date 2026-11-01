@@ -6,7 +6,7 @@
 
 ```bash
 python3 -m http.server 8765 --bind 127.0.0.1 &   # 起本地服务
-node scripts/verify/verify.mjs          # 结构与交互（915 项断言，2026-10-27）
+node scripts/verify/verify.mjs          # 结构与交互（931 项断言，2026-10-27）
 node scripts/verify/coverage.mjs        # 中文覆盖率（差集必须为空）
 node scripts/verify/mixed-gen.mjs       # 新旧 JS 混用（33 项）
 node scripts/verify/perf.mjs 5          # 首屏对比，参数是每个用例的重复次数

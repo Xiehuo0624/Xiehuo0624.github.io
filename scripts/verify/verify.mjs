@@ -224,7 +224,7 @@ const P = [
   /* 2026-10-09：just-type 补了 2026.10.04 Cedar Land 的海报与两张现场照（走 ecce 的现场网格），
      故从 img+audio 改为 img+audio+live，n = 3（断言里 imgs 为 n + 1，另加顶部那张 still）。 */
   { id: 'the-just-type-study', layout: 'ecce',    zh: 'The JustType Study', en: 'The JustType Study', media: 'img+audio+live', n: 3 },
-  { id: 'the-induction-mixer', layout: 'gallery', zh: 'THE INDUCTION MIXER', en: 'THE INDUCTION MIXER', media: 'gallery', n: 3 },
+  { id: 'the-induction-mixer', layout: 'mixer',   zh: 'THE INDUCTION MIXER', en: 'THE INDUCTION MIXER', media: 'gallery', n: 3 },
   { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'none', n: 0 },
   { id: 'edgedgedge',         layout: 'edge',    zh: 'EDGEDGEDGE',         en: 'EDGEDGEDGE',         media: 'iframe+live', n: 6 },
   { id: 'spectral-dissector', layout: 'ecce',    zh: 'SPECTRAL DISSECTOR', en: 'SPECTRAL DISSECTOR', media: 'img', n: 1 },
@@ -840,11 +840,13 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   check('16 个作品页各含恰好一处烤好的返回栏', bars, 16);
   check('16 页的返回栏 href 与文案逐页正确（./ 与 ./zh/）', bad, []);
 
-  /* 不跑 JS：返回 + 语言切换两个链接都得在（此前是 0 个） */
+  /* 不跑 JS：返回 + 语言切换两个链接都得在（此前是 0 个）。
+     只数**可见**链接：mixer 模板给带 media 的作品加了「照片 ↓ / 回到混音器」两个隐藏链接，
+     riverrun 没有 media，它们保持 hidden；无 JS 时不该把这两个不可见出口算进来。 */
   const v = await visit('/works/riverrun/zh/', { noJs: true, waitMs: 800 });
   const info = await v.evaluate(`(() => {
     const back = document.querySelector('.back a[data-i18n="back"]');
-    return { links: document.querySelectorAll('a[href]').length,
+    return { links: [...document.querySelectorAll('a[href]')].filter(a => a.getClientRects().length > 0).length,
              backText: back && back.textContent, backAbs: back && back.href,
              toggle: !!document.querySelector('#lang-toggle'),
              hasText: document.body.innerText.includes('作品简介') };
@@ -1035,7 +1037,7 @@ console.log('=== 八、生成页按布局挂脚本 ===');
     '6u104hp':             [],
     'edgedgedge':          [],
     'ecce-homo':           [],
-    'the-induction-mixer': [],
+    'the-induction-mixer': ['js/mixer-riverrun.js'],
     'the-just-type-study': []
   };
   const ALL = ['js/ink-wwhbh.js', 'js/audio-wwhbh.js', 'js/mixer-riverrun.js'];
@@ -1454,6 +1456,7 @@ console.log('=== 十四、深色模式：计算值断言（Emulation.setEmulated
     ['/works/ecce-homo/', 'ecce 布局',    '.work-meta',       'borderTopColor',    '.work-meta-k'],
     ['/works/wwhbh/',     'wwhbh 布局',   '.btn-mic',         'borderTopColor',    '.work-meta-k'],
     ['/works/riverrun/',  'mixer 布局',   '.mixer-stage',     'borderTopColor',    '.work-meta-k'],
+    ['/works/the-induction-mixer/', 'mixer + gallery 布局', '.mixer-stage', 'borderTopColor', '.work-meta-k'],
   ];
 
   const probe = (ruleSel, ruleProp, mutedSel) => `(function(){

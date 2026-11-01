@@ -102,6 +102,35 @@
     return grid;
   }
 
+  /** 画廊主体：段 → 组 → 网格。gallery 布局与 mixer 布局的照片区共用。
+   *  调用前 root 里应是空的；本函数会重置 Lightbox 的三份扁平索引，
+   *  所以同一页只调用一次（见 mediaRendered）。 */
+  function renderGallerySections(rootId, project, alt){
+    if (!project.media || project.media.type !== 'gallery') return;
+    const rootEl = document.getElementById(rootId);
+    if (!rootEl) return;
+    rootEl.innerHTML = '';
+    galleryImages = [];
+    galleryLabels = [];
+    galleryCaptions = [];
+    /* 老数据只有扁平 images（The Induction Mixer 的照片区仍在用）；归一成同一形状后共用下面这套渲染 */
+    const sections = project.media.sections || [{ images: project.media.images }];
+    sections.forEach(sec => {
+      const secEl = document.createElement('div');
+      secEl.className = 'gallery-section';
+      addGalleryLabel(secEl, sec.label, 'gallery-section-title');
+      if (sec.images) secEl.appendChild(buildGalleryGrid(sec.images, alt));
+      (sec.groups || []).forEach(grp => {
+        const grpEl = document.createElement('div');
+        grpEl.className = 'gallery-group';
+        addGalleryLabel(grpEl, grp.label, 'gallery-group-title');
+        grpEl.appendChild(buildGalleryGrid(grp.images, alt));
+        secEl.appendChild(grpEl);
+      });
+      rootEl.appendChild(secEl);
+    });
+  }
+
   /** 现场资料块：可播放音频（可选）＋ 照片网格（可选）。edge／ecce／wwhbh 三个布局共用。
    *  网格交给 buildGalleryGrid，所以 Lightbox 的索引、翻页与计数与画廊页同源；
    *  容器在烤好的页面里是空的（没有 data-baked），因此这一块不吃 isBaked 的判断，
@@ -335,34 +364,12 @@
     } else if (layout === 'gallery') {
       setTitle('gallery-title');
       /* render gallery sections → groups → grids */
-      if (!mediaRendered && project.media && project.media.type === 'gallery' && !isBaked('gallery-sections')) {
-        const rootEl = document.getElementById('gallery-sections');
-        if (rootEl) {
-          rootEl.innerHTML = '';
-          galleryImages = [];
-          galleryLabels = [];
-          galleryCaptions = [];
-          /* 老数据只有扁平 images（the-induction-mixer）；归一成同一形状后共用下面这套渲染 */
-          const sections = project.media.sections || [{ images: project.media.images }];
-          sections.forEach(sec => {
-            const secEl = document.createElement('div');
-            secEl.className = 'gallery-section';
-            addGalleryLabel(secEl, sec.label, 'gallery-section-title');
-            if (sec.images) secEl.appendChild(buildGalleryGrid(sec.images, t));
-            (sec.groups || []).forEach(grp => {
-              const grpEl = document.createElement('div');
-              grpEl.className = 'gallery-group';
-              addGalleryLabel(grpEl, grp.label, 'gallery-group-title');
-              grpEl.appendChild(buildGalleryGrid(grp.images, t));
-              secEl.appendChild(grpEl);
-            });
-            rootEl.appendChild(secEl);
-          });
-        }
+      if (!mediaRendered && !isBaked('gallery-sections')) {
+        renderGallerySections('gallery-sections', project, t);
       }
       /* 分组标题、图注与 alt 是文字，切语言必须跟着换；网格不重建 —— 重建会丢滚动位置、
          也会让已经解码的图片重新入队下载（媒体只渲染一次的原因见文件头变量注释）。
-         统一在 mediaRendered 之后调一次 applyGalleryLang()，四个布局共用。 */
+         统一在 mediaRendered 之后调一次 applyGalleryLang()，gallery 与 mixer 的照片区共用。 */
     } else if (layout === 'wwhbh') {
       setTitle('wwhbh-title');
       /* 现场资料：2024.12.14「硬糖」@ Trigger（上海）那一场的录音与照片。
@@ -370,6 +377,19 @@
       if (!mediaRendered) renderLive('wwhbh-live', project, t);
     } else if (layout === 'mixer') {
       setTitle('mixer-title');
+      /* The Induction Mixer 的作品页在混音器下方带一段照片区；riverrun 没有 media，
+         这一块保持 hidden，首屏与改动前完全一致。照片区由渲染函数补建，
+         所以不依赖生成器烤入，lightbox 与 gallery 布局同源。 */
+      const hasGallery = !!(project.media && project.media.type === 'gallery');
+      const panel = document.getElementById('layout-mixer');
+      if (panel) panel.classList.toggle('has-gallery', hasGallery);
+      const photosLink = document.getElementById('mixer-photos-link');
+      if (photosLink) photosLink.hidden = !hasGallery;
+      const gallery = document.getElementById('mixer-gallery');
+      if (gallery) gallery.hidden = !hasGallery;
+      if (hasGallery && !mediaRendered && !isBaked('mixer-gallery-sections')) {
+        renderGallerySections('mixer-gallery-sections', project, t);
+      }
     } else if (layout === 'ecce') {
       setTitle('ecce-title');
       /* render top image (+ optional audio) */
@@ -515,12 +535,39 @@
     App.initWwhbh(document.getElementById('btn-mic'), document.getElementById('wwhbh-status'));
   }
 
-  /* ---- RIVERRUN spatial mixer ---- */
+  /* ---- mixer 照片区锚点 ----
+     生成页带 <base href="/">：裸 `#mixer-gallery` 会按 base 解析成站点根，
+     点「照片 ↓」会直接跳回首页（实测）。这里改成「当前路径 + #id」，
+     并接管点击做滚动；语言切换只改 replaceState 的路径，点击时再取一次。
+     绑定只做一次：dataset 标记挡住重复 addEventListener。 */
+  function bindMixerGalleryLinks(){
+    const panel = document.getElementById('layout-mixer');
+    const gallery = document.getElementById('mixer-gallery');
+    if (!panel || !gallery) return;
+    const behavior = () => (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth';
+    const bind = (el, hash, target) => {
+      if (!el || el.dataset.mixerLinkBound) return;
+      el.dataset.mixerLinkBound = '1';
+      el.href = location.href.split('#')[0] + hash;
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        el.href = location.href.split('#')[0] + hash;
+        target.scrollIntoView({ behavior: behavior(), block: 'start' });
+      });
+    };
+    bind(document.getElementById('mixer-photos-link'), '#mixer-gallery', gallery);
+    bind(gallery.querySelector('.mixer-gallery-back'), '#layout-mixer', panel);
+  }
+
+  /* ---- spatial mixer: riverrun（audioDir）或 The Induction Mixer（sampleManifest） ---- */
   if (project.layout === 'mixer') {
     App.initRiverrunMixer(document.getElementById('layout-mixer'), {
       audioDir: project.audioDir,
-      tracks: project.tracks
+      tracks: project.tracks,
+      sampleManifest: project.sampleManifest,
+      sampleCount: project.sampleCount
     });
+    bindMixerGalleryLinks();
   }
 
   /* ---- Gallery lightbox ----

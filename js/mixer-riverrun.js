@@ -1,12 +1,18 @@
-/* ===== RIVERRUN: spatial mixer (recreates The Induction Mixer interaction) =====
+/* ===== SPATIAL MIXER: riverrun + The Induction Mixer =====
  *
- * 12 条音轨在二维「面板」上排布为若干点，点的直径随各轨响度脉动；所有音轨同步循环
- * 播放。用户以光标（抽象指示，非麦克风图标）在面板内移动，即为一只虚拟「麦克风」：
- * 离某轨越近，该轨混音音量越大，越远越小（距离反比衰减）。支持多只麦克风（多点触控，
- * 每根手指一只），其贡献以饱和求和的方式叠加。每只麦克风带增益控制：触控/手写笔/Force
+ * 12 条音轨在二维「面板」上排布为若干点，点的直径随各轨响度脉动。用户以光标
+ * （抽象指示，非麦克风图标）在面板内移动，即为一只虚拟「麦克风」：离某轨越近，
+ * 该轨混音音量越大，越远越小（距离反比衰减）。支持多只麦克风（多点触控，每根手指
+ * 一只），其贡献以饱和求和的方式叠加。每只麦克风带增益控制：触控/手写笔/Force
  * Touch 设备读取 PointerEvent.pressure（按压力度）；鼠标无压力则用滚轮调节增益。
  *
- * 音频：12 个 <audio> 流式播放（MediaElementAudioSourceNode，低内存、可同步循环），
+ * 两种音源：
+ *   · riverrun：audioDir 下的 12 条等长音轨，统一 START 后听感同步循环；
+ *   · The Induction Mixer：每次 START 从 sampleManifest 清单随机抽 12 条不重复的
+ *     Sample，12 条同时起播，之后各按自身长度 loop —— 长度不同，自然错开。
+ *   其余交互与 FX 完全共用。
+ *
+ * 音频：12 个 <audio> 流式播放（MediaElementAudioSourceNode，低内存、可循环），
  * 每轨 source → analyser(响度可视化) → gain(距离混音) → stereoPanner(按 X 固定声像)
  *       → masterGain → limiter(DynamicsCompressor) → destination
  *       ╰ 全局并行发送 FX 链（黑箱）：干声带少量混响；send(0.08~0.5 恒有下限) →
@@ -16,13 +22,17 @@
  * 可视化：Canvas 2D，RAF 常驻绘制（启动前也画静态点阵预览）。
  */
 (function(){
-  let state = null;   // 当前实例状态（本页仅一个 riverrun）
+  let state = null;   // 当前实例状态（每页仅一个 mixer）
 
   App.initRiverrunMixer = function(panel, opts){
     if (state) return;                       // 防止重复初始化
     opts = opts || {};
     const AUDIO_DIR    = opts.audioDir || 'audio/riverrun';
     const TRACK_COUNT  = opts.tracks   || 12;
+    const SAMPLE_MANIFEST = opts.sampleManifest || null;   // 有值则走随机 Sample 模式
+    const SAMPLE_COUNT    = opts.sampleCount || TRACK_COUNT;
+    let sampleListPromise = null;            // 清单只取一次；失败后清空，允许重试
+    let errorText = null;                    // 启动失败时按钮上的 i18n 键
 
     /* ---- DOM ---- */
     const stage     = panel.querySelector('#mixer-stage');
@@ -164,9 +174,68 @@
       return zones;
     }
 
+    /* ---- Sample 模式：清单 + 每次 START 随机抽 12 条 ----
+       清单只在第一次 START 时取，成功后缓存在内存里；失败则清空，下一次 START 重试。
+       这与 riverrun 的 audioDir 模式互不影响：没有 sampleManifest 时整段不会执行。 */
+    async function loadSampleList(){
+      if (!SAMPLE_MANIFEST) return null;
+      if (!sampleListPromise){
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 15000);
+        sampleListPromise = fetch(SAMPLE_MANIFEST, { cache: 'no-cache', signal: ctrl.signal })
+          .then(r => { if (!r.ok) throw new Error('manifest'); return r.json(); })
+          .then(data => {
+            const list = Array.isArray(data) ? data : (data && Array.isArray(data.samples) ? data.samples : null);
+            if (!list || !list.every(u => typeof u === 'string' && u)) throw new Error('manifest');
+            const unique = [...new Set(list)];
+            if (unique.length < SAMPLE_COUNT){
+              const err = new Error('samples');
+              err.code = 'need';
+              throw err;
+            }
+            return unique;
+          })
+          .catch(err => { sampleListPromise = null; throw err; })
+          .finally(() => clearTimeout(timer));
+      }
+      return sampleListPromise;
+    }
+
+    // 部分 Fisher-Yates：只洗前 SAMPLE_COUNT 个，不复制整份再排序
+    function pickSamples(list){
+      const a = list.slice();
+      const n = Math.min(SAMPLE_COUNT, a.length);
+      for (let i = 0; i < n; i++){
+        const j = i + Math.floor(Math.random() * (a.length - i));
+        const t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a.slice(0, n);
+    }
+
+    /* 清单失败/样本不足：把已经建到一半的 AudioContext 收干净，按钮显示错误，
+       不进入 running，也不留下半套音轨。FX 节点在清单取到之前还没建，故只清引用。 */
+    function failStart(key){
+      loading = false;
+      running = false;
+      errorText = key;
+      try { if (audioCtx) audioCtx.close(); } catch(e){}
+      audioCtx = null; masterGain = null; limiter = null; analysisSink = null;
+      fxSend = fxFb = fxDelay = fxEq = fxTrem = tremLfo = tremAmt = fxDrivePre = null;
+      fxDelay2 = fxFb2 = dryRevSend = dryReverb = fxReturn = dryAn = fxAn = swellLfo = swellDepth = swellBaseSrc = null;
+      tracks = [];
+      touchMics.clear();
+      mouseMic.x = -9999; mouseMic.y = -9999;
+      toggleBtn.disabled = false;
+      toggleBtn.textContent = App.I18n.t(key);
+      stopBtn.style.display = 'none';
+      stopBtn.textContent = App.I18n.t('mixerStop');
+      center.style.display = '';
+    }
+
     async function start(){
       if (running || loading) return;
       loading = true;
+      errorText = null;
       const gen = ++generation;          // 本次启动的身份标识
       toggleBtn.disabled = true;
       toggleBtn.textContent = App.I18n.t('mixerLoading');
@@ -176,6 +245,22 @@
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') { try { await audioCtx.resume(); } catch(e){} }
       if (gen !== generation || !loading) return;   // resume 期间被取消
+
+      /* Sample 模式：先把 12 个 URL 抽出来，再建图。失败就收掉 AudioContext，
+         不留下半套音轨；STOP 取消时由 generation 守卫直接返回。 */
+      let sampleFiles = null;
+      if (SAMPLE_MANIFEST){
+        try {
+          const list = await loadSampleList();
+          if (gen !== generation || !loading) return;
+          sampleFiles = pickSamples(list);
+          if (sampleFiles.length < TRACK_COUNT) { failStart('mixerNeedSamples'); return; }
+        } catch(e) {
+          if (gen !== generation || !loading) return;
+          failStart(e && e.code === 'need' ? 'mixerNeedSamples' : 'mixerLoadFailed');
+          return;
+        }
+      }
 
       masterGain = audioCtx.createGain();
       masterGain.gain.value = 0.5;
@@ -292,7 +377,8 @@
       const made = [];
       for (let i = 0; i < TRACK_COUNT; i++){
         const el = new Audio();
-        el.src = AUDIO_DIR + '/' + (i + 1) + '.m4a';
+        /* 两种音源：Sample 模式用它本次抽到的 URL；riverrun 仍走原来的 audioDir/NN.m4a。 */
+        el.src = sampleFiles ? sampleFiles[i] : (AUDIO_DIR + '/' + (i + 1) + '.m4a');
         el.loop = true;
         el.preload = 'metadata';     // 弱网友好：仅先取元数据，播放时才拉流（避免 17MB 预缓冲）
         el.crossOrigin = 'anonymous';
@@ -352,6 +438,7 @@
       loading = false;
       generation++;
       running = false;
+      errorText = null;
       touchMics.clear();
       mouseMic.x = -9999; mouseMic.y = -9999;
 
@@ -709,7 +796,7 @@
         toggleBtn.textContent = App.I18n.t('mixerLoading');
         stopBtn.style.display = 'inline-block';
       } else if (!running) {
-        toggleBtn.textContent = App.I18n.t('mixerStart');
+        toggleBtn.textContent = App.I18n.t(errorText || 'mixerStart');
         stopBtn.style.display = 'none';
       }
     };

@@ -1,0 +1,24 @@
+{
+  "count": 19,
+  "samples": [
+    "audio/the-induction-mixer/loop-01.m4a",
+    "audio/the-induction-mixer/loop-02.m4a",
+    "audio/the-induction-mixer/loop-03.m4a",
+    "audio/the-induction-mixer/loop-04.m4a",
+    "audio/the-induction-mixer/loop-05.m4a",
+    "audio/the-induction-mixer/loop-06.m4a",
+    "audio/the-induction-mixer/loop-07.m4a",
+    "audio/the-induction-mixer/clap-100.m4a",
+    "audio/the-induction-mixer/clap-120.m4a",
+    "audio/the-induction-mixer/clap-140.m4a",
+    "audio/the-induction-mixer/hat-080.m4a",
+    "audio/the-induction-mixer/hat-120.m4a",
+    "audio/the-induction-mixer/hat-140.m4a",
+    "audio/the-induction-mixer/kick-080.m4a",
+    "audio/the-induction-mixer/kick-100.m4a",
+    "audio/the-induction-mixer/kick-120.m4a",
+    "audio/the-induction-mixer/snare-080.m4a",
+    "audio/the-induction-mixer/snare-100.m4a",
+    "audio/the-induction-mixer/snare-140.m4a"
+  ]
+}
