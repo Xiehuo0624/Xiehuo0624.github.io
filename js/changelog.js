@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-03',
+      title: {
+        zh: '英文层机械修正：Lucier 曲名、英式拼写与 cepstrum 小写',
+        en: 'English-layer corrections: Lucier title, British spellings, lowercase cepstrum'
+      },
+      brief: {
+        zh: 'WWHBH 英文页统一为 Lucier 正式曲名；edgedgedge 改英式拼写；SPECTRAL 的 cepstrum 改小写。中文随笔原文未动。',
+        en: 'WWHBH now uses the formal title by Lucier; edgedgedge switches to British spellings; SPECTRAL lowercases cepstrum. The Chinese essay is untouched.'
+      },
+      media: ''
+    },
+    {
       date: '2026-11-02',
       title: {
         zh: 'THE INDUCTION MIXER 网页版：19 条 Sample 随机抽 12 条，各自循环',

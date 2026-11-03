@@ -1,7 +1,7 @@
 <span class="work-meta">
 <span class="work-meta-k">Year</span><span class="work-meta-v">2025–2026</span>
 <span class="work-meta-k">Type</span><span class="work-meta-v">A Max for Live plugin: fundamental, harmonic, transient and noise separation</span>
-<span class="work-meta-k">Specs</span><span class="work-meta-v">Eight harmonic bands, one Cepstrum band (Band 9) and one percussive band (Perc, Band 10), plus a Dry path; all of them share one <code>pfft~</code>, delay-aligned at 4032 samples</span>
+<span class="work-meta-k">Specs</span><span class="work-meta-v">Eight harmonic bands, one cepstrum band (Band 9) and one percussive band (Perc, Band 10), plus a Dry path; all of them share one <code>pfft~</code>, delay-aligned at 4032 samples</span>
 <span class="work-meta-k">Roles</span><span class="work-meta-v">Algorithm and architecture: me; the <code>pfft~</code> of the first parallel Spectral Gates: 任时弘; implementation and UI of the new version: 闫开</span>
 <span class="work-meta-k">Shown</span><span class="work-meta-v">Downloadable from this site (current version); no external use so far</span>
 <span class="work-meta-k">License</span><span class="work-meta-v">All rights reserved. Free for personal and commercial use; modification for own use permitted; redistribution and resale prohibited. See LICENSE.txt in the package.</span>
@@ -23,7 +23,7 @@ Spectral Dissector is a Max for Live plugin that splits a sound into its fundame
 
 <br><br>
 
-Its first form was a set of six parallel Spectral Gates whose thresholds were chained end to end and interlinked; in April 2026 I rebuilt it into the present architecture: eight harmonic bands, one Cepstrum band and one percussive band (Perc), plus a Dry path. The image below is the first version (Spectral Bank, finished around June 2025).
+Its first form was a set of six parallel Spectral Gates whose thresholds were chained end to end and interlinked; in April 2026 I rebuilt it into the present architecture: eight harmonic bands, one cepstrum band and one percussive band (Perc), plus a Dry path. The image below is the first version (Spectral Bank, finished around June 2025).
 
 <img src="img/spectral-dissector-1.webp" alt="Screenshot of the initial version of the Spectral Dissector (Spectral Bank) Max for Live device" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0">
 
@@ -64,11 +64,11 @@ Ircam iana~ &amp; ASAP
 
 <span class="work-sec">How it works</span>
 
-I did not invent a new algorithm. HPSS, Cepstrum and Spectral Noise Gate are all existing methods; what I did was connect them into a tool that can be used in a work in real time, and whose separation is reversible.
+I did not invent a new algorithm. HPSS, cepstrum and Spectral Noise Gate are all existing methods; what I did was connect them into a tool that can be used in a work in real time, and whose separation is reversible.
 
 <br><br>
 
-Technically it splits a sound into ten bands that can be processed separately — eight harmonic bands, one Cepstrum band (Band 9) and one percussive band (Band 10 / Perc) — plus a Dry path. Every band and the dry path share a single <code>pfft~</code>; the separation adds no further FFT analysis and no latency.
+Technically it splits a sound into ten bands that can be processed separately — eight harmonic bands, one cepstrum band (Band 9) and one percussive band (Band 10 / Perc) — plus a Dry path. Every band and the dry path share a single <code>pfft~</code>; the separation adds no further FFT analysis and no latency.
 
 <br><br>
 
@@ -76,7 +76,7 @@ Using it is simple: send one sound in and each band, the Perc Band and the Dry p
 
 <img src="img/spectral-dissector-3.webp" alt="The Spectral Separator routing menu: Bands 1-8, the Perc Band, Residual and Dry each on their own output" loading="lazy" decoding="async" style="display:block;width:100%;margin:16px 0 6px">
 
-<span class="work-note">Routing menu: Bands 1–8, the Perc Band, Residual and Dry each choose an output of their own. Nothing is assigned in this screenshot, so every row reads No output; Residual is the Cepstrum band (Band 9) of the info bar.</span>
+<span class="work-note">Routing menu: Bands 1–8, the Perc Band, Residual and Dry each choose an output of their own. Nothing is assigned in this screenshot, so every row reads No output; Residual is the cepstrum band (Band 9) of the info bar.</span>
 
 <br><br>
 
@@ -84,11 +84,11 @@ The dry path runs through exactly the same <code>pfft~</code> as the ten bands, 
 
 <br><br>
 
-You first adjust the HPSS section to pull the percussive signal out, then the Cepstrum section to separate steady noise and breath. After that you only need <strong>Main Threshold</strong> (the common threshold of all bands), <strong>Spacing</strong> (the loudness difference between harmonic bands), <strong>Tilt</strong> (high- and low-frequency compensation), <strong>Rise / Fall</strong> (the onset and release of transients) and <strong>Focus</strong> (the sharpness of band crossings) — and you have the harmonic content separated into up to 8 Bands in the Harmonic Bands.
+You first adjust the HPSS section to pull the percussive signal out, then the cepstrum section to separate steady noise and breath. After that you only need <strong>Main Threshold</strong> (the common threshold of all bands), <strong>Spacing</strong> (the loudness difference between harmonic bands), <strong>Tilt</strong> (high- and low-frequency compensation), <strong>Rise / Fall</strong> (the onset and release of transients) and <strong>Focus</strong> (the sharpness of band crossings) — and you have the harmonic content separated into up to 8 Bands in the Harmonic Bands.
 
 <br><br>
 
-The Perc Band and the harmonic bands are separated by a strictly complementary pair of masks: percussive content goes to <code>perc_mask</code>, while the harmonic bands multiply their reconstruction by <code>1 - perc_mask</code>. The two sum to the original input, sample for sample, with no added FFT analysis or latency. The envelope-compensation algorithm is temporarily removed in the current version because it conflicts with Cepstrum and HPSS.
+The Perc Band and the harmonic bands are separated by a strictly complementary pair of masks: percussive content goes to <code>perc_mask</code>, while the harmonic bands multiply their reconstruction by <code>1 - perc_mask</code>. The two sum to the original input, sample for sample, with no added FFT analysis or latency. The envelope-compensation algorithm is temporarily removed in the current version because it conflicts with cepstrum and HPSS.
 
 <br><br>
 
