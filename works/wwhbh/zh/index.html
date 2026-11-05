@@ -21,7 +21,7 @@
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
 (function(){try{var fired=false;
-function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=59746bc7';document.head.appendChild(f);}
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=e75c4706';document.head.appendChild(f);}
 if(document.documentElement.dataset.lang==='zh'){pre();return;}
 document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
 document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
@@ -51,7 +51,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=47">
+<link rel="stylesheet" href="css/base.css?v=48">
 <link rel="stylesheet" href="css/nav.css?v=4">
 <link rel="stylesheet" href="css/project.css?v=22">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -153,7 +153,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 
 <br><br>
 
-<span class="work-note">这个作品非常像Alvin Lucier的I'm Sitting in a Room，但是很有趣的是：在创作这个作品时，我还不知道I'm Sitting in a Room。
+<span class="work-note">这个作品非常像Alvin Lucier的I Am Sitting in a Room，但是很有趣的是：在创作这个作品时，我还不知道I Am Sitting in a Room。
 这个作品最初的创作灵感是来源于Cathy Van Eck的一系列基于麦克风与扬声器回授的作品（主要是Words, Words, Words, Empty Chairs, 和What We Keep）和我当时对存在主义哲学（由What We Keep唤起，又可以追溯到动漫作品《黑礁》）、记忆（riverrun, past Eve and Adam's..）、不留下记录的艺术实践/表演/作品的兴趣。</span>
 
 <br><br>
@@ -237,7 +237,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <br><br>
 
 另一个很重要的部分是<span style="font-weight:700">易失性</span>。
-相对于I'm Sitting in a Room所留下的一盘盘磁带，Buffer中的数据无疑是及其<span style="font-weight:700">易失</span>的。
+相对于I Am Sitting in a Room所留下的一盘盘磁带，Buffer中的数据无疑是及其<span style="font-weight:700">易失</span>的。
 它们存储在RAM中，难以被保留，一旦关闭系统就会永久消失，原有的数据在一遍遍写入的过程中也被反复擦写。
 <span style="font-weight:700">我不需要磁带来证明这一切，只有我的被彻底忘记才证明我活过。</span>
 我那时是一个难以不被注意的人，我尝试以一种破坏性的方式来摆脱这部分特质。

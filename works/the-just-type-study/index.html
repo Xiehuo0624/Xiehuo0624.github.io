@@ -21,7 +21,7 @@
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
 (function(){try{var fired=false;
-function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=59746bc7';document.head.appendChild(f);}
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=e75c4706';document.head.appendChild(f);}
 if(document.documentElement.dataset.lang==='zh'){pre();return;}
 document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
 document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
@@ -51,7 +51,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=47">
+<link rel="stylesheet" href="css/base.css?v=48">
 <link rel="stylesheet" href="css/nav.css?v=4">
 <link rel="stylesheet" href="css/project.css?v=22">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -102,11 +102,11 @@ This is a Eurorack system I designed for a performance on 24 July 2026; it is 3+
 
 <br><br>
 
-At its centre is a Monome Teletype clone (made by 王凯文) — a programming module with its own scripting language that lets you organise music in scripts; the harmony, quantisation and triggering of a piece are all written in the script, which can be downloaded from this page.
+At its centre is a monome Teletype clone (made by 王凯文) — a programming module with its own scripting language that lets you organise music in scripts; the harmony, quantisation and triggering of a piece are all written in the script, which can be downloaded from this page.
 
 <br><br>
 
-The other seven: a Mannequins Just Friends (a digital oscillator that can be controlled digitally over I2C by the Teletype), a Holocene AWMS (Radio, LFO and S&amp;H), a Holocene Seiche (complex dual filters), a khiat v.dws (a control module that turns a wire displacement sensor, like the ring of the Ondes Martenot, into a voltage output), a 1U Nearness Mixer designed by sarnesjo (mixing with panning), a 1U Pico FX (reverb) and a 1U active output module. The Pico FX and the Output module come from fm.things and were made by my friend qoɔ.
+The other seven: a Mannequins Just Friends (a digital oscillator that can be controlled digitally over I2C by the Teletype), a Holocene AWMS (Radio, LFO and S&amp;H), a Holocene Seiche (complex dual filters), a modular.khiat v.dws (a control module that turns a wire displacement sensor, like the ring of the Ondes Martenot, into a voltage output), a 1U Nearness Mixer designed by sarnesjo (mixing with panning), a 1U Pico FX (reverb) and a 1U active output module. The Pico FX and the Output module come from fm.things and were made by my friend qoɔ.
 
 <br><br>
 

@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-05',
+      title: {
+        zh: '英文层收尾：Sontag 引号、厂商名与中文曲名',
+        en: 'English-layer cleanup: Sontag quotes, maker names, Chinese title'
+      },
+      brief: {
+        zh: 'WWHBH 英文去掉 Sontag 概括的引号；JustType 厂商名改为 monome / modular.khiat；中文随笔两处 Lucier 曲名改为 I Am；《Nuestra Tierra》加斜体。',
+        en: 'WWHBH drops quotes around the Sontag paraphrase; JustType uses monome and modular.khiat; the Chinese essay says I Am Sitting in a Room; Nuestra Tierra is italicised.'
+      },
+      media: ''
+    },
+    {
       date: '2026-11-03',
       title: {
         zh: '英文层机械修正：Lucier 曲名、英式拼写与 cepstrum 小写',
