@@ -6,8 +6,24 @@
 .bio p{font-size:13px;line-height:1.9;margin-bottom:16px}
 .bio-date{display:block;text-align:right;font-size:13px;margin-bottom:16px}
 
+/* ===== 原版 About 折叠区 =====
+   默认收起；summary 做成站内链接式样，[+] / [−] 由 CSS 出，文字随语言切换。
+   展开后的内容用左侧 2px 细线标成「档案」，与当前正文拉开层级。 */
+.bio-archive{margin:0 0 16px}
+.bio-archive summary{display:inline-block;font-size:13px;color:var(--muted);cursor:pointer;list-style:none;padding:2px 0}
+.bio-archive summary::-webkit-details-marker{display:none}
+.bio-archive summary::before{content:'[+] '}
+.bio-archive[open] summary::before{content:'[−] '}
+.bio-archive summary:hover{color:var(--fg)}
+.bio-archive-body{margin-top:10px;padding:2px 0 0 14px;border-left:2px solid var(--rule)}
+
+/* 页末作品链接：放在原版折叠区下方、分隔线之前，与联系区邮箱拉开层级 */
+.bio-more{margin:0}
+.bio-more a{color:var(--fg);text-decoration:none;font-size:13px;padding:2px 0}
+.bio-more a:hover{background:var(--fg);color:var(--bg)}
+
 .contact h2{font-size:16px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;line-height:1}
-.contact a{color:var(--fg);text-decoration:none;font-size:16px;padding:2px 4px}
+.contact a{color:var(--fg);text-decoration:none;font-size:16px;padding:2px 0}
 .contact a:hover{background:var(--fg);color:var(--bg)}
 
 @media(max-width:768px){

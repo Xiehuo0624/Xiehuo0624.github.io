@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-14',
+      title: {
+        zh: '关于页重写：5 段正文、折叠原版与作品入口',
+        en: 'About page rewritten: five paragraphs, a fold-out original and a works link'
+      },
+      brief: {
+        zh: '关于页改为 5 段正文；文末折叠重写前的 8 段原版；作品入口移到页末；专业名按在读证明改正。',
+        en: 'The About page now has five paragraphs, a fold-out original, a works link at the foot, and the degree name from the enrolment certificate.'
+      },
+      media: ''
+    },
+    {
       date: '2026-11-05',
       title: {
         zh: '英文层收尾：Sontag 引号、厂商名与中文曲名',

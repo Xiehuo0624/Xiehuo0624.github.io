@@ -9,12 +9,12 @@
 <script>
 /* 生成页：语言由路径写死，只保留「中文界面才预载中日韩字体」这一条性能决策。
    预载 URL 由 mainFontHref() 从 css/base.css 现读，不在这里硬编码版本号。 */
-(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=e75c4706';document.head.appendChild(f);}catch(e){}})();
+(function(){try{if(document.documentElement.dataset.lang!=='zh')return;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=f59f4930';document.head.appendChild(f);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- 生成页不继承模板的 noindex：生成页就是规范地址，必须可被索引 -->
 <title>ABOUT</title>
-<meta name="description" content="About Cao Haoxuan (Xiehuo): background, practice and contact.">
+<meta name="description" content="About Cao Haoxuan (Xiehuo): sound works, instrument design, and explorations of non-traditional sound media and algorithms.">
 <link rel="canonical" href="https://caohaoxuan.com/about/">
 <link rel="alternate" hreflang="en" href="https://caohaoxuan.com/about/">
 <link rel="alternate" hreflang="zh" href="https://caohaoxuan.com/about/zh/">
@@ -22,7 +22,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Xiehuo — Cao Haoxuan">
 <meta property="og:title" content="ABOUT">
-<meta property="og:description" content="About Cao Haoxuan (Xiehuo): background, practice and contact.">
+<meta property="og:description" content="About Cao Haoxuan (Xiehuo): sound works, instrument design, and explorations of non-traditional sound media and algorithms.">
 <meta property="og:url" content="https://caohaoxuan.com/about/">
 <meta property="og:image" content="https://caohaoxuan.com/img/logo/shuihuo-180.png">
 <meta property="og:locale" content="en_US">
@@ -31,7 +31,7 @@
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=48">
+<link rel="stylesheet" href="css/base.css?v=49">
 <link rel="stylesheet" href="css/nav.css?v=4">
 <link rel="stylesheet" href="css/about.css">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
@@ -43,7 +43,7 @@
      （defer 要等全部脚本下载完才跑，那之前英文界面会先画出 HTML 里硬编码的中文「关于」，
      实测约 190ms）。两个文件共约 4.6KB，与 CSS 并行下载，实测首屏时刻无回归。 -->
 <script src="js/app.js"></script>
-<script src="js/about-i18n.js?v=4"></script>
+<script src="js/about-i18n.js?v=5"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/i18n.js?v=8"></script>
 <script defer src="js/autospace.js"></script>
@@ -59,16 +59,35 @@
 <div class="about-page">
   <div class="bio">
     <h1 data-i18n="title">ABOUT</h1>
-    <p data-i18n="bio1">I really hate explaining who I am, what I do, what my works are about, what they express, what they concern. But no matter what, I still have to do this sort of thing — there's just no way around it. I am Xiehuo, I am Cao Haoxuan, I am Cao Tianyu, I am Jerry. I was born on June 24, 2004. If you'd like, you can get me something fun for my birthday, but nothing too expensive — I won't take it.</p>
-    <p data-i18n="bio2">In the beginning I made art, or rather dreamed of making art, simply because my mental state was truly terrible. Why say &quot;simply&quot;? Maybe because it seems like everyone can and ought to be able to stabilize their own mind. But of course that's impossible — it is simply the hardest thing in this world.</p>
-    <p data-i18n="bio3">Anyway, I don't actually want to make art, and I can't even figure out what I'm doing. Whatever, everything is whatever. Regardless, I still studied computer music, modular synthesizers, synthesis methods and all sorts of things, and read quite a few books, watched films, experienced works — whatever. What am I even saying. Anyway, these past few years have been pretty good.</p>
-    <p data-i18n="bio4">I know that generally speaking, this isn't what people come here to see. If I must say, I mainly play around with modular synthesizers, build some myself, and then I research things related to musical interfaces, things related to synthesis methods, and I care quite a bit about the politicization of art. Other than that, nothing much.</p>
-    <p data-i18n="bio5">I am currently studying at the Shanghai Conservatory of Music, Department of Music Engineering, majoring in Art and Technology.</p>
-    <p data-i18n="bio6">I hope everyone is happy.</p>
-    <p data-i18n="bio7">My favorite artists are probably Christina Kubisch and Cathy Van Eck.</p>
-    <span class="bio-date" data-i18n="bio6date">2026.06.10</span>
-    <p data-i18n="bio8">My mom says I used the wrong punctuation.</p>
-    <span class="bio-date" data-i18n="bio8date">2026.06.24</span>
+    <p data-i18n="bio1">Xiehuo — also Cao Haoxuan, Cao Tianyu, Jerry. Born in Hefei on 24 June 2004; now based in Shanghai.</p>
+    <p data-i18n="bio2">Studying Arts and Technology (specialism: Music Technology and Arts) in the Department of Music Engineering at the Shanghai Conservatory of Music since 2023. Currently a fourth-year student; expected to graduate in June 2027.</p>
+    <p data-i18n="bio3">Current work is mainly modular synthesizers and instrument interface design, including designing and producing Eurorack modules. Co-designed the 6U104HP Eurorack case with Ciiyte between 2023 and 2025; currently also designing some digital and analogue module hardware. The rest of the work is mostly an exploration of non-traditional sound media and algorithms — electromagnetic fields, rooms, cables, concatenative synthesis, neural networks. Works include, among others, THE INDUCTION MIXER and riverrun: a mixer played through electromagnetic induction, and an interactive audiobook of Finnegans Wake built on it.</p>
+    <p data-i18n="bio4">Works have been shown and performed at Music China (2024, 2025), Modular Commune (2024, 2025), Trigger, antianti, Cedar Land and other events and venues. Some of the works were made in collaboration with 钢铁大腿, Allen, 闫开, Ciiyte and others; the credits are on each work's page.</p>
+    <span class="bio-date" data-i18n="updated">2026.11.13</span>
+    <p data-i18n="bio5">I hope everyone is happy.</p>
+    <span class="bio-date" data-i18n="hopeDate">2026.06.10</span>
+    <!-- 折叠的原版 About：重写前 HEAD 的 8 段，默认收起；内容逐字保留，不做润色。
+         <details> 原生可折叠，不跑 JS 也能展开；文案由 i18n 数据提供，生成页会烤进静态 HTML。 -->
+    <details class="bio-archive">
+      <summary data-i18n="archiveToggle">Original About</summary>
+      <div class="bio-archive-body">
+        <p data-i18n="oldBio1">I really hate explaining who I am, what I do, what my works are about, what they express, what they concern. But no matter what, I still have to do this sort of thing — there's just no way around it. I am Xiehuo, I am Cao Haoxuan, I am Cao Tianyu, I am Jerry. I was born on June 24, 2004. If you'd like, you can get me something fun for my birthday, but nothing too expensive — I won't take it.</p>
+        <p data-i18n="oldBio2">In the beginning I made art, or rather dreamed of making art, simply because my mental state was truly terrible. Why say &quot;simply&quot;? Maybe because it seems like everyone can and ought to be able to stabilize their own mind. But of course that's impossible — it is simply the hardest thing in this world.</p>
+        <p data-i18n="oldBio3">Anyway, I don't actually want to make art, and I can't even figure out what I'm doing. Whatever, everything is whatever. Regardless, I still studied computer music, modular synthesizers, synthesis methods and all sorts of things, and read quite a few books, watched films, experienced works — whatever. What am I even saying. Anyway, these past few years have been pretty good.</p>
+        <p data-i18n="oldBio4">I know that generally speaking, this isn't what people come here to see. If I must say, I mainly play around with modular synthesizers, build some myself, and then I research things related to musical interfaces, things related to synthesis methods, and I care quite a bit about the politicization of art. Other than that, nothing much.</p>
+        <p data-i18n="oldBio5">I am currently studying at the Shanghai Conservatory of Music, Department of Music Engineering, majoring in Art and Technology.</p>
+        <p data-i18n="oldBio6">I hope everyone is happy.</p>
+        <span class="bio-date" data-i18n="oldDate1">2026.06.10</span>
+        <p data-i18n="oldBio7">My favorite artists are probably Christina Kubisch and Cathy Van Eck.</p>
+        <p data-i18n="oldBio8">My mom says I used the wrong punctuation.</p>
+        <span class="bio-date" data-i18n="oldDate2">2026.06.24</span>
+      </div>
+    </details>
+    <!-- 作品列表链接：放在原版链接下方、分隔线之前；生成器按语言烤 href（works/ 或 works/zh/），
+         旧地址由 js/about.js 按当前语言补。i18n 引擎用 textContent 覆盖整段，锚点不能放进 bio 段落里。 -->
+    <div class="bio-more">
+      <a href="works/" data-i18n="worksLink" data-page-link="works">[ALL WORKS →]</a>
+    </div>
   </div>
   <div class="contact">
     <h2 data-i18n="contact">CONTACT</h2>

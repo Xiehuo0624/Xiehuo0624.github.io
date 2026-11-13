@@ -62,8 +62,8 @@ const PAGES = [
     name: 'about', template: 'about.html', i18n: ['js/about-i18n.js', 'ABOUT_I18N'],
     title: { en: 'ABOUT', zh: '关于' },
     desc: {
-      en: 'About Cao Haoxuan (Xiehuo): background, practice and contact.',
-      zh: '关于曹浩轩（泻火）：经历、创作方向与联系方式。'
+      en: 'About Cao Haoxuan (Xiehuo): sound works, instrument design, and explorations of non-traditional sound media and algorithms.',
+      zh: '关于曹浩轩（泻火）：声音作品、乐器设计，以及对非传统声音媒介与算法的探索。'
     },
     outputs: [{ lang: 'en', path: 'about/index.html' }, { lang: 'zh', path: 'about/zh/index.html' }],
     backNav: true
@@ -197,6 +197,15 @@ function bakeI18nText(html, data, lang, where) {
   return out;
 }
 
+/* 站内页链接按语言烤 href：模板里写 data-page-link="works"，生成时换成 works/ 或 works/zh/。
+   i18n 的 apply() 用 textContent 覆盖整段，会把段内锚点抹掉，所以这类链接必须自成一个元素
+   （见 about.html 联系区的注释）；旧地址没有生成器参与，由 js/about.js 按当前语言补一次。 */
+function bakePageLinks(html, lang) {
+  return html.replace(/<a\b[^>]*\bdata-page-link="([a-z]+)"[^>]*>/g, (tag, name) => {
+    return tag.replace(/\bhref="[^"]*"/, `href="${esc(pageHref(name, lang))}"`);
+  });
+}
+
 /* 首尾导航也烤成静态链接：不跑 JS 的抓取者因此能沿着 首页 → 作品列表 → 各作品 走 */
 function bakeBackNav(html, c, lang) {
   const bar = `<div class="back" data-baked="1">` +
@@ -289,6 +298,7 @@ function renderPage({ page, app, common, origin, template, lang }) {
   /* ⑤ 正文 */
   if (page.bakeWorksList && app) html = bakeWorksList(html, app, lang);
   html = bakeI18nText(html, data, lang, where);
+  html = bakePageLinks(html, lang);
 
   /* ⑥ 标题与元信息 */
   const canonical = `${origin}/${page.name === 'index' ? '' : page.name + '/'}${LANG_DIR[lang]}`;

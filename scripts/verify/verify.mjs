@@ -1060,8 +1060,8 @@ console.log('=== 九、站内页目录式地址：关掉 JS 后内容仍在（�
     ['/zh/',              { h1: null,      links: 8,  text: '作品' }],
     ['/works/',           { h1: 'WORKS',   items: 8,  text: '6U104HP' }],
     ['/works/zh/',        { h1: '作品列表', items: 8,  text: '6U104HP' }],
-    ['/about/',           { h1: 'ABOUT',   paras: 8,  text: 'Cao Haoxuan' }],
-    ['/about/zh/',        { h1: '关于',     paras: 8,  text: '曹浩轩' }],
+    ['/about/',           { h1: 'ABOUT',   paras: 5,  text: 'Cao Haoxuan' }],
+    ['/about/zh/',        { h1: '关于',     paras: 5,  text: '曹浩轩' }],
     /* 日志正文刻意不烤（见 scripts/gen-pages.mjs）：无 JS 时只有烤好的标题与导航 */
     ['/changelog/',       { h1: 'CHANGELOG', text: 'CHANGELOG', minLinks: 2 }],
     ['/changelog/zh/',    { h1: '进程日志',  text: '进程日志', minLinks: 2 }]
@@ -1071,8 +1071,11 @@ console.log('=== 九、站内页目录式地址：关掉 JS 后内容仍在（�
     const info = await v.evaluate(`({
       h1: (document.querySelector('h1,h2')||{}).textContent || null,
       items: document.querySelectorAll('.works-item').length,
-      paras: document.querySelectorAll('.bio p').length,
+      paras: document.querySelectorAll('.bio > p').length,
+      archiveParas: document.querySelectorAll('.bio-archive p').length,
+      archiveOpen: !!document.querySelector('.bio-archive[open]'),
       links: document.querySelectorAll('a[href]').length,
+      hrefs: [...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')),
       inner: document.body.innerText.slice(0, 4000),
       lang: document.documentElement.dataset.lang,
       fixed: document.documentElement.hasAttribute('data-lang-fixed')
@@ -1083,6 +1086,14 @@ console.log('=== 九、站内页目录式地址：关掉 JS 后内容仍在（�
     if (want.items) check(`${path} 无 JS 也有 ${want.items} 条作品链接`, info.items, want.items);
     if (want.paras) check(`${path} 无 JS 也有 ${want.paras} 段正文`, info.paras, want.paras);
     checkTrue(`${path} 无 JS 也有站内链接`, info.links >= (want.minLinks || 3));
+    /* About 页页末的作品列表链接必须按语言烤对：英文 works/、中文 works/zh/；
+       折叠的原版 About 必须带 8 段原文且默认收起。 */
+    if (path.startsWith('/about/')) {
+      const wantWorks = path.includes('/zh/') ? 'works/zh/' : 'works/';
+      checkTrue(`${path} 无 JS 也有作品列表链接（${wantWorks}）`, info.hrefs.includes(wantWorks));
+      check(`${path} 原版 About 折叠区有 8 段`, info.archiveParas, 8);
+      check(`${path} 原版 About 默认收起`, info.archiveOpen, false);
+    }
     checkTrue(`${path} 无 JS 也有正文文字`, info.inner.includes(want.text));
     await v.close();
   }

@@ -236,6 +236,9 @@ const stepY = len > 1 ? Math.min(maxStepY, maxSpreadY / (len - 1)) : maxStepY;
 
 - 日期 `.bio-date` 标注在段落组末尾，右对齐
 - 连续段落共享同一日期时只标注一个日期，不逐条重复
+- 文末「原版 About」用 `<details class="bio-archive">` 折叠，默认收起；展开状态存 `sessionStorage` 的 `aboutArchiveOpen`，切换语言（整页导航）后不收起
+- 折叠区内容为重写前的 8 段原文，逐字保留；左侧 2px 细线标成档案区，不再与当前正文混排
+- 页末作品链接放在折叠区下方、分隔线之前，`data-page-link="works"` 由生成器按语言烤 href；联系区只留邮箱
 
 ---
 
@@ -787,7 +790,7 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 | 生成器 | `scripts/gen-pages.mjs`，模板就是根目录那四个 HTML（`index.html`／`works.html`／`about.html`／`changelog.html`），`--check` 查漂移 |
 | 首页的特殊处 | 英文规范地址 `/` 就是 `index.html` 自己，所以生成器**不写 index.html**，只从它派生 `/zh/`；`/?lang=zh` 由该文件里一段兼容脚本跳到 `/zh/` |
 | 模板里的标记 | `<!-- gen:legacy-only:lang -->`（按 `?lang=` 定语言的前置脚本）与 `:prepaint`（绘制前定文案）只对旧地址生效，生成页换成写死语言的版本 |
-| 烤什么 | 该语言的标题、`data-i18n` 文案（简介 8 段正文、卡片降级文案等）、作品列表的 8 条静态 `<a>`、四角导航与返回栏 |
+| 烤什么 | 该语言的标题、`data-i18n` 文案（简介 5 段正文 + 折叠的原版 8 段、卡片降级文案等）、作品列表的 8 条静态 `<a>`、四角导航与返回栏、按语言烤 href 的站内链接（`data-page-link`） |
 | 不烤什么 | **进程日志的正文刻意不烤**（98 条、约 200KB × 2 语言；该页靠点进来读，不靠搜索发现），只烤标题与元信息 |
 | 导航 | 烤好的静态导航存在时 `js/nav.js` 不再重复创建；首页的四角导航因此成了爬虫从 `/` 走到 `/works/` 与各作品页的路径 |
 | 链接出口 | 站内页走 `App.pageHref(name)`、作品页走 `App.projectHref(id)`，两者的返回值都已含语言，**不要再套 `App.langHref`** |
