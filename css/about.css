@@ -1,4 +1,11 @@
 /* ===== ABOUT PAGE ===== */
+
+/* 展开/收起原版 About 会改变页面高度；经典滚动条出现/消失会占掉宽度，居中的正文因此横向跳动。
+   只在 About 页保留滚动条槽位（overlay 滚动条的系统上无副作用），展开时正文不横移。
+   不支持 scrollbar-gutter 的旧浏览器退回「始终显示滚动条」，同样不横移。 */
+html{scrollbar-gutter:stable}
+@supports not (scrollbar-gutter: stable){html{overflow-y:scroll}}
+
 .about-page{max-width:640px;margin:0 auto;padding:80px 24px 48px}
 
 .bio{border-bottom:3px solid var(--rule);padding-bottom:32px;margin-bottom:32px}
