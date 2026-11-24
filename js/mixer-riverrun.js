@@ -513,6 +513,24 @@
         touchMics.delete(e.pointerId);
       }
     });   // iOS 系统手势可能丢捕获而不发 pointerup
+    /* ---- 收尾兜底：iOS 系统手势会把整串 pointer 事件吞掉 ----
+       iOS Safari 把一串触摸提升为原生手势后（左缘右滑返回、底部 Home 条、通知中心等），
+       后续 pointer 事件直接停发：pointerup 与 pointercancel 都不来（WebKit 239014 / 136531）。
+       上面 canvas 的几条收尾于是全部落空，那只 touchMic 永远留在表里 —— 圈停在原地、
+       那一带的音轨一直最响，再点别处只是多一只，旧的不会消失。
+       touch 事件不受这条影响：手指抬起时 touchend / touchcancel 照常送达，而且此时
+       touches 为空（系统手势不会替页面留着一根按着的手指）。据此把残留的触摸麦克风清掉。
+       不按 changedTouches 的 identifier 逐只删：Chrome 的 Touch.identifier 与 pointerId
+       是两套编号（2026-11-24 实测 pointerId=2 / identifier=1），拿它删会误删另一只手指的
+       麦克风。多指中途被吞时等所有手指抬起才清，这是为不误删而接受的代价。 */
+    function reconcileTouches(e){
+      if (e.touches && e.touches.length === 0) touchMics.clear();
+    }
+    document.addEventListener('touchend', reconcileTouches, { passive: true });
+    document.addEventListener('touchcancel', reconcileTouches, { passive: true });
+    // 捕获被系统丢掉后 pointerup 可能落在 canvas 以外，document 级再兜一层
+    document.addEventListener('pointerup', endPointer, true);
+    document.addEventListener('pointercancel', endPointer, true);
     window.addEventListener('blur', () => {                      // 切走应用/锁屏时清空所有麦克风
       touchMics.clear();
       mouseMic.x = -9999; mouseMic.y = -9999;

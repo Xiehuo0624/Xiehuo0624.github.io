@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-24',
+      title: {
+        zh: 'iOS 混音器：系统手势吞掉 pointerup 后虚拟麦克风不再残留',
+        en: 'iOS mixer: a virtual mic no longer sticks after a system gesture swallows pointerup'
+      },
+      brief: {
+        zh: 'Safari 系统手势接管触摸后，用 touchend 对账清掉残留的虚拟麦克风；交互与视觉不变。',
+        en: 'When Safari system gestures take over a touch, leftover virtual mics are cleared from touchend; interaction and visuals are unchanged.'
+      },
+      media: ''
+    },
+    {
       date: '2026-11-14',
       title: {
         zh: '关于页重写：5 段正文、折叠原版与作品入口',

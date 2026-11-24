@@ -1728,6 +1728,64 @@ console.log('=== 十七、首页展签：8 张逐张对应，年份与 data/<id>
   check('16 处年份与作品页信息栏逐字一致', bad, []);
 }
 
+/* ---------- 十八、iOS 混音器：系统手势吞掉 pointerup 后不留残留麦克风（2026-11-24） ----------
+   真机上 iOS Safari 把一串触摸提升为原生手势后（左缘右滑返回、底部 Home 条、通知中心），
+   后续 pointer 事件直接停发，pointerup / pointercancel 都不来（WebKit 239014 / 136531），
+   只靠 canvas 上的 pointer 收尾时那只虚拟麦克风会永远留在画布上（圈停在原地、那带音轨
+   一直最响）。修法是在 document 上按 touchend / touchcancel 对账。
+   这里的复现与真机同条件：先真实 touchStart（pointerdown 正常到达），再**只**派发 touchend、
+   不派发 pointerup。判断画布上还有没有麦克风，用 setLineDash 计数 —— draw() 里只有麦克风
+   光标会调 setLineDash([4,4])，音轨点、网格、连线都不用它。 */
+console.log('=== 十八、iOS 混音器：系统手势吞掉 pointerup 后不留残留麦克风 ===');
+{
+  const v = await visit('/works/the-induction-mixer/', { waitMs: 1200, viewport: { width: 390, height: 844 } });
+  await v.raw('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  const rects = await v.evaluate(`(function(){
+    const c = document.querySelector('#mixer-canvas').getBoundingClientRect();
+    const b = document.querySelector('#mixer-toggle').getBoundingClientRect();
+    return { canvas: { x: c.x, y: c.y, w: c.width, h: c.height }, start: { x: b.x + b.width / 2, y: b.y + b.height / 2 } };
+  })()`);
+  checkTrue('移动端画布可用（宽 > 200）', rects.canvas.w > 200);
+
+  await v.clickAt(rects.start.x, rects.start.y);
+  let running = false;
+  for (let i = 0; i < 100 && !running; i++) {
+    running = await v.evaluate(`document.querySelector('#mixer-center').style.display === 'none'`);
+    if (!running) await sleep(200);
+  }
+  checkTrue('START 后进入 running', running);
+
+  if (running) {
+    /* __dashOn 是计数窗口：读数前关掉，免得「上一次读数 → touchend」之间的一两帧混进来，
+       让修复后的结果也非零；touchend 派发完再清零打开，此后还画麦克风就一定是没修好。 */
+    await v.evaluate(`(function(){
+      window.__dash = 0; window.__dashOn = true;
+      const orig = CanvasRenderingContext2D.prototype.setLineDash;
+      CanvasRenderingContext2D.prototype.setLineDash = function(a){ if (window.__dashOn && a && a.length) window.__dash++; return orig.call(this, a); };
+    })()`);
+    const px = rects.canvas.x + rects.canvas.w / 2;
+    const py = rects.canvas.y + rects.canvas.h / 2;
+    await v.raw('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: px, y: py }] });
+    await sleep(400);
+    const during = await v.evaluate(`(function(){ const n = window.__dash; window.__dash = 0; return n; })()`);
+    checkTrue('触摸按下后画布上画着麦克风（setLineDash 被调用）', during > 0);
+
+    /* 关键一步：只发 touchend（touches 为空），不发 pointerup —— 系统手势吞掉后半串事件的样子 */
+    await v.evaluate(`window.__dashOn = false`);
+    await v.evaluate(`(function(){
+      const c = document.querySelector('#mixer-canvas');
+      const t = new Touch({ identifier: 1, target: c, clientX: ${px}, clientY: ${py} });
+      document.dispatchEvent(new TouchEvent('touchend', { bubbles: true, cancelable: true, touches: [], targetTouches: [], changedTouches: [t] }));
+    })()`);
+    await v.evaluate(`(function(){ window.__dash = 0; window.__dashOn = true; })()`);
+    await sleep(400);
+    const after = await v.evaluate(`window.__dash`);
+    check('只有 touchend、没有 pointerup 时残留麦克风被清掉', after, 0);
+    await v.raw('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  }
+  await v.close();
+}
+
 /* ---------- 汇总 ---------- */
 console.log('\n================ 结果 ================');
 console.log(`通过 ${pass} 项，失败 ${fail} 项`);
