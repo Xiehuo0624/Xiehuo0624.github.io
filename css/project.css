@@ -329,9 +329,11 @@ h2 .work-sub{
 
 /* 演奏录像：首屏之下、照片区之上（riverrun）。栏宽 800 与照片区一致；
    标题行沿用照片区那条 3px 上边线，作为「首屏混音器」与「资料」的同一个分界。 */
-.mixer-video{width:100%;max-width:800px;margin:0 auto;padding:0 40px 40px;scroll-margin-top:76px}
+.mixer-video{width:100%;max-width:1080px;margin:0 auto;padding:0 20px 40px;scroll-margin-top:76px}
 .mixer-video[hidden]{display:none}
-.mixer-video-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px 12px;border-top:3px solid var(--rule);padding-top:24px;margin-bottom:12px}
+/* 2026-11-26：去掉这条 border-top（作者要求录像区与上方内容之间不画分隔线），
+   宽度改为与 .mixer-hero 同一套（1080 / 20px），不再收在 800 / 40px。 */
+.mixer-video-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px 12px;padding-top:24px;margin-bottom:12px}
 .mixer-video-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
 /* 播放器：视频是满幅画面，没有 object-fit:contain 露出的垫子，所以不用 --surface 而用黑底；
    3px 硬边与首屏、照片区同一条线。width/height 属性已给出 16:9，这里只让它撑满栏宽。 */
@@ -347,7 +349,7 @@ h2 .work-sub{
   .mixer-desc{width:auto;flex:none;border:none;background:transparent;overflow:visible;padding:6px 2px 0;font-size:12.5px;line-height:1.85}
   .mixer-gallery{padding:0 16px 24px;scroll-margin-top:64px}
   .mixer-gallery-head{padding-top:18px}
-  .mixer-video{padding:0 16px 24px;scroll-margin-top:64px}
+  .mixer-video{padding:0 12px 24px;max-width:none;scroll-margin-top:64px}  /* 与手机上 .mixer-hero 的 12px 对齐 */
   .mixer-video-head{padding-top:18px}
   .mixer-video-note{font-size:11px}
   .btn-mixer{font-size:13px;padding:12px 22px}
