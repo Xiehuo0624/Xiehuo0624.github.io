@@ -495,6 +495,24 @@ function renderPage({ template, app, origin, id, lang, common }) {
     }
   }
 
+  /* ⑦-bis 演奏录像（mixer 布局，目前只有 riverrun）。
+     与 js/project.js 的 buildVideo() 逐字一致（元素、属性顺序、class 名）——
+     生成页与旧地址的运行时重建必须是同一个播放器，同 ⑦ 里 iframe 的那条约束。
+     <video> 自带 controls、不需要绑定，所以直接烤；烤完标 data-baked，
+     运行时见到 isBaked('mixer-video') 就不再重建（否则会二次下载封面）。 */
+  if (p.layout === 'mixer' && media && media.type === 'video') {
+    html = fillContainer(html, 'mixer-video-body',
+      '<video class="mixer-video-el" controls playsinline preload="none"' +
+      ` poster="${attr(media.poster)}" width="${Number(media.width)}" height="${Number(media.height)}">` +
+      `<source src="${attr(media.src)}" type="video/mp4">` +
+      `<a href="${attr(media.src)}">${esc(media.src)}</a></video>`,
+      where + '：演奏录像');
+    html = replaceOnce(html,
+      '<section class="mixer-video" id="mixer-video" hidden>',
+      '<section class="mixer-video" id="mixer-video" data-baked="1">',
+      where + '：演奏录像区');
+  }
+
   return html;
 }
 

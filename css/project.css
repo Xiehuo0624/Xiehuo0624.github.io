@@ -297,11 +297,12 @@ h2 .work-sub{
 .mixer-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 12px;padding:0 4px}
 .mixer-header h2{flex:1 1 auto;min-width:0;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
 .mixer-panel.lowercase .mixer-header h2{text-transform:none;letter-spacing:1px}
-/* 照片跳转：只在作品带 media 时由 js/project.js 取消 hidden；riverrun 看不到 */
-.mixer-photos-link,.mixer-gallery-back{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px;white-space:nowrap}
-.mixer-photos-link{flex:none;margin-left:auto;color:var(--muted)}
-.mixer-photos-link:hover,.mixer-gallery-back:hover{background:var(--fg);color:var(--bg)}
-.mixer-photos-link[hidden]{display:none}
+/* 资料跳转（录像 ↓ / 照片 ↓）：默认 hidden，由 js/project.js 按作品数据取消；
+   照片区标题行里的「回到混音器」用同一套字与线。 */
+.mixer-video-link,.mixer-photos-link,.mixer-gallery-back{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--fg);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px;white-space:nowrap}
+.mixer-video-link,.mixer-photos-link{flex:none;margin-left:auto;color:var(--muted)}
+.mixer-video-link:hover,.mixer-photos-link:hover,.mixer-gallery-back:hover{background:var(--fg);color:var(--bg)}
+.mixer-video-link[hidden],.mixer-photos-link[hidden]{display:none}
 .mixer-body{display:flex;flex:1;min-height:0;gap:14px}
 .mixer-stage{position:relative;flex:1;min-width:0;border:3px solid var(--rule);background:var(--bg);overflow:hidden}
 .mixer-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
@@ -326,15 +327,29 @@ h2 .work-sub{
 .mixer-gallery-back{margin-left:auto}
 .mixer-gallery .gallery-grid{margin-top:0}
 
+/* 演奏录像：首屏之下、照片区之上（riverrun）。栏宽 800 与照片区一致；
+   标题行沿用照片区那条 3px 上边线，作为「首屏混音器」与「资料」的同一个分界。 */
+.mixer-video{width:100%;max-width:800px;margin:0 auto;padding:0 40px 40px;scroll-margin-top:76px}
+.mixer-video[hidden]{display:none}
+.mixer-video-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px 12px;border-top:3px solid var(--rule);padding-top:24px;margin-bottom:12px}
+.mixer-video-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1}
+/* 播放器：视频是满幅画面，没有 object-fit:contain 露出的垫子，所以不用 --surface 而用黑底；
+   3px 硬边与首屏、照片区同一条线。width/height 属性已给出 16:9，这里只让它撑满栏宽。 */
+.mixer-video-el{display:block;width:100%;height:auto;background:#000;border:3px solid var(--rule)}
+.mixer-video-note{margin-top:10px;font-size:12px;line-height:1.7;letter-spacing:0.3px;color:var(--muted)}
+
 @media(max-width:768px){
   .mixer-hero{height:auto;min-height:100dvh;padding:64px 12px 48px;gap:8px;overflow:visible;max-width:none;margin:0}
   .mixer-body{display:flex;flex-direction:column;flex:none;gap:8px}
   .mixer-header h2{font-size:15px}
-  .mixer-photos-link,.mixer-gallery-back{font-size:10px}
+  .mixer-video-link,.mixer-photos-link,.mixer-gallery-back{font-size:10px}
   .mixer-stage{height:40dvh;flex:none}
   .mixer-desc{width:auto;flex:none;border:none;background:transparent;overflow:visible;padding:6px 2px 0;font-size:12.5px;line-height:1.85}
   .mixer-gallery{padding:0 16px 24px;scroll-margin-top:64px}
   .mixer-gallery-head{padding-top:18px}
+  .mixer-video{padding:0 16px 24px;scroll-margin-top:64px}
+  .mixer-video-head{padding-top:18px}
+  .mixer-video-note{font-size:11px}
   .btn-mixer{font-size:13px;padding:12px 22px}
   .mixer-hud{top:8px;right:8px;gap:6px}
   .btn-mixer-sm{font-size:10px;padding:5px 8px}

@@ -704,7 +704,7 @@ media: {
 
 ### 7f. Mixer 布局（riverrun / The Induction Mixer 交互式空间混音）
 
-riverrun 与 The Induction Mixer 两个作品页共用的交互式空间混音器：12 个音源在 Canvas 面板上排布为带编号的点，点半径随响度脉动；光标（虚拟麦克风）离点越近该音源音量越大。全屏面板，Web Audio API 驱动。riverrun 用 12 条等长音轨；The Induction Mixer 每次 START 从 Sample 清单随机抽 12 条、各自循环（见《程序编写说明》§9.5）。带 `media` 的混音作品在首屏下方接一段照片区；riverrun 没有 media，照片区与两个跳转链接保持 `hidden`，首屏与改动前一致。
+riverrun 与 The Induction Mixer 两个作品页共用的交互式空间混音器：12 个音源在 Canvas 面板上排布为带编号的点，点半径随响度脉动；光标（虚拟麦克风）离点越近该音源音量越大。全屏面板，Web Audio API 驱动。riverrun 用 12 条等长音轨；The Induction Mixer 每次 START 从 Sample 清单随机抽 12 条、各自循环（见《程序编写说明》§9.5）。首屏之下可有两块资料，各自按作品数据决定是否出现：`media.type === 'video'` 的**演奏录像区**（riverrun，2026-11-25 加）与 `media.type === 'gallery'` 的**照片区**（The Induction Mixer）。两块与各自的跳转链接默认 `hidden`，由生成器／脚本按数据打开；没有任何资料的混音作品首屏与改动前一致。
 
 | 属性 | 桌面端 | 移动端 |
 |------|--------|--------|
@@ -720,12 +720,14 @@ riverrun 与 The Induction Mixer 两个作品页共用的交互式空间混音�
 | 增益 | 无 UI 控件：增益只由麦克风光标外圈半径 + 增益弧指示，桌面滚轮（wheel）调节、手机固定 100%、手写笔 pressure | 同左 |
 | 交互 | 鼠标常驻一只麦克风（滚轮调增益）；触控每指一只（手机固定增益 100%） | 同左 |
 | 照片区 `.mixer-gallery` | 首屏下方，`max-width:800px`；3 列（手机 2 列）、4:3 contain、Lightbox；标题行「照片 / PHOTOGRAPHS」+「↑ 回到混音器」 | 同左 |
+| 录像区 `.mixer-video` | 首屏下方、照片区之上，`max-width:800px`、`padding:0 40px 40px`；标题行「演奏录像 / RECORDING」自带 3px 上边线；播放器 16:9、3px 黑边、`preload="none"`、`poster` 封面帧、`playsinline`；下方一行说明（「手机录制；建议戴耳机收听。」） | 同左，`padding` 收到 16px |
+| 录像跳转 | 标题区右侧「录像 ↓」，与「照片 ↓」同一套样式（`--muted` + 下划线，hover 反色）；同样受 `<base href="/">` 影响，由 `bindMixerGalleryLinks()` 接管滚动 | 同左 |
 | 照片跳转 | 舞台滚轮仍调增益；照片区用链接跳转。**裸 `#id` 会被 `<base href="/">` 解析成站点根**，必须用当前 URL + `#id` 并由 JS 接管滚动 | 同左 |
 | 逻辑位置 | `js/mixer-riverrun.js` 的 `App.initRiverrunMixer()`，`js/project.js` 的 mixer 分支初始化、`bindMixerGalleryLinks()` 绑定照片链接 | |
 
 > Gallery 布局适用于纯图片作品（6U104HP 21 张）；The Induction Mixer 的 3 张照片走 Mixer 布局的 `.mixer-gallery`，不再用 Gallery。
 
-> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），纯多图作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`）；混音作品即使带照片资料也用 Mixer（照片区在首屏下方），不要退回 Gallery。均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
+> **布局选择规则**：含视频的作品统一使用 Edge 布局（`layout:'edge'`），纯多图作品使用 Gallery 布局（`layout:'gallery'`），单张图片置于文字上方用 Ecce 布局（`layout:'ecce'`），交互式空间混音作品使用 Mixer 布局（`layout:'mixer'`）；混音作品即使带照片或演奏录像也用 Mixer（资料区在首屏下方），不要退回 Gallery 或 Edge。均不得使用 Grid 布局的左右分栏。Grid 布局仅用于无媒体或单张图片（左右分栏）的场景。
 
 ### 7g. 首屏布局选择（绘制前定布局）
 
@@ -903,6 +905,10 @@ defer 脚本要等全部脚本下载完、文档解析结束后才执行，那�
 │   └── wwhbh/
 │       ├── zh.html
 │       └── en.html
+│
+├── video/                        视频资源（目前只有 riverrun 的硬件版演奏录像）
+│   ├── riverrun.mp4           1280×720 H.264，1000 kbps + 160 kbps AAC，52MB，faststart
+│   └── riverrun-poster.webp   封面帧（1280×720，108KB），<video poster> 用
 │
 ├── audio/                        音频资源
 │   ├── ecce-homo.m4a
@@ -1108,7 +1114,7 @@ python3 scripts/gen-cjk-main.py
 
 - **首屏图片（卡片封面 / 项目页 hero 图）**：`decoding="async"` + `fetchpriority="high"`，保持默认 eager。
 - **非首屏图片（Gallery 网格、Changelog 媒体）**：`loading="lazy"` + `decoding="async"`，进入视口才下载。
-- **音频 / 视频**：单文件音频（`audio/ecce-homo.m4a` 12MB、JustType 录音）与 Changelog `<details>` 内视频 `preload="none"`，用户点播放前不拉取；riverrun 12 条音轨由 `js/mixer-riverrun.js` 设为 `preload="metadata"`（弱网不预缓冲 17MB，播放时才拉流）。
+- **音频 / 视频**：单文件音频（`audio/ecce-homo.m4a` 12MB、JustType 录音）与 Changelog `<details>` 内视频 `preload="none"`，用户点播放前不拉取；riverrun 12 条音轨由 `js/mixer-riverrun.js` 设为 `preload="metadata"`（弱网不预缓冲 17MB，播放时才拉流）；同一页的硬件版演奏录像 `video/riverrun.mp4`（52MB）用 `preload="none"`，页面加载只取 108KB 封面帧 —— 冷缓存 + 150ms RTT / 1.6Mbps 实测 FCP/LCP 1048ms，拦掉封面为 964ms（差 84ms），mp4 一次请求都没有。
 - **字体**：`@font-face` 全部 `font-display:swap`（不阻塞首屏文字）；文字为主的页（about/works/changelog/project）
   在 `<head>` `<link rel="preload" as="font" crossorigin>` 预载 `SourceHanSansSC-Regular.woff2`；首页图片为主故不预载字体以免争抢带宽。
   **预载 URL 必须与 `css/base.css` 逐字相同（含 `?v=`）—— 见上方「主字体 URL 的一致性」。

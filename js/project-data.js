@@ -83,6 +83,12 @@ App.projects = {
     desc: { file: true },
     audioDir: 'audio/riverrun',
     tracks: 12,
+    /* 硬件版的演奏录像（手机拍摄，6分13秒，1280×720 H.264，52MB）。
+       只在 media.type === 'video' 时出现：生成器把 <video> 烤进 /works/riverrun/，
+       运行时那条分支留给旧地址（project-template.html?project=riverrun）。
+       preload="none"：52MB 不在首屏拉取，点播放才开始下载。 */
+    media: { type:'video', src:'video/riverrun.mp4', poster:'video/riverrun-poster.webp',
+             width:1280, height:720 },
     related: [ { id:'the-induction-mixer', role:{ zh:'本作品使用', en:'Created with' } } ]
   },
 

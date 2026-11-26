@@ -21,7 +21,7 @@
    同一份字体白下一遍（实测中文作品页 809.5KB → 补齐后 541.8KB）。
    版本号**不再在这里硬编码**，由 mainFontHref() 从 base.css 现读 —— 见那个函数的注释。 */
 (function(){try{var fired=false;
-function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=732eaec3';document.head.appendChild(f);}
+function pre(){if(fired)return;fired=true;var f=document.createElement('link');f.rel='preload';f.as='font';f.type='font/woff2';f.crossOrigin='anonymous';f.href='/css/fonts/SourceHanSansSC-Regular.woff2?v=7aa54bb7';document.head.appendChild(f);}
 if(document.documentElement.dataset.lang==='zh'){pre();return;}
 document.addEventListener('pointerdown',function(e){var t=e.target;if(t&&t.closest&&t.closest('#lang-toggle'))pre();},true);
 document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lang-toggle')pre();},true);
@@ -51,9 +51,9 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" href="img/logo/shuihuo.svg?v=1" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/logo/shuihuo-180.png?v=1">
-<link rel="stylesheet" href="css/base.css?v=50">
+<link rel="stylesheet" href="css/base.css?v=51">
 <link rel="stylesheet" href="css/nav.css?v=4">
-<link rel="stylesheet" href="css/project.css?v=22">
+<link rel="stylesheet" href="css/project.css?v=23">
 <!-- 中日韩字体只在中文界面才需要（英文全站走 PlainZero / DejaVu Sans Mono，
      用不到 SourceHanSansSC）。它的 Regular + Bold 合计 599KB，无条件 preload
      等于让每个英文读者白等半兆字节，所以改由上面的内联脚本按语言条件注入。
@@ -62,7 +62,7 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
      生成页的布局与标题已写在 HTML 里，同步加载不再是首屏正确性的前提；
      保持同步只为避免两份加载策略各自漂移。 -->
 <script src="js/app.js"></script>
-<script src="js/project-data.js?v=13"></script>
+<script src="js/project-data.js?v=14"></script>
 <!-- core（defer：并行下载、按序执行、不阻塞渲染） -->
 <script defer src="js/i18n.js?v=8"></script>
 <script defer src="js/autospace.js"></script>
@@ -70,9 +70,9 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 <script defer src="js/prefetch.js"></script>
 <!-- page data + logic（js/ink-wwhbh.js、js/audio-wwhbh.js 只在 wwhbh / mixer 布局用到，本页已由
      生成器剪掉，见 scripts/gen-projects.mjs） -->
-<script defer src="js/project-i18n.js?v=6"></script>
+<script defer src="js/project-i18n.js?v=7"></script>
 <script defer src="js/mixer-riverrun.js?v=8"></script>
-<script defer src="js/project.js?v=21"></script>
+<script defer src="js/project.js?v=22"></script>
 </head>
 <body>
 
@@ -87,13 +87,14 @@ document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.id==='lan
 
 
 <!-- riverrun / The Induction Mixer: interactive spatial mixer.
-     首屏是混音器本身；作品带 media 时，下面接一段照片区（渲染见 js/project.js 的 mixer 分支）。
-     照片区与两个跳转链接默认 hidden，只有带 media 的作品由脚本打开 —— riverrun 没有 media，
-     所以它永远看不到这一块，首屏高度与改动前一致。 -->
+     首屏是混音器本身；首屏之下可能有演奏录像（riverrun，生成器烤入）与照片区
+     （The Induction Mixer，渲染见 js/project.js 的 mixer 分支）。
+     两块的跳转链接默认 hidden，由脚本按作品数据打开 —— 没有 media 的作品首屏高度与改动前一致。 -->
 <div class="mixer-panel" id="layout-mixer">
   <div class="mixer-hero">
     <div class="mixer-header">
       <h2 id="mixer-title">riverrun<span class="work-sub">基于《芬尼根的守灵夜》多义性的交互式声音作品</span></h2>
+      <a class="mixer-video-link" id="mixer-video-link" href="#mixer-video" data-i18n="videoLink" hidden>VIDEO ↓</a>
       <a class="mixer-photos-link" id="mixer-photos-link" href="#mixer-gallery" data-i18n="photosLink" hidden>PHOTOS ↓</a>
     </div>
     <div class="mixer-body">
@@ -227,6 +228,18 @@ Here Comes Everybody.</span><br><br>
 </div>
     </div>
   </div>
+  <!-- 演奏录像：只有 media.type === 'video' 的作品（目前是 riverrun）由生成器
+       把 <video> 烤进 #mixer-video-body 并去掉这里的 hidden、标上 data-baked。
+       其余作品（The Induction Mixer）保持 hidden，首屏与改动前一致。
+       preload="none"：52MB 的 mp4 不在首屏拉取；poster 是 1280×720 的封面帧，
+       属性里的 width/height 让浏览器先按 16:9 占位，加载完不跳版。 -->
+  <section class="mixer-video" id="mixer-video" data-baked="1">
+    <div class="mixer-video-head">
+      <h3 class="mixer-video-title" data-i18n="videoTitle">RECORDING</h3>
+    </div>
+    <div class="mixer-video-body" id="mixer-video-body"><video class="mixer-video-el" controls playsinline preload="none" poster="video/riverrun-poster.webp" width="1280" height="720"><source src="video/riverrun.mp4" type="video/mp4"><a href="video/riverrun.mp4">video/riverrun.mp4</a></video></div>
+    <p class="mixer-video-note" data-i18n="videoNote">Phone recording; headphones recommended.</p>
+  </section>
   <section class="mixer-gallery" id="mixer-gallery" hidden>
     <div class="mixer-gallery-head">
       <h3 class="mixer-gallery-title" data-i18n="photosTitle">PHOTOGRAPHS</h3>

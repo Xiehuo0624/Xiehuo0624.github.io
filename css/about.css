@@ -30,7 +30,8 @@ html{scrollbar-gutter:stable}
 .bio-more a:hover{background:var(--fg);color:var(--bg)}
 
 .contact h2{font-size:16px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;line-height:1}
-.contact a{color:var(--fg);text-decoration:none;font-size:16px;padding:2px 0}
+/* block + fit-content：邮箱与 CV 各占一行，悬停底色仍只包住文字本身（整行宽的黑条很难看） */
+.contact a{display:block;width:fit-content;color:var(--fg);text-decoration:none;font-size:16px;padding:2px 0}
 .contact a:hover{background:var(--fg);color:var(--bg)}
 
 @media(max-width:768px){

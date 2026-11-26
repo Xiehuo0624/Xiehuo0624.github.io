@@ -131,6 +131,32 @@
     });
   }
 
+  /** 演奏录像播放器：mixer 布局首屏之下那一段。
+   *  结构必须与 scripts/gen-projects.mjs 烤进 HTML 的那份逐字一致（元素、属性、class）——
+   *  生成页不重建（isBaked('mixer-video') 早返回），旧地址（project-template.html?project=）
+   *  走这里；两条路径的播放器必须是同一个，否则同一个作品有两个不同的播放器。
+   *  preload="none"：52MB 不在首屏拉取，点播放才开始下载；poster 是封面帧，
+   *  width/height 让浏览器先按 16:9 占位，加载完不跳版。 */
+  function buildVideo(media){
+    const video = document.createElement('video');
+    video.className = 'mixer-video-el';
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = 'none';
+    video.poster = media.poster;
+    video.width = media.width;
+    video.height = media.height;
+    const source = document.createElement('source');
+    source.src = media.src;
+    source.type = 'video/mp4';
+    video.appendChild(source);
+    const fallback = document.createElement('a');
+    fallback.href = media.src;
+    fallback.textContent = media.src;
+    video.appendChild(fallback);
+    return video;
+  }
+
   /** 现场资料块：可播放音频（可选）＋ 照片网格（可选）。edge／ecce／wwhbh 三个布局共用。
    *  网格交给 buildGalleryGrid，所以 Lightbox 的索引、翻页与计数与画廊页同源；
    *  容器在烤好的页面里是空的（没有 data-baked），因此这一块不吃 isBaked 的判断，
@@ -377,16 +403,29 @@
       if (!mediaRendered) renderLive('wwhbh-live', project, t);
     } else if (layout === 'mixer') {
       setTitle('mixer-title');
-      /* The Induction Mixer 的作品页在混音器下方带一段照片区；riverrun 没有 media，
-         这一块保持 hidden，首屏与改动前完全一致。照片区由渲染函数补建，
-         所以不依赖生成器烤入，lightbox 与 gallery 布局同源。 */
+      /* 首屏之下有两种资料，各自独立：
+         ① 演奏录像（riverrun，2026-11-25 加）：生成器已经把 <video> 烤进 HTML 并去掉
+            区段的 hidden，这里只把「录像 ↓」跳转放出来；旧地址没烤过时按同一结构补建。
+         ② 照片区（The Induction Mixer）：由渲染函数补建，lightbox 与 gallery 布局同源。 */
       const hasGallery = !!(project.media && project.media.type === 'gallery');
+      const hasVideo = !!(project.media && project.media.type === 'video');
       const panel = document.getElementById('layout-mixer');
       if (panel) panel.classList.toggle('has-gallery', hasGallery);
       const photosLink = document.getElementById('mixer-photos-link');
       if (photosLink) photosLink.hidden = !hasGallery;
+      const videoLink = document.getElementById('mixer-video-link');
+      if (videoLink) videoLink.hidden = !hasVideo;
       const gallery = document.getElementById('mixer-gallery');
       if (gallery) gallery.hidden = !hasGallery;
+      const videoSection = document.getElementById('mixer-video');
+      if (videoSection) videoSection.hidden = !hasVideo;
+      if (hasVideo && !mediaRendered && !isBaked('mixer-video')) {
+        const body = document.getElementById('mixer-video-body');
+        if (body) {
+          body.innerHTML = '';
+          body.appendChild(buildVideo(project.media));
+        }
+      }
       if (hasGallery && !mediaRendered && !isBaked('mixer-gallery-sections')) {
         renderGallerySections('mixer-gallery-sections', project, t);
       }
@@ -535,15 +574,16 @@
     App.initWwhbh(document.getElementById('btn-mic'), document.getElementById('wwhbh-status'));
   }
 
-  /* ---- mixer 照片区锚点 ----
+  /* ---- mixer 首屏之下的锚点（照片区 / 演奏录像） ----
      生成页带 <base href="/">：裸 `#mixer-gallery` 会按 base 解析成站点根，
      点「照片 ↓」会直接跳回首页（实测）。这里改成「当前路径 + #id」，
      并接管点击做滚动；语言切换只改 replaceState 的路径，点击时再取一次。
-     绑定只做一次：dataset 标记挡住重复 addEventListener。 */
+     绑定只做一次：dataset 标记挡住重复 addEventListener。
+     两块资料互斥（riverrun 只有录像、The Induction Mixer 只有照片），
+     但函数按「有哪块绑哪块」写，将来同页并存也不会打架。 */
   function bindMixerGalleryLinks(){
     const panel = document.getElementById('layout-mixer');
-    const gallery = document.getElementById('mixer-gallery');
-    if (!panel || !gallery) return;
+    if (!panel) return;
     const behavior = () => (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth';
     const bind = (el, hash, target) => {
       if (!el || el.dataset.mixerLinkBound) return;
@@ -555,8 +595,13 @@
         target.scrollIntoView({ behavior: behavior(), block: 'start' });
       });
     };
-    bind(document.getElementById('mixer-photos-link'), '#mixer-gallery', gallery);
-    bind(gallery.querySelector('.mixer-gallery-back'), '#layout-mixer', panel);
+    const gallery = document.getElementById('mixer-gallery');
+    if (gallery) {
+      bind(document.getElementById('mixer-photos-link'), '#mixer-gallery', gallery);
+      bind(gallery.querySelector('.mixer-gallery-back'), '#layout-mixer', panel);
+    }
+    const video = document.getElementById('mixer-video');
+    if (video) bind(document.getElementById('mixer-video-link'), '#mixer-video', video);
   }
 
   /* ---- spatial mixer: riverrun（audioDir）或 The Induction Mixer（sampleManifest） ---- */

@@ -36,4 +36,11 @@ App.PROJECT_I18N = {
   photosTitle:    { zh:'照片',                                      en:'PHOTOGRAPHS' },
   photosLink:     { zh:'照片 ↓',                                    en:'PHOTOS ↓' },
   backToMixer:    { zh:'↑ 回到混音器',                              en:'↑ BACK TO MIXER' },
+
+  /* ---- mixer 录像区（riverrun 的硬件演奏录像，2026-11-25 加）----
+     videoLink 与 photosLink 同一个位置、同一套样式；videoNote 是播放器下方那行说明，
+     把「手机录制、立体声」交代在播放器旁边，不必翻回正文。 */
+  videoTitle:     { zh:'演奏录像',                                  en:'RECORDING' },
+  videoLink:      { zh:'录像 ↓',                                    en:'VIDEO ↓' },
+  videoNote:      { zh:'手机录制；建议戴耳机收听。',                  en:'Phone recording; headphones recommended.' },
 };

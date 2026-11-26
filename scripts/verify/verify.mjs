@@ -225,7 +225,9 @@ const P = [
      故从 img+audio 改为 img+audio+live，n = 3（断言里 imgs 为 n + 1，另加顶部那张 still）。 */
   { id: 'the-just-type-study', layout: 'ecce',    zh: 'The JustType Study', en: 'The JustType Study', media: 'img+audio+live', n: 3 },
   { id: 'the-induction-mixer', layout: 'mixer',   zh: 'THE INDUCTION MIXER', en: 'THE INDUCTION MIXER', media: 'gallery', n: 3 },
-  { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'none', n: 0 },
+  /* 2026-11-25：riverrun 加了硬件版演奏录像（mixer 布局的录像是生成器烤进 HTML 的 <video>，
+     不是画廊图），故 n = 1 指的是播放器个数。 */
+  { id: 'riverrun',           layout: 'mixer',   zh: 'riverrun',           en: 'riverrun',           media: 'video', n: 1 },
   { id: 'edgedgedge',         layout: 'edge',    zh: 'EDGEDGEDGE',         en: 'EDGEDGEDGE',         media: 'iframe+live', n: 6 },
   { id: 'spectral-dissector', layout: 'ecce',    zh: 'SPECTRAL DISSECTOR', en: 'SPECTRAL DISSECTOR', media: 'img', n: 1 },
   { id: 'ecce-homo',          layout: 'ecce',    zh: '瞧！这个人',          en: 'ECCE HOMO',          media: 'img+audio+live', n: 8 },
@@ -260,6 +262,7 @@ for (const p of P) {
       panelVisible: getComputedStyle(document.querySelector('[id^="layout-"]')).display,
       imgs: document.querySelectorAll('[id$="-media"] img, .gallery-grid img').length,
       iframes: document.querySelectorAll('[id$="-media"] iframe').length,
+      videos: document.querySelectorAll('video').length,
       audios: document.querySelectorAll('.work-audio, .ecce-audio').length,
       related: [...document.querySelectorAll('.project-related a')].map(a=>a.getAttribute('href')),
       srcdocTitle: document.querySelector('title').textContent
@@ -302,6 +305,9 @@ for (const p of P) {
     if (p.media === 'live') check(`${tag} 现场录音 + 现场照`,
       [info.audios, info.imgs, info.iframes], [1, p.n, 0]);
     if (p.media === 'none') check(`${tag} 无静态媒体`, [info.imgs, info.iframes, info.audios], [0, 0, 0]);
+    /* mixer 布局的演奏录像（riverrun）：生成器烤进 HTML 的 <video>，preload="none" 不拉 mp4；
+       封面 poster 会随元素一起请求，所以上面「无 4xx/失败请求」那条同时也在守它能不能 200。 */
+    if (p.media === 'video') check(`${tag} 演奏录像播放器`, [info.videos, info.iframes], [p.n, 0]);
 
     if (p.id === 'riverrun') check(`${tag} 相关作品链接`, info.related, [`works/the-induction-mixer/${dir}`]);
     if (p.id === 'the-induction-mixer') check(`${tag} 相关作品链接`, info.related, [`works/riverrun/${dir}`]);
@@ -841,8 +847,10 @@ console.log('=== 四、首页卡片与作品列表链接 ===');
   check('16 页的返回栏 href 与文案逐页正确（./ 与 ./zh/）', bad, []);
 
   /* 不跑 JS：返回 + 语言切换两个链接都得在（此前是 0 个）。
-     只数**可见**链接：mixer 模板给带 media 的作品加了「照片 ↓ / 回到混音器」两个隐藏链接，
-     riverrun 没有 media，它们保持 hidden；无 JS 时不该把这两个不可见出口算进来。 */
+     只数**可见**链接：mixer 模板给带 media 的作品加了「录像 ↓ / 照片 ↓ / 回到混音器」三个隐藏链接，
+     它们都由 js/project.js 按作品数据取消 hidden。无 JS 时三个都还是 hidden（riverrun 的录像区
+     本身是烤好的、直接可见，只是跳转链接不出现）；<video> 里那条兜底 <a> 没有布局盒，
+     getClientRects() 为 0，也不会被算进来。 */
   const v = await visit('/works/riverrun/zh/', { noJs: true, waitMs: 800 });
   const info = await v.evaluate(`(() => {
     const back = document.querySelector('.back a[data-i18n="back"]');

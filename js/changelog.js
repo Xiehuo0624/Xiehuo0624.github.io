@@ -15,6 +15,30 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-25',
+      title: {
+        zh: '简介页加上站版 CV：根目录 cv.pdf，去掉手机号',
+        en: 'A site version of the CV on the About page: /cv.pdf, phone removed'
+      },
+      brief: {
+        zh: '简介页联系区加上站版 CV（根目录 cv.pdf），去掉手机号；旧地址与生成页共用同一相对路径。',
+        en: 'The About page links a phone-free site version of the CV at /cv.pdf; one relative path serves both the legacy page and the generated ones.'
+      },
+      media: ''
+    },
+    {
+      date: '2026-11-25',
+      title: {
+        zh: 'riverrun 上站硬件版演奏录像：720p 自托管，首屏只拉封面',
+        en: 'riverrun gets its performance video: self-hosted 720p, poster only at first'
+      },
+      brief: {
+        zh: 'riverrun 加硬件版演奏录像（3 分钟）：720p H.264 自托管 25 MB，首屏只拉 108 KB 封面，无第三方播放器。',
+        en: 'riverrun gains a 3-minute performance video: self-hosted 720p H.264, 25 MB, a 108 KB poster on first load, no third-party player.'
+      },
+      media: ''
+    },
+    {
       date: '2026-11-24',
       title: {
         zh: 'iOS 混音器：系统手势吞掉 pointerup 后虚拟麦克风不再残留',
