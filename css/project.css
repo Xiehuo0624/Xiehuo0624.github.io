@@ -350,7 +350,7 @@ h2 .work-sub{
   .mixer-gallery{padding:0 16px 24px;scroll-margin-top:64px}
   .mixer-gallery-head{padding-top:18px}
   .mixer-video{padding:0 12px 24px;max-width:none;scroll-margin-top:64px}  /* 与手机上 .mixer-hero 的 12px 对齐 */
-  .mixer-video-head{padding-top:18px}
+  .mixer-video-head{padding-top:18px;border-top:3px solid var(--rule)}  /* 手机上把分隔线加回来：首屏是整屏滚动，没有它分不清录像区从哪开始 */
   .mixer-video-note{font-size:11px}
   .btn-mixer{font-size:13px;padding:12px 22px}
   .mixer-hud{top:8px;right:8px;gap:6px}
