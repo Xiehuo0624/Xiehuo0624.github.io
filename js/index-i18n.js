@@ -6,6 +6,12 @@ App.INDEX_I18N = {
   /* 标签页标题用罗马字：浏览器历史与自动补全能认出 xiehuo / cao haoxuan，
      汉字标题在地址栏补全里等于不存在。
      页面内的四角署名是另一回事，保持汉字（见 js/nav.js 的 .nav-top-right）。 */
+  /* ===== 首访幕布（2026-11-28）=====
+     生成页（/zh/）会把这三条烤进静态 HTML；/ 本身写的就是英文原文。 */
+  introLine:   { zh:'声音艺术、乐器设计与交互作品',                    en:'Sound art, instrument design and interactive work' },
+  introName:   { zh:'— 曹浩轩（泻火）',                                en:'— Cao Haoxuan (Xiehuo)' },
+  introUse:    { zh:'点开一张卡片看作品，把它甩到一边看下一张。',      en:'Click a card to open a work, drag it aside for the next one.' },
+
   siteTitle:   { zh:'泻火 曹浩轩',                        en:'Xiehuo — Cao Haoxuan' },
   about:       { zh:'[+] 简介与联系',                    en:'[+] About & Contact' },
   changelog:   { zh:'[>] 进程日志',                      en:'[>] Changelog' },

@@ -15,6 +15,18 @@ if (typeof App.injectCanonical === 'function' && typeof App.pageHref === 'functi
    * ======================================================== */
   const entries = [
     {
+      date: '2026-11-28',
+      title: {
+        zh: '首访幕布：作品图随机拼成背景墙，前面一块展签式文字',
+        en: 'A first-visit curtain: a wall of random work photos behind a wall label'
+      },
+      brief: {
+        zh: '首次访问压一屏：作品图随机拼成背景墙，前面一块展签式文字；关掉后不再出现，无 JS 不显示。',
+        en: 'A first visit opens on a curtain: a random mosaic of work photos behind a wall label, gone for good once closed and never rendered without JS.'
+      },
+      media: ''
+    },
+    {
       date: '2026-11-25',
       title: {
         zh: '简介页加上站版 CV：根目录 cv.pdf，去掉手机号',

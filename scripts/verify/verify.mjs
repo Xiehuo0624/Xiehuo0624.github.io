@@ -97,7 +97,7 @@ if (!version) { console.error('Chrome 起不来'); process.exit(2); }
 const browser = await CDP.connect(version.webSocketDebuggerUrl);
 
 /* ---------- 访问一个页面并收集证据 ---------- */
-async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null, motion = null, viewport = null } = {}) {
+async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 900, noJs = false, scheme = null, motion = null, viewport = null, keepIntro = false } = {}) {
   /* 一个用例一个浏览器上下文：localStorage 天然是干净的，否则「本页有没有写 localStorage」
      会被上一页残留的偏好污染（同一 profile 共用存储）。 */
   const { browserContextId } = await browser.send('Target.createBrowserContext');
@@ -159,6 +159,19 @@ async function visit(path, { waitMs = 700, clickSelector = null, afterClickMs = 
   await browser.send('Page.navigate', { url: BASE + path }, sessionId);
   await Promise.race([loaded, sleep(8000)]);
   await sleep(waitMs);
+
+  /* 首访幕布会盖住首页：每个用例都是新浏览器上下文，localStorage 天然是空的，
+     所以不处理的话每一次首页访问都会被一块全屏幕布压住。除了第十九节专门验幕布，
+     其余用例在这里先把幕布摘掉（删节点 + 去掉 data-intro，等价于「这台机器已经看过」），
+     让既有断言继续测它本来要测的东西。 */
+  if (!keepIntro) {
+    await evaluate(sessionId, `(() => {
+      document.documentElement.removeAttribute('data-intro');
+      var n = document.getElementById('intro');
+      if (n) n.remove();
+      return true;
+    })()`).catch(() => {});
+  }
 
   let clickError = null;
   if (clickSelector) {
@@ -1795,6 +1808,77 @@ console.log('=== 十八、iOS 混音器：系统手势吞掉 pointerup 后不留
 }
 
 /* ---------- 汇总 ---------- */
+/* ---------- 十九、首访幕布 ---------- */
+console.log('=== 十九、首访幕布：无 JS 不出现、首次出现、关掉后不再出现 ===');
+{
+  /* 无 JS：节点在 HTML 里，但没有 data-intro，CSS 让它 display:none ——
+     禁 JS 的抓取者看到的仍是正常首页，不是一块挡住内容的层。 */
+  const nojs = await visit('/', { noJs: true, keepIntro: true, waitMs: 900 });
+  const nojsState = await nojs.evaluate(`(() => {
+    const n = document.getElementById('intro');
+    return {
+      present: !!n,
+      display: n ? getComputedStyle(n).display : null,
+      attr: document.documentElement.hasAttribute('data-intro')
+    };
+  })()`);
+  check('无 JS：幕布节点在 DOM 里', nojsState.present, true);
+  check('无 JS：但没有 data-intro', nojsState.attr, false);
+  check('无 JS：幕布 display:none', nojsState.display, 'none');
+
+  /* 有 JS、存储为空（这个上下文是全新的）：幕布出来，图墙铺满、无重复。 */
+  const v = await visit('/', { keepIntro: true, waitMs: 1400 });
+  const first = await v.evaluate(`(() => {
+    const n = document.getElementById('intro');
+    const imgs = [...document.querySelectorAll('.intro-wall img')];
+    const srcs = imgs.map(i => i.getAttribute('src'));
+    return {
+      display: n ? getComputedStyle(n).display : null,
+      attr: document.documentElement.hasAttribute('data-intro'),
+      tiles: imgs.length,
+      dup: srcs.length - new Set(srcs).size,
+      line: (document.getElementById('intro-line') || {}).textContent,
+      stored: localStorage.getItem('intro-v1')
+    };
+  })()`);
+  check('首访：data-intro 存在', first.attr, true);
+  check('首访：幕布 display:block', first.display, 'block');
+  check('首访：图墙 24 格（桌面 6×4）', first.tiles, 24);
+  check('首访：同屏没有重复的图', first.dup, 0);
+  check('首访：身份文案', first.line, 'Sound art, instrument design and interactive work');
+  check('首访：还没写 intro-v1', first.stored, null);
+
+  /* 关掉（走真实的点击路径）→ 写 localStorage → 重新导航不再出现。 */
+  await v.evaluate(`document.getElementById('intro').click()`);
+  await sleep(400);
+  const after = await v.evaluate(`(() => ({
+    gone: !document.getElementById('intro'),
+    attr: document.documentElement.hasAttribute('data-intro'),
+    stored: localStorage.getItem('intro-v1')
+  }))()`);
+  check('关闭后：节点被移除', after.gone, true);
+  check('关闭后：data-intro 已去掉', after.attr, false);
+  check('关闭后：写入 intro-v1', after.stored, '1');
+
+  await v.raw('Page.navigate', { url: `${BASE}/` });
+  await sleep(1500);
+  const second = await v.evaluate(`(() => {
+    const n = document.getElementById('intro');
+    return { display: n ? getComputedStyle(n).display : null, attr: document.documentElement.hasAttribute('data-intro') };
+  })()`);
+  check('第二次访问：不再出现', second.display, 'none');
+  check('第二次访问：没有 data-intro', second.attr, false);
+
+  /* 中文页：文案随路径语言烤好 */
+  const zh = await visit('/zh/', { keepIntro: true, waitMs: 1400 });
+  const zhState = await zh.evaluate(`(() => ({
+    line: (document.getElementById('intro-line') || {}).textContent,
+    use: (document.querySelector('#intro .intro-use') || {}).textContent
+  }))()`);
+  check('中文页：身份文案是中文', zhState.line, '声音艺术、乐器设计与交互作品');
+  check('中文页：使用说明是中文', zhState.use, '点开一张卡片看作品，把它甩到一边看下一张。');
+}
+
 console.log('\n================ 结果 ================');
 console.log(`通过 ${pass} 项，失败 ${fail} 项`);
 if (failures.length) {

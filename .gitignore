@@ -22,9 +22,5 @@ img/originals/
 # 音频母版与编码评估产物（1.58 GiB，本地保留，绝不部署到 Pages）
 audio-masters/
 
-# 首访幕布（开发中，还没接进 index.html）。
-# 上线时把下面三行去掉、再一起入库：生成器本身是要进仓库的，
-# 现在忽略只是不让它挡在待提交列表里。
+# 首访幕布的本地预览页（正式版已接进 index.html，这份只是调样式时用）
 preview-intro.html
-img/collage/
-scripts/gen-collage.py
